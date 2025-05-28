@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mantık Bağlaçları ile Çevre Dostu Çöp Ayrıştırma</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a5d1a, #0d3b0d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        /* Introduction Page Styles */
+        .intro-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 20px 10px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .intro-header {
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            color: #ffd700;
+            background: linear-gradient(to right, #ffd700, #ff9d00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.3;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+        
+        .game-explanation {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: left;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .explanation-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ffd700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-align: center;
+        }
+        
+        .explanation-content {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .feature-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #4fc3f7;
+        }
+        
+        .feature-desc {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .start-button {
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffd700, #ffa000);
+            color: #333;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Game Page Styles */
+        .game-page {
+            display: none;
+            width: 100%;
+        }
+        
+        header {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 15px;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .rules-area {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        
+        .rules-area h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logic-rules {
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .logic-rules h3 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .rule {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid transparent;
+        }
+        
+        .rule-title {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .rule-desc {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            padding-left: 25px;
+        }
+        
+        .game-ui {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .bins-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        .bin {
+            height: 160px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .bin-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .bin-content {
+            border-radius: 8px;
+            padding: 8px;
+            gap: 8px;
+            overflow-y: auto;
+            max-height: 100px;
+        }
+        
+        .trash-column {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .trash-header {
+            font-size: 1.2rem;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .trash-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 10px;
+            padding: 5px;
+        }
+        
+        .trash-item {
+            height: 80px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: grab;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            font-size: 0.8rem;
+            padding: 8px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .trash-item.plastic { background: linear-gradient(135deg, #2196F3, #64B5F6); }
+        .trash-item.paper { background: linear-gradient(135deg, #FFEB3B, #FFF59D); color: #333; }
+        .trash-item.glass { background: linear-gradient(135deg, #4CAF50, #81C784); }
+        .trash-item.organic { background: linear-gradient(135deg, #795548, #A1887F); }
+        .trash-item.metal { background: linear-gradient(135deg, #9E9E9E, #E0E0E0); color: #333; }
+        .trash-item.battery { background: linear-gradient(135deg, #F44336, #EF9A9A); }
+        .trash-item.electronic { background: linear-gradient(135deg, #9C27B0, #E1BEE7); }
+        .trash-item.chemical { background: linear-gradient(135deg, #FF9800, #FFCC80); color: #333; }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .game-btn {
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+        
+        .score {
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .message {
+            margin-top: 10px;
+            font-size: 1rem;
+            min-height: 35px;
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .show-answer-btn {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #9E9E9E, #616161);
+        }
+        
+        .correct-badge {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+        }
+        
+        @media (min-width: 768px) {
+            .game-area {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .rules-area {
+                flex: 1;
+                min-width: 300px;
+                max-height: 85vh;
+            }
+            
+            .game-ui {
+                flex: 2;
+                min-width: 300px;
+            }
+            
+            .trash-column {
+                flex: 1;
+                min-width: 250px;
+                max-height: 85vh;
+            }
+            
+            .trash-items {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            }
+            
+            .trash-item {
+                height: 90px;
+            }
+            
+            .controls {
+                gap: 15px;
+            }
+            
+            .game-btn {
+                min-width: auto;
+                flex: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Introduction Page -->
+        <div class="intro-page" id="introPage">
+            <div class="intro-header">
+                <h1><i class="fas fa-recycle"></i> Mantık Bağlaçları ile Çevre Dostu Çöp Ayrıştırma</h1>
+                <p class="subtitle">Mantıksal düşünme becerilerinizi geliştirirken çevreyi koruyun!</p>
+            </div>
+            
+            <div class="game-explanation">
+                <h2 class="explanation-title"><i class="fas fa-lightbulb"></i> Oyun Hakkında</h2>
+                <div class="explanation-content">
+                    <p>Bu interaktif oyun, mantık bağlaçlarını (VE, VEYA, YA DA, İSE) eğlenceli bir şekilde öğretmeyi ve çevre bilincini artırmayı amaçlamaktadır.</p>
+                    <p>Oyunun amacı, çöpleri mantık kurallarına göre doğru şekilde ayrıştırmaktır. Her çöp kutusu belirli mantık bağlaçları ile tanımlanmış kurallara sahiptir.</p>
+                    <p>Çöpleri sürükleyip bırakarak uygun çöp kutularına yerleştirin ve mantık becerilerinizi geliştirirken çevreye katkıda bulunun!</p>
+                </div>
+                
+                <div class="features">
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                        <h3 class="feature-title">Mantık Bağlaçlarını Öğrenin</h3>
+                        <p class="feature-desc">VE, VEYA, YA DA ve İSE bağlaçlarının gerçek dünya uygulamalarını görün</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-leaf"></i></div>
+                        <h3 class="feature-title">Çevre Bilinci Kazanın</h3>
+                        <p class="feature-desc">Çöplerin doğru ayrıştırılmasının çevreye katkılarını keşfedin</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon"><i class="fas fa-gamepad"></i></div>
+                        <h3 class="feature-title">Eğlenceli Öğrenme</h3>
+                        <p class="feature-desc">Oyun tabanlı öğrenme ile kalıcı bilgiler edinin</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="start-button" id="startButton">
+                <i class="fas fa-play"></i> OYUNU BAŞLAT
+            </button>
+        </div>
+        
+        <!-- Game Page -->
+        <div class="game-page" id="gamePage">
+            <header>
+                <h1><i class="fas fa-recycle"></i> Mantık Bağlaçları ile Çöp Ayrıştırma</h1>
+                <p class="subtitle">Çöpleri mantık kurallarına göre doğru kutuya yerleştirin!</p>
+            </header>
+            
+            <div class="game-area">
+                <div class="rules-area">
+                    <h2><i class="fas fa-book"></i> Mantık Bağlaçları ve Kurallar</h2>
+                    
+                    <div class="logic-rules">
+                        <h3><i class="fas fa-puzzle-piece"></i> Mantık Bağlaçları</h3>
+                        
+                        <div class="rule and-rule">
+                            <div class="rule-title">
+                                <i class="fas fa-times"></i> Ve Bağlacı (∧)
+                            </div>
+                            <div class="rule-desc">
+                                İki veya daha fazla önermenin hepsinin doğru olup olmadığını kontrol eder. 
+                            </div>
+                        </div>
+                        
+                        <div class="rule or-rule">
+                            <div class="rule-title">
+                                <i class="fas fa-plus"></i> Veya Bağlacı (∨)
+                            </div>
+                            <div class="rule-desc">
+                                İki veya daha fazla önermeden en az birinin doğru olup olmadığını kontrol eder.
+                            </div>
+                        </div>
+                        
+                        <div class="rule xor-rule">
+                            <div class="rule-title">
+                                <i class="fas fa-xmark"></i> Ya da Bağlacı (⊕)
+                            </div>
+                            <div class="rule-desc">
+                                İki önermeden yalnızca birinin doğru olup olmadığını kontrol eder.
+                            </div>
+                        </div>
+                        
+                        <div class="rule implies-rule">
+                            <div class="rule-title">
+                                <i class="fas fa-arrow-right"></i> İse Bağlacı (→)
+                            </div>
+                            <div class="rule-desc">
+                                Bir koşulun sağlanması durumunda belirli bir komutun yerine getirilmesini sağlar.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="logic-rules" style="margin-top: 20px;">
+                        <h3><i class="fas fa-recycle"></i> Ayrıştırma Kuralları</h3>
+                        
+                        <div class="rule">
+                            <div class="rule-title"><i class="fas fa-recycle"></i> Geri Dönüşüm Kutusu</div>
+                            <div class="rule-desc">
+                                (Plastik ∧ Temiz) ∨ (Kağıt ∧ Temiz) ∨ Cam ∨ Metal
+                            </div>
+                        </div>
+                        
+                        <div class="rule">
+                            <div class="rule-title"><i class="fas fa-leaf"></i> Organik Çöp Kutusu</div>
+                            <div class="rule-desc">
+                                Organik ∧ ¬Plastik ∧ ¬Kimyasal
+                            </div>
+                        </div>
+                        
+                        <div class="rule">
+                            <div class="rule-title"><i class="fas fa-biohazard"></i> Zararlı Atık Kutusu</div>
+                            <div class="rule-desc">
+                                (Pil ⊕ Kimyasal) ∨ Elektronik
+                            </div>
+                        </div>
+                        
+                        <div class="rule">
+                            <div class="rule-title"><i class="fas fa-trash"></i> Genel Çöp Kutusu</div>
+                            <div class="rule-desc">
+                                Diğer çöpler (kurallara uymayanlar)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-ui">
+                    <div class="bins-container">
+                        <div class="bin recyclable-bin">
+                            <div class="bin-title"><i class="fas fa-recycle"></i> Geri Dönüşüm</div>
+                            <div class="bin-content" id="recyclable-bin"></div>
+                        </div>
+                        
+                        <div class="bin organic-bin">
+                            <div class="bin-title"><i class="fas fa-leaf"></i> Organik Çöp</div>
+                            <div class="bin-content" id="organic-bin"></div>
+                        </div>
+                        
+                        <div class="bin hazardous-bin">
+                            <div class="bin-title"><i class="fas fa-biohazard"></i> Zararlı Atık</div>
+                            <div class="bin-content" id="hazardous-bin"></div>
+                        </div>
+                        
+                        <div class="bin general-bin">
+                            <div class="bin-title"><i class="fas fa-trash"></i> Genel Çöp</div>
+                            <div class="bin-content" id="general-bin"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button class="game-btn" id="check-btn"><i class="fas fa-check-circle"></i> Kontrol Et</button>
+                        <button class="game-btn show-answer-btn" id="show-answer-btn"><i class="fas fa-eye"></i> Doğru Cevap</button>
+                        <button class="game-btn" id="reset-btn"><i class="fas fa-redo"></i> Yeniden Başla</button>
+                        <button class="game-btn back-btn" id="back-btn"><i class="fas fa-arrow-left"></i> Ana Sayfa</button>
+                    </div>
+                    
+                    <div class="info-panel">
+                        <div class="score"><i class="fas fa-star"></i> Puan: <span id="score">0</span></div>
+                        <div class="message" id="message">Çöpleri mantık kurallarına göre doğru kutuya sürükleyin!</div>
+                    </div>
+                </div>
+                
+                <div class="trash-column">
+                    <div class="trash-header">
+                        <i class="fas fa-trash-alt"></i> Çöpleri Buradan Seçin
+                    </div>
+                    <div class="trash-items" id="trash-items">
+                        <div class="trash-item plastic" data-id="1" data-type="plastic" data-clean="true">Plastik Şişe</div>
+                        <div class="trash-item paper" data-id="2" data-type="paper" data-clean="true">Kağıt</div>
+                        <div class="trash-item glass" data-id="3" data-type="glass">Cam Kavanoz</div>
+                        <div class="trash-item organic" data-id="4" data-type="organic">Meyve Kabuğu</div>
+                        <div class="trash-item battery" data-id="5" data-type="battery">Pil</div>
+                        <div class="trash-item electronic" data-id="6" data-type="electronic">Telefon</div>
+                        <div class="trash-item chemical" data-id="7" data-type="chemical">Boya</div>
+                        <div class="trash-item metal" data-id="8" data-type="metal">Kola Kutusu</div>
+                        <div class="trash-item plastic" data-id="9" data-type="plastic" data-clean="false">Kirli Plastik</div>
+                        <div class="trash-item paper" data-id="10" data-type="paper" data-clean="false">Islak Kağıt</div>
+                        <div class="trash-item organic" data-id="11" data-type="organic">Çay Posası</div>
+                        <div class="trash-item glass" data-id="12" data-type="glass">Cam Bardak</div>
+                        <div class="trash-item electronic" data-id="13" data-type="electronic">Kablolar</div>
+                        <div class="trash-item chemical" data-id="14" data-type="chemical">Temizlik Kimyasılı</div>
+                        <div class="trash-item plastic" data-id="15" data-type="plastic" data-clean="true">Plastik Kapak</div>
+                        <div class="trash-item organic" data-id="16" data-type="organic">Sebze Artıkları</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const introPage = document.getElementById('introPage');
+            const gamePage = document.getElementById('gamePage');
+            const startButton = document.getElementById('startButton');
+            const backButton = document.getElementById('back-btn');
+            const showAnswerButton = document.getElementById('show-answer-btn');
+            
+            // Sayfa geçişlerini yönet
+            startButton.addEventListener('click', () => {
+                introPage.style.display = 'none';
+                gamePage.style.display = 'block';
+            });
+            
+            backButton.addEventListener('click', () => {
+                gamePage.style.display = 'none';
+                introPage.style.display = 'flex';
+            });
+            
+            // Oyun mantığı
+            const trashItemsContainer = document.getElementById('trash-items');
+            const bins = {
+                recyclable: document.getElementById('recyclable-bin'),
+                organic: document.getElementById('organic-bin'),
+                hazardous: document.getElementById('hazardous-bin'),
+                general: document.getElementById('general-bin')
+            };
+            
+            const scoreElement = document.getElementById('score');
+            const messageElement = document.getElementById('message');
+            const checkButton = document.getElementById('check-btn');
+            const resetButton = document.getElementById('reset-btn');
+            
+            let score = 0;
+            let draggedItem = null;
+            
+            // Çöp öğelerini oluştur
+            function setupTrashItems() {
+                const trashItems = trashItemsContainer.querySelectorAll('.trash-item');
+                trashItems.forEach(item => {
+                    item.draggable = true;
+                    
+                    item.addEventListener('dragstart', dragStart);
+                    item.addEventListener('dragend', dragEnd);
+                    
+                    // Mobil için dokunmatik destek
+                    item.addEventListener('touchstart', touchStart);
+                    item.addEventListener('touchend', touchEnd);
+                    item.addEventListener('touchmove', touchMove);
+                });
+            }
+            
+            // Kutulara sürükleme olaylarını ekle
+            function setupBins() {
+                for (const binType in bins) {
+                    const bin = bins[binType];
+                    
+                    bin.addEventListener('dragover', dragOver);
+                    bin.addEventListener('dragenter', dragEnter);
+                    bin.addEventListener('dragleave', dragLeave);
+                    bin.addEventListener('drop', drop);
+                    
+                    // Mobil için dokunmatik destek
+                    bin.addEventListener('touchmove', touchMove);
+                    bin.addEventListener('touchend', touchEnd);
+                }
+            }
+            
+            // Sürükleme işlevleri
+            function dragStart(e) {
+                draggedItem = this;
+                this.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', this.dataset.id);
+            }
+            
+            function dragEnd() {
+                this.classList.remove('dragging');
+                draggedItem = null;
+            }
+            
+            function dragOver(e) {
+                e.preventDefault();
+            }
+            
+            function dragEnter(e) {
+                e.preventDefault();
+                this.classList.add('highlight');
+            }
+            
+            function dragLeave() {
+                this.classList.remove('highlight');
+            }
+            
+            function drop(e) {
+                e.preventDefault();
+                this.classList.remove('highlight');
+                
+                const trashId = e.dataTransfer.getData('text/plain');
+                const trashElement = document.querySelector(`.trash-item[data-id="${trashId}"]`);
+                
+                if (trashElement && draggedItem) {
+                    addToBin(trashElement, this);
+                }
+            }
+            
+            // Mobil dokunmatik desteği
+            let touchStartX, touchStartY;
+            
+            function touchStart(e) {
+                draggedItem = this;
+                this.classList.add('dragging');
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+            }
+            
+            function touchMove(e) {
+                if (!draggedItem) return;
+                e.preventDefault();
+                
+                // Öğeyi hareket ettir
+                const touchX = e.touches[0].clientX;
+                const touchY = e.touches[0].clientY;
+                
+                draggedItem.style.position = 'fixed';
+                draggedItem.style.left = (touchX - 40) + 'px';
+                draggedItem.style.top = (touchY - 40) + 'px';
+                draggedItem.style.zIndex = '1000';
+                
+                // Kutuları vurgula
+                for (const binType in bins) {
+                    const bin = bins[binType];
+                    const rect = bin.getBoundingClientRect();
+                    
+                    if (touchX > rect.left && touchX < rect.right &&
+                        touchY > rect.top && touchY < rect.bottom) {
+                        bin.classList.add('highlight');
+                    } else {
+                        bin.classList.remove('highlight');
+                    }
+                }
+            }
+            
+            function touchEnd(e) {
+                if (!draggedItem) return;
+                
+                draggedItem.style.position = '';
+                draggedItem.style.left = '';
+                draggedItem.style.top = '';
+                draggedItem.style.zIndex = '';
+                
+                const touchX = e.changedTouches[0].clientX;
+                const touchY = e.changedTouches[0].clientY;
+                
+                for (const binType in bins) {
+                    const bin = bins[binType];
+                    const rect = bin.getBoundingClientRect();
+                    
+                    if (touchX > rect.left && touchX < rect.right &&
+                        touchY > rect.top && touchY < rect.bottom) {
+                        addToBin(draggedItem, bin);
+                        bin.classList.remove('highlight');
+                        break;
+                    }
+                }
+                
+                draggedItem.classList.remove('dragging');
+                draggedItem = null;
+            }
+            
+            // Öğeyi kutuya ekleme fonksiyonu
+            function addToBin(item, bin) {
+                bin.appendChild(item);
+                item.style.cursor = 'default';
+                
+                // Animasyon ekle
+                item.classList.add('highlight');
+                setTimeout(() => {
+                    item.classList.remove('highlight');
+                }, 1500);
+                
+                messageElement.textContent = `"${item.textContent}" çöpü kutuya eklendi!`;
+                messageElement.style.color = '#4caf50';
+            }
+            
+            // Kontrol etme işlevi
+            function checkSorting() {
+                let correct = 0;
+                let total = 16; // Toplam çöp sayısı
+                
+                // Her bir kutu için kontrol yap
+                for (const binType in bins) {
+                    const bin = bins[binType];
+                    const items = bin.querySelectorAll('.trash-item');
+                    
+                    items.forEach(item => {
+                        const itemType = item.dataset.type;
+                        const isClean = item.dataset.clean === "true";
+                        let isCorrect = false;
+                        
+                        // Mantık kurallarına göre kontrol
+                        switch(binType) {
+                            case 'recyclable':
+                                // (Plastik ∧ Temiz) ∨ (Kağıt ∧ Temiz) ∨ Cam ∨ Metal
+                                isCorrect = 
+                                    (itemType === 'plastic' && isClean) ||
+                                    (itemType === 'paper' && isClean) ||
+                                    itemType === 'glass' ||
+                                    itemType === 'metal';
+                                break;
+                            case 'organic':
+                                // Organik ∧ ¬Plastik ∧ ¬Kimyasal
+                                isCorrect = 
+                                    itemType === 'organic' && 
+                                    itemType !== 'plastic' && 
+                                    itemType !== 'chemical';
+                                break;
+                            case 'hazardous':
+                                // (Pil ⊕ Kimyasal) ∨ Elektronik
+                                const isBattery = itemType === 'battery';
+                                const isChemical = itemType === 'chemical';
+                                const isElectronic = itemType === 'electronic';
+                                
+                                // XOR: Yalnızca pil VEYA yalnızca kimyasal, ya da elektronik
+                                isCorrect = 
+                                    (isBattery && !isChemical && !isElectronic) ||
+                                    (isChemical && !isBattery && !isElectronic) ||
+                                    (isElectronic && !isBattery && !isChemical);
+                                break;
+                            case 'general':
+                                // Diğer çöpler (kurallara uymayanlar)
+                                isCorrect = 
+                                    (itemType === 'plastic' && !isClean) ||
+                                    (itemType === 'paper' && !isClean) ||
+                                    (itemType === 'chemical' && !isBattery && !isElectronic) ||
+                                    (itemType === 'battery' && (isChemical || isElectronic)) ||
+                                    (itemType === 'electronic' && (isBattery || isChemical));
+                                break;
+                        }
+                        
+                        if (isCorrect) {
+                            item.style.boxShadow = '0 0 0 3px green';
+                            correct++;
+                        } else {
+                            item.style.boxShadow = '0 0 0 3px red';
+                        }
+                    });
+                }
+                
+                // Puan hesapla
+                score = Math.floor((correct / total) * 100);
+                scoreElement.textContent = score;
+                
+                // Mesaj göster
+                if (score === 100) {
+                    messageElement.textContent = 'Tebrikler! Tüm çöpleri doğru şekilde ayrıştırdınız!';
+                    messageElement.style.color = '#4caf50';
+                } else if (score >= 70) {
+                    messageElement.textContent = `İyi iş! Puan: ${score} - Daha yüksek puan için düzeltin!`;
+                    messageElement.style.color = '#4caf50';
+                } else if (score >= 50) {
+                    messageElement.textContent = `Orta seviye! Puan: ${score} - Mantık kurallarını gözden geçirin!`;
+                    messageElement.style.color = '#FF9800';
+                } else {
+                    messageElement.textContent = `Puan: ${score} - "Doğru Cevap" butonunu kullanabilirsiniz!`;
+                    messageElement.style.color = '#f44336';
+                }
+            }
+            
+            // Doğru yanıtı göster
+            function showAnswer() {
+                // Tüm çöp öğelerini topla
+                const allItems = document.querySelectorAll('.trash-item');
+                
+                // Her çöp öğesi için doğru kutuya yerleştir
+                allItems.forEach(item => {
+                    const correctBin = getCorrectBinForItem(item);
+                    
+                    // Doğru kutuya taşı
+                    bins[correctBin].appendChild(item);
+                    
+                    // Doğruluk rozeti ekle
+                    const badge = document.createElement('div');
+                    badge.className = 'correct-badge';
+                    badge.innerHTML = '<i class="fas fa-check"></i>';
+                    item.appendChild(badge);
+                });
+                
+                messageElement.textContent = 'Doğru çözüm gösteriliyor! Çöpler mantık kurallarına göre doğru kutulara yerleştirildi.';
+                messageElement.style.color = '#4caf50';
+            }
+            
+            // Her çöp öğesi için doğru kutu bilgisini döndür
+            function getCorrectBinForItem(item) {
+                const itemType = item.dataset.type;
+                const isClean = item.dataset.clean === "true";
+                
+                // Geri dönüşüm kutusu için kurallar
+                if ((itemType === 'plastic' && isClean) ||
+                    (itemType === 'paper' && isClean) ||
+                    itemType === 'glass' ||
+                    itemType === 'metal') {
+                    return 'recyclable';
+                }
+                // Organik çöp kutusu için kurallar
+                else if (itemType === 'organic') {
+                    return 'organic';
+                }
+                // Zararlı atık kutusu için kurallar: 
+                // Pil, kimyasal veya elektronik olabilir, ancak kuralda "ya da" olduğu için
+                // aslında her biri ayrı ayrı zararlı atık. 
+                else if (itemType === 'battery') {
+                    return 'hazardous';
+                }
+                else if (itemType === 'chemical') {
+                    return 'hazardous';
+                }
+                else if (itemType === 'electronic') {
+                    return 'hazardous';
+                }
+                // Genel çöp kutusu için kurallar
+                else {
+                    return 'general';
+                }
+            }
+            
+            // Oyunu sıfırla
+            function resetGame() {
+                // Tüm çöp öğelerini başlangıç konumuna al
+                trashItemsContainer.innerHTML = `
+                    <div class="trash-item plastic" data-id="1" data-type="plastic" data-clean="true">Plastik Şişe</div>
+                    <div class="trash-item paper" data-id="2" data-type="paper" data-clean="true">Kağıt</div>
+                    <div class="trash-item glass" data-id="3" data-type="glass">Cam Kavanoz</div>
+                    <div class="trash-item organic" data-id="4" data-type="organic">Meyve Kabuğu</div>
+                    <div class="trash-item battery" data-id="5" data-type="battery">Pil</div>
+                    <div class="trash-item electronic" data-id="6" data-type="electronic">Telefon</div>
+                    <div class="trash-item chemical" data-id="7" data-type="chemical">Boya</div>
+                    <div class="trash-item metal" data-id="8" data-type="metal">Kola Kutusu</div>
+                    <div class="trash-item plastic" data-id="9" data-type="plastic" data-clean="false">Kirli Plastik</div>
+                    <div class="trash-item paper" data-id="10" data-type="paper" data-clean="false">Islak Kağıt</div>
+                    <div class="trash-item organic" data-id="11" data-type="organic">Çay Posası</div>
+                    <div class="trash-item glass" data-id="12" data-type="glass">Cam Bardak</div>
+                    <div class="trash-item electronic" data-id="13" data-type="electronic">Kablolar</div>
+                    <div class="trash-item chemical" data-id="14" data-type="chemical">Temizlik Kimyasılı</div>
+                    <div class="trash-item plastic" data-id="15" data-type="plastic" data-clean="true">Plastik Kapak</div>
+                    <div class="trash-item organic" data-id="16" data-type="organic">Sebze Artıkları</div>
+                `;
+                
+                for (const binType in bins) {
+                    bins[binType].innerHTML = '';
+                }
+                
+                // Değişkenleri sıfırla
+                score = 0;
+                scoreElement.textContent = '0';
+                messageElement.textContent = 'Çöpleri mantık kurallarına göre doğru kutuya sürükleyin!';
+                messageElement.style.color = '#fff';
+                
+                // Olay dinleyicilerini yeniden ekle
+                setupTrashItems();
+            }
+            
+            // Olay dinleyicileri
+            checkButton.addEventListener('click', checkSorting);
+            resetButton.addEventListener('click', resetGame);
+            showAnswerButton.addEventListener('click', showAnswer);
+            
+            // Oyunu başlat
+            setupTrashItems();
+            setupBins();
+        });
+    </script>
+</body>
+</html>
