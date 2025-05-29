@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YA DA Mantık Bağlacı - Veri Karşılaştırma Oyunu</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(0, 15, 30, 0.85);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+            border: 2px solid #00eeff;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #00eeff;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00eeff;
+            background: linear-gradient(to right, #00eeff, #00ffaa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .intro {
+            background: rgba(0, 40, 80, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid #0088ff;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        
+        .intro p {
+            margin-bottom: 12px;
+        }
+        
+        .highlight {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .data-container {
+            flex: 1;
+            min-width: 250px;
+            background: rgba(0, 30, 60, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid #0088ff;
+        }
+        
+        .data-title {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            color: #00eeff;
+        }
+        
+        .data-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .data-cell {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 8px;
+            background: rgba(0, 50, 100, 0.8);
+            border: 2px solid #0088ff;
+            transition: all 0.3s ease;
+        }
+        
+        .ya-da-result .data-cell {
+            background: rgba(20, 80, 20, 0.7);
+            border: 2px solid #00ff88;
+            cursor: pointer;
+        }
+        
+        .ya-da-result .data-cell:hover {
+            transform: scale(1.1);
+            background: rgba(30, 120, 30, 0.9);
+        }
+        
+        .ya-da-result .data-cell.selected {
+            background: #00ff88;
+            color: #003315;
+            box-shadow: 0 0 15px #00ff88;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0 15px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 25px;
+            font-size: 1rem;
+            background: linear-gradient(to right, #0066ff, #00aaff);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(0, 100, 255, 0.4);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 150, 255, 0.6);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        #checkBtn {
+            background: linear-gradient(to right, #00cc66, #00ff99);
+        }
+        
+        #newBtn {
+            background: linear-gradient(to right, #ff6600, #ffaa00);
+        }
+        
+        .instructions {
+            background: rgba(0, 40, 80, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #0088ff;
+        }
+        
+        .instructions h2 {
+            color: #00eeff;
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .feedback {
+            text-align: center;
+            margin: 15px 0;
+            min-height: 50px;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .success {
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.7);
+        }
+        
+        .error {
+            color: #ff5555;
+            text-shadow: 0 0 10px rgba(255, 85, 85, 0.7);
+        }
+        
+        .score-panel {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 30, 60, 0.7);
+            padding: 12px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border: 1px solid #00aaff;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00eeff;
+        }
+        
+        .logic-gate {
+            text-align: center;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(0, 60, 120, 0.6);
+            border-radius: 10px;
+            border: 1px solid #00aaff;
+        }
+        
+        .logic-gate h3 {
+            color: #00eeff;
+            margin-bottom: 8px;
+            font-size: 1.3rem;
+        }
+        
+        .gate-table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+        
+        .gate-table th, .gate-table td {
+            border: 1px solid #0088ff;
+            padding: 6px 12px;
+            text-align: center;
+        }
+        
+        .game-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .level-indicator, .timer {
+            background: rgba(0, 50, 100, 0.8);
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-weight: bold;
+            color: #00ffaa;
+            border: 2px solid #00aaff;
+            display: inline-block;
+            font-size: 1.1rem;
+        }
+        
+        .timer {
+            background: rgba(100, 0, 50, 0.7);
+            color: #ff55aa;
+            border-color: #ff55aa;
+        }
+        
+        .bit-info {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 1.1rem;
+            color: #00eeff;
+        }
+        
+        @media (max-width: 768px) {
+            .game-area {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .data-cell {
+                width: 35px;
+                height: 35px;
+                font-size: 1.1rem;
+            }
+            
+            .game-indicators {
+                gap: 10px;
+            }
+            
+            .level-indicator, .timer {
+                padding: 6px 15px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>YA DA Mantık Bağlacı Oyunu</h1>
+        <p class="subtitle">Veri setlerini karşılaştır, farklı bitleri YA DA mantığıyla işaretle!</p>
+    </header>
+    
+    <div class="container">
+        <div class="intro">
+            <p>Veri karşılaştırma, bilgisayar bilimlerinde ve günlük hayatımızda kritik bir rol oynar. İki veri kümesi arasındaki farkları tespit etmek, hata kontrolünden güvenlik sistemlerine kadar birçok alanda hayati öneme sahiptir. <span class="highlight">YA DA (XOR) mantık bağlacı</span> bu işlem için mükemmel bir araçtır, çünkü <span class="highlight">yalnızca farklı bitlerde 1 değerini üretir</span>.</p>
+        </div>
+        
+        <div class="score-panel">
+            <div class="score-item">
+                <div>Puan</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div>Doğru</div>
+                <div class="score-value" id="correct">0</div>
+            </div>
+            <div class="score-item">
+                <div>Yanlış</div>
+                <div class="score-value" id="wrong">0</div>
+            </div>
+        </div>
+        
+        <div class="logic-gate">
+            <h3>YA DA (Özel Veya) Mantık Kapısı</h3>
+            <table class="gate-table">
+                <tr>
+                    <th>A</th>
+                    <th>B</th>
+                    <th>A YA DA B</th>
+                </tr>
+                <tr>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>0</td>
+                    <td>1</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>0</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>0</td>
+                </tr>
+            </table>
+            <p style="margin-top: 12px;"><strong>Kural:</strong> İki giriş <span class="highlight">farklı</span> ise çıkış 1, <span class="highlight">aynı</span> ise çıkış 0</p>
+        </div>
+        
+        <div class="game-area">
+            <div class="data-container">
+                <h2 class="data-title">Veri Seti 1</h2>
+                <div class="data-row" id="dataSet1"></div>
+            </div>
+            
+            <div class="data-container">
+                <h2 class="data-title">Veri Seti 2</h2>
+                <div class="data-row" id="dataSet2"></div>
+            </div>
+            
+            <div class="data-container">
+                <h2 class="data-title">YA DA Sonucu</h2>
+                <div class="bit-info"><span id="bitCount">4</span> bit</div>
+                <div class="data-row ya-da-result" id="yaDaResult"></div>
+            </div>
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+        
+        <div class="game-indicators">
+            <div class="level-indicator">Seviye: <span id="level">1</span></div>
+            <div class="timer">Süre: <span id="timer">20</span> saniye</div>
+        </div>
+        
+        <div class="controls">
+            <button id="checkBtn">Kontrol Et</button>
+            <button id="newBtn">Yeni Veri Seti</button>
+            <button id="hintBtn">İpucu Göster</button>
+        </div>
+        
+        <div class="instructions">
+            <h2>Nasıl Oynanır?</h2>
+            <ul>
+                <li>YA DA (Özel Veya) mantığı: <span class="highlight">Aynı bitler → 0, Farklı bitler → 1</span></li>
+                <li>İki veri setini karşılaştır ve <span class="highlight">farklı olan bitlere tıkla</span></li>
+                <li>Tıkladığın bitler <span class="highlight">yeşil</span> olarak işaretlenecek</li>
+                <li>"Kontrol Et" butonuna basarak cevabını doğrula</li>
+                <li>Her doğru cevap için <span class="highlight">10 puan</span> kazanırsın</li>
+                <li>Seviye arttıkça veri setleri büyüyecek!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Oyun durumu
+            const state = {
+                score: 0,
+                correct: 0,
+                wrong: 0,
+                level: 1,
+                dataLength: 4,
+                dataSet1: [],
+                dataSet2: [],
+                yaDaResult: [],
+                userSelection: [],
+                timer: 20,
+                timerInterval: null
+            };
+            
+            // DOM elementleri
+            const elements = {
+                dataSet1: document.getElementById('dataSet1'),
+                dataSet2: document.getElementById('dataSet2'),
+                yaDaResult: document.getElementById('yaDaResult'),
+                feedback: document.getElementById('feedback'),
+                score: document.getElementById('score'),
+                correct: document.getElementById('correct'),
+                wrong: document.getElementById('wrong'),
+                level: document.getElementById('level'),
+                timer: document.getElementById('timer'),
+                bitCount: document.getElementById('bitCount'),
+                checkBtn: document.getElementById('checkBtn'),
+                newBtn: document.getElementById('newBtn'),
+                hintBtn: document.getElementById('hintBtn')
+            };
+            
+            // Oyunu başlat
+            initGame();
+            
+            // Buton eventleri
+            elements.checkBtn.addEventListener('click', checkAnswer);
+            elements.newBtn.addEventListener('click', generateNewData);
+            elements.hintBtn.addEventListener('click', showHint);
+            
+            // Oyunu başlatma
+            function initGame() {
+                generateNewData();
+                updateScoreboard();
+            }
+            
+            // Timer başlat
+            function startTimer() {
+                clearInterval(state.timerInterval);
+                state.timer = 20 + (state.level * 2);
+                elements.timer.textContent = state.timer;
+                
+                state.timerInterval = setInterval(() => {
+                    state.timer--;
+                    elements.timer.textContent = state.timer;
+                    
+                    if (state.timer <= 0) {
+                        clearInterval(state.timerInterval);
+                        elements.feedback.textContent = '⏱️ Süre bitti! Yeni veri seti oluşturuluyor.';
+                        elements.feedback.className = 'feedback error';
+                        setTimeout(generateNewData, 2000);
+                    }
+                }, 1000);
+            }
+            
+            // Yeni veri seti oluştur
+            function generateNewData() {
+                // Timer'ı sıfırla
+                clearInterval(state.timerInterval);
+                
+                // Veri uzunluğunu seviyeye göre ayarla (4'ten başlayıp 1'er artacak)
+                state.dataLength = 3 + state.level;
+                elements.bitCount.textContent = state.dataLength;
+                
+                // Veri setlerini oluştur
+                state.dataSet1 = generateRandomData(state.dataLength);
+                state.dataSet2 = generateRandomData(state.dataLength);
+                
+                // YA DA sonucunu hesapla
+                calculateYaDa();
+                
+                // Kullanıcı seçimini sıfırla
+                state.userSelection = Array(state.dataLength).fill(0);
+                
+                // Ekranı güncelle
+                renderDataSets();
+                renderYaDaResult();
+                
+                // Geri bildirimi temizle
+                elements.feedback.textContent = '';
+                elements.feedback.className = 'feedback';
+                
+                // Timer'ı başlat
+                startTimer();
+            }
+            
+            // Rastgele veri seti oluştur
+            function generateRandomData(length) {
+                return Array.from({length}, () => Math.floor(Math.random() * 2));
+            }
+            
+            // YA DA hesapla
+            function calculateYaDa() {
+                state.yaDaResult = [];
+                for (let i = 0; i < state.dataLength; i++) {
+                    // YA DA: Farklıysa 1, aynıysa 0
+                    state.yaDaResult.push(state.dataSet1[i] === state.dataSet2[i] ? 0 : 1);
+                }
+            }
+            
+            // Veri setlerini ekranda göster
+            function renderDataSets() {
+                renderDataSet(elements.dataSet1, state.dataSet1);
+                renderDataSet(elements.dataSet2, state.dataSet2);
+            }
+            
+            // Tek bir veri setini render et
+            function renderDataSet(container, data) {
+                container.innerHTML = '';
+                data.forEach(bit => {
+                    const cell = document.createElement('div');
+                    cell.className = 'data-cell';
+                    cell.textContent = bit;
+                    container.appendChild(cell);
+                });
+            }
+            
+            // YA DA sonucu için tıklanabilir hücreler oluştur
+            function renderYaDaResult() {
+                elements.yaDaResult.innerHTML = '';
+                state.userSelection.forEach((selected, index) => {
+                    const cell = document.createElement('div');
+                    cell.className = 'data-cell';
+                    cell.textContent = '0';
+                    
+                    if (selected === 1) {
+                        cell.classList.add('selected');
+                        cell.textContent = '1';
+                    }
+                    
+                    // Hücreye tıklama olayı ekle
+                    cell.addEventListener('click', () => {
+                        // Seçimi değiştir: 0->1, 1->0
+                        state.userSelection[index] = state.userSelection[index] === 1 ? 0 : 1;
+                        
+                        // Hücreyi güncelle
+                        if (state.userSelection[index] === 1) {
+                            cell.classList.add('selected');
+                            cell.textContent = '1';
+                        } else {
+                            cell.classList.remove('selected');
+                            cell.textContent = '0';
+                        }
+                    });
+                    
+                    elements.yaDaResult.appendChild(cell);
+                });
+            }
+            
+            // Cevabı kontrol et
+            function checkAnswer() {
+                let isCorrect = true;
+                
+                for (let i = 0; i < state.dataLength; i++) {
+                    if (state.userSelection[i] !== state.yaDaResult[i]) {
+                        isCorrect = false;
+                        break;
+                    }
+                }
+                
+                if (isCorrect) {
+                    // Doğru cevap
+                    state.score += 10;
+                    state.correct++;
+                    
+                    // Geri bildirim
+                    elements.feedback.textContent = '✓ Tebrikler! Doğru cevap.';
+                    elements.feedback.className = 'feedback success';
+                    
+                    // Seviye atlama kontrolü
+                    if (state.correct % 3 === 0 && state.level < 8) {
+                        state.level++;
+                        elements.level.textContent = state.level;
+                        elements.feedback.textContent += ` Seviye atladın! Yeni seviye: ${state.level}`;
+                    }
+                } else {
+                    // Yanlış cevap
+                    state.wrong++;
+                    elements.feedback.textContent = '✗ Yanlış cevap. Farklı bitleri işaretlemelisin.';
+                    elements.feedback.className = 'feedback error';
+                    
+                    // Seviye düşürme (eğer 1'den büyükse)
+                    if (state.level > 1 && state.wrong % 2 === 0) {
+                        state.level--;
+                        elements.level.textContent = state.level;
+                        elements.feedback.textContent += ` Seviye düştü! Yeni seviye: ${state.level}`;
+                    }
+                }
+                
+                // Skor tahtasını güncelle
+                updateScoreboard();
+                
+                // Yeni veri seti oluştur
+                setTimeout(generateNewData, 2000);
+            }
+            
+            // İpucu göster
+            function showHint() {
+                // Rastgele bir doğru biti göster
+                const correctIndices = [];
+                state.yaDaResult.forEach((bit, index) => {
+                    if (bit === 1) correctIndices.push(index);
+                });
+                
+                if (correctIndices.length > 0) {
+                    const randomIndex = correctIndices[Math.floor(Math.random() * correctIndices.length)];
+                    
+                    // Kullanıcı bu biti seçmemişse seç
+                    if (state.userSelection[randomIndex] === 0) {
+                        state.userSelection[randomIndex] = 1;
+                        renderYaDaResult();
+                        
+                        // Geri bildirim
+                        elements.feedback.textContent = `💡 İpucu: ${randomIndex + 1}. bit farklı olan bitlerden biri!`;
+                        elements.feedback.className = 'feedback';
+                    }
+                }
+            }
+            
+            // Skor tahtasını güncelle
+            function updateScoreboard() {
+                elements.score.textContent = state.score;
+                elements.correct.textContent = state.correct;
+                elements.wrong.textContent = state.wrong;
+            }
+        });
+    </script>
+</body>
+</html>
