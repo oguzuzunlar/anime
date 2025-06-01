@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Güzel Bir Polinom Sorusu</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a237e, #311b92, #4a148c);
+            color: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+        
+        .instagram-story {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 700px;
+            background: linear-gradient(135deg, #1a237e, #311b92);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .slides-container {
+            display: flex;
+            width: 600%;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+        
+        .slide {
+            width: 16.666%;
+            height: 100%;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 15px 0;
+            border-bottom: 2px solid #5c6bc0;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(to right, #64b5f6, #bb86fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        
+        .slide-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 10px;
+            background: rgba(100, 181, 246, 0.2);
+        }
+        
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 15px 0;
+        }
+        
+        .problem-box, .solution-step {
+            background: rgba(33, 33, 99, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .problem-box {
+            border: 1px solid rgba(100, 181, 246, 0.3);
+        }
+        
+        .solution-step {
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .math-expression {
+            text-align: center;
+            font-size: 1.3rem;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(100, 181, 246, 0.3);
+        }
+        
+        .step-content {
+            padding: 10px 0;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        
+        .formula-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            font-family: 'Times New Roman', serif;
+            text-align: center;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .result-box {
+            background: linear-gradient(135deg, #2e7d32, #4caf50);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            margin: 20px 0;
+        }
+        
+        .result-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 15px;
+            display: inline-block;
+            min-width: 120px;
+            margin: 10px 0;
+        }
+        
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 152, 0, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #ff9800;
+            font-size: 0.95rem;
+        }
+        
+        .highlight {
+            color: #ffeb3b;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px 0;
+            font-size: 0.9rem;
+            color: #bb86fc;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .navigation {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-dot.active {
+            background: #64b5f6;
+            transform: scale(1.2);
+        }
+        
+        .swipe-hint {
+            position: absolute;
+            bottom: 60px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #bb86fc;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        .slide-number {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #64b5f6;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            z-index: 10;
+        }
+        
+        .vieta-info {
+            background: rgba(255, 152, 0, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #ff9800;
+            font-size: 0.9rem;
+        }
+        
+        .key-point {
+            background: rgba(100, 181, 246, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid #64b5f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="instagram-story">
+        <div class="slides-container">
+            <!-- Slide 1: Başlık -->
+            <div class="slide">
+                <div class="slide-number">1</div>
+                <div class="header">
+                    <h1><i class="fas fa-square-root-alt"></i> Güzel Bir Polinom Sorusu</h1>
+                    <p>Polinom Kökleri ile Denklem Çözümü</p>
+                </div>
+                
+                <div class="content">
+                    <div class="problem-box">
+                        <div class="slide-title"><i class="fas fa-question-circle"></i> Problem</div>
+                        <div class="step-content">
+                            <p><span class="highlight">p(x) = 5x³ - 3x - a = 0</span> denkleminin kökleri m, n, k olsun.</p>
+                            <div class="math-expression">
+                                (2 - m)(2 - n)(2 - k) = -4
+                            </div>
+                            <p>Verilen bu koşula göre <span class="highlight">a</span> değerini bulunuz.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="solution-step">
+                        <p>Bu slayt serisinde bu problemi adım adım çözeceğiz.</p>
+                        <div class="vieta-info">
+                           
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <p>Kaydırarak devam edin <i class="fas fa-arrow-right"></i></p>
+                </div>
+            </div>
+            
+    
+            
+            <!-- Slide 3: Adım 1 -->
+            <div class="slide">
+                <div class="slide-number">3</div>
+                <div class="header">
+                    <h1>Adım 1: Köklerle İfade</h1>
+                </div>
+                
+                <div class="content">
+                    <div class="solution-step">
+                        <div class="slide-title"><i class="fas fa-1"></i> Polinomun Kökler Cinsinden Yazılışı</div>
+                        <div class="step-content">
+                            <p>Başkatsayısı 5 olan üçüncü dereceden polinomu kökleri cinsinden yazalım:</p>
+                            <div class="formula-box">
+                                \( p(x) = 5(x - m)(x - n)(x - k) \)
+                            </div>
+                            <p>Burada m, n, k polinomun kökleridir.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="solution-step">
+                        <div class="slide-title"><i class="fas fa-bullseye"></i> Hedef İfade</div>
+                        <div class="step-content">
+                            <p>Verilen ifade: \( (2 - m)(2 - n)(2 - k) \)</p>
+                            <p>Bu ifadeyi polinom cinsinden yazabiliriz:</p>
+                            <div class="formula-box">
+                                \( p(2) = 5(2 - m)(2 - n)(2 - k) \)
+                            </div>
+                            <div class="key-point">
+                                <i class="fas fa-hand-point-right"></i> Bu kritik dönüşüm, problemi çözmemizi sağlayacak
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <p>Verilen ifadeyi p(2) cinsinden yazdık</p>
+                </div>
+            </div>
+            
+            <!-- Slide 4: Adım 2 -->
+            <div class="slide">
+                <div class="slide-number">4</div>
+                <div class="header">
+                    <h1>Adım 2: Koşulun Uygulanması</h1>
+                </div>
+                
+                <div class="content">
+                    <div class="solution-step">
+                        <div class="slide-title"><i class="fas fa-2"></i> Verilen Değeri Kullanma</div>
+                        <div class="step-content">
+                            <p>Problemde verilen koşul:</p>
+                            <div class="math-expression">
+                                (2 - m)(2 - n)(2 - k) = -4
+                            </div>
+                            
+                            <p>Bir önceki adımdan elde ettiğimiz ilişki:</p>
+                            <div class="formula-box">
+                                \( p(2) = 5 \times (2 - m)(2 - n)(2 - k) \)
+                            </div>
+                            
+                            <p>Bu iki ifadeyi birleştirirsek:</p>
+                            <div class="formula-box">
+                                \( p(2) = 5 \times (-4) = -20 \)
+                            </div>
+                            <div class="key-point">
+                                <i class="fas fa-check-circle"></i> Böylece p(2)'nin değerini bulmuş olduk
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <p>p(2) = -20 olarak hesaplandı</p>
+                </div>
+            </div>
+            
+            <!-- Slide 5: Adım 3 -->
+            <div class="slide">
+                <div class="slide-number">5</div>
+                <div class="header">
+                    <h1>Adım 3: p(2) Değerinin Hesaplanması</h1>
+                </div>
+                
+                <div class="content">
+                    <div class="solution-step">
+                        <div class="slide-title"><i class="fas fa-3"></i> Polinomun Açık Formu</div>
+                        <div class="step-content">
+                            <p>Polinomun açık formu:</p>
+                            <div class="formula-box">
+                                \( p(x) = 5x^3 - 3x - a \)
+                            </div>
+                            <p>x = 2 için değerini hesaplayalım:</p>
+                            <div class="formula-box">
+                                \( p(2) = 5(2)^3 - 3(2) - a \)
+                                <br>
+                                \( = 5 \times 8 - 6 - a \)
+                                <br>
+                                \( = 40 - 6 - a \)
+                                <br>
+                                \( = 34 - a \)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="solution-step">
+                        <div class="slide-title"><i class="fas fa-equals"></i> Eşitliği Kurma</div>
+                        <div class="step-content">
+                            <p>İki farklı yolla bulduğumuz p(2) değerleri:</p>
+                            <div class="formula-box">
+                                \( p(2) = -20 \) (kökler cinsinden)
+                                <br>
+                                \( p(2) = 34 - a \) (açık formdan)
+                            </div>
+                            <p>Bu iki ifadeyi eşitleyelim:</p>
+                            <div class="formula-box">
+                                \( 34 - a = -20 \)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <p>Denklemi kurduk, çözüme çok yakınız</p>
+                </div>
+            </div>
+            
+            <!-- Slide 6: Sonuç ve Kontrol -->
+            <div class="slide">
+                <div class="slide-number">6</div>
+                <div class="header">
+                    <h1>Sonuç ve Kontrol</h1>
+                </div>
+                
+                <div class="content">
+                    <div class="solution-step">
+                        <div class="slide-title"><i class="fas fa-4"></i> Denklemin Çözülmesi</div>
+                        <div class="step-content">
+                            <div class="formula-box">
+                                \( 34 - a = -20 \)
+                            </div>
+                            <p>Bu denklemi çözelim:</p>
+                            <div class="formula-box">
+                                \( -a = -20 - 34 \)
+                                <br>
+                                \( -a = -54 \)
+                                <br>
+                                \( a = 54 \)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <h2><i class="fas fa-trophy"></i> Sonuç</h2>
+                        <div class="result-value">a = 54</div>
+                    </div>
+                    
+                    <div class="explanation">
+                        <div class="slide-title"><i class="fas fa-check-double"></i> Kontrol Edelim</div>
+                        <p>Eğer a = 54 ise, denklem: \( p(x) = 5x^3 - 3x - 54 \)</p>
+                        <p>\( p(2) = 5(8) - 3(2) - 54 = 40 - 6 - 54 = -20 \)</p>
+                        <p>\( (2 - m)(2 - n)(2 - k) = \frac{p(2)}{5} = \frac{-20}{5} = -4 \)</p>
+                        <p>Verilen koşul sağlanır!</p>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <p>Çözüm başarıyla tamamlandı</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="swipe-hint">
+            <i class="fas fa-long-arrow-alt-right"></i> Kaydır
+        </div>
+        
+        <div class="navigation">
+            <div class="nav-dot active" data-slide="0"></div>
+            <div class="nav-dot" data-slide="1"></div>
+            <div class="nav-dot" data-slide="2"></div>
+            <div class="nav-dot" data-slide="3"></div>
+            <div class="nav-dot" data-slide="4"></div>
+            <div class="nav-dot" data-slide="5"></div>
+        </div>
+    </div>
+
+    <script>
+        // Slide navigation
+        const slidesContainer = document.querySelector('.slides-container');
+        const navDots = document.querySelectorAll('.nav-dot');
+        let currentSlide = 0;
+        
+        // Update slide position
+        function goToSlide(slideIndex) {
+            currentSlide = slideIndex;
+            slidesContainer.style.transform = `translateX(-${currentSlide * 16.666}%)`;
+            
+            // Update navigation dots
+            navDots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+        
+        // Navigation dots event listeners
+        navDots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                const slideIndex = parseInt(dot.getAttribute('data-slide'));
+                goToSlide(slideIndex);
+            });
+        });
+        
+        // Touch and mouse swipe functionality
+        let startX = 0;
+        let endX = 0;
+        
+        slidesContainer.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        });
+        
+        slidesContainer.addEventListener('touchmove', (e) => {
+            endX = e.touches[0].clientX;
+        });
+        
+        slidesContainer.addEventListener('touchend', () => {
+            handleSwipe();
+        });
+        
+        slidesContainer.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            slidesContainer.addEventListener('mousemove', mouseMoveHandler);
+            slidesContainer.addEventListener('mouseup', mouseUpHandler);
+            slidesContainer.addEventListener('mouseleave', mouseUpHandler);
+        });
+        
+        function mouseMoveHandler(e) {
+            endX = e.clientX;
+        }
+        
+        function mouseUpHandler() {
+            handleSwipe();
+            slidesContainer.removeEventListener('mousemove', mouseMoveHandler);
+            slidesContainer.removeEventListener('mouseup', mouseUpHandler);
+            slidesContainer.removeEventListener('mouseleave', mouseUpHandler);
+        }
+        
+        function handleSwipe() {
+            const diffX = startX - endX;
+            const slideCount = navDots.length;
+            
+            if (diffX > 50 && currentSlide < slideCount - 1) {
+                // Swipe left
+                goToSlide(currentSlide + 1);
+            } else if (diffX < -50 && currentSlide > 0) {
+                // Swipe right
+                goToSlide(currentSlide - 1);
+            }
+        }
+    </script>
+</body>
+</html>
