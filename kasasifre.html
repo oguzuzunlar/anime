@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuyumcu Şifre Problemi - Etkileşimli Eğitim</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.97);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 5px solid #f39c12;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .activity-info {
+            background: linear-gradient(135deg, #4e54c8, #8f94fb);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .info-card {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .info-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 5px;
+        }
+        
+        .problem-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #3498db;
+        }
+        
+        .problem-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .problem-section h2 i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+        
+        .problem-image {
+            background-color: #e9ecef;
+            height: 200px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #6c757d;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23e9ecef"/><text x="50" y="50" font-family="Arial" font-size="14" fill="%236c757d" text-anchor="middle" dominant-baseline="middle">Problem Senaryosu Resmi</text></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .problem-text {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            line-height: 1.8;
+        }
+        
+        .constraints {
+            background-color: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .constraints h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+        
+        .constraints ul {
+            padding-left: 25px;
+        }
+        
+        .constraints li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .question-box {
+            flex: 1;
+            min-width: 300px;
+            background: linear-gradient(135deg, #ffffff, #f0f8ff);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #e74c3c;
+        }
+        
+        .question-box:nth-child(2) {
+            border-top-color: #2ecc71;
+        }
+        
+        .question-box h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .question-box h3 i {
+            margin-right: 10px;
+        }
+        
+        .answer-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .answer-section label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .answer-section input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .answer-section input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+        
+        .hint-container {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #e67e22;
+            font-weight: bold;
+        }
+        
+        .hint-container i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .hint-content {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+            border-left: 3px solid #ffc107;
+            display: none;
+        }
+        
+        .feedback {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .solution-toggle {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        
+        .solution-toggle:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(90deg, #219653, #27ae60);
+        }
+        
+        .solution-section {
+            background-color: #e8f4f8;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+            border-left: 5px solid #3498db;
+            display: none;
+        }
+        
+        .solution-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .solution-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .step {
+            margin-bottom: 25px;
+            padding-bottom: 25px;
+            border-bottom: 1px dashed #ddd;
+        }
+        
+        .step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .step h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .step h3 .step-number {
+            background-color: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        
+        .formula {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 18px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #2c3e50;
+            color: white;
+            margin-top: 30px;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .vault-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 50px;
+            color: #f39c12;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @media (max-width: 768px) {
+            .questions {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .vault-icon {
+                position: static;
+                text-align: center;
+                margin-bottom: 15px;
+            }
+            
+            .activity-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="vault-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h1>KUYUMCU ŞİFRE PROBLEMİ</h1>
+            <div class="subtitle">Kombinatorik ve Olasılık Üzerine Etkileşimli Bir Eğitim</div>
+        </header>
+        
+        <div class="content">
+            <div class="activity-info">
+                <h2><i class="fas fa-info-circle"></i> Etkinlik Bilgileri</h2>
+                <div class="activity-grid">
+                    <div class="info-card">
+                        <h3>Sıralama ve Seçme</h3>
+                        <p>Kazanım: 10.1.1.1</p>
+                        <p>Olayların sayısını toplama ve çarpma yöntemleri kullanarak hesaplar</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Alan Becerileri</h3>
+                        <p>Muhakeme</p>
+                        <p>İlişkilendirme</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Genel Beceriler</h3>
+                        <p>Problem Çözme</p>
+                        <p>Birbirini Düşünme</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Etkinlik Bilgileri</h3>
+                        <p><strong>ŞİFRE BULMA</strong></p>
+                        <p>Süre: 15 dk</p>
+                        <p>Bireysel Çalışma</p>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; text-align: center; font-weight: bold;">
+                    <i class="fas fa-bullseye"></i> Amaç: Olayların sayısını toplama ve çarpma yöntem kullanarak bulabilme
+                </p>
+            </div>
+            
+            <div class="problem-section">
+                <h2><i class="fas fa-lock"></i> Problem Senaryosu</h2>
+                
+                <div class="problem-image">
+                    <!-- Image placeholder -->
+                </div>
+                
+                <div class="problem-text">
+                    <p>Bir kuyumcu dükkânı daha önce iki kez soyulmuş ve dükkân sahibi ciddi bir maddi kayıp yaşamıştır. Her iki soygun da kasaların şifresi kırılarak gerçekleştirilmiştir. Bunun üzerine dükkân sahibi yeni bir kasa almış ve bu kasaya yeni bir şifre oluşturmaya karar vermiştir.</p>
+                </div>
+                
+                <div class="constraints">
+                    <h3><i class="fas fa-exclamation-circle"></i> Şifre Oluşturma Kuralları</h3>
+                    <ul>
+                        <li>Şifre <strong>beş haneli</strong> olacak ve <strong>her hane farklı sayılardan</strong> oluşacaktır.</li>
+                        <li>Şifrenin <strong>başında 0 (sıfır)</strong> kullanılmayacaktır.</li>
+                        <li>Kuyumcunun doğum tarihi olan <strong>1975 sayısı</strong> şifrenin içinde <strong>bulunmayacaktır</strong>.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="questions">
+                <div class="question-box">
+                    <h3><i class="fas fa-question-circle"></i> Soru 1</h3>
+                    <p>Kuyumcu şifresini kaç farklı şekilde oluşturabilir?</p>
+                    
+                    <div class="answer-section">
+                        <label for="answer1">Cevabınız:</label>
+                        <input type="number" id="answer1" placeholder="Cevabınızı girin">
+                        <button id="check1" class="check-btn">Cevabı Kontrol Et</button>
+                        <div id="feedback1" class="feedback"></div>
+                    </div>
+                    
+                    <div class="hint-container" onclick="toggleHint('hint1')">
+                        <i class="fas fa-lightbulb"></i> İpucu Göster
+                    </div>
+                    <div id="hint1" class="hint-content">
+                        <p><i class="fas fa-lightbulb"></i> İpucu: Başında sıfır olmayan, tüm rakamları farklı 5 haneli sayıların sayısından, içinde "1975" geçenleri çıkarın.</p>
+                    </div>
+                </div>
+                
+                <div class="question-box">
+                    <h3><i class="fas fa-question-circle"></i> Soru 2</h3>
+                    <p>Kuyumcu şifreyi unuttuğunda, hatırladığı şu iki bilgiye göre en fazla kaç deneme yapması gerekir?</p>
+                    <ul>
+                        <li>İlk hane 7'den küçük bir tek sayı (1, 3 veya 5)</li>
+                        <li>Son hane 4</li>
+                    </ul>
+                    
+                    <div class="answer-section">
+                        <label for="answer2">Cevabınız:</label>
+                        <input type="number" id="answer2" placeholder="Cevabınızı girin">
+                        <button id="check2" class="check-btn">Cevabı Kontrol Et</button>
+                        <div id="feedback2" class="feedback"></div>
+                    </div>
+                    
+                    <div class="hint-container" onclick="toggleHint('hint2')">
+                        <i class="fas fa-lightbulb"></i> İpucu Göster
+                    </div>
+                    <div id="hint2" class="hint-content">
+                        <p><i class="fas fa-lightbulb"></i> İpucu: İlk rakam için 3 seçenek (1, 3, 5), son rakam 4 olmak üzere, ortadaki 3 rakam için kalan rakamları kullanın. Unutmayın ki "19754" şifresi yasaklıdır!</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="solution-toggle" class="solution-toggle">
+                <i class="fas fa-book"></i> Çözümleri Göster
+            </button>
+            
+            <div id="solution-section" class="solution-section">
+                <h2><i class="fas fa-lightbulb"></i> Çözüm Adımları ve Açıklamalar</h2>
+                <div class="solution-content">
+                    <div class="step">
+                        <h3><span class="step-number">1</span> Soru 1 Çözümü</h3>
+                        <p>İlk olarak, herhangi bir kısıtlama olmadan 5 haneli, rakamları farklı ve başında sıfır olmayan şifre sayısını hesaplıyoruz:</p>
+                        <div class="formula">
+                            İlk hane: 9 seçenek (1-9 arası)<br>
+                            İkinci hane: 9 seçenek (0-9, ilk hanedekiler hariç)<br>
+                            Üçüncü hane: 8 seçenek<br>
+                            Dördüncü hane: 7 seçenek<br>
+                            Beşinci hane: 6 seçenek<br>
+                            Toplam = 9 × 9 × 8 × 7 × 6 = 27,216
+                        </div>
+                        
+                        <p>Doğum tarihi olan 1975'in şifre içinde geçmemesi kuralını uyguluyoruz. Bu dizilim iki şekilde olabilir:</p>
+                        <ul>
+                            <li><strong>İlk dört hane 1975:</strong> Beşinci hane için 6 seçenek (19750, 19752, 19753, 19754, 19756, 19758)</li>
+                            <li><strong>Son dört hane 1975:</strong> İlk hane için 5 seçenek (21975, 31975, 41975, 61975, 81975)</li>
+                        </ul>
+                        <div class="formula">
+                            Toplam yasaklı şifre = 6 + 5 = 11<br>
+                            Geçerli şifre sayısı = 27,216 - 11 = 27,205
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <h3><span class="step-number">2</span> Soru 2 Çözümü</h3>
+                        <p>Kuyumcu şifreyi unuttuğunda hatırladığı iki bilgi:</p>
+                        <ul>
+                            <li>İlk hane 7'den küçük tek sayı: 1, 3 veya 5 (3 seçenek)</li>
+                            <li>Son hane 4 (1 seçenek)</li>
+                        </ul>
+                        <div class="formula">
+                            İlk hane: 3 seçenek<br>
+                            Son hane: 1 seçenek (4)<br>
+                            Ortadaki üç hane: 8 × 7 × 6 seçenek<br>
+                            Toplam = 3 × 8 × 7 × 6 = 1,008
+                        </div>
+                        
+                        <p>Bu durumda yasaklı şifrelerden sadece bir tanesi geçerlidir:</p>
+                        <ul>
+                            <li>19754 (ilk dört hanesi 1975 ve son hanesi 4)</li>
+                            <li>Diğer yasaklı şifreler son hanesi 4 olmadığı veya ilk hanesi 1,3,5 olmadığı için geçerli değildir</li>
+                        </ul>
+                        <div class="formula">
+                            Geçerli şifre sayısı = 1,008 - 1 = 1,007
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 Matematik ve Kombinatorik Eğitimi | Kuyumcu Şifre Problemi</p>
+            <p>Etkileşimli Eğitim Aracı - Tüm hakları saklıdır</p>
+        </footer>
+    </div>
+
+    <script>
+        // Soru 1 cevap kontrolü
+        document.getElementById('check1').addEventListener('click', function() {
+            const userAnswer = parseInt(document.getElementById('answer1').value);
+            const feedbackElement = document.getElementById('feedback1');
+            
+            if (isNaN(userAnswer)) {
+                feedbackElement.textContent = "Lütfen geçerli bir sayı girin!";
+                feedbackElement.className = "feedback incorrect";
+                feedbackElement.style.display = 'block';
+                return;
+            }
+            
+            if (userAnswer === 27205) {
+                feedbackElement.textContent = "Tebrikler! Doğru cevap: 27,205";
+                feedbackElement.className = "feedback correct";
+            } else {
+                feedbackElement.textContent = "Maalesef yanlış cevap. Tekrar deneyin.";
+                feedbackElement.className = "feedback incorrect";
+            }
+            
+            feedbackElement.style.display = 'block';
+        });
+        
+        // Soru 2 cevap kontrolü
+        document.getElementById('check2').addEventListener('click', function() {
+            const userAnswer = parseInt(document.getElementById('answer2').value);
+            const feedbackElement = document.getElementById('feedback2');
+            
+            if (isNaN(userAnswer)) {
+                feedbackElement.textContent = "Lütfen geçerli bir sayı girin!";
+                feedbackElement.className = "feedback incorrect";
+                feedbackElement.style.display = 'block';
+                return;
+            }
+            
+            if (userAnswer === 1007) {
+                feedbackElement.textContent = "Tebrikler! Doğru cevap: 1,007";
+                feedbackElement.className = "feedback correct";
+            } else {
+                feedbackElement.textContent = "Maalesef yanlış cevap. Tekrar deneyin.";
+                feedbackElement.className = "feedback incorrect";
+            }
+            
+            feedbackElement.style.display = 'block';
+        });
+        
+        // Çözümleri gösterme/gizleme
+        document.getElementById('solution-toggle').addEventListener('click', function() {
+            const solutionSection = document.getElementById('solution-section');
+            const button = document.getElementById('solution-toggle');
+            
+            if (solutionSection.style.display === 'none' || solutionSection.style.display === '') {
+                solutionSection.style.display = 'block';
+                button.innerHTML = '<i class="fas fa-book"></i> Çözümleri Gizle';
+            } else {
+                solutionSection.style.display = 'none';
+                button.innerHTML = '<i class="fas fa-book"></i> Çözümleri Göster';
+            }
+        });
+        
+        // İpucu gösterme fonksiyonu
+        function toggleHint(hintId) {
+            const hintElement = document.getElementById(hintId);
+            if (hintElement.style.display === 'none' || hintElement.style.display === '') {
+                hintElement.style.display = 'block';
+            } else {
+                hintElement.style.display = 'none';
+            }
+        }
+        
+        // Sayfa yüklendiğinde çözümleri gizle
+        window.onload = function() {
+            document.getElementById('solution-section').style.display = 'none';
+        };
+    </script>
+</body>
+</html>
