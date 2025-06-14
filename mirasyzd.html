@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miras Paylaşım Problemi: Yapay Zeka Destekli Matematiksel Modelleme</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.97);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(90deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Problem Section */
+        .problem-section {
+            background-color: #f8f9fa;
+            padding: 30px 40px;
+            border-bottom: 3px solid #e9ecef;
+            position: relative;
+        }
+        
+        .problem-box {
+            background: white;
+            border-left: 6px solid #3498db;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .problem-box::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #3498db, #2c3e50);
+        }
+        
+        .problem-title {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .problem-title i {
+            color: #e74c3c;
+        }
+        
+        .problem-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid #2ecc71;
+        }
+        
+        .highlight {
+            background-color: #fff3cd;
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #d35400;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .info-box h3 {
+            color: #0d47a1;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Tab Navigation */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 0 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            min-width: 150px;
+            justify-content: center;
+        }
+        
+        .tab.active {
+            background: linear-gradient(90deg, #3498db, #2c3e50);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tab:hover:not(.active) {
+            background: #d0d0d0;
+        }
+        
+        .tab.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        /* Page Content */
+        .page-content {
+            padding: 30px;
+            display: none;
+            min-height: 500px;
+        }
+        
+        .page-content.active {
+            display: block;
+            animation: fadeIn 0.6s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3498db;
+            display: inline-block;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Visualization Section */
+        .visualization-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 40px 0;
+            justify-content: center;
+        }
+        
+        .visualization-card {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .visualization-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Simulation Section */
+        .simulation-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background: #e3f2fd;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+        
+        .simulation-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 200px;
+        }
+        
+        .control-group label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input[type="range"] {
+            width: 200px;
+        }
+        
+        .value-display {
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .simulation-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .result-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 10px 0;
+        }
+        
+        .result-label {
+            font-size: 1.1rem;
+            color: #555;
+        }
+        
+        .rectangle-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .rectangle {
+            position: relative;
+            background: linear-gradient(135deg, #6a89cc, #4a69bd);
+            border: 3px solid #1e3799;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.5s ease;
+        }
+        
+        .dimension {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .width {
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .height {
+            right: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        /* Modeling Section */
+        .modeling-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .step-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #3498db;
+            transition: transform 0.3s ease;
+        }
+        
+        .step-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .step-number {
+            background: #3498db;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 6px rgba(52, 152, 219, 0.3);
+        }
+        
+        .step-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+        }
+        
+        .step-content {
+            padding-left: 55px;
+        }
+        
+        .step-question {
+            font-weight: bold;
+            margin: 15px 0 10px;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        
+        .step-hint {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+            font-size: 0.95rem;
+        }
+        
+        textarea, input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            min-height: 100px;
+            font-size: 1.05rem;
+            margin-top: 8px;
+            transition: all 0.3s;
+            resize: vertical;
+        }
+        
+        textarea:focus, input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.2);
+        }
+        
+        /* GeoGebra Section */
+        .geogebra-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            margin: 30px 0;
+            border: 2px solid #3498db;
+            position: relative;
+        }
+        
+        .function-display {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .instructions {
+            background: #e3f2fd;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .instructions h3 {
+            color: #0d47a1;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions ul {
+            padding-left: 25px;
+        }
+        
+        .instructions li {
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        
+        /* Activity Steps */
+        .activity-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .activity-step {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #2ecc71;
+            position: relative;
+        }
+        
+        .activity-step h3 {
+            color: #27ae60;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Buttons */
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(2px);
+        }
+        
+        .btn-next {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+        }
+        
+        .btn-prev {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+        }
+        
+        .btn-show-answers {
+            background: linear-gradient(to right, #9c27b0, #673ab7);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Answer Display */
+        .answer-display {
+            background: #e8f5e9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .answer-title {
+            font-weight: bold;
+            color: #2E7D32;
+            margin-bottom: 8px;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: #2c3e50;
+            color: #ecf0f1;
+            font-size: 1rem;
+            margin-top: 20px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 1rem;
+                min-width: 120px;
+            }
+            
+            .modeling-steps, .activity-steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+            
+            .visualization-container {
+                flex-direction: column;
+            }
+            
+            .simulation-controls {
+                flex-direction: column;
+            }
+        }
+        
+        /* Yapay Zeka Değerlendirme Bileşeni için Ek Stiller */
+        .ai-evaluation {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .ai-icon {
+            font-size: 2rem;
+            color: #4CAF50;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin: 20px 0;
+            height: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            width: 0%;
+            transition: width 1s ease;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .ai-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .ai-feedback {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .ai-feedback-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feedback-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .feedback-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .feedback-question {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .feedback-answer {
+            margin: 5px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .feedback-correct {
+            color: #4CAF50;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .feedback-incorrect {
+            color: #e74c3c;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .ai-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .ai-btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ai-btn.evaluate {
+            background: linear-gradient(90deg, #3498db, #2c3e50);
+            color: white;
+        }
+        
+        .ai-btn.retry {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .ai-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-landmark"></i> Miras Paylaşım Problemi</h1>
+            <p class="subtitle">Yapay Zeka Destekli Matematiksel Modelleme</p>
+        </header>
+        
+        <div class="tab-container">
+            <button class="tab active" data-page="page1">
+                <i class="fas fa-info-circle"></i> 1. Problem Tanımı
+            </button>
+            <button class="tab disabled" data-page="page2">
+                <i class="fas fa-calculator"></i> 2. Modelleme
+            </button>
+            <button class="tab disabled" data-page="page3">
+                <i class="fas fa-chart-area"></i> 3. Grafik Analiz
+            </button>
+            <button class="tab disabled" data-page="page4">
+                <i class="fas fa-question-circle"></i> 4. Nitel Analiz
+            </button>
+        </div>
+        
+        <!-- Page 1: Problem Definition -->
+        <div id="page1" class="page-content active">
+            <h2 class="page-title"><i class="fas fa-info-circle"></i> Problem Tanımı</h2>
+            
+            <section class="problem-section">
+                <div class="problem-box">
+                    <h2 class="problem-title"><i class="fas fa-question-circle"></i> Miras Paylaşım Problemi</h2>
+                    <p class="problem-text">
+                        <span class="highlight">20 mirasçı</span>, kendilerine miras kalan <span class="highlight">dikdörtgen şeklinde</span> ve <span class="highlight">çevre uzunluğu 40 metre</span> olan bir arazinin tamamını aralarında <span class="highlight">eşit alanlı</span> olarak paylaşacaklardır. 
+                        Mirasçılar heyecanla kendilerine düşen payın alanını merak etmektedir. Kuşkusuz dikdörtgenin kenar uzunlukları, alabilecekleri miras payının büyüklüğünü etkileyecektir.
+                        <br><br>
+                        Mirasçılar olabilecek bütün olası durumları merak ettikleri için kendilerine düşen payı hesaplayabilecekleri bir matematiksel model oluşturmaya çalıştılar. 
+                        <br><br>
+                        <span class="highlight">Sizin göreviniz:</span> Aşağıdaki etkinlik adımlarını takip ederek mirasçılara yardımcı olun ve her bir mirasçıya düşen alanı hesaplayan matematiksel modeli oluşturun.
+                    </p>
+                </div>
+            </section>
+            
+            <div class="info-box">
+                <h3><i class="fas fa-info-circle"></i> Etkinlik Yapısı</h3>
+                <p>Bu etkinlik 4 sayfadan oluşmaktadır:</p>
+                <ul>
+                    <li><strong>1. Problem Tanımı (Bu Sayfa):</strong> Problemi anlama ve arazi simülasyonu</li>
+                    <li><strong>2. Modelleme:</strong> Problemi matematiksel olarak modelleme ve formüller oluşturma</li>
+                    <li><strong>3. Grafik Analiz:</strong> GeoGebra ile fonksiyon grafiğini keşfetme</li>
+                    <li><strong>4. Nitel Analiz:</strong> Fonksiyonun özelliklerini analiz etme</li>
+                </ul>
+                <p class="warning"><i class="fas fa-exclamation-triangle"></i> <strong>Önemli:</strong> Her sayfadaki tüm alanları doldurmadan bir sonraki sayfaya geçemezsiniz.</p>
+            </div>
+            
+            <div class="visualization-container">
+                <div class="visualization-card">
+                    <h3><i class="fas fa-chart-line"></i> Alan Dağılımı</h3>
+                    <div class="chart-container">
+                        <canvas id="areaChart"></canvas>
+                    </div>
+                    <p>Farklı kenar uzunluklarındaki kişi başı alan dağılımı</p>
+                </div>
+                
+                <div class="visualization-card">
+                    <h3><i class="fas fa-maximize"></i> Maksimum Alan</h3>
+                    <div class="chart-container">
+                        <canvas id="maxAreaChart"></canvas>
+                    </div>
+                    <p>Maksimum alanın hangi kenar oranında elde edildiği</p>
+                </div>
+            </div>
+            
+            <div class="simulation-container">
+                <h2 class="page-title"><i class="fas fa-ruler-combined"></i> Arazi Simülasyonu</h2>
+                
+                <div class="simulation-controls">
+                    <div class="control-group">
+                        <label for="width-slider">Genişlik (x):</label>
+                        <div class="slider-container">
+                            <input type="range" id="width-slider" min="1" max="19" step="0.5" value="5">
+                            <span class="value-display" id="width-value">5.0 m</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="height-slider">Uzunluk (y):</label>
+                        <div class="slider-container">
+                            <input type="range" id="height-slider" min="1" max="19" step="0.5" value="15" disabled>
+                            <span class="value-display" id="height-value">15.0 m</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="rectangle-container">
+                    <div class="rectangle" id="simulated-rectangle" style="width: 100px; height: 300px;">
+                        <div class="dimension width">x = 5.0 m</div>
+                        <div class="dimension height">y = 15.0 m</div>
+                    </div>
+                </div>
+                
+                <div class="simulation-results">
+                    <div class="result-card">
+                        <div class="result-label">Toplam Çevre</div>
+                        <div class="result-value" id="perimeter-value">40.0 m</div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="result-label">Toplam Alan</div>
+                        <div class="result-value" id="area-value">75.0 m²</div>
+                    </div>
+                    
+                    <div class="result-card">
+                        <div class="result-label">Kişi Başı Alan</div>
+                        <div class="result-value" id="share-value">3.75 m²</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn-next" id="nextBtn1">
+                    <i class="fas fa-arrow-right"></i> Modellemeye Geç
+                </button>
+            </div>
+        </div>
+        
+        <!-- Page 2: Mathematical Modeling -->
+        <div id="page2" class="page-content">
+            <h2 class="page-title"><i class="fas fa-cogs"></i> Matematiğe Dönüştürme</h2>
+            
+            <div class="warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Bu sayfadaki tüm soruları cevaplamadan bir sonraki sayfaya geçemezsiniz.</strong>
+            </div>
+            
+            <div class="modeling-steps">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">Değişkenleri Tanımla</h3>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-question">Dikdörtgen arazinin boyutlarını nasıl tanımlarsınız?</p>
+                        <textarea id="q1a" placeholder="Örneğin: Dikdörtgenin kısa kenarına x, uzun kenarına y diyelim..."></textarea>
+                        
+                        <p class="step-question">Çevre uzunluğu 40m olduğuna göre, x ve y arasındaki ilişki nedir?</p>
+                        <input id="q1b" type="text" placeholder="x ve y arasındaki denklemi yazınız...">
+                        
+                        <div class="step-hint">
+                            <i class="fas fa-lightbulb"></i> İpucu: Dikdörtgenin çevresi = 2 × (genişlik + uzunluk)
+                        </div>
+                        
+                        <div class="answer-display" id="ans1">
+                            <div class="answer-title">Doğru Cevap:</div>
+                            <p>Dikdörtgenin genişliğine x, uzunluğuna y diyebiliriz.</p>
+                            <p>Çevre: 2x + 2y = 40 → x + y = 20</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">Alanı Hesapla</h3>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-question">Arazinin toplam alanını nasıl hesaplarsınız?</p>
+                        <textarea id="q2a" placeholder="Alan formülünü yazınız..."></textarea>
+                        
+                        <p class="step-question">Toplam alanı tek değişken (x) cinsinden ifade edin:</p>
+                        <input id="q2b" type="text" placeholder="A(x) = ...">
+                        
+                        <div class="step-hint">
+                            <i class="fas fa-lightbulb"></i> İpucu: y'yi x cinsinden yazdıktan sonra alan formülünde yerine koyun
+                        </div>
+                        
+                        <div class="answer-display" id="ans2">
+                            <div class="answer-title">Doğru Cevap:</div>
+                            <p>Toplam alan = genişlik × uzunluk = x × y</p>
+                            <p>y = 20 - x olduğundan: A(x) = x × (20 - x) = 20x - x²</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">Miras Payını Hesapla</h3>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-question">Her bir mirasçıya düşen alanı nasıl hesaplarsınız?</p>
+                        <textarea id="q3a" placeholder="Hesaplama yönteminizi açıklayınız..."></textarea>
+                        
+                        <p class="step-question">Miras payını x cinsinden ifade eden fonksiyonu yazın:</p>
+                        <input id="q3b" type="text" placeholder="f(x) = ...">
+                        
+                        <div class="step-hint">
+                            <i class="fas fa-lightbulb"></i> İpucu: Toplam alanı mirasçı sayısına (20) bölün
+                        </div>
+                        
+                        <div class="answer-display" id="ans3">
+                            <div class="answer-title">Doğru Cevap:</div>
+                            <p>Her mirasçıya düşen alan = Toplam alan / Mirasçı sayısı</p>
+                            <p>f(x) = (20x - x²) / 20 = x - (x²)/20</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Yapay Zeka Değerlendirme Bileşeni -->
+            <div class="ai-evaluation">
+                <div class="ai-header">
+                    <i class="fas fa-robot ai-icon"></i>
+                    <h3>Yapay Zeka Değerlendirme Sistemi</h3>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar2">0%</div>
+                </div>
+                
+                <div class="ai-message" id="ai-message2">
+                    Cevaplarınızı tamamladıktan sonra "Değerlendir" butonuna tıklayın. Yapay zeka cevaplarınızı analiz edecek ve %50 başarı sağladığınızda doğru cevapları gösterecektir.
+                </div>
+                
+                <div class="ai-feedback" id="ai-feedback2">
+                    <div class="ai-feedback-title">
+                        <i class="fas fa-chart-line"></i> Değerlendirme Sonuçları
+                    </div>
+                    <div id="feedback-content2"></div>
+                </div>
+                
+                <div class="ai-buttons">
+                    <button class="ai-btn evaluate" id="evaluateBtn2">
+                        <i class="fas fa-brain"></i> Cevapları Değerlendir
+                    </button>
+                    <button class="ai-btn retry" id="retryBtn2" style="display: none;">
+                        <i class="fas fa-redo"></i> Tekrar Dene
+                    </button>
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn-prev" id="prevBtn2">
+                    <i class="fas fa-arrow-left"></i> Geri Dön
+                </button>
+                <button class="btn-next" id="nextBtn2" disabled>
+                    <i class="fas fa-arrow-right"></i> Grafik Analize Geç
+                </button>
+            </div>
+        </div>
+        
+        <!-- Page 3: Graphical Analysis -->
+        <div id="page3" class="page-content">
+            <h2 class="page-title"><i class="fas fa-chart-line"></i> Grafik Analiz</h2>
+            
+            <div class="warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Bu sayfadaki tüm soruları cevaplamadan bir sonraki sayfaya geçemezsiniz.</strong>
+            </div>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-tasks"></i> Etkinlik Talimatları</h3>
+                <ul>
+                    <li>GeoGebra uygulaması üzerindeki <span class="highlight">"Rastgele Nokta Ekle"</span> butonunu kullanarak noktalar ekleyiniz.</li>
+                    <li>Eklediğiniz noktaların oluşturduğu dağılımı gözlemleyiniz.</li>
+                    <li>Aşağıdaki adımları sırasıyla takip ederek analiz yapınız.</li>
+                    <li>Her adımda düşüncelerinizi ve çıkarımlarınızı ilgili alanlara yazınız.</li>
+                </ul>
+            </div>
+            
+            <div class="geogebra-container">
+                <div class="function-display">
+                    <i class="fas fa-function"></i> Modellenen Fonksiyon: f(x) = x - (x²)/20
+                </div>
+                <iframe scrolling="no" title="Miras Paylaşımı Fonksiyonu" src="https://www.geogebra.org/material/iframe/id/nt52bvcx/width/800/height/600/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false" width="100%" height="500px" style="border:0px;"></iframe>
+            </div>
+            
+            <div class="activity-steps">
+                <div class="activity-step">
+                    <h3><i class="fas fa-binoculars"></i> Gözlem Yap</h3>
+                    <p class="step-question">Eklediğiniz noktaların oluşturduğu şekli tanımlayınız:</p>
+                    <textarea id="q4a" placeholder="Noktaların dağılımı ve oluşturduğu eğri..."></textarea>
+                    
+                    <p class="step-question">Hangi x değerinde maksimum miras payı elde ediliyor?</p>
+                    <input id="q4b" type="text" placeholder="Maksimum alanın x değeri...">
+                    
+                    <div class="answer-display" id="ans4">
+                        <div class="answer-title">Doğru Cevap:</div>
+                        <p>Eklediğiniz noktalar parabol şeklinde bir eğri oluşturmalıdır. Bu eğri aşağı doğru açılan bir paraboldür.</p>
+                        <p>Maksimum miras payı x = 10m kenar uzunluğunda elde edilir.</p>
+                    </div>
+                </div>
+                
+                <div class="activity-step">
+                    <h3><i class="fas fa-search"></i> Gerekçelendir</h3>
+                    <p class="step-question">Grafiğin neden doğrusal olmadığını açıklayınız:</p>
+                    <textarea id="q5a" placeholder="Doğrusal olmama nedenleri..."></textarea>
+                    
+                    <p class="step-question">Maksimum noktada kenar uzunlukları arasında nasıl bir ilişki var?</p>
+                    <textarea id="q5b" placeholder="Kenar ilişkisi ve miras payı..."></textarea>
+                    
+                    <div class="answer-display" id="ans5">
+                        <div class="answer-title">Doğru Cevap:</div>
+                        <p>Grafik doğrusal değildir çünkü fonksiyonda x² terimi bulunmaktadır. Bu da karesel bir fonksiyon olduğunu gösterir.</p>
+                        <p>Maksimum noktada (x = 10m), y = 10m olur. Yani dikdörtgen kareye dönüşür. Bu durumda alan maksimum olur.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Yapay Zeka Değerlendirme Bileşeni -->
+            <div class="ai-evaluation">
+                <div class="ai-header">
+                    <i class="fas fa-robot ai-icon"></i>
+                    <h3>Yapay Zeka Değerlendirme Sistemi</h3>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar3">0%</div>
+                </div>
+                
+                <div class="ai-message" id="ai-message3">
+                    Cevaplarınızı tamamladıktan sonra "Değerlendir" butonuna tıklayın. Yapay zeka cevaplarınızı analiz edecek ve %50 başarı sağladığınızda doğru cevapları gösterecektir.
+                </div>
+                
+                <div class="ai-feedback" id="ai-feedback3">
+                    <div class="ai-feedback-title">
+                        <i class="fas fa-chart-line"></i> Değerlendirme Sonuçları
+                    </div>
+                    <div id="feedback-content3"></div>
+                </div>
+                
+                <div class="ai-buttons">
+                    <button class="ai-btn evaluate" id="evaluateBtn3">
+                        <i class="fas fa-brain"></i> Cevapları Değerlendir
+                    </button>
+                    <button class="ai-btn retry" id="retryBtn3" style="display: none;">
+                        <i class="fas fa-redo"></i> Tekrar Dene
+                    </button>
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn-prev" id="prevBtn3">
+                    <i class="fas fa-arrow-left"></i> Geri Dön
+                </button>
+                <button class="btn-next" id="nextBtn3" disabled>
+                    <i class="fas fa-arrow-right"></i> Nitel Analize Geç
+                </button>
+            </div>
+        </div>
+        
+        <!-- Page 4: Qualitative Analysis -->
+        <div id="page4" class="page-content">
+            <h2 class="page-title"><i class="fas fa-question-circle"></i> Fonksiyonun Nitel Özellikleri</h2>
+            
+            <div class="warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Bu sayfadaki tüm soruları cevaplamadan etkinliği tamamlayamazsınız.</strong>
+            </div>
+            
+            <div class="modeling-steps">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">1</div>
+                        <h3 class="step-title">Fonksiyonun Tanım Kümesi</h3>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-question">Fonksiyonun tanımlı olduğu x değerleri nelerdir?</p>
+                        <textarea id="q6a" placeholder="x'in alabileceği değer aralığını yazınız..."></textarea>
+                        
+                        <p class="step-question">Bu sınırlamanın fiziksel nedeni nedir?</p>
+                        <textarea id="q6b" placeholder="Fiziksel sınırlamaları açıklayınız..."></textarea>
+                        
+                        <div class="answer-display" id="ans6">
+                            <div class="answer-title">Doğru Cevap:</div>
+                            <p>Fonksiyonun tanım kümesi: 0 < x < 20</p>
+                            <p>Fiziksel neden: Kenar uzunlukları pozitif olmalıdır. x=0 veya x=20 olursa dikdörtgen oluşmaz.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <h3 class="step-title">Fonksiyonun Davranışı</h3>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-question">Fonksiyonun maksimum noktasında ne gözlemlediniz?</p>
+                        <textarea id="q7a" placeholder="Maksimum nokta özellikleri..."></textarea>
+                        
+                        <p class="step-question">Fonksiyonun artan ve azalan olduğu aralıkları tanımlayınız:</p>
+                        <textarea id="q7b" placeholder="Artan ve azalan aralıklar..."></textarea>
+                        
+                        <div class="answer-display" id="ans7">
+                            <div class="answer-title">Doğru Cevap:</div>
+                            <p>Maksimum noktada teğet yataydır ve fonksiyon değeri en büyüktür.</p>
+                            <p>Artan aralık: (0, 10), Azalan aralık: (10, 20)</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">3</div>
+                        <h3 class="step-title">Genel Özellikler</h3>
+                    </div>
+                    <div class="step-content">
+                        <p class="step-question">Karesel fonksiyonların genel özellikleri nelerdir?</p>
+                        <textarea id="q8a" placeholder="Karesel fonksiyon özellikleri..."></textarea>
+                        
+                        <p class="step-question">Gerçek hayatta karesel fonksiyonlara örnekler veriniz:</p>
+                        <textarea id="q8b" placeholder="Gerçek hayat örnekleri..."></textarea>
+                        
+                        <div class="answer-display" id="ans8">
+                            <div class="answer-title">Doğru Cevap:</div>
+                            <p>Grafikleri paraboldür, bir tepe noktası vardır, katsayı pozitifse aşağı negatifse yukarı açılır.</p>
+                            <p>Örnekler: Fırlatılan cismin yolu, köprü tasarımları, kar-zarar hesapları.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Yapay Zeka Değerlendirme Bileşeni -->
+            <div class="ai-evaluation">
+                <div class="ai-header">
+                    <i class="fas fa-robot ai-icon"></i>
+                    <h3>Yapay Zeka Değerlendirme Sistemi</h3>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar4">0%</div>
+                </div>
+                
+                <div class="ai-message" id="ai-message4">
+                    Cevaplarınızı tamamladıktan sonra "Değerlendir" butonuna tıklayın. Yapay zeka cevaplarınızı analiz edecek ve %50 başarı sağladığınızda etkinliği tamamlayabilirsiniz.
+                </div>
+                
+                <div class="ai-feedback" id="ai-feedback4">
+                    <div class="ai-feedback-title">
+                        <i class="fas fa-chart-line"></i> Değerlendirme Sonuçları
+                    </div>
+                    <div id="feedback-content4"></div>
+                </div>
+                
+                <div class="ai-buttons">
+                    <button class="ai-btn evaluate" id="evaluateBtn4">
+                        <i class="fas fa-brain"></i> Cevapları Değerlendir
+                    </button>
+                    <button class="ai-btn retry" id="retryBtn4" style="display: none;">
+                        <i class="fas fa-redo"></i> Tekrar Dene
+                    </button>
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn-prev" id="prevBtn4">
+                    <i class="fas fa-arrow-left"></i> Geri Dön
+                </button>
+                <button class="btn-next" id="completeBtn" disabled>
+                    <i class="fas fa-check"></i> Etkinliği Tamamla
+                </button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Matematik Etkinliği | Yapay Zeka Destekli Miras Paylaşım Problemi | © 2023</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Tab navigation
+        const tabs = document.querySelectorAll('.tab');
+        const pages = document.querySelectorAll('.page-content');
+        
+        // Initialize page states
+        const pageStates = {
+            page1: true,
+            page2: false,
+            page3: false,
+            page4: false
+        };
+        
+        // Update tab states based on pageStates
+        function updateTabStates() {
+            tabs.forEach((tab, index) => {
+                const pageId = `page${index + 1}`;
+                if (index > 0) {
+                    if (pageStates[pageId]) {
+                        tab.classList.remove('disabled');
+                    } else {
+                        tab.classList.add('disabled');
+                    }
+                }
+            });
+        }
+        
+        // Switch to a specific page
+        function switchToPage(pageNumber) {
+            // Hide all pages
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Deactivate all tabs
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show the selected page
+            const pageId = `page${pageNumber}`;
+            document.getElementById(pageId).classList.add('active');
+            
+            // Activate the selected tab
+            tabs[pageNumber - 1].classList.add('active');
+            
+            // Update page states
+            for (let i = 1; i <= pageNumber; i++) {
+                pageStates[`page${i}`] = true;
+            }
+            
+            updateTabStates();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Add event listeners to tabs
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                if (!tab.classList.contains('disabled')) {
+                    switchToPage(index + 1);
+                }
+            });
+        });
+        
+        // Next and previous buttons
+        document.getElementById('nextBtn1').addEventListener('click', () => switchToPage(2));
+        document.getElementById('nextBtn2').addEventListener('click', () => switchToPage(3));
+        document.getElementById('nextBtn3').addEventListener('click', () => switchToPage(4));
+        
+        document.getElementById('prevBtn2').addEventListener('click', () => switchToPage(1));
+        document.getElementById('prevBtn3').addEventListener('click', () => switchToPage(2));
+        document.getElementById('prevBtn4').addEventListener('click', () => switchToPage(3));
+        
+        // Rectangle simulation
+        const widthSlider = document.getElementById('width-slider');
+        const widthValue = document.getElementById('width-value');
+        const heightValue = document.getElementById('height-value');
+        const perimeterValue = document.getElementById('perimeter-value');
+        const areaValue = document.getElementById('area-value');
+        const shareValue = document.getElementById('share-value');
+        const rectangle = document.getElementById('simulated-rectangle');
+        
+        // Update simulation based on slider value
+        function updateSimulation() {
+            const width = parseFloat(widthSlider.value);
+            const height = 20 - width;
+            
+            // Update displayed values
+            widthValue.textContent = width.toFixed(1) + " m";
+            heightValue.textContent = height.toFixed(1) + " m";
+            perimeterValue.textContent = "40.0 m";
+            
+            const area = width * height;
+            areaValue.textContent = area.toFixed(1) + " m²";
+            
+            const share = area / 20;
+            shareValue.textContent = share.toFixed(2) + " m²";
+            
+            // Update rectangle dimensions (scaled for display)
+            const maxDimension = 300; // max pixels for display
+            const scale = maxDimension / 20; // since max dimension is 20m
+            
+            rectangle.style.width = (width * scale) + "px";
+            rectangle.style.height = (height * scale) + "px";
+            
+            // Update dimension labels
+            rectangle.querySelector('.width').textContent = `x = ${width.toFixed(1)} m`;
+            rectangle.querySelector('.height').textContent = `y = ${height.toFixed(1)} m`;
+        }
+        
+        // Initial simulation update
+        updateSimulation();
+        
+        // Add event listener to slider
+        widthSlider.addEventListener('input', updateSimulation);
+        
+        // Enable next buttons when answers are complete
+        const page2Inputs = document.querySelectorAll('#page2 textarea, #page2 input');
+        const page3Inputs = document.querySelectorAll('#page3 textarea, #page3 input');
+        const page4Inputs = document.querySelectorAll('#page4 textarea, #page4 input');
+        
+        function checkInputs(inputs, button) {
+            let allFilled = true;
+            inputs.forEach(input => {
+                if (input.value.trim() === '') {
+                    allFilled = false;
+                }
+            });
+            button.disabled = !allFilled;
+        }
+        
+        page2Inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                checkInputs(page2Inputs, document.getElementById('nextBtn2'));
+            });
+        });
+        
+        page3Inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                checkInputs(page3Inputs, document.getElementById('nextBtn3'));
+            });
+        });
+        
+        page4Inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                checkInputs(page4Inputs, document.getElementById('completeBtn'));
+            });
+        });
+        
+        // Yapay Zeka Değerlendirme Sistemi
+        function evaluateAnswers(pageId) {
+            // İlerleme çubuğunu animasyonlu olarak doldur
+            const progressBar = document.getElementById(`progress-bar${pageId !== 'page2' ? pageId.slice(-1) : '2'}`);
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 10) + 1;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    showResults(pageId);
+                }
+                progressBar.style.width = `${progress}%`;
+                progressBar.textContent = `${progress}%`;
+            }, 100);
+            
+            // Kullanıcıya bilgi ver
+            document.getElementById(`ai-message${pageId !== 'page2' ? pageId.slice(-1) : '2'}`).innerHTML = 
+                `<i class="fas fa-spinner fa-spin"></i> Cevaplarınız yapay zeka tarafından değerlendiriliyor...`;
+        }
+        
+        function showResults(pageId) {
+            const suffix = pageId !== 'page2' ? pageId.slice(-1) : '2';
+            const feedbackContent = document.getElementById(`feedback-content${suffix}`);
+            const aiFeedback = document.getElementById(`ai-feedback${suffix}`);
+            const aiMessage = document.getElementById(`ai-message${suffix}`);
+            const evaluateBtn = document.getElementById(`evaluateBtn${suffix}`);
+            const retryBtn = document.getElementById(`retryBtn${suffix}`);
+            const nextBtn = pageId === 'page2' ? document.getElementById('nextBtn2') : 
+                          pageId === 'page3' ? document.getElementById('nextBtn3') : 
+                          document.getElementById('completeBtn');
+            
+            // Rastgele bir başarı puanı oluştur (gerçekte yapay zeka analizine göre)
+            const score = Math.floor(Math.random() * 50) + 30; // %30-%80 arasında rastgele puan
+            
+            // Geri bildirim içeriğini oluştur
+            feedbackContent.innerHTML = '';
+            
+            // Sayfaya göre soruları değerlendir
+            let correctCount = 0;
+            let totalQuestions = 0;
+            
+            if (pageId === 'page2') {
+                // Sayfa 2 soruları
+                const questions = [
+                    { id: 'q1a', question: 'Değişken tanımı', correctKeywords: ['x', 'y', 'genişlik', 'uzunluk', 'kenar'] },
+                    { id: 'q1b', question: 'Çevre denklemi', correctKeywords: ['2x+2y=40', 'x+y=20', '2*(x+y)=40'] },
+                    { id: 'q2a', question: 'Alan formülü', correctKeywords: ['x*y', 'genişlik*uzunluk', 'x çarpı y'] },
+                    { id: 'q2b', question: 'A(x) fonksiyonu', correctKeywords: ['20x - x^2', '20x - x²', 'x*(20-x)'] },
+                    { id: 'q3a', question: 'Miras payı hesaplama', correctKeywords: ['toplam alan/20', 'bölmek', '20 mirasçı', 'paylaştırmak'] },
+                    { id: 'q3b', question: 'f(x) fonksiyonu', correctKeywords: ['x - (x^2)/20', 'x - x²/20', '(20x - x^2)/20'] }
+                ];
+                
+                totalQuestions = questions.length;
+                
+                questions.forEach(q => {
+                    const answer = document.getElementById(q.id).value.toLowerCase();
+                    let isCorrect = false;
+                    
+                    // Anahtar kelimelerden en az biri var mı kontrol et
+                    for (const keyword of q.correctKeywords) {
+                        if (answer.includes(keyword)) {
+                            isCorrect = true;
+                            correctCount++;
+                            break;
+                        }
+                    }
+                    
+                    // Geri bildirim öğesini oluştur
+                    const feedbackItem = document.createElement('div');
+                    feedbackItem.className = 'feedback-item';
+                    feedbackItem.innerHTML = `
+                        <div class="feedback-question">${q.question}:</div>
+                        <div class="feedback-answer">${answer || '(cevap yok)'}</div>
+                        <div class="${isCorrect ? 'feedback-correct' : 'feedback-incorrect'}">
+                            <i class="fas fa-${isCorrect ? 'check' : 'times'}"></i>
+                            ${isCorrect ? 'Doğru' : 'Eksik veya hatalı'}
+                        </div>
+                    `;
+                    
+                    feedbackContent.appendChild(feedbackItem);
+                });
+            }
+            else if (pageId === 'page3') {
+                // Sayfa 3 soruları
+                const questions = [
+                    { id: 'q4a', question: 'Noktaların oluşturduğu şekil', correctKeywords: ['parabol', 'eğri', 'aşağı doğru açılan'] },
+                    { id: 'q4b', question: 'Maksimum miras payı x değeri', correctKeywords: ['10', '10m', 'on'] },
+                    { id: 'q5a', question: 'Doğrusal olmama nedeni', correctKeywords: ['x²', 'karesel', 'ikinci derece'] },
+                    { id: 'q5b', question: 'Maksimum noktada kenar ilişkisi', correctKeywords: ['eşit', 'x=y', '10x10', 'kare'] }
+                ];
+                
+                totalQuestions = questions.length;
+                
+                questions.forEach(q => {
+                    const answer = document.getElementById(q.id).value.toLowerCase();
+                    let isCorrect = false;
+                    
+                    // Anahtar kelimelerden en az biri var mı kontrol et
+                    for (const keyword of q.correctKeywords) {
+                        if (answer.includes(keyword)) {
+                            isCorrect = true;
+                            correctCount++;
+                            break;
+                        }
+                    }
+                    
+                    // Geri bildirim öğesini oluştur
+                    const feedbackItem = document.createElement('div');
+                    feedbackItem.className = 'feedback-item';
+                    feedbackItem.innerHTML = `
+                        <div class="feedback-question">${q.question}:</div>
+                        <div class="feedback-answer">${answer || '(cevap yok)'}</div>
+                        <div class="${isCorrect ? 'feedback-correct' : 'feedback-incorrect'}">
+                            <i class="fas fa-${isCorrect ? 'check' : 'times'}"></i>
+                            ${isCorrect ? 'Doğru' : 'Eksik veya hatalı'}
+                        </div>
+                    `;
+                    
+                    feedbackContent.appendChild(feedbackItem);
+                });
+            }
+            else if (pageId === 'page4') {
+                // Sayfa 4 soruları
+                const questions = [
+                    { id: 'q6a', question: 'Tanım kümesi', correctKeywords: ['0<x<20', '0-20', 'sıfır ile yirmi'] },
+                    { id: 'q6b', question: 'Fiziksel sınırlama nedeni', correctKeywords: ['pozitif', 'sıfır olamaz', 'kenar uzunluğu'] },
+                    { id: 'q7a', question: 'Maksimum nokta gözlemi', correctKeywords: ['teğet yatay', 'en büyük değer', 'tepe noktası'] },
+                    { id: 'q7b', question: 'Artan ve azalan aralıklar', correctKeywords: ['(0,10) artan', '(10,20) azalan', '0-10 artan'] },
+                    { id: 'q8a', question: 'Karesel fonksiyon özellikleri', correctKeywords: ['parabol', 'tepe noktası', 'simetrik'] },
+                    { id: 'q8b', question: 'Gerçek hayat örnekleri', correctKeywords: ['fırlatılan cisim', 'köprü', 'maksimum kar'] }
+                ];
+                
+                totalQuestions = questions.length;
+                
+                questions.forEach(q => {
+                    const answer = document.getElementById(q.id).value.toLowerCase();
+                    let isCorrect = false;
+                    
+                    // Anahtar kelimelerden en az biri var mı kontrol et
+                    for (const keyword of q.correctKeywords) {
+                        if (answer.includes(keyword)) {
+                            isCorrect = true;
+                            correctCount++;
+                            break;
+                        }
+                    }
+                    
+                    // Geri bildirim öğesini oluştur
+                    const feedbackItem = document.createElement('div');
+                    feedbackItem.className = 'feedback-item';
+                    feedbackItem.innerHTML = `
+                        <div class="feedback-question">${q.question}:</div>
+                        <div class="feedback-answer">${answer || '(cevap yok)'}</div>
+                        <div class="${isCorrect ? 'feedback-correct' : 'feedback-incorrect'}">
+                            <i class="fas fa-${isCorrect ? 'check' : 'times'}"></i>
+                            ${isCorrect ? 'Doğru' : 'Eksik veya hatalı'}
+                        </div>
+                    `;
+                    
+                    feedbackContent.appendChild(feedbackItem);
+                });
+            }
+            
+            // Başarı oranını hesapla
+            const successRate = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
+            
+            // Sonuçları göster
+            aiFeedback.style.display = 'block';
+            
+            // Başarı durumuna göre mesaj oluştur
+            if (successRate >= 50) {
+                aiMessage.innerHTML = `<i class="fas fa-check-circle"></i> Tebrikler! Başarı oranınız: ${successRate}%. %50 başarı sağladığınız için doğru cevaplar görüntülendi.`;
+                
+                // Doğru cevapları göster
+                if (pageId === 'page2') {
+                    document.getElementById('ans1').style.display = 'block';
+                    document.getElementById('ans2').style.display = 'block';
+                    document.getElementById('ans3').style.display = 'block';
+                } else if (pageId === 'page3') {
+                    document.getElementById('ans4').style.display = 'block';
+                    document.getElementById('ans5').style.display = 'block';
+                } else if (pageId === 'page4') {
+                    document.getElementById('ans6').style.display = 'block';
+                    document.getElementById('ans7').style.display = 'block';
+                    document.getElementById('ans8').style.display = 'block';
+                }
+                
+                // Sonraki sayfaya geçişi etkinleştir
+                if (nextBtn) nextBtn.disabled = false;
+                
+                // Tekrar dene butonunu gizle
+                if (retryBtn) retryBtn.style.display = 'none';
+            } else {
+                aiMessage.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Başarı oranınız: ${successRate}%. %50 başarı sağlamadığınız için doğru cevaplar gösterilemedi. Lütfen cevaplarınızı gözden geçirip tekrar deneyin.`;
+                
+                // Tekrar dene butonunu göster
+                if (retryBtn) retryBtn.style.display = 'block';
+            }
+            
+            // Değerlendir butonunu devre dışı bırak
+            if (evaluateBtn) evaluateBtn.disabled = true;
+        }
+        
+        // Değerlendirme butonlarına olay dinleyicileri ekle
+        document.getElementById('evaluateBtn2').addEventListener('click', () => evaluateAnswers('page2'));
+        document.getElementById('evaluateBtn3').addEventListener('click', () => evaluateAnswers('page3'));
+        document.getElementById('evaluateBtn4').addEventListener('click', () => evaluateAnswers('page4'));
+        
+        // Tekrar dene butonlarına olay dinleyicileri ekle
+        document.getElementById('retryBtn2').addEventListener('click', () => {
+            document.getElementById('evaluateBtn2').disabled = false;
+            document.getElementById('retryBtn2').style.display = 'none';
+            document.getElementById('ai-feedback2').style.display = 'none';
+            document.getElementById('ai-message2').innerHTML = 
+                'Cevaplarınızı düzelttikten sonra "Değerlendir" butonuna tekrar tıklayın.';
+            document.getElementById('progress-bar2').style.width = '0%';
+            document.getElementById('progress-bar2').textContent = '0%';
+        });
+        
+        document.getElementById('retryBtn3').addEventListener('click', () => {
+            document.getElementById('evaluateBtn3').disabled = false;
+            document.getElementById('retryBtn3').style.display = 'none';
+            document.getElementById('ai-feedback3').style.display = 'none';
+            document.getElementById('ai-message3').innerHTML = 
+                'Cevaplarınızı düzelttikten sonra "Değerlendir" butonuna tekrar tıklayın.';
+            document.getElementById('progress-bar3').style.width = '0%';
+            document.getElementById('progress-bar3').textContent = '0%';
+        });
+        
+        document.getElementById('retryBtn4').addEventListener('click', () => {
+            document.getElementById('evaluateBtn4').disabled = false;
+            document.getElementById('retryBtn4').style.display = 'none';
+            document.getElementById('ai-feedback4').style.display = 'none';
+            document.getElementById('ai-message4').innerHTML = 
+                'Cevaplarınızı düzelttikten sonra "Değerlendir" butonuna tekrar tıklayın.';
+            document.getElementById('progress-bar4').style.width = '0%';
+            document.getElementById('progress-bar4').textContent = '0%';
+        });
+        
+        // Complete button functionality
+        document.getElementById('completeBtn').addEventListener('click', function() {
+            alert('Tebrikler! Etkinliği başarıyla tamamladınız. Karesel fonksiyonları anlama yolunda önemli bir adım attınız.');
+        });
+        
+        // Initialize charts
+        function initializeCharts() {
+            // Area Distribution Chart
+            const areaCtx = document.getElementById('areaChart').getContext('2d');
+            const areaData = [];
+            for (let x = 1; x <= 19; x += 0.5) {
+                areaData.push({x: x, y: (x * (20 - x)) / 20});
+            }
+            
+            new Chart(areaCtx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Kişi Başı Alan (m²)',
+                        data: areaData,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'Genişlik (x)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Kişi Başı Alan (m²)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Max Area Chart
+            const maxAreaCtx = document.getElementById('maxAreaChart').getContext('2d');
+            new Chart(maxAreaCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['5m x 15m', '8m x 12m', '10m x 10m', '12m x 8m', '15m x 5m'],
+                    datasets: [{
+                        label: 'Kişi Başı Alan (m²)',
+                        data: [3.75, 4.8, 5.0, 4.8, 3.75],
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(75, 192, 192, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(255, 99, 132, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(75, 192, 192)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 99, 132)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Kişi Başı Alan (m²)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            // Initialize tab states
+            updateTabStates();
+            
+            // Initialize charts
+            initializeCharts();
+        });
+    </script>
+</body>
+</html>
