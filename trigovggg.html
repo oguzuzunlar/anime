@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trigonometrik Oranları Keşfediyorum</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #1e5799 0%, #2989d8 50%, #207cca 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.92);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #e74c3c, #2ecc71);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #2980b9;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #e74c3c;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .description {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1rem;
+            color: #34495e;
+            line-height: 1.6;
+        }
+        
+        .instructions-section {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #2980b9;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            color: #e74c3c;
+        }
+        
+        .instructions {
+            background: #e8f4fc;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .instructions h3 {
+            color: #2980b9;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .instructions li strong {
+            color: #e74c3c;
+        }
+        
+        .geogebra-section {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .geogebra-container {
+            position: relative;
+            width: 100%;
+            padding-top: 75%; /* 4:3 Aspect Ratio */
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            background: white;
+            margin: 15px auto;
+        }
+        
+        .geogebra-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .angle-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 12px 0 5px;
+            font-size: 0.95rem;
+            color: #2980b9;
+            font-weight: bold;
+            background: #e8f4fc;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        
+        .activity-section {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+            margin-bottom: 25px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            font-size: 0.9rem;
+        }
+        
+        th {
+            background: linear-gradient(to bottom, #2c3e50, #1a2530);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .trig-header {
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            font-size: 0.9rem;
+            padding: 10px 5px;
+            vertical-align: bottom;
+        }
+        
+        .trig-header small {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: normal;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
+        .vertical-header {
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);
+            text-align: center;
+            padding: 15px 5px;
+            height: 140px;
+            vertical-align: middle;
+        }
+        
+        td {
+            padding: 10px 5px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        input {
+            width: 80px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+        }
+        
+        .triangle-name {
+            font-weight: bold;
+            color: #e74c3c;
+            text-align: left;
+            padding-left: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0 15px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        #resetBtn {
+            background: linear-gradient(to right, #e74c3c, #c0392b);
+        }
+        
+        #resetBtn:hover {
+            background: linear-gradient(to right, #c0392b, #a93226);
+        }
+        
+        #observeBtn {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+        }
+        
+        #observeBtn:hover {
+            background: linear-gradient(to right, #27ae60, #219653);
+        }
+        
+        .ratio-explanation {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 2px dashed #3498db;
+            font-size: 0.9rem;
+        }
+        
+        .ratio-explanation h3 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .formula {
+            display: inline-block;
+            background: #2c3e50;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 5px;
+            margin: 5px 0;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
+        
+        .simplified {
+            font-size: 0.85rem;
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 5px;
+            height: 18px;
+        }
+        
+        .result-message {
+            text-align: center;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            display: none;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+            display: block;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: white;
+            font-size: 0.95rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Keşif Bölümü Stilleri */
+        .discovery-section {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+            margin-bottom: 25px;
+            display: none;
+        }
+        
+        .discovery-section.active {
+            display: block;
+        }
+        
+        .discovery-step {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #3498db;
+        }
+        
+        .discovery-step h3 {
+            color: #2980b9;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            margin-top: 10px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+        }
+        
+        .discovery-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .discovery-btn {
+            padding: 10px 20px;
+        }
+        
+        .conclusion-section {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+            margin-bottom: 25px;
+            display: none;
+        }
+        
+        .conclusion-section.active {
+            display: block;
+        }
+        
+        .conclusion-content {
+            padding: 20px;
+            background: #e8f4fc;
+            border-radius: 10px;
+            margin-top: 15px;
+            line-height: 1.7;
+        }
+        
+        /* Örnek cevap stilleri */
+        .example-answer {
+            background: #e8f4fc;
+            border-left: 4px solid #27ae60;
+            padding: 12px 15px;
+            margin-top: 15px;
+            border-radius: 0 6px 6px 0;
+            display: none;
+        }
+        
+        .example-answer h4 {
+            color: #27ae60;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .example-answer p {
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 1.3rem;
+            }
+            
+            .instructions ul {
+                padding-left: 15px;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+                padding: 12px;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 8px 4px;
+            }
+            
+            .vertical-header {
+                padding: 12px 4px;
+                height: 110px;
+                font-size: 0.8rem;
+            }
+            
+            .trig-header small {
+                font-size: 0.65rem;
+            }
+            
+            input {
+                width: 70px;
+                padding: 6px;
+                font-size: 0.85rem;
+            }
+            
+            .trig-header {
+                font-size: 0.8rem;
+            }
+            
+            .triangle-name {
+                padding-left: 10px;
+                font-size: 0.85rem;
+            }
+            
+            .discovery-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .description {
+                font-size: 0.9rem;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+            
+            .vertical-header {
+                height: 90px;
+                font-size: 0.7rem;
+                padding: 8px 3px;
+            }
+            
+            input {
+                width: 60px;
+                padding: 5px;
+                font-size: 0.8rem;
+            }
+            
+            .simplified {
+                font-size: 0.75rem;
+            }
+            
+            .trig-header small {
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-triangle"></i> Trigonometrik Oranları Keşfediyorum</h1>
+            <div class="subtitle">Dik Üçgende α Açısı için Trigonometrik Oranları Keşfetme</div>
+            <div class="description">
+                Bu etkinlikle, dik üçgenlerde α açısının trigonometrik oranlarını kendiniz keşfedeceksiniz. 
+                Varsayımlarda bulunacak, gözlemleyecek, gerekçelendirecek ve genellemeler yapacaksınız.
+            </div>
+        </header>
+        
+        <div class="instructions-section">
+            <h2 class="section-title"><i class="fas fa-info-circle"></i> Etkinlik Talimatları</h2>
+            
+            <div class="instructions">
+                <h3><i class="fas fa-tasks"></i> Nasıl Çalışır?</h3>
+                <ul>
+                    <li><strong>1.</strong> GeoGebra uygulamasında "k" sürgüsünü hareket ettirin</li>
+                    <li><strong>2.</strong> <strong>3-4-5</strong>, <strong>6-8-10</strong> ve <strong>9-12-15</strong> üçgenlerini oluşturun</li>
+                    <li><strong>3.</strong> Tabloda her üçgen için en küçük açı (α) ile ilgili kenar uzunluklarını inceleyin</li>
+                    <li><strong>4.</strong> Trigonometrik oranları <strong>kesir olarak</strong> (örn: 3/5) girin</li>
+                    <li><strong>5.</strong> Cevaplarınızı kontrol edin ve en sade hale getirilmiş oranları görün</li>
+                    <li><strong>6.</strong> "Gözlem Yap" butonuna tıklayarak etkinliğe devam ediniz</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="geogebra-section">
+            <h2 class="section-title"><i class="fas fa-sliders-h"></i> GeoGebra ile Keşif</h2>
+            
+            <div class="geogebra-container">
+                <iframe scrolling="no" title="TRİGONOMETRİK ORANLARI ÖĞRENİYORUM" 
+                        src="https://www.geogebra.org/material/iframe/id/fxajxygg/width/800/height/600/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false"></iframe>
+            </div>
+            
+            <div class="angle-info">
+                <i class="fas fa-info-circle"></i> En küçük açı (α) her zaman en kısa dik kenarın karşısındaki açıdır
+            </div>
+        </div>
+        
+        <div class="activity-section">
+            <h2 class="section-title"><i class="fas fa-table"></i> α Açısı için Trigonometrik Oranlar Tablosu</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Üçgen</th>
+                        <th class="vertical-header">Karşı</th>
+                        <th class="vertical-header">Komşu</th>
+                        <th class="vertical-header">Hipotenüs</th>
+                        <th class="trig-header">sinα<br><small>=Karşı/Hipotenüs</small></th>
+                        <th class="trig-header">cosα<br><small>=Komşu/Hipotenüs</small></th>
+                        <th class="trig-header">tanα<br><small>=Karşı/Komşu</small></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="triangle-name">3-4-5</td>
+                        <td>3</td>
+                        <td>4</td>
+                        <td>5</td>
+                        <td>
+                            <input type="text" id="ratio1-1" placeholder="a/b">
+                            <div id="simplified1-1" class="simplified"></div>
+                        </td>
+                        <td>
+                            <input type="text" id="ratio1-2" placeholder="a/b">
+                            <div id="simplified1-2" class="simplified"></div>
+                        </td>
+                        <td>
+                            <input type="text" id="ratio1-3" placeholder="a/b">
+                            <div id="simplified1-3" class="simplified"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="triangle-name">6-8-10</td>
+                        <td>6</td>
+                        <td>8</td>
+                        <td>10</td>
+                        <td>
+                            <input type="text" id="ratio2-1" placeholder="a/b">
+                            <div id="simplified2-1" class="simplified"></div>
+                        </td>
+                        <td>
+                            <input type="text" id="ratio2-2" placeholder="a/b">
+                            <div id="simplified2-2" class="simplified"></div>
+                        </td>
+                        <td>
+                            <input type="text" id="ratio2-3" placeholder="a/b">
+                            <div id="simplified2-3" class="simplified"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="triangle-name">9-12-15</td>
+                        <td>9</td>
+                        <td>12</td>
+                        <td>15</td>
+                        <td>
+                            <input type="text" id="ratio3-1" placeholder="a/b">
+                            <div id="simplified3-1" class="simplified"></div>
+                        </td>
+                        <td>
+                            <input type="text" id="ratio3-2" placeholder="a/b">
+                            <div id="simplified3-2" class="simplified"></div>
+                        </td>
+                        <td>
+                            <input type="text" id="ratio3-3" placeholder="a/b">
+                            <div id="simplified3-3" class="simplified"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="btn-container">
+                <button id="checkBtn"><i class="fas fa-check-circle"></i> Cevapları Kontrol Et</button>
+                <button id="observeBtn"><i class="fas fa-search"></i> Gözlem Yap</button>
+                <button id="resetBtn"><i class="fas fa-redo-alt"></i> Tabloyu Temizle</button>
+            </div>
+            
+            <div id="resultMessage" class="result-message"></div>
+        </div>
+        
+        <div class="discovery-section" id="discoverySection">
+            <h2 class="section-title"><i class="fas fa-search"></i> Keşif ve Gözlemler</h2>
+            
+            <div class="discovery-step">
+                <h3><i class="fas fa-lightbulb"></i> Varsayımlarınız</h3>
+                <p>Bu etkinliğe başlamadan önce, aynı açıya sahip farklı büyüklükteki üçgenlerde trigonometrik oranların değişip değişmeyeceği hakkında ne düşünüyordunuz?</p>
+                <textarea id="assumptions" placeholder="Örneğin: 'Kenarlar büyüdükçe oranların değişeceğini düşünüyordum çünkü...'"></textarea>
+                
+                <div class="example-answer" id="exampleAssumptions">
+                    <h4><i class="fas fa-check-circle"></i> Örnek Cevap:</h4>
+                    <p>Kenarlar büyüdükçe trigonometrik oranların değişeceğini düşünüyordum çünkü üçgen büyüdükçe açıların da değişebileceğini sanıyordum. Ancak benzer üçgenlerde açıların aynı kaldığını öğrendim.</p>
+                </div>
+            </div>
+            
+            <div class="discovery-step">
+                <h3><i class="fas fa-binoculars"></i> Gözlemleriniz</h3>
+                <p>Tablodaki verileri karşılaştırın. Farklı üçgenlerde aynı α açısı için sinα, cosα ve tanα değerleri arasında ne gibi ilişkiler gözlemlediniz?</p>
+                <textarea id="observations" placeholder="Örneğin: '3-4-5 üçgeninde sinα = 3/5, 6-8-10 üçgeninde ise 6/10 = 3/5. Buradan...'"></textarea>
+                
+                <div class="example-answer" id="exampleObservations">
+                    <h4><i class="fas fa-check-circle"></i> Örnek Cevap:</h4>
+                    <p>3-4-5 üçgeninde sinα=3/5, 6-8-10 üçgeninde sinα=6/10=3/5, 9-12-15 üçgeninde sinα=9/15=3/5. Benzer şekilde cosα ve tanα oranları da tüm üçgenlerde aynı sadeleşmiş değere sahip. Bu da aynı açı için trigonometrik oranların değişmediğini gösteriyor.</p>
+                </div>
+            </div>
+            
+            <div class="discovery-step">
+                <h3><i class="fas fa-calculator"></i> Gerekçelendirme</h3>
+                <p>Gözlemlerinizi matematiksel olarak nasıl açıklarsınız? Oranların neden değişmediğini kendi cümlelerinizle ifade edin.</p>
+                <textarea id="justification" placeholder="Örneğin: 'Kenarlar aynı oranda büyüdüğü için oranların değeri değişmiyor...'"></textarea>
+                
+                <div class="example-answer" id="exampleJustification">
+                    <h4><i class="fas fa-check-circle"></i> Örnek Cevap:</h4>
+                    <p>Kenarlar aynı oranda (k katı) büyüdüğü için, oranlarda pay ve payda aynı oranda büyüyor. Dolayısıyla sadeleştirilince aynı değer çıkıyor. Örneğin 3-4-5 üçgeni 2 kat büyütüldüğünde 6-8-10 üçgeni elde ediliyor. sinα = karşı/hipotenüs = 3/5 veya 6/10 = 3/5, her iki durumda da aynı sonucu veriyor.</p>
+                </div>
+            </div>
+            
+            <div class="discovery-step">
+                <h3><i class="fas fa-project-diagram"></i> Genelleme</h3>
+                <p>Elde ettiğiniz sonuçlardan yola çıkarak, aynı dar açıya sahip farklı büyüklükteki dik üçgenlerin trigonometrik oranları hakkında ne söyleyebilirsiniz?</p>
+                <textarea id="generalization" placeholder="Örneğin: 'Bir açının trigonometrik oranları, üçgenin büyüklüğünden bağımsızdır çünkü...'"></textarea>
+                
+                <div class="example-answer" id="exampleGeneralization">
+                    <h4><i class="fas fa-check-circle"></i> Örnek Cevap:</h4>
+                    <p>Bir açının trigonometrik oranları, üçgenin büyüklüğünden bağımsızdır. Çünkü benzer üçgenlerde karşılıklı kenarlar arasındaki oranlar sabit kalır. Üçgen ne kadar büyütülür veya küçültülürse küçültülsün, açı aynı kaldığı sürece sin, cos ve tan değerleri değişmez.</p>
+                </div>
+            </div>
+            
+            <div class="discovery-controls">
+                <button id="saveDiscoveryBtn" class="discovery-btn"><i class="fas fa-save"></i> Keşifleri Kaydet</button>
+                <button id="conclusionBtn" class="discovery-btn"><i class="fas fa-graduation-cap"></i> Sonuçları Gör</button>
+            </div>
+        </div>
+        
+        <div class="conclusion-section" id="conclusionSection">
+            <h2 class="section-title"><i class="fas fa-award"></i> Keşif Sonuçları</h2>
+            
+            <div class="conclusion-content">
+                <h3><i class="fas fa-lightbulb"></i> Keşfettikleriniz:</h3>
+                <p id="conclusionText">Keşiflerinizi kaydettikten sonra burada sonuçlarınızı göreceksiniz.</p>
+                
+                <div class="ratio-explanation">
+                    <h3><i class="fas fa-calculator"></i> Trigonometrik Oran Formülleri</h3>
+                    <p><span class="formula">sinα = Karşı / Hipotenüs</span></p>
+                    <p><span class="formula">cosα = Komşu / Hipotenüs</span></p>
+                    <p><span class="formula">tanα = Karşı / Komşu</span></p>
+                    <p style="margin-top: 15px; font-style: italic; color: #2980b9; font-size: 0.9rem;">
+                        Tüm üçgenlerde α açısı aynı olduğu için trigonometrik oranlar değişmez. 
+                        Sadeleştirilmiş hallerinin hep aynı olduğuna dikkat edin!
+                    </p>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #e8f4fc; border-radius: 8px;">
+                    <h3><i class="fas fa-graduation-cap"></i> Öğrendikleriniz:</h3>
+                    <p>Bu etkinlikte, aynı açıya sahip farklı büyüklükteki üçgenlerde trigonometrik oranların değişmediğini keşfettiniz. Bu önemli matematiksel gerçek, trigonometrinin temelini oluşturur. Üçgen ne kadar büyük veya küçük olursa olsun, açı aynı kaldığı sürece trigonometrik oranlar sabit kalır.</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p><i class="fas fa-calculator"></i> Matematik Keşif Etkinliği | © 2023 Matematik Öğretmenleri</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const discoverySection = document.getElementById('discoverySection');
+            const conclusionSection = document.getElementById('conclusionSection');
+            const conclusionText = document.getElementById('conclusionText');
+            
+            // Kontrol butonu
+            document.getElementById('checkBtn').addEventListener('click', function() {
+                checkAnswers();
+            });
+            
+            // Gözlem butonu
+            document.getElementById('observeBtn').addEventListener('click', function() {
+                discoverySection.classList.add('active');
+                discoverySection.scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Temizleme butonu
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                resetTable();
+            });
+            
+            // Keşifleri kaydet butonu
+            document.getElementById('saveDiscoveryBtn').addEventListener('click', function() {
+                saveDiscoveries();
+            });
+            
+            // Sonuçları gör butonu
+            document.getElementById('conclusionBtn').addEventListener('click', function() {
+                showConclusion();
+            });
+            
+            // OBEB hesaplama fonksiyonu (En büyük ortak bölen)
+            function gcd(a, b) {
+                return b ? gcd(b, a % b) : Math.abs(a);
+            }
+            
+            // Kesir sadeleştirme fonksiyonu
+            function simplifyFraction(numerator, denominator) {
+                // OBEB'i hesapla
+                const divisor = gcd(numerator, denominator);
+                
+                // Pay ve paydayı OBEB'e böl
+                const simplifiedNum = numerator / divisor;
+                const simplifiedDen = denominator / divisor;
+                
+                return {
+                    numerator: simplifiedNum,
+                    denominator: simplifiedDen,
+                    string: `${simplifiedNum}/${simplifiedDen}`
+                };
+            }
+            
+            // Kesir kontrol fonksiyonu
+            function checkFraction(inputId, correctRatio) {
+                const inputElement = document.getElementById(inputId);
+                const simplifiedElement = document.getElementById(`simplified${inputId.slice(5)}`);
+                const value = inputElement.value.trim();
+                
+                // Kullanıcı değer girmemişse
+                if (!value) {
+                    simplifiedElement.textContent = "";
+                    return { valid: false, simplified: "" };
+                }
+                
+                // Kesir formatını kontrol et (a/b)
+                const fractionParts = value.split('/');
+                
+                if (fractionParts.length !== 2) {
+                    simplifiedElement.textContent = "Geçersiz format! (a/b)";
+                    simplifiedElement.style.color = "#e74c3c";
+                    return { valid: false, simplified: "" };
+                }
+                
+                const numerator = parseInt(fractionParts[0]);
+                const denominator = parseInt(fractionParts[1]);
+                
+                if (isNaN(numerator) || isNaN(denominator) || denominator === 0) {
+                    simplifiedElement.textContent = "Geçersiz kesir!";
+                    simplifiedElement.style.color = "#e74c3c";
+                    return { valid: false, simplified: "" };
+                }
+                
+                // Kesri sadeleştir
+                const simplified = simplifyFraction(numerator, denominator);
+                simplifiedElement.textContent = `Sade: ${simplified.string}`;
+                simplifiedElement.style.color = "#27ae60";
+                
+                // Doğru oranla karşılaştır
+                const isCorrect = (simplified.numerator === correctRatio.numerator && 
+                                 simplified.denominator === correctRatio.denominator);
+                
+                return {
+                    valid: true,
+                    simplified: simplified.string,
+                    isCorrect: isCorrect
+                };
+            }
+            
+            // Tüm cevapları kontrol etme fonksiyonu
+            function checkAnswers() {
+                // Doğru cevaplar (sadeleştirilmiş)
+                const correctAnswers = {
+                    sin: { numerator: 3, denominator: 5 },
+                    cos: { numerator: 4, denominator: 5 },
+                    tan: { numerator: 3, denominator: 4 }
+                };
+                
+                let allCorrect = true;
+                let allFilled = true;
+                let resultMessage = "";
+                
+                // Tüm üçgenler için kontrol
+                for (let triangle = 1; triangle <= 3; triangle++) {
+                    // sinα için kontrol
+                    const sinResult = checkFraction(`ratio${triangle}-1`, correctAnswers.sin);
+                    if (!sinResult.valid) allFilled = false;
+                    if (sinResult.valid && !sinResult.isCorrect) allCorrect = false;
+                    
+                    // cosα için kontrol
+                    const cosResult = checkFraction(`ratio${triangle}-2`, correctAnswers.cos);
+                    if (!cosResult.valid) allFilled = false;
+                    if (cosResult.valid && !cosResult.isCorrect) allCorrect = false;
+                    
+                    // tanα için kontrol
+                    const tanResult = checkFraction(`ratio${triangle}-3`, correctAnswers.tan);
+                    if (!tanResult.valid) allFilled = false;
+                    if (tanResult.valid && !tanResult.isCorrect) allCorrect = false;
+                }
+                
+                // Sonuç mesajını göster
+                const resultElement = document.getElementById('resultMessage');
+                
+                if (!allFilled) {
+                    resultElement.textContent = "Lütfen tüm alanları a/b formatında doldurunuz!";
+                    resultElement.className = "result-message error";
+                } else if (allCorrect) {
+                    resultElement.innerHTML = '🎉 Tebrikler! Tüm cevaplar doğru. Şimdi "Gözlem Yap" butonuna basarak keşif sürecine devam edebilirsiniz.';
+                    resultElement.className = "result-message success";
+                } else {
+                    resultElement.textContent = "Bazı cevaplar yanlış. Lütfen kontrol edip tekrar deneyin. En sadeleştirilmiş hallerini dikkatlice inceleyin.";
+                    resultElement.className = "result-message error";
+                }
+            }
+            
+            // Tabloyu temizleme fonksiyonu
+            function resetTable() {
+                for (let i = 1; i <= 3; i++) {
+                    for (let j = 1; j <= 3; j++) {
+                        const inputId = `ratio${i}-${j}`;
+                        const simplifiedId = `simplified${i}-${j}`;
+                        
+                        document.getElementById(inputId).value = '';
+                        document.getElementById(simplifiedId).textContent = '';
+                    }
+                }
+                
+                document.getElementById('resultMessage').className = "result-message";
+                document.getElementById('resultMessage').textContent = '';
+            }
+            
+            // Keşifleri kaydetme fonksiyonu
+            function saveDiscoveries() {
+                const assumptions = document.getElementById('assumptions').value.trim();
+                const observations = document.getElementById('observations').value.trim();
+                const justification = document.getElementById('justification').value.trim();
+                const generalization = document.getElementById('generalization').value.trim();
+                
+                if (!assumptions || !observations || !justification || !generalization) {
+                    alert('Lütfen tüm keşif alanlarını doldurunuz!');
+                    return;
+                }
+                
+                alert('Keşifleriniz başarıyla kaydedildi! Şimdi "Sonuçları Gör" butonuna basabilirsiniz.');
+            }
+            
+            // Sonuçları gösterme fonksiyonu
+            function showConclusion() {
+                const assumptions = document.getElementById('assumptions').value.trim();
+                const observations = document.getElementById('observations').value.trim();
+                const justification = document.getElementById('justification').value.trim();
+                const generalization = document.getElementById('generalization').value.trim();
+                
+                if (!assumptions || !observations || !justification || !generalization) {
+                    alert('Lütfen önce keşiflerinizi kaydedin!');
+                    return;
+                }
+                
+                // Örnek cevapları göster
+                document.querySelectorAll('.example-answer').forEach(el => {
+                    el.style.display = 'block';
+                });
+                
+                // Sonuç metnini oluştur
+                let conclusionHTML = `
+                    <h3><i class="fas fa-lightbulb"></i> Varsayımlarınız:</h3>
+                    <p>${assumptions}</p>
+                    
+                    <h3><i class="fas fa-binoculars"></i> Gözlemleriniz:</h3>
+                    <p>${observations}</p>
+                    
+                    <h3><i class="fas fa-calculator"></i> Gerekçelendirmeniz:</h3>
+                    <p>${justification}</p>
+                    
+                    <h3><i class="fas fa-project-diagram"></i> Genellemeniz:</h3>
+                    <p>${generalization}</p>
+                `;
+                
+                conclusionText.innerHTML = conclusionHTML;
+                conclusionSection.classList.add('active');
+                conclusionSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    </script>
+</body>
+</html>
