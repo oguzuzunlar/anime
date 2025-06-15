@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esneklik Potansiyel Enerjisi Simülasyonu</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50, #0f1a3a);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(10, 15, 30, 0.85);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            margin: 20px 0;
+            border: 1px solid rgba(100, 150, 255, 0.2);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(20, 30, 60, 0.7);
+            border-radius: 15px;
+            border-bottom: 2px solid rgba(76, 161, 175, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(76, 161, 175, 0.1)"/></svg>');
+            background-size: cover;
+            z-index: -1;
+        }
+        
+        .turkish-flag {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 2.5rem;
+            color: #E30A17;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            background: linear-gradient(to right, #4CA1AF, #C4E0E5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+        
+        .maarif-badge {
+            display: inline-block;
+            background: linear-gradient(to right, #E30A17, #E30A17 33%, white 33%, white 66%, #E30A17 66%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+        
+        .activity-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .activity-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: rgba(30, 40, 70, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(100, 150, 255, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .panel::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, #4CA1AF, #2C3E50);
+        }
+        
+        .panel h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #4CA1AF;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(76, 161, 175, 0.3);
+        }
+        
+        .simulation-header {
+            background: rgba(20, 30, 60, 0.6);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid rgba(76, 161, 175, 0.4);
+        }
+        
+        .simulation-title {
+            font-size: 1.4rem;
+            color: #C4E0E5;
+            margin-bottom: 10px;
+        }
+        
+        .parameters {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .parameter {
+            background: rgba(10, 20, 40, 0.5);
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-left: 3px solid #4CA1AF;
+        }
+        
+        .formula-info {
+            background: rgba(76, 161, 175, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            border: 1px solid rgba(76, 161, 175, 0.4);
+        }
+        
+        .formula {
+            font-family: 'Courier New', monospace;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+            color: #C4E0E5;
+        }
+        
+        .spring-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: rgba(10, 15, 30, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0 25px;
+            border: 2px solid #2c3e50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .ceiling {
+            width: 100%;
+            height: 25px;
+            background: linear-gradient(to bottom, #777, #555);
+            display: flex;
+            justify-content: center;
+            z-index: 20;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.6);
+        }
+        
+        .hook {
+            width: 60px;
+            height: 25px;
+            background: linear-gradient(to bottom, #999, #666);
+            border-radius: 0 0 8px 8px;
+            box-shadow: inset 0 -3px 6px rgba(0,0,0,0.3);
+        }
+        
+        .spring-svg-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        #spring-svg {
+            position: absolute;
+            top: 25px;
+            width: 120px;
+            height: 300px;
+        }
+        
+        .mass {
+            position: absolute;
+            width: 120px;
+            height: 60px;
+            background: linear-gradient(145deg, #4CA1AF, #2C3E50);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 15;
+            border: 2px solid rgba(200, 230, 255, 0.15);
+            transition: top 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .controls-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .slider-container {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .value-display {
+            font-weight: bold;
+            color: #4CA1AF;
+            font-size: 1.2rem;
+            min-width: 100px;
+            text-align: right;
+            background: rgba(10, 20, 40, 0.4);
+            padding: 5px 12px;
+            border-radius: 8px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 25px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, #1a2a6c, #4CA1AF);
+            border-radius: 15px;
+            outline: none;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.7);
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 35px;
+            height: 35px;
+            background: #C4E0E5;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(196, 224, 229, 0.8);
+            border: 2px solid #4CA1AF;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(to right, #4CA1AF, #2C3E50);
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+        
+        button:hover::before {
+            animation: shine 1.5s;
+        }
+        
+        @keyframes shine {
+            0% { transform: rotate(45deg) translate(-50%, -50%); }
+            100% { transform: rotate(45deg) translate(50%, 50%); }
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        #reset-btn {
+            background: linear-gradient(to right, #b21f1f, #8B0000);
+        }
+        
+        #add-data-btn {
+            background: linear-gradient(to right, #28a745, #1e7e34);
+        }
+        
+        .data-display {
+            background: rgba(10, 15, 30, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 1px solid rgba(100, 150, 255, 0.25);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(76, 161, 175, 0.4);
+        }
+        
+        .data-table th {
+            background-color: rgba(20, 30, 60, 0.6);
+            color: #4CA1AF;
+            font-weight: bold;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background-color: rgba(20, 30, 60, 0.3);
+        }
+        
+        .data-table tr:hover {
+            background-color: rgba(76, 161, 175, 0.2);
+        }
+        
+        .graph-container {
+            height: 400px;
+            margin-top: 20px;
+            background: rgba(10, 15, 30, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(100, 150, 255, 0.25);
+        }
+        
+        .activity-section {
+            background: rgba(30, 40, 70, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(100, 150, 255, 0.25);
+        }
+        
+        .activity-section h2 {
+            color: #C4E0E5;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(76, 161, 175, 0.3);
+        }
+        
+        .activity-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .step {
+            background: rgba(10, 15, 30, 0.9);
+            border-radius: 10px;
+            padding: 25px;
+            border-left: 4px solid #4CA1AF;
+            transition: transform 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .step:hover {
+            transform: translateY(-5px);
+        }
+        
+        .step h3 {
+            color: #C4E0E5;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: #4CA1AF;
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .step-content {
+            color: #e0f7fa;
+            line-height: 1.7;
+            font-size: 1.1rem;
+        }
+        
+        .step-content ul {
+            padding-left: 25px;
+            margin-top: 15px;
+        }
+        
+        .step-content li {
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .step-content li::before {
+            content: "•";
+            color: #4CA1AF;
+            font-weight: bold;
+            position: absolute;
+            left: -15px;
+        }
+        
+        .conclusion-box {
+            background: rgba(76, 161, 175, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px solid #4CA1AF;
+            position: relative;
+        }
+        
+        .conclusion-box::before {
+            content: """;
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            font-size: 3rem;
+            color: #4CA1AF;
+            opacity: 0.3;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            font-size: 1.15rem;
+            opacity: 0.9;
+            width: 100%;
+            color: #C4E0E5;
+            background: rgba(10, 15, 30, 0.6);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .physics-icon {
+            font-size: 1.5rem;
+            color: #4CA1AF;
+        }
+        
+        .maarif-values {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .value-card {
+            background: rgba(76, 161, 175, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 200px;
+            text-align: center;
+            border: 1px solid rgba(76, 161, 175, 0.4);
+        }
+        
+        .value-card i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #4CA1AF;
+        }
+        
+        .maarif-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #4CA1AF;
+            font-weight: bold;
+        }
+        
+        .maarif-description {
+            font-size: 0.95rem;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, rgba(76, 161, 175, 0.3), transparent);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-decoration"></div>
+          
+            <h1>Esneklik Potansiyel Enerjisi Simülasyonu İle Karesel Fonksiyonları Keşfet </h1>
+        
+        </header>
+        
+        <div class="activity-container">
+            <div class="panel">
+                <h2><span class="physics-icon">⚙️</span> Simülasyon ve Kontroller</h2>
+                
+                <!-- Simülasyon başlık ve parametreler -->
+                <div class="simulation-header">
+                    <div class="simulation-title">Esneklik Potansiyel Enerjisi ve Uzama Miktarı İlişkisi</div>
+                    <div class="parameters">
+                        <div class="parameter">k = 0.1 N/m</div>
+                        <div class="parameter">Maksimum Uzama: 5 metre</div>
+                    </div>
+                    <div class="formula-info">
+                        <p>Hooke Kanunu'na göre, bir yayın uzama miktarı (Δx) ile uygulanan kuvvet (F) doğru orantılıdır:</p>
+                        <div class="formula">F = k · Δx</div>
+                        <p>Yayda depolanan potansiyel enerji (E) ise kuvvetin yay üzerinde yaptığı işe eşittir:</p>
+			<p>Bu simulasyonda k=0.1 özel durumu için:</p>
+                        <div class="formula">E = ½ · k · (Δx)²</div>
+			<div class="formula">E = 1/20 · (Δx)²</div>
+                        <p>Bu simülasyon, esneklik potansiyel enerjisinin uzama miktarıyla olan ilişkisini kullanarak karesel fonksiyonları keşfetmenizi sağlar.</p>
+                    </div>
+                </div>
+                
+                <div class="spring-container">
+                    <div class="ceiling">
+                        <div class="hook"></div>
+                    </div>
+                    <div class="spring-svg-container">
+                        <svg id="spring-svg" viewBox="0 0 120 400" preserveAspectRatio="xMidYMin meet"></svg>
+                        <div class="mass" id="mass">0.0g</div>
+                    </div>
+                </div>
+                
+                <div class="controls-panel">
+                    <div class="control-group">
+                        <div class="slider-container">
+                            <label>
+                                <span>Uzama Miktarı (Δx):</span>
+                                <span class="value-display" id="extension-value">1.0 m</span>
+                            </label>
+                            <input type="range" id="extension-slider" min="0.01" max="5" step="0.01" value="1.0">
+                            
+                            <label style="margin-top: 10px;">
+                                <span>Uygulanan Kuvvet (F):</span>
+                                <span class="value-display" id="force-value">0.1 N</span>
+                            </label>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button id="add-data-btn"><i class="fas fa-plus-circle"></i> Veri Noktası Ekle</button>
+                            <button id="reset-btn"><i class="fas fa-redo"></i> Sıfırla</button>
+                        </div>
+                    </div>
+                    
+                    <div class="data-display">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Deney No</th>
+                                    <th>Uzama (m)</th>
+                                    <th>Enerji (J)</th>
+                                    <th>Oran (E/Δx)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-table-body">
+                                <!-- Data rows will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2><span class="physics-icon">📈</span> Enerji-Uzama Grafiği</h2>
+                <div class="graph-container">
+                    <canvas id="energy-chart"></canvas>
+                </div>
+                
+                <div class="controls-panel">
+                    <div class="button-group">
+                        <button id="linear-btn"><i class="fas fa-chart-line"></i> Doğrusal İlişki Göster</button>
+                        <button id="quadratic-btn"><i class="fas fa-project-diagram"></i> Karesel İlişki Göster</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="activity-section">
+            <h2><span class="physics-icon">🔍</span> Etkinlik Adımları</h2>
+            
+            <div class="activity-steps">
+                <div class="step">
+                    <h3><span class="step-number">1</span> Varsayımda Bulunma</h3>
+                    <div class="step-content">
+                        <p>Yayın uzatılmasıyla depolanan enerji arasındaki ilişkinin doğrusal olup olmadığı hakkında bir varsayımda bulunun:</p>
+                        <ul>
+                            <li>Uzama miktarı iki katına çıktığında, depolanan enerji ne olur?</li>
+                            <li>Bu ilişkiyi hangi matematiksel fonksiyonla ifade edersiniz?</li>
+                            <li>Neden bu şekilde düşünüyorsunuz?</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3><span class="step-number">2</span> Veri Toplama ve Gözlem</h3>
+                    <div class="step-content">
+                        <p>Simülasyonu kullanarak farklı uzama değerleri için enerji değerlerini toplayın:</p>
+                        <ul>
+                            <li>Farklı uzama değerleri seçerek "Veri Noktası Ekle" butonuna basın</li>
+                            <li>Tablonun "Oran" sütunundaki değerlerin nasıl değiştiğini gözlemleyin</li>
+                            <li>Grafikte oluşan noktaların şeklini inceleyin</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3><span class="step-number">3</span> Analiz ve Sonuç Çıkarma</h3>
+                    <div class="step-content">
+                        <p>Topladığınız verileri kullanarak aşağıdaki soruları cevaplayın:</p>
+                        <ul>
+                            <li>Enerji/uzama oranı sabit mi yoksa değişiyor mu?</li>
+                            <li>Eğer oran değişiyorsa, nasıl bir değişim gösteriyor?</li>
+                            <li>Doğrusal ve karesel ilişki göster butonlarına basarak hangisinin verilere daha uygun olduğunu belirleyin</li>
+                        </ul>
+                        
+                        <div class="conclusion-box">
+                            <p><strong>Sonuç:</strong> Enerji (E) ile uzama (Δx) arasındaki ilişki karesel bir ilişkidir ve E = (1/2)·k·(Δx)² formülü ile ifade edilir.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step">
+                    <h3><span class="step-number">4</span> Karesel Fonksiyonları Genelleme</h3>
+                    <div class="step-content">
+                        <p>Bu etkinlikten yola çıkarak karesel fonksiyonların özelliklerini genelleyin:</p>
+                        <ul>
+                            <li>Karesel fonksiyonların grafikleri doğrusal değildir.</li>
+                            <li>Bağımsız değişken iki katına çıktığında, bağımlı değişken dört katına çıkar</li>
+                            <li>Sabit oranlı artış göstermezler (oran değişkendir)</li>
+                            <li>Fizikte enerji, alan, kinematik gibi birçok alanda karşımıza çıkarlar</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="maarif-values">
+            <div class="value-card">
+                <i class="fas fa-brain"></i>
+                <div class="maarif-title">Analitik Düşünme</div>
+                <div class="maarif-description">Veri analizi yaparak matematiksel ilişkileri keşfetme</div>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-flask"></i>
+                <div class="maarif-title">Bilimsel Süreç</div>
+                <div class="maarif-description">Hipotez kurma, deney yapma ve sonuç çıkarma</div>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-calculator"></i>
+                <div class="maarif-title">Matematiksel Modelleme</div>
+                <div class="maarif-description">Gerçek dünya olaylarını matematikle açıklama</div>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-lightbulb"></i>
+                <div class="maarif-title">Yenilikçi Yaklaşım</div>
+                <div class="maarif-description">Teknoloji destekli etkileşimli öğrenme</div>
+            </div>
+        </div>
+        
+        <footer>
+            <p> Esneklik Potansiyel Enerjisi Simülasyonu | Fizik ve Matematik Entegrasyonu</p>
+            <p>Millî Eğitim Bakanlığı</p>
+        </footer>
+    </div>
+
+    <script>
+        // Constants
+        const k = 0.1; // Spring constant in N/m
+        const MAX_ELASTIC_EXTENSION = 5; // Maximum elastic extension in meters
+        const NATURAL_LENGTH = 100; // Natural length of spring in pixels
+        const PIXELS_PER_METER = 35; // Pixels per meter for visualization
+        const COIL_COUNT = 8; // Number of coils in the spring
+        const COIL_WIDTH = 40; // Width of each coil in pixels
+        
+        // DOM elements
+        const extensionSlider = document.getElementById('extension-slider');
+        const extensionValue = document.getElementById('extension-value');
+        const forceValue = document.getElementById('force-value');
+        const springSvg = document.getElementById('spring-svg');
+        const mass = document.getElementById('mass');
+        const dataTableBody = document.getElementById('data-table-body');
+        const addDataBtn = document.getElementById('add-data-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const linearBtn = document.getElementById('linear-btn');
+        const quadraticBtn = document.getElementById('quadratic-btn');
+        
+        // Chart setup
+        const ctx = document.getElementById('energy-chart').getContext('2d');
+        let energyChart;
+        let dataPoints = [];
+        let experimentCount = 1;
+        
+        // Initialize simulation
+        updateSimulation(1.0);
+        initChart();
+        
+        // Event listeners
+        extensionSlider.addEventListener('input', function() {
+            const extension = parseFloat(this.value);
+            updateSimulation(extension);
+        });
+        
+        addDataBtn.addEventListener('click', function() {
+            const extension = parseFloat(extensionSlider.value);
+            const force = k * extension;
+            const energy = 0.5 * k * Math.pow(extension, 2);
+            const ratio = (energy / extension).toFixed(5);
+            
+            // Add data point
+            dataPoints.push({extension, energy});
+            
+            // Add to table
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${experimentCount}</td>
+                <td>${extension.toFixed(2)}</td>
+                <td>${energy.toFixed(5)}</td>
+                <td>${ratio}</td>
+            `;
+            dataTableBody.appendChild(newRow);
+            
+            // Scroll to bottom of table
+            dataTableBody.parentElement.scrollTop = dataTableBody.parentElement.scrollHeight;
+            
+            // Update chart
+            updateChart();
+            
+            experimentCount++;
+        });
+        
+        resetBtn.addEventListener('click', function() {
+            dataPoints = [];
+            dataTableBody.innerHTML = '';
+            experimentCount = 1;
+            extensionSlider.value = 1.0;
+            updateSimulation(1.0);
+            updateChart();
+        });
+        
+        linearBtn.addEventListener('click', function() {
+            showLinearFit();
+        });
+        
+        quadraticBtn.addEventListener('click', function() {
+            showQuadraticFit();
+        });
+        
+        // Update simulation based on extension value
+        function updateSimulation(extension) {
+            // Calculate force
+            const force = k * extension;
+            
+            // Update display
+            extensionValue.textContent = extension.toFixed(2) + ' m';
+            forceValue.textContent = force.toFixed(2) + ' N';
+            
+            // Update spring visualization
+            drawSpring(extension);
+            
+            // Update mass position
+            updateMassPosition(extension);
+        }
+        
+        // Draw spiral spring based on extension
+        function drawSpring(extension) {
+            // Calculate total spring height
+            const totalHeight = NATURAL_LENGTH + (extension * PIXELS_PER_METER);
+            
+            // Calculate coil height
+            const coilHeight = totalHeight / COIL_COUNT;
+            
+            // Start point (top of the spring)
+            let path = `M 60,20 `;
+            
+            // Draw coils
+            for (let i = 0; i < COIL_COUNT; i++) {
+                const y = 20 + i * coilHeight;
+                // Draw a full coil (to the right and back to the left)
+                path += `C ${60 + COIL_WIDTH},${y + coilHeight/4} ${60 + COIL_WIDTH},${y + coilHeight*3/4} 60,${y + coilHeight} `;
+                path += `C ${60 - COIL_WIDTH},${y + coilHeight*5/4} ${60 - COIL_WIDTH},${y + coilHeight*7/4} 60,${y + coilHeight*2} `;
+            }
+            
+            // Set spring color based on extension
+            let springColor;
+            if (extension < 3) {
+                springColor = "#4CA1AF";
+            } else if (extension < 4.5) {
+                springColor = "#FFC107";
+            } else {
+                springColor = "#F44336";
+            }
+            
+            // Update SVG
+            springSvg.innerHTML = `
+                <path d="${path}" 
+                      fill="none" 
+                      stroke="${springColor}" 
+                      stroke-width="5" 
+                      stroke-linecap="round" />
+            `;
+            
+            // Update SVG height to match spring
+            springSvg.setAttribute('viewBox', `0 0 120 ${20 + totalHeight}`);
+            springSvg.style.height = (20 + totalHeight) + 'px';
+        }
+        
+        // Update mass position based on extension
+        function updateMassPosition(extension) {
+            // Calculate mass position in pixels
+            const massTop = NATURAL_LENGTH + (extension * PIXELS_PER_METER) + 30;
+            
+            // Update mass position
+            mass.style.top = massTop + 'px';
+            mass.textContent = (extension * 10).toFixed(1) + 'g';
+        }
+        
+        // Initialize the chart
+        function initChart() {
+            energyChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Veri Noktaları',
+                        data: [],
+                        backgroundColor: '#4CA1AF',
+                        pointRadius: 8,
+                        pointHoverRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Uzama Miktarı (Δx) (m)',
+                                color: '#C4E0E5',
+                                font: {
+                                    size: 15,
+                                    weight: 'bold'
+                                }
+                            },
+                            min: 0,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1,
+                                color: '#e0f7fa',
+                                font: {
+                                    size: 13
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(200, 200, 255, 0.15)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Depolanan Enerji (E) (J)',
+                                color: '#C4E0E5',
+                                font: {
+                                    size: 15,
+                                    weight: 'bold'
+                                }
+                            },
+                            min: 0,
+                            max: 1.5,
+                            grid: {
+                                color: 'rgba(200, 200, 255, 0.15)'
+                            },
+                            ticks: {
+                                color: '#e0f7fa',
+                                font: {
+                                    size: 13
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e0f7fa',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(10, 15, 30, 0.95)',
+                            titleColor: '#4CA1AF',
+                            bodyColor: '#e0f7fa',
+                            borderColor: '#4CA1AF',
+                            borderWidth: 1,
+                            displayColors: false,
+                            callbacks: {
+                                title: function(context) {
+                                    return `Deney ${context[0].datasetIndex + 1}`;
+                                },
+                                label: function(context) {
+                                    const point = context.raw;
+                                    return [
+                                        `Uzama: ${point.x.toFixed(2)} m`,
+                                        `Enerji: ${point.y.toFixed(5)} J`,
+                                        `Oran: ${(point.y / point.x).toFixed(5)} J/m`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update chart with data points
+        function updateChart() {
+            // Convert dataPoints to chart.js format
+            const chartData = dataPoints.map(point => ({x: point.extension, y: point.energy}));
+            
+            // Update dataset
+            energyChart.data.datasets[0].data = chartData;
+            
+            // Remove fit lines if they exist
+            for (let i = energyChart.data.datasets.length - 1; i >= 1; i--) {
+                energyChart.data.datasets.pop();
+            }
+            
+            energyChart.update();
+        }
+        
+        // Show linear fit
+        function showLinearFit() {
+            if (dataPoints.length < 2) return;
+            
+            // Find max extension for drawing the line
+            const maxExtension = Math.max(...dataPoints.map(p => p.extension));
+            
+            // Create linear fit dataset
+            const linearFitDataset = {
+                label: 'Doğrusal İlişki',
+                data: [
+                    {x: 0, y: 0},
+                    {x: maxExtension, y: 0.5 * k * maxExtension}
+                ],
+                borderColor: '#FF6384',
+                backgroundColor: 'transparent',
+                borderWidth: 3,
+                pointRadius: 0,
+                borderDash: [5, 5],
+                type: 'line',
+                fill: false
+            };
+            
+            energyChart.data.datasets.push(linearFitDataset);
+            energyChart.update();
+        }
+        
+        // Show quadratic fit
+        function showQuadraticFit() {
+            if (dataPoints.length < 2) return;
+            
+            // Find max extension for drawing the curve
+            const maxExtension = Math.max(...dataPoints.map(p => p.extension));
+            
+            // Create quadratic fit dataset
+            const quadraticFitDataset = {
+                label: 'Karesel İlişki',
+                data: Array.from({length: 20}, (_, i) => {
+                    const x = i * maxExtension / 19;
+                    return {x: x, y: 0.5 * k * Math.pow(x, 2)};
+                }),
+                borderColor: '#36A2EB',
+                backgroundColor: 'transparent',
+                borderWidth: 3,
+                pointRadius: 0,
+                type: 'line',
+                fill: false
+            };
+            
+            energyChart.data.datasets.push(quadraticFitDataset);
+            energyChart.update();
+        }
+        
+        // Initial spring drawing
+        drawSpring(1);
+    </script>
+</body>
+</html>
