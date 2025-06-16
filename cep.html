@@ -631,16 +631,16 @@
         /* Landscape optimizations */
         @media (orientation: landscape) {
             body {
-                padding: 2px 2px;
+                padding: 10px 5px;
             }
             
             .container {
-                padding: 2px;
+                padding: 10px;
                 max-width: 100%;
             }
             
             header {
-                padding: 2px;
+                padding: 10px;
                 margin-bottom: 10px;
             }
             
@@ -654,20 +654,20 @@
             
             .activity-container {
                 flex-direction: row;
-                gap: 2px;
+                gap: 10px;
             }
             
             .panel {
                 flex: 1;
-                padding: 2px;
+                padding: 10px;
             }
             
             .spring-container {
-                height: 250px;
+                height: 300px;
             }
             
             #spring-svg {
-                height: 250px;
+                height: 300px;
             }
             
             .graph-container {
@@ -777,7 +777,10 @@
                             </label>
                             <input type="range" id="extension-slider" min="0.01" max="5" step="0.01" value="1.0">
                             
-
+                            <label style="margin-top: 8px;">
+                                <span>Kuvvet (F):</span>
+                                <span class="value-display" id="force-value">0.1 N</span>
+                            </label>
                         </div>
                         
                         <div class="button-group">
