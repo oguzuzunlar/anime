@@ -843,7 +843,7 @@
                         </ul>
                         
                         <div class="conclusion-box">
-                            <p><strong>Sonuç:</strong> Enerji (E) ile uzama (Δx) arasındaki ilişki karesel bir ilişkidir ve \( E = \frac{1}{2} \cdot k \cdot (\Delta x)^2 \) formülü ile ifade edilir.</p>
+                            <p><strong>Sonuç:</strong> Enerji (E) ile uzama (Δx) arasındaki ilişki karesel fonksiyon ile modellenir ve grafiği doğrusal değildir.</p>
                         </div>
                     </div>
 
@@ -1003,7 +1003,7 @@
             
             // Draw coils
             for (let i = 0; i < COIL_COUNT; i++) {
-                const y = 20 + i * coilHeight;
+                const y = 15 + i * coilHeight;
                 // Draw a full coil (to the right and back to the left)
                 path += `C ${50 + COIL_WIDTH},${y + coilHeight/4} ${50 + COIL_WIDTH},${y + coilHeight*3/4} 50,${y + coilHeight} `;
                 path += `C ${50 - COIL_WIDTH},${y + coilHeight*5/4} ${50 - COIL_WIDTH},${y + coilHeight*7/4} 50,${y + coilHeight*2} `;
@@ -1029,8 +1029,8 @@
             `;
             
             // Update SVG height to match spring
-            springSvg.setAttribute('viewBox', `0 0 100 ${20 + totalHeight}`);
-            springSvg.style.height = (20 + totalHeight) + 'px';
+            springSvg.setAttribute('viewBox', `0 0 100 ${15 + totalHeight}`);
+            springSvg.style.height = (15 + totalHeight) + 'px';
         }
         
         // Update mass position based on extension
