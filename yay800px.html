@@ -991,24 +991,29 @@
             updateMassPosition(extension);
         }
         
-        // Draw spiral spring based on extension
-        function drawSpring(extension) {
-            // Calculate total spring height
-            const totalHeight = NATURAL_LENGTH + (extension * PIXELS_PER_METER);
-            
-            // Calculate coil height
-            const coilHeight = totalHeight / COIL_COUNT;
-            
-            // Start point (top of the spring)
-            let path = `M 50,20 `;
-            
-            // Draw coils
-            for (let i = 0; i < COIL_COUNT; i++) {
-                const y = 15 + i * coilHeight;
-                // Draw a full coil (to the right and back to the left)
-                path += `C ${50 + COIL_WIDTH},${y + coilHeight/4} ${50 + COIL_WIDTH},${y + coilHeight*3/4} 50,${y + coilHeight} `;
-                path += `C ${50 - COIL_WIDTH},${y + coilHeight*5/4} ${50 - COIL_WIDTH},${y + coilHeight*7/4} 50,${y + coilHeight*2} `;
-            }
+      
+              
+// Draw spiral spring based on extension
+function drawSpring(extension) {
+    // Calculate total spring height
+    const totalHeight = NATURAL_LENGTH + (extension * PIXELS_PER_METER);
+    
+    // Calculate coil height
+    const coilHeight = totalHeight / COIL_COUNT;
+    
+    // Start point (top of the spring)
+    let path = `M 50,20 `;
+    
+    // Draw coils
+    for (let i = 0; i < COIL_COUNT; i++) {
+        const y = 15 + i * coilHeight;
+        // Draw a full coil (to the right and back to the left)
+        path += `C ${50 + COIL_WIDTH},${y + coilHeight/4} ${50 + COIL_WIDTH},${y + coilHeight*3/4} 50,${y + coilHeight} `;
+        path += `C ${50 - COIL_WIDTH},${y + coilHeight*5/4} ${50 - COIL_WIDTH},${y + coilHeight*7/4} 50,${y + coilHeight*2} `;
+    }
+    return path;
+}
+
             
             // Set spring color based on extension
             let springColor;
