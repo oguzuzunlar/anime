@@ -883,15 +883,51 @@
                 font-size: 1rem;
             }
             
+            /* POPUP STİLLERİ - TELEFON OPTİMİZASYONU */
+            #welcome-popup {
+                padding: 15px;
+            }
+            
             .popup-content {
+                max-height: 90vh;
+                overflow-y: auto;
                 padding: 20px;
+                width: 95%;
             }
             
             .popup-content h2 {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
+                margin-bottom: 15px;
             }
             
             .popup-message {
+                font-size: 0.95rem;
+                line-height: 1.6;
+                margin-bottom: 15px;
+            }
+            
+            .popup-message ul {
+                margin: 10px 0 10px 15px;
+            }
+            
+            .popup-message li {
+                margin-bottom: 8px;
+                padding-left: 5px;
+            }
+            
+            .popup-message li::before {
+                left: -12px;
+                font-size: 1.2rem;
+            }
+            
+            .encouragement {
+                font-size: 0.9rem;
+                padding: 10px;
+                margin-top: 15px;
+            }
+            
+            .popup-btn {
+                padding: 10px 20px;
                 font-size: 1rem;
             }
         }
@@ -907,16 +943,17 @@
                 
                 <p><strong>Simülasyonun Amacı:</strong></p>
                 <ul>
-                   
-                    <li>Doğrusal ve karesel fonksiyonların grafiksel farklarını analiz etmek.</li>
+                    <li>Yaylarda uzama miktarı ile depolanan enerji arasındaki ilişkiyi incelemek</li>
+                    <li>Doğrusal ve karesel fonksiyonların grafiksel farklarını analiz etmek</li>
+                    <li>Matematiksel modellerin fiziksel olayları açıklamadaki rolünü gözlemlemek</li>
                 </ul>
                 
                 <p><strong>Nasıl Kullanılır:</strong></p>
                 <ul>
-                    <li>Uzama miktarını kaydırıcı ile değiştirerek yayın davranışını gözlemleyin.</li>
-                    <li>Farklı uzama değerleri için "Veri Noktası Ekle" butonuna basarak tabloya veri ekleyin.</li>
-                    <li>Grafik üzerinde doğrusal ve karesel ilişkiyi karşılaştırın.</li>
-                    <li>Sayfalar arasında gezinerek teorik bilgi ve analizleri inceleyin.</li>
+                    <li>Uzama miktarını kaydırıcı ile değiştirerek yayın davranışını gözlemleyin</li>
+                    <li>Farklı uzama değerleri için "Veri Noktası Ekle" butonuna basarak tabloya veri ekleyin</li>
+                    <li>Grafik üzerinde doğrusal ve karesel ilişkiyi karşılaştırın</li>
+                    <li>Sayfalar arasında gezinerek teorik bilgi ve analizleri inceleyin</li>
                 </ul>
                 
                 <div class="encouragement">
@@ -932,7 +969,7 @@
         <div class="title-container">
             <div class="title-decoration"></div>
             <h1>Yay Simülasyonu ile Doğrusal ve Karesel Fonksiyonların Grafikleri Arasındaki Farkın Keşfi</h1>
-        
+            <div class="subtitle">Esneklik Potansiyel Enerjisi ile Uzama Miktarı Arasındaki İlişkinin İncelenmesi</div>
         </div>
         
         <!-- Sayfa navigasyon butonları -->
@@ -1008,9 +1045,9 @@
                         <div class="collection-step-content">
                             <p>Simülasyonu kullanarak farklı uzama değerleri için enerji değerlerini toplayın:</p>
                             <ul>
-                                <li>Uzama miktarı kaydırıcısını kullanarak farklı değerler seçin.</li>
-                                <li>"Veri Noktası Ekle" butonuna basarak tabloya kaydedin.</li>
-                                <li>Tablonun "Oran" sütunundaki değerlerin nasıl değiştiğini gözlemleyin.</li>
+                                <li>Uzama miktarı kaydırıcısını kullanarak farklı değerler seçin</li>
+                                <li>"Veri Noktası Ekle" butonuna basarak tabloya kaydedin</li>
+                                <li>Tablonun "Oran" sütunundaki değerlerin nasıl değiştiğini gözlemleyin</li>
                             </ul>
                         </div>
                     </div>
@@ -1028,8 +1065,8 @@
                                 <li>3,0 m</li>
                                 <li>3,5 m</li>
                                 <li>4,0 m</li>
-				<li>4,5 m</li>
-				<li>5,0 m</li>
+                                <li>4,5 m</li>
+                                <li>5,0 m</li>
                             </ul>
                             <p style="margin-top: 15px;">Her uzama değeri için enerji değerini kaydedin ve enerji/uzama oranını hesaplayın.</p>
                         </div>
@@ -1040,9 +1077,9 @@
                         <div class="collection-step-content">
                             <p>Topladığınız verileri kullanarak:</p>
                             <ul>
-                                <li>Doğrusal ve karesel ilişki butonlarına basarak grafik üzerinde karşılaştırma yapın.</li>
-                                <li>Hangi ilişkinin verilere daha uygun olduğunu belirleyin.</li>
-                                <li>Enerji/uzama oranının nasıl değiştiğini inceleyin.</li>
+                                <li>Doğrusal ve karesel ilişki butonlarına basarak grafik üzerinde karşılaştırma yapın</li>
+                                <li>Hangi ilişkinin verilere daha uygun olduğunu belirleyin</li>
+                                <li>Enerji/uzama oranının nasıl değiştiğini inceleyin</li>
                             </ul>
                         </div>
                     </div>
@@ -1082,8 +1119,8 @@
                                 <input type="range" id="extension-slider" min="0" max="5" step="0.5" value="1.0">
                                 
                                 <label style="margin-top: 10px;">
-                                    <span> </span>
-                                    <span class="value-display" id="force-value"></span>
+                                    <span><i class="fas fa-weight-hanging"></i> Kuvvet (F):</span>
+                                    <span class="value-display" id="force-value">0,10 N</span>
                                 </label>
                             </div>
                             
@@ -1141,9 +1178,15 @@
                 
                 <div class="activity-steps">
                     <div class="step">
-                        <h3><span class="step-number"></span> Sonuç</h3>
+                        <h3><span class="step-number">1</span> Sonuç</h3>
                         <div class="step-content">
-   
+                            <p>Simülasyon ve veri analizi sonucunda aşağıdaki gözlemleri yapabiliriz:</p>
+                            <ul>
+                                <li>Yayın uzama miktarı arttıkça depolanan enerji artmaktadır</li>
+                                <li>Enerji/uzama oranı sabit değildir, uzama miktarıyla birlikte artmaktadır</li>
+                                <li>Grafik üzerinde karesel ilişki, doğrusal ilişkiye göre verilere daha iyi uymaktadır</li>
+                                <li>Bu durum Hooke Kanunu ve esneklik potansiyel enerjisi formüllerini doğrulamaktadır</li>
+                            </ul>
                             
                             <div class="conclusion-box">
                                 <p><strong>Sonuç:</strong> Enerji (E) ile uzama (Δx) arasındaki ilişki karesel fonksiyon ile modellenir ve grafiği doğrusal değildir. Bu ilişki \( E = \frac{1}{2} k (\Delta x)^2 \) formülü ile ifade edilir.</p>
@@ -1152,14 +1195,15 @@
                     </div>
 
                     <div class="step">
-                        <h3><span class="step-number"></span> Karesel Fonksiyonların Özellikleri</h3>
+                        <h3><span class="step-number">2</span> Karesel Fonksiyonların Özellikleri</h3>
                         <div class="step-content">
                             <p>Bu etkinlikten yola çıkarak karesel fonksiyonların özelliklerini genelleyelim.</p>
                             <ul>
-                                <li>Karesel fonksiyonların grafikleri doğrusal değildir.</li>
-                                <li>Bağımsız değişken iki katına çıktığında, bağımlı değişken dört katına çıkar.</li>
-                                <li>Sabit oranlı artış göstermezler (oran değişkendir).</li>
-                                <li>Fizikte enerji, alan, kinematik gibi birçok alanda karşımıza çıkarlar.</li>
+                                <li>Karesel fonksiyonların grafikleri parabol şeklindedir</li>
+                                <li>Bağımsız değişken iki katına çıktığında, bağımlı değişken dört katına çıkar</li>
+                                <li>Sabit oranlı artış göstermezler (oran değişkendir)</li>
+                                <li>Fizikte enerji, alan, kinematik gibi birçok alanda karşımıza çıkarlar</li>
+                                <li>Matematiksel olarak \( y = ax^2 + bx + c \) formunda ifade edilirler</li>
                             </ul>
                         </div>
                     </div>
@@ -1191,8 +1235,8 @@
         </div>
         
         <footer>
-            <p>Doğrusal ve Karesel Fonksiyonlar Arasındaki İlişki Etkinliği </p>
-            
+            <p>Doğrusal ve Karesel Fonksiyonlar Arasındaki İlişki Etkinliği | Fizik ve Matematik Entegrasyonu</p>
+            <p><i class="fas fa-graduation-cap physics-icon"></i> Eğitim Teknolojileri ve Simülasyon Tasarımı</p>
         </footer>
     </div>
 
