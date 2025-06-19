@@ -10,7 +10,7 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         /* POPUP STİLLERİ */
-        #welcome-popup {
+                #welcome-popup {
             position: fixed;
             top: 0;
             left: 0;
@@ -35,6 +35,8 @@
             border: 2px solid rgba(76, 161, 175, 0.5);
             position: relative;
             animation: popupAppear 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
         .popup-content h2 {
@@ -85,6 +87,7 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
+            margin-top: 10px;
         }
         
         .popup-btn:hover {
@@ -110,6 +113,142 @@
             to { 
                 opacity: 1; 
                 transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* KAYDIRMA ANİMASYONU EKLENTİSİ */
+        .swipe-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            z-index: 10001;
+            width: 100%;
+            animation: fadeInSwipe 1s ease-out;
+            display: none; /* Varsayılan olarak gizli */
+        }
+        
+        .swipe-hand {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+            animation: swipeUp 2s infinite;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+        }
+        
+        .swipe-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        }
+        
+        @keyframes swipeUp {
+            0% {
+                transform: translateY(0);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateY(-20px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 0.8;
+            }
+        }
+        
+        @keyframes fadeInSwipe {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        /* Tablet ve masaüstünde göster */
+        @media (min-width: 769px) {
+            .swipe-indicator {
+                display: block;
+            }
+        }
+        
+        /* Mobilde gizle */
+        @media (max-width: 768px) {
+            .swipe-indicator {
+                display: none !important;
+            }
+        }
+.swipe-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            z-index: 10001;
+            width: 100%;
+            animation: fadeInSwipe 1s ease-out;
+            display: none; /* Varsayılan olarak gizli */
+        }
+        
+        .swipe-hand {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+            animation: swipeUp 2s infinite;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+        }
+        
+        .swipe-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        }
+        
+        @keyframes swipeUp {
+            0% {
+                transform: translateY(0);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateY(-20px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 0.8;
+            }
+        }
+        
+        @keyframes fadeInSwipe {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        /* Tablet ve masaüstünde göster */
+        @media (min-width: 769px) {
+            .swipe-indicator {
+                display: block;
+            }
+        }
+        
+        /* Mobilde gizle */
+        @media (max-width: 768px) {
+            .swipe-indicator {
+                display: none !important;
             }
         }
         
@@ -961,6 +1100,12 @@
                 </div>
             </div>
             <button id="close-popup" class="popup-btn">Keşfe Başla <i class="fas fa-rocket"></i></button>
+            
+            <!-- Kaydırma animasyonu ekle -->
+            <div class="swipe-indicator">
+                <div class="swipe-hand">👆</div>
+                <p class="swipe-text">KEŞFET BUTONUNU GÖRMEK İÇİN KAYDIR</p>
+            </div>
         </div>
     </div>
     
@@ -1356,11 +1501,18 @@
             experimentCount = 1;
             extensionSlider.value = 1.0;
             updateSimulation(1.0);
-            updateChart();
             
-            // Fit çizgilerini de sıfırla
+            // Clear fit references
             linearFitDatasetRef = null;
             quadraticFitDatasetRef = null;
+            
+            // Clear all datasets except the first one
+            energyChart.data.datasets = [energyChart.data.datasets[0]];
+            // And reset the data of the first dataset to empty
+            energyChart.data.datasets[0].data = [];
+            
+            // Now update the chart
+            energyChart.update();
         });
         
         linearBtn.addEventListener('click', function() {
@@ -1492,7 +1644,6 @@
             }, 800);
         }
         
-        // Initialize the chart
         function initChart() {
             energyChart = new Chart(ctx, {
                 type: 'scatter',
@@ -1503,7 +1654,7 @@
                         backgroundColor: '#4CA1AF',
                         pointRadius: 6,
                         pointHoverRadius: 8,
-                        pointStyle: 'circle' // Daire şeklinde veri noktaları
+                        pointStyle: 'circle'
                     }]
                 },
                 options: {
@@ -1564,8 +1715,35 @@
                                 font: {
                                     size: 13
                                 },
-                                usePointStyle: true, // Gösterge simgelerini kullan
-                                padding: 20
+                                usePointStyle: true,
+                                padding: 20,
+                                generateLabels: function(chart) {
+                                    const original = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                                    return original.map(label => {
+                                        if (label.text === 'Doğrusal İlişki') {
+                                            return {
+                                                ...label,
+                                                pointStyle: 'line',
+                                                rotation: 0,
+                                                lineWidth: 2,
+                                                borderDash: [10, 10]
+                                            };
+                                        }
+                                        else if (label.text === 'Karesel İlişki') {
+                                            return {
+                                                ...label,
+                                                pointStyle: 'line',
+                                                rotation: 0,
+                                                lineWidth: 2,
+                                                borderDash: []
+                                            };
+                                        }
+                                        return {
+                                            ...label,
+                                            pointStyle: 'circle'
+                                        };
+                                    });
+                                }
                             }
                         },
                         tooltip: {
@@ -1624,9 +1802,9 @@
             
             const maxExtension = Math.max(...dataPoints.map(p => p.extension));
             
-            // Yeni çizgiyi oluştur (LABEL EKLENDİ)
+            // Yeni çizgiyi oluştur
             linearFitDatasetRef = {
-                label: 'Doğrusal İlişki', // Bu satır eklendi
+                label: 'Doğrusal İlişki',
                 data: [
                     {x: 0, y: 0},
                     {x: maxExtension, y: 0.5 * k * maxExtension}
@@ -1661,9 +1839,9 @@
             
             const maxExtension = Math.max(...dataPoints.map(p => p.extension));
             
-            // Yeni çizgiyi oluştur (LABEL EKLENDİ)
+            // Yeni çizgiyi oluştur
             quadraticFitDatasetRef = {
-                label: 'Karesel İlişki', // Bu satır eklendi
+                label: 'Karesel İlişki',
                 data: Array.from({length: 20}, (_, i) => {
                     const x = i * maxExtension / 19;
                     return {x: x, y: 0.5 * k * Math.pow(x, 2)};
@@ -1704,6 +1882,48 @@
                 }
             }
         }
+document.addEventListener('DOMContentLoaded', function() {
+            const popup = document.getElementById('welcome-popup');
+            const closePopupBtn = document.getElementById('close-popup');
+            const swipeIndicator = document.querySelector('.swipe-indicator');
+            
+            // Popup'ı göster
+            popup.style.display = 'flex';
+            
+            // Kaydırma animasyonunu başlat
+            let scrollTimeout;
+            function checkScroll() {
+                const popupContent = document.querySelector('.popup-content');
+                const popupHeight = popupContent.clientHeight;
+                const scrollPosition = popupContent.scrollTop;
+                const scrollHeight = popupContent.scrollHeight;
+                
+                // Eğer kullanıcı aşağı kaydırmışsa animasyonu gizle
+                if (scrollPosition > 50) {
+                    swipeIndicator.style.opacity = '0';
+                    swipeIndicator.style.pointerEvents = 'none';
+                    clearTimeout(scrollTimeout);
+                }
+            }
+            
+            // Popup içeriğine scroll event listener ekle
+            const popupContent = document.querySelector('.popup-content');
+            if (popupContent) {
+                popupContent.addEventListener('scroll', checkScroll);
+                
+                // 10 saniye sonra animasyonu otomatik gizle
+                scrollTimeout = setTimeout(() => {
+                    swipeIndicator.style.opacity = '0';
+                    swipeIndicator.style.pointerEvents = 'none';
+                }, 10000);
+            }
+            
+            // Kapat butonuna tıklanınca popup'ı gizle
+            closePopupBtn.addEventListener('click', function() {
+                popup.style.display = 'none';
+            });
+        });
+        
     </script>
 </body>
 </html>
