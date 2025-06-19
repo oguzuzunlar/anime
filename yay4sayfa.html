@@ -1047,8 +1047,8 @@
         </div>
         
         <footer>
-            <p>Doğrusal ve Karesel İlişki Etkinliği </p>
-            <p><i class="fas fa-copyright"></i> </p>
+            <p>Doğrusal ve Karesel Fonksiyonlar Arasındaki İlişki Etkinliği </p>
+            
         </footer>
     </div>
 
@@ -1081,6 +1081,10 @@
         let energyChart;
         let dataPoints = [];
         let experimentCount = 1;
+        
+        // Fit çizgileri için referanslar
+        let linearFitDatasetRef = null;
+        let quadraticFitDatasetRef = null;
         
         // Format number with comma as decimal separator
         function formatNumber(num, decimals = 2) {
@@ -1151,6 +1155,10 @@
             extensionSlider.value = 1.0;
             updateSimulation(1.0);
             updateChart();
+            
+            // Fit çizgilerini de sıfırla
+            linearFitDatasetRef = null;
+            quadraticFitDatasetRef = null;
         });
         
         linearBtn.addEventListener('click', function() {
@@ -1392,24 +1400,31 @@
             // Update dataset
             energyChart.data.datasets[0].data = chartData;
             
-            // Remove fit lines if they exist
-            for (let i = energyChart.data.datasets.length - 1; i >= 1; i--) {
-                energyChart.data.datasets.pop();
+            // Eğer fit çizgileri varsa yeniden ekle
+            if (linearFitDatasetRef) {
+                energyChart.data.datasets.push(linearFitDatasetRef);
+            }
+            if (quadraticFitDatasetRef) {
+                energyChart.data.datasets.push(quadraticFitDatasetRef);
             }
             
             energyChart.update();
         }
         
-        // Show linear fit
+        // Doğrusal İlişki Göster
         function showLinearFit() {
             if (dataPoints.length < 2) return;
             
-            // Find max extension for drawing the line
+            // Önceki doğrusal çizgiyi kaldır
+            if (linearFitDatasetRef) {
+                removeFitLine('linear');
+            }
+            
             const maxExtension = Math.max(...dataPoints.map(p => p.extension));
             
-            // Create linear fit dataset
-            const linearFitDataset = {
-                label: 'Doğrusal İlişki',
+            // Yeni çizgiyi oluştur (LABEL EKLENDİ)
+            linearFitDatasetRef = {
+                label: 'Doğrusal İlişki', // Bu satır eklendi
                 data: [
                     {x: 0, y: 0},
                     {x: maxExtension, y: 0.5 * k * maxExtension}
@@ -1418,25 +1433,35 @@
                 backgroundColor: 'transparent',
                 borderWidth: 3,
                 pointRadius: 0,
-                borderDash: [5, 5], // Noktalı çizgi
+                borderDash: [5, 5],
                 type: 'line',
                 fill: false
             };
             
-            energyChart.data.datasets.push(linearFitDataset);
+            // Karesel çizgiyi kaldır
+            if (quadraticFitDatasetRef) {
+                removeFitLine('quadratic');
+            }
+            
+            // Yeni çizgiyi ekle
+            energyChart.data.datasets.push(linearFitDatasetRef);
             energyChart.update();
         }
         
-        // Show quadratic fit
+        // Karesel İlişki Göster
         function showQuadraticFit() {
             if (dataPoints.length < 2) return;
             
-            // Find max extension for drawing the curve
+            // Önceki karesel çizgiyi kaldır
+            if (quadraticFitDatasetRef) {
+                removeFitLine('quadratic');
+            }
+            
             const maxExtension = Math.max(...dataPoints.map(p => p.extension));
             
-            // Create quadratic fit dataset
-            const quadraticFitDataset = {
-                label: 'Karesel İlişki',
+            // Yeni çizgiyi oluştur (LABEL EKLENDİ)
+            quadraticFitDatasetRef = {
+                label: 'Karesel İlişki', // Bu satır eklendi
                 data: Array.from({length: 20}, (_, i) => {
                     const x = i * maxExtension / 19;
                     return {x: x, y: 0.5 * k * Math.pow(x, 2)};
@@ -1445,13 +1470,37 @@
                 backgroundColor: 'transparent',
                 borderWidth: 3,
                 pointRadius: 0,
-                borderDash: [], // Düz çizgi
+                borderDash: [],
                 type: 'line',
                 fill: false
             };
             
-            energyChart.data.datasets.push(quadraticFitDataset);
+            // Doğrusal çizgiyi kaldır
+            if (linearFitDatasetRef) {
+                removeFitLine('linear');
+            }
+            
+            // Yeni çizgiyi ekle
+            energyChart.data.datasets.push(quadraticFitDatasetRef);
             energyChart.update();
+        }
+        
+        // Fit çizgisini grafikten kaldır
+        function removeFitLine(type) {
+            const datasets = energyChart.data.datasets;
+            
+            for (let i = datasets.length - 1; i >= 1; i--) {
+                if (type === 'linear' && datasets[i] === linearFitDatasetRef) {
+                    datasets.splice(i, 1);
+                    linearFitDatasetRef = null;
+                    break;
+                }
+                if (type === 'quadratic' && datasets[i] === quadraticFitDatasetRef) {
+                    datasets.splice(i, 1);
+                    quadraticFitDatasetRef = null;
+                    break;
+                }
+            }
         }
     </script>
 </body>
