@@ -713,7 +713,12 @@
             box-shadow: inset 0 0 8px rgba(0,0,0,0.7);
             touch-action: manipulation;
         }
-        
+        #force-value,
+label[for="force-value"],
+label[style*="margin-top: 10px;"] {
+    display: none !important;
+    visibility: hidden !important;
+}
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 40px;
@@ -1078,21 +1083,22 @@
         <div class="popup-content">
             <h2>Yay Simülasyonuna Hoş Geldiniz! <i class="fas fa-graduation-cap"></i></h2>
             <div class="popup-message">
-                <p>Bu etkileşimli simülasyon ile yaylardaki esneklik potansiyel enerjisinin uzama miktarı ile olan ilişkisini keşfedeceksiniz. Doğrusal ve karesel fonksiyonlar arasındaki farkı gözlemleyeceksiniz.</p>
+                <p>Bu etkileşimli simülasyon doğrusal ve karesel fonksiyonlar arasındaki farkı gözlemleyeceksiniz.</p>
                 
                 <p><strong>Simülasyonun Amacı:</strong></p>
                 <ul>
-                    <li>Yaylarda uzama miktarı ile depolanan enerji arasındaki ilişkiyi incelemek.</li>
+                   
                     <li>Doğrusal ve karesel fonksiyonların grafiksel farklarını analiz etmek.</li>
                     <li>Matematiksel modellerin fiziksel olayları açıklamadaki rolünü gözlemlemek.</li>
                 </ul>
                 
                 <p><strong>Nasıl Kullanılır:</strong></p>
                 <ul>
-                    <li>Uzama miktarını kaydırıcı ile değiştirerek yayın davranışını gözlemleyin.</li>
-                    <li>Farklı uzama değerleri için "Veri Noktası Ekle" butonuna basarak tabloya veri ekleyin.</li>
-                    <li>Grafik üzerinde doğrusal ve karesel ilişkiyi karşılaştırın.</li>
-                    <li>Sayfalar arasında gezinerek teorik bilgi ve analizleri inceleyin.</li>
+                    <li>1. sayfayı okuyarak,yaylarda esneklik ve potansiyel enerji konusu hakkında bilgi edinin.</li>
+                    <li>2. sayfada simülasyonu kullanarak nasıl veri toplayacağınızı ve gözlem yapacağınızı öğrenin.</li>
+                    <li>3. sayfada bulunan simülasyonı kullanarak gözlem yapın.</li>
+  		    <li>4. sayfada karesel fonksiyonların özellikleri ile ilgili bilgi edinin.</li>
+
                 </ul>
                 
                 <div class="encouragement">
@@ -1726,7 +1732,7 @@
                                                 pointStyle: 'line',
                                                 rotation: 0,
                                                 lineWidth: 2,
-                                                borderDash: [10, 10]
+                                                borderDash: [5, 5]
                                             };
                                         }
                                         else if (label.text === 'Karesel İlişki') {
@@ -1813,7 +1819,7 @@
                 backgroundColor: 'transparent',
                 borderWidth: 3,
                 pointRadius: 0,
-                borderDash: [5, 5],
+                borderDash: [],
                 type: 'line',
                 fill: false
             };
