@@ -72,8 +72,40 @@
         
         .content {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             padding: 20px;
+            gap: 20px;
+        }
+        
+        /* Talimatlar Paneli */
+        .instruction-panel {
+            background: rgba(26, 35, 71, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 188, 212, 0.4);
+        }
+        
+        .instruction-panel h2 {
+            font-size: 1.5rem;
+            color: #00bcd4;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #00bcd4;
+            text-align: center;
+            text-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .instruction-content {
+            line-height: 1.7;
+            font-size: 1.05rem;
+            color: #e0e0e0;
+        }
+        
+        /* Orta Panel (Parametre ve Grafik) */
+        .middle-row {
+            display: flex;
+            flex-wrap: wrap;
             gap: 20px;
         }
         
@@ -85,6 +117,8 @@
             padding: 20px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(101, 115, 255, 0.4);
+            display: flex;
+            flex-direction: column;
         }
         
         .panel-title {
@@ -165,9 +199,8 @@
         }
         
         .graph-panel {
-            flex: 1;
+            flex: 2;
             min-width: 300px;
-	    max-high: 600px;
             background: rgba(26, 35, 71, 0.7);
             border-radius: 12px;
             padding: 20px;
@@ -178,7 +211,7 @@
         }
         
         .chart-container {
-            height: 500px; /* Sabit yükseklik */
+            height: 500px;
             position: relative;
             overflow: hidden;
         }
@@ -198,10 +231,28 @@
             box-shadow: 0 0 10px rgba(92, 107, 192, 0.3);
         }
         
+        /* Tablo Paneli */
+        .table-panel {
+            background: rgba(26, 35, 71, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(121, 134, 203, 0.4);
+        }
+        
+        .table-panel h2 {
+            font-size: 1.5rem;
+            color: #7986cb;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #6573ff;
+            text-align: center;
+            text-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+        }
+        
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 25px 0;
             background: rgba(26, 35, 71, 0.9);
             border-radius: 8px;
             overflow: hidden;
@@ -247,6 +298,10 @@
                 flex-direction: column;
             }
             
+            .middle-row {
+                flex-direction: column;
+            }
+            
             h1 {
                 font-size: 1.8rem;
             }
@@ -282,21 +337,6 @@
             color: #00bcd4;
             font-weight: bold;
         }
-        
-        .instruction {
-            background: rgba(0, 188, 212, 0.15);
-            border-left: 4px solid #00bcd4;
-            padding: 12px;
-            margin: 18px 0;
-            border-radius: 0 8px 8px 0;
-            font-size: 1rem;
-        }
-        
-        .instruction h3 {
-            color: #00bcd4;
-            margin-bottom: 8px;
-            font-size: 1.1rem;
-        }
     </style>
 </head>
 <body>
@@ -310,37 +350,61 @@
         </header>
         
         <div class="content">
-            <div class="control-panel">
-                <h2 class="panel-title">Parametre Seçimi</h2>
-                
-                <div class="a-buttons">
-                    <button class="a-btn active" data-a="1">a = 1</button>
-                    <button class="a-btn" data-a="-1">a = -1</button>
-                    <button class="a-btn" data-a="2">a = 2</button>
-                    <button class="a-btn" data-a="0.5">a = 1/2</button>
-                    <button class="a-btn" data-a="-2">a = -2</button>
+            <!-- Talimatlar Paneli -->
+            <div class="instruction-panel">
+                <h2>Etkinlik Kullanım Talimatları</h2>
+                <div class="instruction-content">
+                    <p>Bu etkinlikte, karesel fonksiyonlarda a parametresinin grafik üzerindeki etkisini gözlemleyeceksiniz:</p>
+                    <ul>
+                        <li>Farklı <strong>a değerlerini</strong> seçerek fonksiyonun nasıl değiştiğini gözlemleyin</li>
+                        <li>Her parametre değerinin fonksiyon grafiği üzerindeki etkisini inceleyin</li>
+                        <li>Grafikteki değişimleri alt kısımdaki dönüşüm tablosu ile karşılaştırın</li>
+                        <li>Referans fonksiyonu (a=1) ile diğer değerlerin karşılaştırmasını yapın</li>
+                    </ul>
+                    <p><strong>İpucu:</strong> a değerinin pozitif ve negatif olması durumunda kolların yönüne, mutlak değerinin büyüklüğüne göre de kolların genişliğine dikkat edin.</p>
+                </div>
+            </div>
+            
+            <!-- Orta Panel (Parametre ve Grafik) -->
+            <div class="middle-row">
+                <div class="control-panel">
+                    <h2 class="panel-title">Parametre Seçimi</h2>
+                    
+                    <div class="a-buttons">
+                        <button class="a-btn active" data-a="1">a = 1</button>
+                        <button class="a-btn" data-a="-1">a = -1</button>
+                        <button class="a-btn" data-a="2">a = 2</button>
+                        <button class="a-btn" data-a="0.5">a = 1/2</button>
+                        <button class="a-btn" data-a="-2">a = -2</button>
+                    </div>
+                    
+                    <div class="function-display">
+                        <p>Seçilen Fonksiyon:</p>
+                        <p id="function-output">\( g(x) = 1 \cdot x^2 \)</p>
+                    </div>
+                    
+                    <div class="transformation-info">
+                        <h3 class="info-title">Dönüşüm Bilgileri:</h3>
+                        <p class="info-content" id="transformation-info">
+                            <span class="highlight">a = 1</span> için referans fonksiyonuyla aynıdır. 
+                            Parabolün tepe noktası (0,0) ve kollar yukarı doğru açılır.
+                        </p>
+                    </div>
                 </div>
                 
-                <div class="function-display">
-                    <p>Seçilen Fonksiyon:</p>
-                    <p id="function-output">\( g(x) = 1 \cdot x^2 \)</p>
+                <div class="graph-panel">
+                    <h2 class="panel-title">Koordinat Düzleminde Grafik</h2>
+                    <div class="chart-container">
+                        <div class="canvas-container">
+                            <canvas id="graph-canvas"></canvas>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="instruction">
-                    <h3>Etkinlik Kullanım Talimatları:</h3>
-                    <p>Farklı a değerlerini seçerek karesel fonksiyonun nasıl değiştiğini gözlemleyin. Her bir parametre değerinin fonksiyon grafiği üzerindeki etkisini inceleyin.</p>
-                </div>
-                
-                <div class="transformation-info">
-                    <h3 class="info-title">Dönüşüm Bilgileri:</h3>
-                    <p class="info-content" id="transformation-info">
-                        <span class="highlight">a = 1</span> için referans fonksiyonuyla aynıdır. 
-                        Parabolün tepe noktası (0,0) ve kollar yukarı doğru açılır.
-                    </p>
-                </div>
-                
-                <h2 class="panel-title" style="margin-top: 25px;">Dönüşüm Tablosu</h2>
-                
+            </div>
+            
+            <!-- Tablo Paneli -->
+            <div class="table-panel">
+                <h2 class="panel-title">Dönüşüm Tablosu</h2>
                 <table>
                     <thead>
                         <tr>
@@ -383,15 +447,6 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>
-            
-            <div class="graph-panel">
-                <h2 class="panel-title">Koordinat Düzleminde Grafik</h2>
-                <div class="chart-container">
-                    <div class="canvas-container">
-                        <canvas id="graph-canvas"></canvas>
-                    </div>
-                </div>
             </div>
         </div>
         
