@@ -18,7 +18,7 @@
             background: linear-gradient(135deg, #1a237e, #311b92, #4a148c);
             color: #fff;
             min-height: 100vh;
-            padding: 20px;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,22 +28,21 @@
             width: 100%;
             max-width: 1200px;
             background: rgba(13, 19, 33, 0.95);
-            border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
             overflow: hidden;
-            border: 1px solid rgba(101, 115, 255, 0.4);
+            border: none;
         }
         
         header {
             text-align: center;
-            padding: 25px 20px;
+            padding: 20px 15px;
             background: rgba(26, 35, 71, 0.9);
             border-bottom: 2px solid #6573ff;
         }
         
         h1 {
-            font-size: 2.2rem;
-            margin-bottom: 15px;
+            font-size: 2rem;
+            margin-bottom: 10px;
             background: linear-gradient(to right, #7986cb, #e0e0e0, #7986cb);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -52,149 +51,158 @@
         }
         
         .subtitle {
-            font-size: 1.1rem;
+            font-size: 1rem;
             max-width: 800px;
             margin: 0 auto;
             color: #c5cae9;
-            line-height: 1.6;
+            line-height: 1.5;
         }
         
         .math-equation {
-            font-size: 1.5rem;
-            margin: 15px 0;
-            padding: 12px;
+            font-size: 1.3rem;
+            margin: 10px 0;
+            padding: 10px;
             background: rgba(26, 35, 71, 0.7);
-            border-radius: 8px;
+            border-radius: 6px;
             display: inline-block;
             border: 1px solid #7986cb;
-            box-shadow: 0 0 10px rgba(121, 134, 203, 0.4);
+            box-shadow: 0 0 8px rgba(121, 134, 203, 0.4);
         }
         
         .content {
             display: flex;
             flex-direction: column;
-            padding: 20px;
-            gap: 20px;
+            padding: 15px;
+            gap: 15px;
         }
         
         /* Talimatlar Paneli */
         .instruction-panel {
             background: rgba(26, 35, 71, 0.7);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(0, 188, 212, 0.4);
         }
         
         .instruction-panel h2 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: #00bcd4;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
             border-bottom: 2px solid #00bcd4;
             text-align: center;
-            text-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
         
         .instruction-content {
-            line-height: 1.7;
-            font-size: 1.05rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
             color: #e0e0e0;
+        }
+        
+        .instruction-content ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .instruction-content li {
+            margin-bottom: 8px;
         }
         
         /* Orta Panel (Parametre ve Grafik) */
         .middle-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 15px;
         }
         
         .control-panel {
             flex: 1;
             min-width: 300px;
             background: rgba(26, 35, 71, 0.7);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(101, 115, 255, 0.4);
             display: flex;
             flex-direction: column;
         }
         
         .panel-title {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: #7986cb;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 2px solid #6573ff;
             text-align: center;
-            text-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
         
         .a-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-            gap: 12px;
-            margin-bottom: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            margin-bottom: 20px;
         }
         
         .a-btn {
-            padding: 14px 10px;
+            padding: 10px 6px;
             background: linear-gradient(135deg, #283593, #1a237e);
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             color: white;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
             border: 2px solid #5c6bc0;
         }
         
         .a-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             background: linear-gradient(135deg, #3949ab, #283593);
         }
         
         .a-btn.active {
             background: linear-gradient(135deg, #5c6bc0, #3949ab);
-            box-shadow: 0 0 20px rgba(92, 107, 192, 0.7);
-            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(92, 107, 192, 0.6);
+            transform: scale(1.03);
         }
         
         .function-display {
             background: rgba(26, 35, 71, 0.9);
-            padding: 18px;
-            border-radius: 8px;
-            margin: 20px 0;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
             text-align: center;
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: bold;
             border: 2px solid #e91e63;
-            box-shadow: 0 0 12px rgba(233, 30, 99, 0.3);
+            box-shadow: 0 0 10px rgba(233, 30, 99, 0.2);
         }
         
         .transformation-info {
             background: rgba(26, 35, 71, 0.9);
-            padding: 18px;
-            border-radius: 8px;
-            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
             border: 2px solid #00bcd4;
-            box-shadow: 0 0 12px rgba(0, 188, 212, 0.3);
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.2);
         }
         
         .info-title {
             color: #00bcd4;
-            margin-bottom: 12px;
-            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
             font-weight: bold;
         }
         
         .info-content {
-            line-height: 1.7;
-            font-size: 1.05rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
             color: #e0e0e0;
         }
         
@@ -202,16 +210,16 @@
             flex: 2;
             min-width: 300px;
             background: rgba(26, 35, 71, 0.7);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(233, 30, 99, 0.4);
             display: flex;
             flex-direction: column;
         }
         
         .chart-container {
-            height: 500px;
+            height: 400px;
             position: relative;
             overflow: hidden;
         }
@@ -226,54 +234,55 @@
             width: 100%;
             height: 100%;
             background: rgba(13, 19, 33, 0.8);
-            border-radius: 8px;
+            border-radius: 6px;
             border: 1px solid #5c6bc0;
-            box-shadow: 0 0 10px rgba(92, 107, 192, 0.3);
+            box-shadow: 0 0 8px rgba(92, 107, 192, 0.2);
         }
         
         /* Tablo Paneli */
         .table-panel {
             background: rgba(26, 35, 71, 0.7);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
             border: 1px solid rgba(121, 134, 203, 0.4);
         }
         
         .table-panel h2 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: #7986cb;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 2px solid #6573ff;
             text-align: center;
-            text-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
             background: rgba(26, 35, 71, 0.9);
-            border-radius: 8px;
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(121, 134, 203, 0.6);
         }
         
         th {
             background: linear-gradient(135deg, #283593, #1a237e);
-            padding: 16px 15px;
+            padding: 12px 10px;
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #7986cb;
             border-bottom: 2px solid #5c6bc0;
         }
         
         td {
-            padding: 14px;
+            padding: 10px 8px;
             text-align: center;
             border-bottom: 1px solid rgba(92, 107, 192, 0.4);
             color: #e0e0e0;
+            font-size: 0.9rem;
         }
         
         tr:nth-child(even) {
@@ -286,56 +295,109 @@
         
         .footer {
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             background: rgba(13, 19, 33, 0.95);
             border-top: 2px solid #7986cb;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #c5cae9;
-        }
-        
-        @media (max-width: 768px) {
-            .content {
-                flex-direction: column;
-            }
-            
-            .middle-row {
-                flex-direction: column;
-            }
-            
-            h1 {
-                font-size: 1.8rem;
-            }
-            
-            .subtitle {
-                font-size: 1rem;
-            }
-            
-            .math-equation {
-                font-size: 1.2rem;
-                padding: 10px;
-            }
-            
-            .a-btn {
-                padding: 12px 8px;
-                font-size: 1rem;
-            }
-            
-            .chart-container {
-                height: 400px;
-            }
-            
-            .panel-title {
-                font-size: 1.3rem;
-            }
-            
-            .function-display {
-                font-size: 1.2rem;
-            }
         }
         
         .highlight {
             color: #00bcd4;
             font-weight: bold;
+        }
+        
+        /* Mobil için özel düzenlemeler */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                display: block;
+            }
+            
+            .container {
+                width: 100%;
+                max-width: 100%;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            
+            header {
+                padding: 15px 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .math-equation {
+                font-size: 1.1rem;
+                padding: 8px;
+            }
+            
+            .content {
+                padding: 10px;
+                gap: 10px;
+            }
+            
+            .instruction-panel,
+            .control-panel,
+            .graph-panel,
+            .table-panel {
+                border-radius: 8px;
+                padding: 12px;
+            }
+            
+            .a-buttons {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+                gap: 6px;
+            }
+            
+            .a-btn {
+                padding: 8px 4px;
+                font-size: 0.85rem;
+            }
+            
+            .chart-container {
+                height: 300px;
+            }
+            
+            .panel-title {
+                font-size: 1.1rem;
+            }
+            
+            .function-display {
+                font-size: 1.1rem;
+                padding: 12px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+                font-size: 0.8rem;
+            }
+            
+            .footer {
+                padding: 12px;
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .a-buttons {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            }
+            
+            .a-btn {
+                font-size: 0.8rem;
+                padding: 6px 3px;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
         }
     </style>
 </head>
@@ -376,6 +438,13 @@
                         <button class="a-btn" data-a="2">a = 2</button>
                         <button class="a-btn" data-a="0.5">a = 1/2</button>
                         <button class="a-btn" data-a="-2">a = -2</button>
+                        <button class="a-btn" data-a="3">a = 3</button>
+                        <button class="a-btn" data-a="-3">a = -3</button>
+                        <button class="a-btn" data-a="-0.5">a = -1/2</button>
+                        <button class="a-btn" data-a="4">a = 4</button>
+                        <button class="a-btn" data-a="-4">a = -4</button>
+                        <button class="a-btn" data-a="0.25">a = 1/4</button>
+                        <button class="a-btn" data-a="-0.25">a = -1/4</button>
                     </div>
                     
                     <div class="function-display">
@@ -445,6 +514,42 @@
                             <td>Referans fonksiyonunun -2 katı</td>
                             <td>Yansıma + dikey genişleme (Tepe noktası (0,0))</td>
                         </tr>
+                        <tr>
+                            <td>a = 3</td>
+                            <td>\( g(x) = 3x^2 \)</td>
+                            <td>Referans fonksiyonunun 3 katı</td>
+                            <td>Daha fazla dikey genişleme (kollar dar)</td>
+                        </tr>
+                        <tr>
+                            <td>a = -3</td>
+                            <td>\( g(x) = -3x^2 \)</td>
+                            <td>Referans fonksiyonunun -3 katı</td>
+                            <td>Yansıma + daha fazla dikey genişleme</td>
+                        </tr>
+                        <tr>
+                            <td>a = 1/4</td>
+                            <td>\( g(x) = \frac{1}{4}x^2 \)</td>
+                            <td>Referans fonksiyonunun 0.25 katı</td>
+                            <td>Daha fazla dikey sıkışma (kollar çok geniş)</td>
+                        </tr>
+                        <tr>
+                            <td>a = -1/4</td>
+                            <td>\( g(x) = -\frac{1}{4}x^2 \)</td>
+                            <td>Referans fonksiyonunun -0.25 katı</td>
+                            <td>Yansıma + daha fazla dikey sıkışma</td>
+                        </tr>
+                        <tr>
+                            <td>a = 4</td>
+                            <td>\( g(x) = 4x^2 \)</td>
+                            <td>Referans fonksiyonunun 4 katı</td>
+                            <td>En dar kollu parabol</td>
+                        </tr>
+                        <tr>
+                            <td>a = -4</td>
+                            <td>\( g(x) = -4x^2 \)</td>
+                            <td>Referans fonksiyonunun -4 katı</td>
+                            <td>Yansıma + en dar kollar</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -488,6 +593,23 @@
             
             // Grafiği güncelle
             updateGraph(currentA);
+        }
+        
+        // Ok çizme fonksiyonu - Optimize edilmiş
+        function drawArrow(x, y, angle) {
+            const length = 12;
+            const width = 6;
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-length, -width/2);
+            ctx.lineTo(-length, width/2);
+            ctx.closePath();
+            ctx.fillStyle = '#00bcd4';
+            ctx.fill();
+            ctx.restore();
         }
         
         // Koordinat sistemini çiz
@@ -606,6 +728,22 @@
             ctx.lineWidth = 3;
             ctx.stroke();
             
+            // Eğrilerin uçlarına ok çiz
+            if (points.length > 1) {
+                // Sol uç için ok
+                const dxLeft = points[1].x - points[0].x;
+                const dyLeft = points[1].y - points[0].y;
+                const angleLeft = Math.atan2(dyLeft, dxLeft);
+                drawArrow(points[0].x, points[0].y, angleLeft);
+                
+                // Sağ uç için ok
+                const lastIndex = points.length - 1;
+                const dxRight = points[lastIndex].x - points[lastIndex-1].x;
+                const dyRight = points[lastIndex].y - points[lastIndex-1].y;
+                const angleRight = Math.atan2(dyRight, dxRight);
+                drawArrow(points[lastIndex].x, points[lastIndex].y, angleRight);
+            }
+            
             // Referans fonksiyonunu çiz (a=1)
             if (a !== 1) {
                 const refPoints = [];
@@ -642,9 +780,18 @@
             
             // Başlık
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold 18px Arial';
+            ctx.font = 'bold 16px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(`g(x) = ${a === 0.5 ? '1/2' : a} · x²`, canvas.width / 2, 30);
+            
+            // Özel durumlar için formatlama
+            let functionText;
+            if (a === 0.5) functionText = '1/2';
+            else if (a === 0.25) functionText = '1/4';
+            else if (a === -0.5) functionText = '-1/2';
+            else if (a === -0.25) functionText = '-1/4';
+            else functionText = a;
+            
+            ctx.fillText(`g(x) = ${functionText} · x²`, canvas.width / 2, 25);
             
             // Tepe noktasını işaretle (0,0)
             ctx.fillStyle = '#ff9d00';
@@ -664,7 +811,14 @@
             '-1': '<span class="highlight">a = -1</span> için fonksiyon x eksenine göre yansır. Parabolün kolları aşağı doğru açılır ve tepe noktası (0,0) olur. Grafik x ekseninin negatif ve pozitif kısımlarını simetrik olarak gösterir.',
             '2': '<span class="highlight">a = 2</span> için fonksiyon dikey olarak 2 kat genişler. Parabolün kolları referans fonksiyonuna göre daha dardır. Tepe noktası (0,0) olup grafik x ekseninin negatif ve pozitif kısımlarını simetrik olarak gösterir.',
             '0.5': '<span class="highlight">a = 1/2</span> için fonksiyon dikey olarak yarıya sıkışır. Parabolün kolları referans fonksiyonuna göre daha geniştir. Tepe noktası (0,0) olup grafik x ekseninin negatif ve pozitif kısımlarını simetrik olarak gösterir.',
-            '-2': '<span class="highlight">a = -2</span> için fonksiyon x eksenine göre yansır ve dikey olarak 2 kat genişler. Kollar aşağı doğru ve dardır. Tepe noktası (0,0) olup grafik x ekseninin negatif ve pozitif kısımlarını simetrik olarak gösterir.'
+            '-2': '<span class="highlight">a = -2</span> için fonksiyon x eksenine göre yansır ve dikey olarak 2 kat genişler. Kollar aşağı doğru ve dardır. Tepe noktası (0,0) olup grafik x ekseninin negatif ve pozitif kısımlarını simetrik olarak gösterir.',
+            '3': '<span class="highlight">a = 3</span> için fonksiyon dikey olarak 3 kat genişler. Parabolün kolları çok dardır. Tepe noktası (0,0) olup grafik x ekseninin negatif ve pozitif kısımlarını simetrik olarak gösterir.',
+            '-3': '<span class="highlight">a = -3</span> için fonksiyon x eksenine göre yansır ve dikey olarak 3 kat genişler. Kollar aşağı doğru ve çok dardır. Tepe noktası (0,0) olup grafik x ekseninin negatif ve pozitif kısımlarını simetrik olarak gösterir.',
+            '0.25': '<span class="highlight">a = 1/4</span> için fonksiyon dikey olarak 1/4 oranında sıkışır. Parabolün kolları çok geniştir. Tepe noktası (0,0) olup grafik x ekseninin negatif ve pozitif kısımlarını simetrik olarak gösterir.',
+            '-0.25': '<span class="highlight">a = -1/4</span> için fonksiyon x eksenine göre yansır ve dikey olarak 1/4 oranında sıkışır. Kollar aşağı doğru ve çok geniştir. Tepe noktası (0,0) olup grafik x ekseninin negatif ve pozitif kısımlarını simetrik olarak gösterir.',
+            '-0.5': '<span class="highlight">a = -1/2</span> için fonksiyon x eksenine göre yansır ve dikey olarak yarıya sıkışır. Kollar aşağı doğru ve geniştir. Tepe noktası (0,0) olup grafik x ekseninin negatif ve pozitif kısımlarını simetrik olarak gösterir.',
+            '4': '<span class="highlight">a = 4</span> için fonksiyon dikey olarak 4 kat genişler. Parabolün kolları çok dardır. Tepe noktası (0,0) olup grafik x ekseninin negatif ve pozitif kısımlarını simetrik olarak gösterir.',
+            '-4': '<span class="highlight">a = -4</span> için fonksiyon x eksenine göre yansır ve dikey olarak 4 kat genişler. Kollar aşağı doğru ve çok dardır. Tepe noktası (0,0) olup grafik x ekseninin negatif ve pozitif kısımlarını simetrik olarak gösterir.'
         };
         
         // a değerini güncelleme
@@ -683,6 +837,15 @@
             if (a === '0.5') {
                 functionText = `\\( g(x) = \\frac{1}{2} x^2 \\)`;
                 currentA = 0.5;
+            } else if (a === '0.25') {
+                functionText = `\\( g(x) = \\frac{1}{4} x^2 \\)`;
+                currentA = 0.25;
+            } else if (a === '-0.5') {
+                functionText = `\\( g(x) = -\\frac{1}{2} x^2 \\)`;
+                currentA = -0.5;
+            } else if (a === '-0.25') {
+                functionText = `\\( g(x) = -\\frac{1}{4} x^2 \\)`;
+                currentA = -0.25;
             } else {
                 functionText = `\\( g(x) = ${a} x^2 \\)`;
                 currentA = parseFloat(a);
