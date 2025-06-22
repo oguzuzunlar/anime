@@ -129,15 +129,47 @@
         
         .geogebra-container {
             background-color: #e9ecef;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 5px;
+            border-radius: 2px;
             text-align: center;
         }
         
-        .geogebra-container h3 {
-            color: #1a2a6c;
+        .geogebra-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .geogebra-header h3 {
+            color: #1a2a6c;
             font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        .how-to-btn {
+            background: linear-gradient(to right, #1a2a6c, #3a5fc5);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .how-to-btn:hover {
+            background: linear-gradient(to right, #0d1b4d, #2a4bbd);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .how-to-btn i {
+            font-size: 0.9rem;
         }
         
         .iframe-wrapper {
@@ -147,8 +179,8 @@
             margin: 0 auto;
             overflow: hidden;
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1);
         }
         
         iframe {
@@ -341,6 +373,94 @@
             background-color: #FFD700;
             color: #1a2a6c;
         }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1a2a6c;
+        }
+        
+        .modal-header h2 {
+            color: #1a2a6c;
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: #b21f1f;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            transform: scale(1.2);
+            color: #8a1919;
+        }
+        
+        .modal-instructions {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid #1a2a6c;
+        }
+        
+        .modal-instructions ol {
+            padding-left: 25px;
+            margin: 15px 0;
+        }
+        
+        .modal-instructions li {
+            margin-bottom: 12px;
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+        
+        .modal-instructions li strong {
+            color: #1a2a6c;
+        }
+        
+        .modal-tip {
+            background-color: #fffde7;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #ffd600;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -349,41 +469,29 @@
             <div class="logo">
                 <i class="fas fa-function"></i>
                 <div>
-                    <h1>Fonksiyon Kavramı Modül 1</h1>
-                    <p>Düşey Doğru Testi ile Fonksiyon Analizi</p>
+                    <h1>Fonksiyon Kavramı Değerlendirme Testi</h1>
                 </div>
             </div>
             <div class="module-info">
-                <span><i class="fas fa-book-open"></i> Modül 1: Düşey Doğru Testi</span>
+                <span><i class="fas fa-book-open"></i> 1.Soru</span>
                 <span><i class="fas fa-clock"></i> ~10 dk</span>
             </div>
             <div class="relation-info">
-                Analiz Edilen Bağıntı: <span class="math">\( x = y^2 \)</span> 
+               Grafiği Verilen İfade: <span class="math">\( x = y^2 \)</span> 
                 (<span class="math">\( \mathbb{R} \to \mathbb{R} \)</span>)
             </div>
         </header>
         
         <div class="content">
-            <div class="instructions">
-                <h2><i class="fas fa-info-circle"></i> Yönergeler</h2>
-                <p><strong>\( x = y^2 \)</strong> bağıntısının fonksiyon olup olmadığını düşey doğru testi ile inceleyeceğiz.</p>
-                
-                <h3>Düşey Doğru Testi Nasıl Uygulanır?</h3>
-                <ol>
-                    <li><strong>Düşey Doğru Testi sürgüsünü</strong> sağa ve sola hareket ettirin</li>
-                    <li>Düşey doğrunun (mavi çizgi) grafiği kaç noktada kestiğine dikkat edin</li>
-                    <li><strong>Bir x değeri için birden fazla y değeri</strong> varsa fonksiyon değildir</li>
-                    <li><strong>Her x değeri için en fazla bir y değeri</strong> varsa fonksiyondur</li>
-                    <li>Özellikle pozitif x değerlerinde (sağ tarafta) kesişim noktalarını gözlemleyin</li>
-                </ol>
-                
-                <div class="tip">
-                    <p><strong><i class="fas fa-lightbulb"></i> İpucu:</strong> x > 0 değerlerinde düşey doğru grafiği kaç noktada kesiyor?</p>
-                </div>
-            </div>
+
             
             <div class="geogebra-container">
-                <h3><i class="fas fa-chart-line"></i> İnteraktif Uygulama</h3>
+                <div class="geogebra-header">
+                    <h3><i class="fas fa-chart-line"></i> İnteraktif Uygulama</h3>
+                    <button class="how-to-btn" id="how-to-btn">
+                        <i class="fas fa-question-circle"></i> Nasıl Kullanılır?
+                    </button>
+                </div>
                 <p>\( x = y^2 \) Bağıntısı ve Düşey Doğru Testi</p>
                 <div class="iframe-wrapper">
                     <iframe scrolling="no" title="x=y^2 bağıntısı" src="https://www.geogebra.org/material/iframe/id/ydhbwq8r/width/600/height/500/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false" allowfullscreen></iframe>
@@ -391,16 +499,15 @@
             </div>
             
             <div class="question-section">
-                <h3><i class="fas fa-question-circle"></i> Değerlendirme</h3>
+                <h3><i class="fas fa-question-circle"></i> Soru:</h3>
                 <div class="question">
-                    \( \mathbb{R} \to \mathbb{R} \) tanımlı \( x = y^2 \) bağıntısı bir fonksiyon mudur?
+                   Grafikte mavi ile gösterilen \( \mathbb{R} \to \mathbb{R} \) tanımlı \( x = y^2 \)ifadesi bir fonksiyon mudur?
                 </div>
                 
                 <div class="options">
-                    <div class="option" data-value="yes">Evet, fonksiyondur</div>
-                    <div class="option" data-value="no">Hayır, fonksiyon değildir</div>
+                    <div class="option" data-value="yes">Evet, fonksiyondur.</div>
+                    <div class="option" data-value="no">Hayır, fonksiyon değildir.</div>
                 </div>
-                
                 <div class="feedback correct">
                     <i class="fas fa-check-circle"></i> Doğru cevap! \( x = y^2 \) bağıntısı bir fonksiyon değildir.
                 </div>
@@ -425,7 +532,6 @@
         </div>
         
         <footer>
-            <p>Fonksiyon Kavramı Öğrenme Modülleri &copy; 2023 | Matematik Eğitim Teknolojileri</p>
             <div class="module-nav">
                 <button class="module-nav-btn active">1</button>
                 <button class="module-nav-btn">2</button>
@@ -434,6 +540,38 @@
                 <button class="module-nav-btn">5</button>
             </div>
         </footer>
+    </div>
+    
+    <!-- Nasıl Kullanılır Modal -->
+    <div class="modal" id="how-to-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-question-circle"></i> Nasıl Kullanılır?</h2>
+                <button class="close-modal" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-instructions">
+                <h3>Düşey Doğru Testi Nasıl Uygulanır?</h3>
+                <ol>
+                    <li><strong>Düşey Doğru Testi sürgüsünü</strong> sağa ve sola hareket ettirin</li>
+                    <li>Düşey doğrunun (mavi çizgi) grafiği kaç noktada kestiğine dikkat edin</li>
+                    <li><strong>Bir x değeri için birden fazla y değeri</strong> varsa fonksiyon değildir</li>
+                    <li><strong>Her x değeri için en fazla bir y değeri</strong> varsa fonksiyondur</li>
+                    <li>Özellikle pozitif x değerlerinde (sağ tarafta) kesişim noktalarını gözlemleyin</li>
+                </ol>
+                
+                <div class="modal-tip">
+                    <p><strong><i class="fas fa-lightbulb"></i> İpucu:</strong> x > 0 değerlerinde düşey doğru grafiği kaç noktada kesiyor? Bu bilgi size bağıntının fonksiyon olup olmadığı konusunda ipucu verecektir.</p>
+                </div>
+                
+                <h3>Uygulama Özellikleri</h3>
+                <ul>
+                    <li>Sürgüyü istediğiniz hızda hareket ettirebilirsiniz</li>
+                    <li>Grafik üzerindeki noktaların koordinatlarını görmek için üzerlerine tıklayabilirsiniz</li>
+                    <li>Grafiği yakınlaştırmak için fare tekerleğini kullanabilirsiniz</li>
+                    <li>Grafiği taşımak için tıklayıp sürükleyebilirsiniz</li>
+                </ul>
+            </div>
+        </div>
     </div>
     
     <script>
@@ -486,6 +624,35 @@
             nextButton.addEventListener('click', function() {
                 alert('Sonraki modüle geçiliyor...');
                 // Burada sonraki modülün yüklenmesi sağlanacak
+            });
+            
+            // Nasıl Kullanılır Modal İşlevselliği
+            const howToBtn = document.getElementById('how-to-btn');
+            const howToModal = document.getElementById('how-to-modal');
+            const closeModal = document.getElementById('close-modal');
+            
+            // Modal açma
+            howToBtn.addEventListener('click', function() {
+                howToModal.style.display = 'flex';
+            });
+            
+            // Modal kapatma
+            closeModal.addEventListener('click', function() {
+                howToModal.style.display = 'none';
+            });
+            
+            // Modal dışına tıklayarak kapatma
+            window.addEventListener('click', function(event) {
+                if (event.target === howToModal) {
+                    howToModal.style.display = 'none';
+                }
+            });
+            
+            // ESC tuşu ile kapatma
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    howToModal.style.display = 'none';
+                }
             });
         });
     </script>
