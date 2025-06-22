@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fonksiyon Kavramı Değerlendirme Testi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background-color: rgba(255, 255, 255, 0.98);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        header {
+            background: linear-gradient(to right, #1a2a6c, #b21f1f);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .logo i {
+            font-size: 1.8rem;
+            color: #FFD700;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .module-info {
+            display: flex;
+            justify-content: space-between;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .relation-info {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 8px;
+            border-radius: 5px;
+            margin-top: 8px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        
+        .math {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #FFD700;
+        }
+        
+        .content {
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            min-height: 500px;
+        }
+        
+        .instructions {
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #1a2a6c;
+        }
+        
+        .instructions h2 {
+            color: #1a2a6c;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .instructions h2 i {
+            color: #b21f1f;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+            font-size: 0.95rem;
+        }
+        
+        .instructions li strong {
+            color: #1a2a6c;
+        }
+        
+        .geogebra-container {
+            background-color: #e9ecef;
+            padding: 5px;
+            border-radius: 2px;
+            text-align: center;
+        }
+        
+        .geogebra-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .geogebra-header h3 {
+            color: #1a2a6c;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        .how-to-btn {
+            background: linear-gradient(to right, #1a2a6c, #3a5fc5);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .how-to-btn:hover {
+            background: linear-gradient(to right, #0d1b4d, #2a4bbd);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .how-to-btn i {
+            font-size: 0.9rem;
+        }
+        
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 83.33%;
+            margin: 0 auto;
+            overflow: hidden;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        /* Fonksiyon Özellikleri Bölümü */
+        .properties-section {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border-top: 3px solid #1a2a6c;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .properties-section h3 {
+            color: #1a2a6c;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .property-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .property-card h4 {
+            color: #1a2a6c;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .property-card h4 i {
+            color: #b21f1f;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .option {
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .option:hover {
+            background-color: #e9ecef;
+        }
+        
+        .option.selected {
+            background-color: #1a2a6c;
+            color: white;
+            border-color: #1a2a6c;
+            box-shadow: 0 4px 8px rgba(26, 42, 108, 0.2);
+        }
+        
+        .feedback {
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* Ana Soru Bölümü */
+        .question-section {
+            grid-column: 1 / -1;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border-top: 3px solid #b21f1f;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .question-section h3 {
+            color: #b21f1f;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .question {
+            font-size: 1.05rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #1a2a6c;
+            text-align: center;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-check {
+            background: linear-gradient(to right, #1a2a6c, #3a5fc5);
+            color: white;
+        }
+        
+        .btn-check:hover:not(:disabled) {
+            background: linear-gradient(to right, #0d1b4d, #2a4bbd);
+            transform: translateY(-2px);
+        }
+        
+        .btn-next {
+            background: linear-gradient(to right, #b21f1f, #d9534f);
+            color: white;
+        }
+        
+        .btn-next:hover:not(:disabled) {
+            background: linear-gradient(to right, #8a1919, #c9302c);
+            transform: translateY(-2px);
+        }
+        
+        .btn-finish {
+            background: linear-gradient(to right, #28a745, #4caf50);
+            color: white;
+        }
+        
+        .btn-finish:hover:not(:disabled) {
+            background: linear-gradient(to right, #218838, #3d9140);
+            transform: translateY(-2px);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #1a2a6c;
+            color: white;
+            font-size: 0.85rem;
+        }
+        
+        .module-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .module-nav-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        
+        .module-nav-btn:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .module-nav-btn.active {
+            background-color: #FFD700;
+            color: #1a2a6c;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1a2a6c;
+        }
+        
+        .modal-header h2 {
+            color: #1a2a6c;
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: #b21f1f;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            transform: scale(1.2);
+            color: #8a1919;
+        }
+        
+        .modal-instructions {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid #1a2a6c;
+        }
+        
+        .modal-instructions ol {
+            padding-left: 25px;
+            margin: 15px 0;
+        }
+        
+        .modal-instructions li {
+            margin-bottom: 12px;
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+        
+        .modal-instructions li strong {
+            color: #1a2a6c;
+        }
+        
+        .modal-tip {
+            background-color: #fffde7;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #ffd600;
+            margin-top: 15px;
+        }
+        
+        /* Özellikler için özel stiller */
+        .property-card .math {
+            color: #1a2a6c;
+            font-size: 1rem;
+        }
+        
+        .answer-summary {
+            background-color: #e2f0ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .answer-summary h4 {
+            color: #1a2a6c;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .answer-summary ul {
+            padding-left: 20px;
+        }
+        
+        .answer-summary li {
+            margin-bottom: 8px;
+        }
+        
+        /* Sonuç Ekranı */
+        .result-container {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+        
+        .result-header {
+            font-size: 2rem;
+            color: #1a2a6c;
+            margin-bottom: 20px;
+        }
+        
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: conic-gradient(#4caf50 0% var(--percentage), #f0f0f0 var(--percentage) 100%);
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .score-value {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #1a2a6c;
+        }
+        
+        .score-text {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .module-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .module-result-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            text-align: center;
+        }
+        
+        .module-result-card h4 {
+            color: #1a2a6c;
+            margin-bottom: 10px;
+        }
+        
+        .module-score {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #b21f1f;
+        }
+        
+        .restart-btn {
+            background: linear-gradient(to right, #1a2a6c, #3a5fc5);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .restart-btn:hover {
+            background: linear-gradient(to right, #0d1b4d, #2a4bbd);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* Modül İçerikleri */
+        .module-content {
+            display: none;
+        }
+        
+        .module-content.active {
+            display: block;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #1a2a6c, #b21f1f);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #1a2a6c;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-function"></i>
+                <div>
+                    <h1>Fonksiyon Kavramı Değerlendirme Testi</h1>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div class="progress-text" id="progress-text">Tamamlanma: 0%</div>
+        </header>
+        
+        <div class="content">
+            <!-- Modül 1 -->
+            <div class="module-content active" id="mod1">
+                <div class="module-info">
+                    <span><i class="fas fa-book-open"></i> 1. Soru</span>
+                    <span><i class="fas fa-clock"></i> ~10 dk</span>
+                </div>
+                <div class="relation-info">
+                   Grafiği Verilen İfade: <span class="math">\( x = y^2 \)</span> 
+                    (<span class="math">\( \mathbb{R} \to \mathbb{R} \)</span>)
+                </div>
+                
+                <div class="instructions">
+                    <h2><i class="fas fa-info-circle"></i> Yönergeler:</h2>
+                    <ol>
+                        <li><strong>Düşey Doğru Testi sürgüsünü</strong> sağa ve sola hareket ettirin</li>
+                        <li>Düşey doğrunun (mavi çizgi) grafiği kaç noktada kestiğine dikkat edin</li>
+                        <li><strong>Bir x değeri için birden fazla y değeri</strong> varsa fonksiyon değildir</li>
+                        <li><strong>Her x değeri için en fazla bir y değeri</strong> varsa fonksiyondur</li>
+                        <li>Özellikle pozitif x değerlerinde kesişim noktalarını gözlemleyin</li>
+                    </ol>
+                </div>
+                
+                <div class="geogebra-container">
+                    <div class="geogebra-header">
+                        <h3><i class="fas fa-chart-line"></i> İnteraktif Uygulama</h3>
+                        <button class="how-to-btn" id="how-to-btn1">
+                            <i class="fas fa-question-circle"></i> Nasıl Kullanılır?
+                        </button>
+                    </div>
+                    <p>\( x = y^2 \) Bağıntısı ve Düşey Doğru Testi</p>
+                    <div class="iframe-wrapper">
+                        <iframe scrolling="no" title="x=y^2 bağıntısı" src="https://www.geogebra.org/material/iframe/id/ydhbwq8r/width/600/height/500/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false" allowfullscreen></iframe>
+                    </div>
+                </div>
+                
+                <div class="question-section">
+                    <h3><i class="fas fa-question-circle"></i> Soru:</h3>
+                    <div class="question">
+                       Grafikte mavi ile gösterilen \( \mathbb{R} \to \mathbb{R} \) tanımlı \( x = y^2 \) ifadesi bir fonksiyon mudur?
+                    </div>
+                    
+                    <div class="options">
+                        <div class="option" data-value="yes">Evet, fonksiyondur.</div>
+                        <div class="option" data-value="no">Hayır, fonksiyon değildir.</div>
+                    </div>
+                    <div class="feedback correct" id="mod1-correct">
+                        <i class="fas fa-check-circle"></i> Doğru cevap! \( x = y^2 \) bağıntısı bir fonksiyon değildir.
+                    </div>
+                    
+                    <div class="feedback incorrect" id="mod1-incorrect">
+                        <i class="fas fa-times-circle"></i> Yanlış cevap. Lütfen tekrar deneyin.
+                    </div>
+                    
+                    <div class="explanation" id="mod1-explanation">
+                        <p><strong>Açıklama:</strong> \( x = y^2 \) bağıntısı fonksiyon değildir çünkü her pozitif x değeri için iki farklı y değeri (\( y = \sqrt{x} \) ve \( y = -\sqrt{x} \)) bulunur. Düşey doğru testinde, x > 0 değerleri için düşey doğru grafiği iki noktada kesmektedir. Bir bağıntının fonksiyon olabilmesi için her x değerine karşılık en fazla bir y değeri olmalıdır.</p>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button class="btn btn-check" id="check-mod1">
+                            <i class="fas fa-check"></i> Kontrol Et
+                        </button>
+                        <button class="btn btn-next" id="next-mod1" disabled>
+                            <i class="fas fa-arrow-right"></i> Sonraki Soru
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modül 2 -->
+            <div class="module-content" id="mod2">
+                <div class="module-info">
+                    <span><i class="fas fa-book-open"></i> 2. Soru</span>
+                    <span><i class="fas fa-clock"></i> ~15 dk</span>
+                </div>
+                <div class="relation-info">
+                   Grafiği Verilen İfade: <span class="math">\( y = 2x - 3 \)</span> 
+                    (<span class="math">\( \mathbb{R} \to \mathbb{R} \)</span>)
+                </div>
+                
+                <div class="instructions">
+                    <h2><i class="fas fa-info-circle"></i> Yönergeler</h2>
+                    <p><strong>\( y = 2x - 3 \)</strong> ifadesinin fonksiyon olup olmadığını düşey doğru testi ile inceleyeceğiz ve fonksiyonun temel özelliklerini analiz edeceğiz.</p>
+                    
+                    <h3>Fonksiyon Özellikleri Nasıl Analiz Edilir?</h3>
+                    <ol>
+                        <li><strong>Tanım kümesi:</strong> Fonksiyonun tanımlı olduğu x değerleri</li>
+                        <li><strong>Görüntü kümesi:</strong> Fonksiyonun alabileceği y değerleri</li>
+                        <li><strong>Sıfır noktası:</strong> Fonksiyonun y = 0 yaptığı x değeri</li>
+                        <li><strong>Artış/azalış:</strong> Fonksiyonun hangi aralıklarda arttığı veya azaldığı</li>
+                        <li><strong>Pozitif/negatif:</strong> Fonksiyonun hangi aralıklarda pozitif/negatif olduğu</li>
+                        <li><strong>Doğrusal/karesel:</strong> Fonksiyonun tipinin belirlenmesi</li>
+                        <li><strong>Bire bir olma:</strong> Farklı x değerlerinin farklı y değerleri vermesi</li>
+                    </ol>
+                    
+                    <div class="tip">
+                        <p><strong><i class="fas fa-lightbulb"></i> İpucu:</strong> Grafiği dikkatlice inceleyin ve fonksiyonun davranışını gözlemleyin.</p>
+                    </div>
+                </div>
+                
+                <div class="geogebra-container">
+                    <div class="geogebra-header">
+                        <h3><i class="fas fa-chart-line"></i> İnteraktif Uygulama</h3>
+                        <button class="how-to-btn" id="how-to-btn2">
+                            <i class="fas fa-question-circle"></i> Nasıl Kullanılır?
+                        </button>
+                    </div>
+                    <p>\( y = 2x - 3 \) Bağıntısı ve Düşey Doğru Testi</p>
+                    <div class="iframe-wrapper">
+                        <iframe scrolling="no" title="y=2x-3" src="https://www.geogebra.org/material/iframe/id/cmxz8vep/width/600/height/500/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/true/rc/false/ld/false/sdz/false/ctl/false" width="600px" height="500px" style="border:0px;" allowfullscreen></iframe>
+                    </div>
+                </div>
+                
+                <!-- Ana Soru Bölümü -->
+                <div class="question-section">
+                    <h3><i class="fas fa-question-circle"></i> Temel Soru:</h3>
+                    <div class="question">
+                       Grafikte gösterilen \( \mathbb{R} \to \mathbb{R} \) tanımlı \( y = 2x - 3 \) ifadesi bir fonksiyon mudur?
+                    </div>
+                    
+                    <div class="options">
+                        <div class="option" data-value="yes">Evet, fonksiyondur.</div>
+                        <div class="option" data-value="no">Hayır, fonksiyon değildir.</div>
+                    </div>
+                    <div class="feedback correct" id="mod2-main-correct">
+                        <i class="fas fa-check-circle"></i> Doğru cevap! \( y = 2x - 3 \) bağıntısı bir fonksiyondur. <br>
+                        Şimdi fonksiyonun özelliklerini inceleyebilirsiniz.
+                    </div>
+                    
+                    <div class="feedback incorrect" id="mod2-main-incorrect">
+                        <i class="fas fa-times-circle"></i> Yanlış cevap. Lütfen tekrar deneyin.
+                    </div>
+                    
+                    <div class="explanation" id="mod2-explanation">
+                        <p><strong>Açıklama:</strong> \( y = 2x - 3 \) bağıntısı bir fonksiyondur çünkü her x değeri için tam olarak bir y değeri bulunur. Düşey doğru testinde, her düşey doğru grafiği sadece bir noktada kesmektedir. Bir bağıntının fonksiyon olabilmesi için her x değerine karşılık en fazla bir y değeri olmalıdır. Bu durumda, her x değeri için tam olarak bir y değeri vardır.</p>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button class="btn btn-check" id="check-main-mod2">
+                            <i class="fas fa-check"></i> Kontrol Et
+                        </button>
+                        <button class="btn btn-next" id="next-mod2" disabled>
+                            <i class="fas fa-arrow-right"></i> Sonraki Soru
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modül 3 -->
+            <div class="module-content" id="mod3">
+                <div class="module-info">
+                    <span><i class="fas fa-book-open"></i> 3. Soru</span>
+                    <span><i class="fas fa-clock"></i> ~10 dk</span>
+                </div>
+                <div class="relation-info">
+                   Grafiği Verilen İfade: <span class="math">\( x^2 + y^2 = 9 \)</span> 
+                    (<span class="math">\( \mathbb{R} \to \mathbb{R} \)</span>)
+                </div>
+                
+                <div class="instructions">
+                    <h2><i class="fas fa-info-circle"></i> Yönergeler:</h2>
+                    <ol>
+                        <li><strong>Düşey Doğru Testi sürgüsünü</strong> sağa ve sola hareket ettirin</li>
+                        <li>Düşey doğrunun (mavi çizgi) grafiği kaç noktada kestiğine dikkat edin</li>
+                        <li><strong>Bir x değeri için birden fazla y değeri</strong> varsa fonksiyon değildir</li>
+                        <li><strong>Her x değeri için en fazla bir y değeri</strong> varsa fonksiyondur</li>
+                        <li>Özellikle -3 ile 3 arasındaki x değerlerinde kesişim noktalarını gözlemleyin</li>
+                    </ol>
+                </div>
+                
+                <div class="geogebra-container">
+                    <div class="geogebra-header">
+                        <h3><i class="fas fa-chart-line"></i> İnteraktif Uygulama</h3>
+                        <button class="how-to-btn" id="how-to-btn3">
+                            <i class="fas fa-question-circle"></i> Nasıl Kullanılır?
+                        </button>
+                    </div>
+                    <p>\( x^2 + y^2 = 9 \) Bağıntısı ve Düşey Doğru Testi</p>
+                    <div class="iframe-wrapper">
+                        <iframe scrolling="no" title="x^2+y^2=9" src="https://www.geogebra.org/material/iframe/id/nesbpsux/width/600/height/500/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/true/rc/false/ld/false/sdz/f false/ctl/false" allowfullscreen></iframe>
+                    </div>
+                </div>
+                
+                <div class="question-section">
+                    <h3><i class="fas fa-question-circle"></i> Soru:</h3>
+                    <div class="question">
+                       Grafikte gösterilen \( \mathbb{R} \to \mathbb{R} \) tanımlı \( x^2 + y^2 = 9 \) ifadesi bir fonksiyon mudur?
+                    </div>
+                    
+                    <div class="options">
+                        <div class="option" data-value="yes">Evet, fonksiyondur.</div>
+                        <div class="option" data-value="no">Hayır, fonksiyon değildir.</div>
+                    </div>
+                    <div class="feedback correct" id="mod3-correct">
+                        <i class="fas fa-check-circle"></i> Doğru cevap! \( x^2 + y^2 = 9 \) bağıntısı bir fonksiyon değildir.
+                    </div>
+                    
+                    <div class="feedback incorrect" id="mod3-incorrect">
+                        <i class="fas fa-times-circle"></i> Yanlış cevap. Lütfen tekrar deneyin.
+                    </div>
+                    
+                    <div class="explanation" id="mod3-explanation">
+                        <p><strong>Açıklama:</strong> \( x^2 + y^2 = 9 \) bağıntısı fonksiyon değildir çünkü bu bir çember denklemidir. Örneğin, x=0 değeri için y=3 ve y=-3 olmak üzere iki farklı y değeri vardır. Düşey doğru testinde, -3 &lt; x &lt; 3 aralığındaki x değerleri için düşey doğru grafiği iki noktada kesmektedir. Bir bağıntının fonksiyon olabilmesi için her x değerine karşılık en fazla bir y değeri olmalıdır.</p>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button class="btn btn-check" id="check-mod3">
+                            <i class="fas fa-check"></i> Kontrol Et
+                        </button>
+                        <button class="btn btn-next" id="next-mod3" disabled>
+                            <i class="fas fa-arrow-right"></i> Sonraki Soru
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modül 4 -->
+            <div class="module-content" id="mod4">
+                <div class="module-info">
+                    <span><i class="fas fa-book-open"></i> 4. Soru</span>
+                    <span><i class="fas fa-clock"></i> ~20 dk</span>
+                </div>
+                <div class="relation-info">
+                   Grafiği Verilen İfade: <span class="math">\( y = (x-2)^2 - 1 \)</span> 
+                    (<span class="math">\( \mathbb{R} \to \mathbb{R} \)</span>)
+                </div>
+                
+                <div class="instructions">
+                    <h2><i class="fas fa-info-circle"></i> Yönergeler</h2>
+                    <p><strong>\( y = (x-2)^2 - 1 \)</strong> ifadesinin fonksiyon olup olmadığını düşey doğru testi ile inceleyeceğiz ve fonksiyonun temel özelliklerini analiz edeceğiz.</p>
+                    
+                    <h3>Fonksiyon Özellikleri Nasıl Analiz Edilir?</h3>
+                    <ol>
+                        <li><strong>Tanım kümesi:</strong> Fonksiyonun tanımlı olduğu x değerleri</li>
+                        <li><strong>Görüntü kümesi:</strong> Fonksiyonun alabileceği y değerleri</li>
+                        <li><strong>Sıfır noktası:</strong> Fonksiyonun y = 0 yaptığı x değerleri</li>
+                        <li><strong>Tepe noktası:</strong> Fonksiyonun maksimum veya minimum noktası</li>
+                        <li><strong>Artış/azalış:</strong> Fonksiyonun hangi aralıklarda arttığı veya azaldığı</li>
+                        <li><strong>Pozitif/negatif:</strong> Fonksiyonun hangi aralıklarda pozitif/negatif olduğu</li>
+                        <li><strong>Doğrusal/karesel:</strong> Fonksiyonun tipinin belirlenmesi</li>
+                        <li><strong>Bire bir olma:</strong> Farklı x değerlerinin farklı y değerleri vermesi</li>
+                        <li><strong>Örten olma:</strong> Görüntü kümesinin tüm reel sayılar olması</li>
+                    </ol>
+                    
+                    <div class="tip">
+                        <p><strong><i class="fas fa-lightbulb"></i> İpucu:</strong> Grafiği dikkatlice inceleyin ve fonksiyonun parabolik davranışını gözlemleyin.</p>
+                    </div>
+                </div>
+                
+                <div class="geogebra-container">
+                    <div class="geogebra-header">
+                        <h3><i class="fas fa-chart-line"></i> İnteraktif Uygulama</h3>
+                        <button class="how-to-btn" id="how-to-btn4">
+                            <i class="fas fa-question-circle"></i> Nasıl Kullanılır?
+                        </button>
+                    </div>
+                    <p>\( y = (x-2)^2 - 1 \) Bağıntısı ve Düşey Doğru Testi</p>
+                    <div class="iframe-wrapper">
+                        <iframe scrolling="no" title="y=(x-2)^2-1" src="https://www.geogebra.org/material/iframe/id/hnaejbqt/width/600/height/500/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/true/rc/false/ld/false/sdz/false/ctl/false" width="600px" height="500px" style="border:0px;" allowfullscreen></iframe>
+                    </div>
+                </div>
+                
+                <!-- Ana Soru Bölümü -->
+                <div class="question-section">
+                    <h3><i class="fas fa-question-circle"></i> Temel Soru:</h3>
+                    <div class="question">
+                       Grafikte gösterilen \( \mathbb{R} \to \mathbb{R} \) tanımlı \( y = (x-2)^2 - 1 \) ifadesi bir fonksiyon mudur?
+                    </div>
+                    
+                    <div class="options">
+                        <div class="option" data-value="yes">Evet, fonksiyondur.</div>
+                        <div class="option" data-value="no">Hayır, fonksiyon değildir.</div>
+                    </div>
+                    <div class="feedback correct" id="mod4-main-correct">
+                        <i class="fas fa-check-circle"></i> Doğru cevap! \( y = (x-2)^2 - 1 \) bağıntısı bir fonksiyondur. <br>
+                        Şimdi fonksiyonun özelliklerini inceleyebilirsiniz.
+                    </div>
+                    
+                    <div class="feedback incorrect" id="mod4-main-incorrect">
+                        <i class="fas fa-times-circle"></i> Yanlış cevap. Lütfen tekrar deneyin.
+                    </div>
+                    
+                    <div class="explanation" id="mod4-explanation">
+                        <p><strong>Açıklama:</strong> \( y = (x-2)^2 - 1 \) bağıntısı bir fonksiyondur çünkü her x değeri için tam olarak bir y değeri bulunur. Düşey doğru testinde, her düşey doğru grafiği sadece bir noktada kesmektedir. Bir bağıntının fonksiyon olabilmesi için her x değerine karşılık en fazla bir y değeri olmalıdır. Bu durumda, her x değeri için tam olarak bir y değeri vardır.</p>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button class="btn btn-check" id="check-main-mod4">
+                            <i class="fas fa-check"></i> Kontrol Et
+                        </button>
+                        <button class="btn btn-next" id="next-mod4" disabled>
+                            <i class="fas fa-arrow-right"></i> Sonraki Soru
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modül 5 -->
+            <div class="module-content" id="mod5">
+                <div class="module-info">
+                    <span><i class="fas fa-book-open"></i> 5. Soru</span>
+                    <span><i class="fas fa-clock"></i> ~20 dk</span>
+                </div>
+                <div class="relation-info">
+                   Grafiği Verilen İfade: <span class="math">\( f(x) = \frac{1}{4}(x-1)^2 - 5 \)</span> 
+                    (<span class="math">\( [-2, 3] \to \mathbb{R} \)</span>)
+                </div>
+                
+                <div class="instructions">
+                    <h2><i class="fas fa-info-circle"></i> Yönergeler</h2>
+                    <p><strong>\( f(x) = \frac{1}{4}(x-1)^2 - 5 \)</strong> ifadesinin fonksiyon olup olmadığını düşey doğru testi ile inceleyeceğiz ve fonksiyonun temel özelliklerini analiz edeceğiz.</p>
+                    
+                    <h3>Fonksiyon Özellikleri Nasıl Analiz Edilir?</h3>
+                    <ol>
+                        <li><strong>Tanım kümesi:</strong> Fonksiyonun tanımlı olduğu x değerleri</li>
+                        <li><strong>Görüntü kümesi:</strong> Fonksiyonun alabileceği y değerleri</li>
+                        <li><strong>Sıfır noktası:</strong> Fonksiyonun y = 0 yaptığı x değerleri</li>
+                        <li><strong>Tepe noktası:</strong> Fonksiyonun maksimum veya minimum noktası</li>
+                        <li><strong>Artış/azalış:</strong> Fonksiyonun hangi aralıklarda arttığı veya azaldığı</li>
+                        <li><strong>Pozitif/negatif:</strong> Fonksiyonun hangi aralıklarda pozitif/negatif olduğu</li>
+                        <li><strong>Doğrusal/karesel:</strong> Fonksiyonun tipinin belirlenmesi</li>
+                        <li><strong>Bire bir olma:</strong> Farklı x değerlerinin farklı y değerleri vermesi</li>
+                        <li><strong>Örten olma:</strong> Görüntü kümesinin tüm reel sayılar olması</li>
+                    </ol>
+                    
+                    <div class="tip">
+                        <p><strong><i class="fas fa-lightbulb"></i> İpucu:</strong> Grafiği dikkatlice inceleyin ve fonksiyonun parabolik davranışını gözlemleyin. Tanım kümesinin kısıtlı olduğuna dikkat edin.</p>
+                    </div>
+                </div>
+                
+                <div class="geogebra-container">
+                    <div class="geogebra-header">
+                        <h3><i class="fas fa-chart-line"></i> İnteraktif Uygulama</h3>
+                        <button class="how-to-btn" id="how-to-btn5">
+                            <i class="fas fa-question-circle"></i> Nasıl Kullanılır?
+                        </button>
+                    </div>
+                    <p>\( f(x) = \frac{1}{4}(x-1)^2 - 5 \) Bağıntısı ve Düşey Doğru Testi</p>
+                    <div class="iframe-wrapper">
+                        <iframe scrolling="no" title="1/4(x-1)^2-5" src="https://www.geogebra.org/material/iframe/id/xrgywwx9/width/600/height/500/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/true/rc/false/ld/false/sdz/false/ctl/false" width="600px" height="500px" style="border:0px;"></iframe>
+                    </div>
+                </div>
+                
+                <!-- Ana Soru Bölümü -->
+                <div class="question-section">
+                    <h3><i class="fas fa-question-circle"></i> Temel Soru:</h3>
+                    <div class="question">
+                       Grafikte gösterilen \( [-2, 3] \to \mathbb{R} \) tanımlı \( f(x) = \frac{1}{4}(x-1)^2 - 5 \) ifadesi bir fonksiyon mudur?
+                    </div>
+                    
+                    <div class="options">
+                        <div class="option" data-value="yes">Evet, fonksiyondur.</div>
+                        <div class="option" data-value="no">Hayır, fonksiyon değildir.</div>
+                    </div>
+                    <div class="feedback correct" id="mod5-main-correct">
+                        <i class="fas fa-check-circle"></i> Doğru cevap! \( f(x) = \frac{1}{4}(x-1)^2 - 5 \) bağıntısı bir fonksiyondur. <br>
+                        Şimdi fonksiyonun özelliklerini inceleyebilirsiniz.
+                    </div>
+                    
+                    <div class="feedback incorrect" id="mod5-main-incorrect">
+                        <i class="fas fa-times-circle"></i> Yanlış cevap. Lütfen tekrar deneyin.
+                    </div>
+                    
+                    <div class="explanation" id="mod5-explanation">
+                        <p><strong>Açıklama:</strong> \( f(x) = \frac{1}{4}(x-1)^2 - 5 \) bağıntısı bir fonksiyondur çünkü her x değeri için tam olarak bir y değeri bulunur. Düşey doğru testinde, her düşey doğru grafiği sadece bir noktada kesmektedir. Bir bağıntının fonksiyon olabilmesi için her x değerine karşılık en fazla bir y değeri olmalıdır. Bu durumda, her x değeri için tam olarak bir y değeri vardır.</p>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button class="btn btn-check" id="check-main-mod5">
+                            <i class="fas fa-check"></i> Kontrol Et
+                        </button>
+                        <button class="btn btn-finish" id="finish-btn" disabled>
+                            <i class="fas fa-flag-checkered"></i> Testi Bitir
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sonuç Ekranı -->
+            <div class="result-container" id="result-section">
+                <div class="result-header">
+                    <i class="fas fa-trophy"></i> Test Sonuçları
+                </div>
+                
+                <div class="score-circle" id="score-circle">
+                    <div class="score-value" id="total-score">0</div>
+                </div>
+                
+                <div class="score-text" id="score-message">
+                    Testi tamamladığınız için teşekkür ederiz!
+                </div>
+                
+                <div class="module-results">
+                    <div class="module-result-card">
+                        <h4>Soru 1</h4>
+                        <div class="module-score" id="mod1-score">0</div>
+                    </div>
+                    <div class="module-result-card">
+                        <h4>Soru 2</h4>
+                        <div class="module-score" id="mod2-score">0</div>
+                    </div>
+                    <div class="module-result-card">
+                        <h4>Soru 3</h4>
+                        <div class="module-score" id="mod3-score">0</div>
+                    </div>
+                    <div class="module-result-card">
+                        <h4>Soru 4</h4>
+                        <div class="module-score" id="mod4-score">0</div>
+                    </div>
+                    <div class="module-result-card">
+                        <h4>Soru 5</h4>
+                        <div class="module-score" id="mod5-score">0</div>
+                    </div>
+                </div>
+                
+                <button class="restart-btn" id="restart-btn">
+                    <i class="fas fa-redo"></i> Testi Yeniden Başlat
+                </button>
+            </div>
+        </div>
+        
+        <footer>
+            <div class="module-nav">
+                <button class="module-nav-btn active" data-module="1">1</button>
+                <button class="module-nav-btn" data-module="2">2</button>
+                <button class="module-nav-btn" data-module="3">3</button>
+                <button class="module-nav-btn" data-module="4">4</button>
+                <button class="module-nav-btn" data-module="5">5</button>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Nasıl Kullanılır Modal -->
+    <div class="modal" id="how-to-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-question-circle"></i> Nasıl Kullanılır?</h2>
+                <button class="close-modal" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-instructions">
+                <h3>Düşey Doğru Testi Nasıl Uygulanır?</h3>
+                <ol>
+                    <li><strong>Düşey Doğru Testi sürgüsünü</strong> sağa ve sola hareket ettirin</li>
+                    <li>Düşey doğrunun (mavi çizgi) grafiği kaç noktada kestiğine dikkat edin</li>
+                    <li><strong>Bir x değeri için birden fazla y değeri</strong> varsa fonksiyon değildir</li>
+                    <li><strong>Her x değeri için en fazla bir y değeri</strong> varsa fonksiyondur</li>
+                    <li>Özellikle pozitif x değerlerinde kesişim noktalarını gözlemleyin</li>
+                </ol>
+                
+                <div class="modal-tip">
+                    <p><strong><i class="fas fa-lightbulb"></i> İpucu:</strong> x > 0 değerlerinde düşey doğru grafiği kaç noktada kesiyor? Bu bilgi size bağıntının fonksiyon olup olmadığı konusunda ipucu verecektir.</p>
+                </div>
+                
+                <h3>Uygulama Özellikleri</h3>
+                <ul>
+                    <li>Sürgüyü istediğiniz hızda hareket ettirebilirsiniz</li>
+                    <li>Grafik üzerindeki noktaların koordinatlarını görmek için üzerlerine tıklayabilirsiniz</li>
+                    <li>Grafiği yakınlaştırmak için fare tekerleğini kullanabilirsiniz</li>
+                    <li>Grafiği taşımak için tıklayıp sürükleyebilirsiniz</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Puan durumu
+            const scores = {
+                mod1: 0,
+                mod2: 0,
+                mod3: 0,
+                mod4: 0,
+                mod5: 0
+            };
+            
+            // Mevcut modül
+            let currentModule = 1;
+            
+            // Modal kontrolü
+            const howToModal = document.getElementById('how-to-modal');
+            const closeModal = document.getElementById('close-modal');
+            
+            // Modal açma (tüm nasıl kullanılır butonları için)
+            document.querySelectorAll('.how-to-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    howToModal.style.display = 'flex';
+                });
+            });
+            
+            // Modal kapatma
+            closeModal.addEventListener('click', function() {
+                howToModal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', function(event) {
+                if (event.target === howToModal) {
+                    howToModal.style.display = 'none';
+                }
+            });
+            
+            // Modül navigasyon butonları
+            document.querySelectorAll('.module-nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const moduleNum = parseInt(this.getAttribute('data-module'));
+                    showModule(moduleNum);
+                });
+            });
+            
+            // Modül geçiş fonksiyonu
+            function showModule(moduleNum) {
+                // Tüm modülleri gizle
+                document.querySelectorAll('.module-content').forEach(mod => {
+                    mod.classList.remove('active');
+                });
+                
+                // İstenen modülü göster
+                document.getElementById(`mod${moduleNum}`).classList.add('active');
+                currentModule = moduleNum;
+                
+                // Navigasyon butonlarını güncelle
+                document.querySelectorAll('.module-nav-btn').forEach(btn => {
+                    if (parseInt(btn.getAttribute('data-module')) === moduleNum) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                
+                // İlerleme çubuğunu güncelle
+                updateProgress();
+            }
+            
+            // İlerleme çubuğunu güncelleme
+            function updateProgress() {
+                const progress = (currentModule / 5) * 100;
+                document.getElementById('progress-fill').style.width = `${progress}%`;
+                document.getElementById('progress-text').textContent = `Tamamlanma: ${progress}%`;
+            }
+            
+            // Modül 1
+            const mod1Options = document.querySelectorAll('#mod1 .option');
+            const checkMod1Btn = document.getElementById('check-mod1');
+            const nextMod1Btn = document.getElementById('next-mod1');
+            const mod1Correct = document.getElementById('mod1-correct');
+            const mod1Incorrect = document.getElementById('mod1-incorrect');
+            const mod1Explanation = document.getElementById('mod1-explanation');
+            
+            let mod1Selected = null;
+            
+            mod1Options.forEach(option => {
+                option.addEventListener('click', function() {
+                    mod1Options.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    mod1Selected = this.getAttribute('data-value');
+                    
+                    // Feedback'leri gizle
+                    mod1Correct.style.display = 'none';
+                    mod1Incorrect.style.display = 'none';
+                    mod1Explanation.style.display = 'none';
+                    
+                    checkMod1Btn.disabled = false;
+                });
+            });
+            
+            checkMod1Btn.addEventListener('click', function() {
+                if (mod1Selected === 'no') {
+                    mod1Correct.style.display = 'block';
+                    mod1Explanation.style.display = 'block';
+                    scores.mod1 = 20;
+                    nextMod1Btn.disabled = false;
+                } else {
+                    mod1Incorrect.style.display = 'block';
+                }
+            });
+            
+            nextMod1Btn.addEventListener('click', function() {
+                showModule(2);
+            });
+            
+            // Modül 2
+            const mod2Options = document.querySelectorAll('#mod2 .option');
+            const checkMod2Btn = document.getElementById('check-main-mod2');
+            const nextMod2Btn = document.getElementById('next-mod2');
+            const mod2Correct = document.getElementById('mod2-main-correct');
+            const mod2Incorrect = document.getElementById('mod2-main-incorrect');
+            const mod2Explanation = document.getElementById('mod2-explanation');
+            
+            let mod2Selected = null;
+            
+            mod2Options.forEach(option => {
+                option.addEventListener('click', function() {
+                    mod2Options.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    mod2Selected = this.getAttribute('data-value');
+                    
+                    // Feedback'leri gizle
+                    mod2Correct.style.display = 'none';
+                    mod2Incorrect.style.display = 'none';
+                    mod2Explanation.style.display = 'none';
+                    
+                    checkMod2Btn.disabled = false;
+                });
+            });
+            
+            checkMod2Btn.addEventListener('click', function() {
+                if (mod2Selected === 'yes') {
+                    mod2Correct.style.display = 'block';
+                    mod2Explanation.style.display = 'block';
+                    scores.mod2 = 20;
+                    nextMod2Btn.disabled = false;
+                } else {
+                    mod2Incorrect.style.display = 'block';
+                }
+            });
+            
+            nextMod2Btn.addEventListener('click', function() {
+                showModule(3);
+            });
+            
+            // Modül 3
+            const mod3Options = document.querySelectorAll('#mod3 .option');
+            const checkMod3Btn = document.getElementById('check-mod3');
+            const nextMod3Btn = document.getElementById('next-mod3');
+            const mod3Correct = document.getElementById('mod3-correct');
+            const mod3Incorrect = document.getElementById('mod3-incorrect');
+            const mod3Explanation = document.getElementById('mod3-explanation');
+            
+            let mod3Selected = null;
+            
+            mod3Options.forEach(option => {
+                option.addEventListener('click', function() {
+                    mod3Options.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    mod3Selected = this.getAttribute('data-value');
+                    
+                    // Feedback'leri gizle
+                    mod3Correct.style.display = 'none';
+                    mod3Incorrect.style.display = 'none';
+                    mod3Explanation.style.display = 'none';
+                    
+                    checkMod3Btn.disabled = false;
+                });
+            });
+            
+            checkMod3Btn.addEventListener('click', function() {
+                if (mod3Selected === 'no') {
+                    mod3Correct.style.display = 'block';
+                    mod3Explanation.style.display = 'block';
+                    scores.mod3 = 20;
+                    nextMod3Btn.disabled = false;
+                } else {
+                    mod3Incorrect.style.display = 'block';
+                }
+            });
+            
+            nextMod3Btn.addEventListener('click', function() {
+                showModule(4);
+            });
+            
+            // Modül 4
+            const mod4Options = document.querySelectorAll('#mod4 .option');
+            const checkMod4Btn = document.getElementById('check-main-mod4');
+            const nextMod4Btn = document.getElementById('next-mod4');
+            const mod4Correct = document.getElementById('mod4-main-correct');
+            const mod4Incorrect = document.getElementById('mod4-main-incorrect');
+            const mod4Explanation = document.getElementById('mod4-explanation');
+            
+            let mod4Selected = null;
+            
+            mod4Options.forEach(option => {
+                option.addEventListener('click', function() {
+                    mod4Options.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    mod4Selected = this.getAttribute('data-value');
+                    
+                    // Feedback'leri gizle
+                    mod4Correct.style.display = 'none';
+                    mod4Incorrect.style.display = 'none';
+                    mod4Explanation.style.display = 'none';
+                    
+                    checkMod4Btn.disabled = false;
+                });
+            });
+            
+            checkMod4Btn.addEventListener('click', function() {
+                if (mod4Selected === 'yes') {
+                    mod4Correct.style.display = 'block';
+                    mod4Explanation.style.display = 'block';
+                    scores.mod4 = 20;
+                    nextMod4Btn.disabled = false;
+                } else {
+                    mod4Incorrect.style.display = 'block';
+                }
+            });
+            
+            nextMod4Btn.addEventListener('click', function() {
+                showModule(5);
+            });
+            
+            // Modül 5
+            const mod5Options = document.querySelectorAll('#mod5 .option');
+            const checkMod5Btn = document.getElementById('check-main-mod5');
+            const finishBtn = document.getElementById('finish-btn');
+            const mod5Correct = document.getElementById('mod5-main-correct');
+            const mod5Incorrect = document.getElementById('mod5-main-incorrect');
+            const mod5Explanation = document.getElementById('mod5-explanation');
+            
+            let mod5Selected = null;
+            
+            mod5Options.forEach(option => {
+                option.addEventListener('click', function() {
+                    mod5Options.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    mod5Selected = this.getAttribute('data-value');
+                    
+                    // Feedback'leri gizle
+                    mod5Correct.style.display = 'none';
+                    mod5Incorrect.style.display = 'none';
+                    mod5Explanation.style.display = 'none';
+                    
+                    checkMod5Btn.disabled = false;
+                });
+            });
+            
+            checkMod5Btn.addEventListener('click', function() {
+                if (mod5Selected === 'yes') {
+                    mod5Correct.style.display = 'block';
+                    mod5Explanation.style.display = 'block';
+                    scores.mod5 = 20;
+                    finishBtn.disabled = false;
+                } else {
+                    mod5Incorrect.style.display = 'block';
+                }
+            });
+            
+            // Testi bitirme butonu
+            finishBtn.addEventListener('click', function() {
+                // Toplam puanı hesapla
+                const totalScore = scores.mod1 + scores.mod2 + scores.mod3 + scores.mod4 + scores.mod5;
+                
+                // Sonuç ekranını göster
+                document.querySelectorAll('.module-content').forEach(mod => {
+                    mod.classList.remove('active');
+                });
+                const resultSection = document.getElementById('result-section');
+                resultSection.style.display = 'block';
+                
+                // Puanları güncelle
+                document.getElementById('total-score').textContent = totalScore;
+                document.getElementById('mod1-score').textContent = `${scores.mod1}/20`;
+                document.getElementById('mod2-score').textContent = `${scores.mod2}/20`;
+                document.getElementById('mod3-score').textContent = `${scores.mod3}/20`;
+                document.getElementById('mod4-score').textContent = `${scores.mod4}/20`;
+                document.getElementById('mod5-score').textContent = `${scores.mod5}/20`;
+                
+                // Puan çemberini güncelle
+                const scoreCircle = document.getElementById('score-circle');
+                scoreCircle.style.setProperty('--percentage', `${totalScore}%`);
+                
+                // Puan mesajını ayarla
+                const scoreMessage = document.getElementById('score-message');
+                if (totalScore >= 80) {
+                    scoreMessage.innerHTML = '<i class="fas fa-star"></i> Mükemmel! Fonksiyon kavramını çok iyi anlamışsınız.';
+                } else if (totalScore >= 60) {
+                    scoreMessage.innerHTML = '<i class="fas fa-thumbs-up"></i> İyi iş çıkardınız! Konuyu anlamışsınız.';
+                } else if (totalScore >= 40) {
+                    scoreMessage.innerHTML = '<i class="fas fa-check"></i> Orta düzeyde başarı gösterdiniz. Daha fazla çalışmanız önerilir.';
+                } else {
+                    scoreMessage.innerHTML = '<i class="fas fa-book"></i> Konuyu tekrar çalışmanız faydalı olacaktır.';
+                }
+            });
+            
+            // Yeniden başlat butonu
+            document.getElementById('restart-btn').addEventListener('click', function() {
+                // Puanları sıfırla
+                for (let key in scores) {
+                    scores[key] = 0;
+                }
+                
+                // Tüm seçimleri sıfırla
+                document.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Tüm feedback'leri gizle
+                document.querySelectorAll('.feedback, .explanation').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                // Butonları sıfırla
+                document.querySelectorAll('.btn-check, .btn-next, .btn-finish').forEach(btn => {
+                    btn.disabled = true;
+                });
+                
+                // Modül 1'e dön
+                showModule(1);
+                
+                // Sonuç ekranını gizle
+                document.getElementById('result-section').style.display = 'none';
+            });
+            
+            // İlk modülü göster
+            showModule(1);
+        });
+    </script>
+</body>
+</html>
