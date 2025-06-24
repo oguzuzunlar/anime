@@ -97,7 +97,6 @@
         }
         
         .encouragement {
-            font-style: italic;
             margin-top: 20px;
             padding: 15px;
             background: rgba(76, 161, 175, 0.15);
@@ -939,6 +938,17 @@ label[style*="margin-top: 10px;"] {
                 padding: 10px 20px;
                 font-size: 1rem;
             }
+	    	    .math {
+
+		font-style: normal;
+
+	     }
+
+		mjx-container[jax="CHTML"] {
+
+		font-style: normal !important;
+
+	    }
         }
     </style>
 </head>
@@ -967,7 +977,7 @@ label[style*="margin-top: 10px;"] {
                 </ul>
                 
                 <div class="encouragement">
-                    <p><i class="fas fa-star"></i> Fizik ve matematiğin birleştiği bu keşif yolculuğunda, interaktif simülasyonla öğrenmenin keyfini çıkarın!</p>
+                    <p><span class="fas fa-star"></span> Fizik ve matematiğin birleştiği bu keşif yolculuğunda, interaktif simülasyonla öğrenmenin keyfini çıkarın!</p>
                 </div>
             </div>
             <button id="close-popup" class="popup-btn">Keşfe Başla <i class="fas fa-rocket"></i></button>
@@ -1011,15 +1021,15 @@ label[style*="margin-top: 10px;"] {
                             \[ \mathrm{F = k \cdot \Delta x} \]
                         </div>
                         <p class="explanation">
-                            Hooke Kanunu'na göre, bir yayın uzama miktarı \( (\Delta x) \) ile uygulanan kuvvet \( (F) \) doğru orantılıdır. Buradaki \( k \) yay sabiti olarak adlandırılır ve yayın sertliğini ifade eder.
+                            Hooke Kanunu'na göre, bir yayın uzama miktarı \( \mathrm{(\Delta x)} \) ile uygulanan kuvvet \( \mathrm{(F)} \) doğru orantılıdır. Buradaki \( k \) yay sabiti olarak adlandırılır ve yayın sertliğini ifade eder.
                         </p>
                         
                         <h3 style="margin-top: 20px;">Enerji Formülü</h3>
                         <div class="math-display">
-                            \[ E = \frac{1}{2} \cdot k \cdot (\Delta x)^2 \]
+                            \[\mathrm{ E = \frac{1}{2} \cdot k \cdot (\Delta x)^2 }\]
                         </div>
                         <p class="explanation">
-                            Yayda depolanan potansiyel enerji \( (E) \) ise kuvvetin yay üzerinde yaptığı işe eşittir. Bu formül bize enerji ile uzama arasındaki karesel ilişkiyi gösterir.
+                            Yayda depolanan potansiyel enerji \(\mathrm{ (E)} \) ise kuvvetin yay üzerinde yaptığı işe eşittir. Bu formül bize enerji ile uzama arasındaki karesel ilişkiyi gösterir.
                         </p>
                     </div>
                     
@@ -1027,12 +1037,12 @@ label[style*="margin-top: 10px;"] {
                         <h3>Simülasyon Parametreleri</h3>
                         <p>Bu simülasyonda:</p>
                         <ul style="margin-top: 15px; padding-left: 20px;">
-                            <li>Yay sabiti \( k = 0,1 \, \text{N/m} \)</li>
-                            <li>Maksimum uzama miktarı \( \Delta x = 5 \, \text{m} \)</li>
+                            <li>Yay sabiti \( \mathrm{k = 0,1 \, \text{N/m}} \)</li>
+                            <li>Maksimum uzama miktarı \(\mathrm{ \Delta x = 5 \, \text{m}} \)</li>
                         </ul>
                         
                         <div class="math-display" style="margin-top: 15px;">
-                            \[ E = \frac{1}{2} \cdot (0,1) \cdot (\Delta x)^2 = \frac{1}{20} \cdot (\Delta x)^2 \]
+                            \[ \mathrm{E = \frac{1}{2} \cdot (0,1) \cdot (\Delta x)^2 = \frac{1}{20} \cdot (\Delta x)^2 }\]
                         </div>
                         
                         <p style="margin-top: 15px;">
@@ -1201,7 +1211,7 @@ label[style*="margin-top: 10px;"] {
                             </ul>
                             
                             <div class="conclusion-box">
-                                <p><strong>Sonuç:</strong> Enerji (E) ile uzama (Δx) arasındaki ilişki karesel fonksiyon ile modellenir ve grafiği doğrusal değildir. Bu ilişki \( E = \frac{1}{2} k (\Delta x)^2 \) formülü ile ifade edilir.</p>
+                                <p><strong>Sonuç:</strong> Enerji (E) ile uzama (Δx) arasındaki ilişki karesel fonksiyon ile modellenir ve grafiği doğrusal değildir. Bu ilişki  \(\mathrm{E = \frac{1}{2} \cdot k \cdot (\Delta x)^2}\)  formülü ile ifade edilir.</p>
                             </div>
                         </div>
                     </div>
