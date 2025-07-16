@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matematik ve Biyoloji Entegre Sınavı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { 
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            background-color: rgba(255, 255, 255, 0.98);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        header {
+            background: linear-gradient(to right, #1a2a6c, #b21f1f);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+            color: #FFD700;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        
+        .relation-info {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 1rem;
+            text-align:justify;
+        }
+
+        .immune-info {
+            background-color: rgba(255, 255, 255, 0.25);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 1rem;
+            text-align: left;
+            border-left: 4px solid #FFD700;
+        }
+        
+        .immune-info strong {
+            color: #3700ffb4;
+        }
+        
+        .content {
+            padding: 15px;
+        }
+
+        .graph-container {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+            border: 1px solid #dee2e6;
+            position: relative;
+        }
+
+        .graph-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .graph-header h3 {
+            color: #1a2a6c;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .info-btn {
+            background: none;
+            border: none;
+            color: #1a2a6c;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: rgba(26, 42, 108, 0.1);
+        }
+        
+        .info-btn:hover {
+            color: #b21f1f;
+            transform: scale(1.05);
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+            aspect-ratio: 3/2;
+            padding: 8px;
+        }
+
+        .canvas-wrapper-2 {
+            max-width: 800px;
+            aspect-ratio: 3/2;
+        }
+
+        #antibodyChart, #functionChart {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .properties-section {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            border-top: 4px solid #1a2a6c;
+        }
+        
+        .properties-section h2 {
+            color: #1a2a6c;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        .properties-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .property-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .property-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .property-card h4 {
+            color: #1a2a6c;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .property-card h4 i {
+            color: #b21f1f;
+        }
+        
+        .points-badge {
+            background: linear-gradient(to right, #1a2a6c, #3a5fc5);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+        }
+
+        .formula-input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 10px 0;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            min-height: 70px;
+            resize: vertical;
+        }
+        
+        .feedback {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+            display: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            background-color: #e2f0ff;
+            color: #0c5460;
+            border: 1px solid #b8daff;
+        }
+        
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 150px;
+            max-width: 250px;
+        }
+        
+        .btn-check {
+            background: linear-gradient(to right, #1a2a6c, #3a5fc5);
+            color: white;
+        }
+        
+        .btn-check:hover:not(:disabled) {
+            background: linear-gradient(to right, #0d1b4d, #2a4bbd);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .btn-simulate {
+            background: linear-gradient(to right, #b21f1f, #d9534f);
+            color: white;
+        }
+        
+        .btn-simulate:hover {
+            background: linear-gradient(to right, #8a1919, #c9302c);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(178, 31, 31, 0.3);
+        }
+        
+        .btn-stage {
+            background: linear-gradient(to right, #28a745, #218838);
+            color: white;
+        }
+        
+        .btn-stage:hover {
+            background: linear-gradient(to right, #218838, #1e7e34);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+        }
+        
+        .btn-finish {
+            background: linear-gradient(to right, #ffc107, #e0a800);
+            color: #212529;
+        }
+        
+        .btn-finish:hover {
+            background: linear-gradient(to right, #e0a800, #d39e00);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .total-points {
+            text-align: center;
+            margin: 12px 0;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #1a2a6c;
+        }
+        
+        .stage {
+            display: none;
+        }
+        
+        .stage.active {
+            display: block;
+        }
+        
+        .exam-info {
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        
+        .progress-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            gap: 5px;
+        }
+        
+        .progress-stage {
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-stage.active {
+            background: linear-gradient(to right, #1a2a6c, #3a5fc5);
+            color: white;
+        }
+        
+        .progress-stage.completed {
+            background: linear-gradient(to right, #28a745, #218838);
+            color: white;
+        }
+        
+        .progress-stage:not(.active):not(.completed):hover {
+            background-color: #e9ecef;
+        }
+        
+        .stage-title {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #1a2a6c;
+            color: #1a2a6c;
+            font-size: 1.2rem;
+        }
+
+        /* Modal Stilleri */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+        }
+        
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+            width: 95%;
+            max-width: 700px;
+            animation: modalopen 0.4s;
+        }
+        
+        @keyframes modalopen {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+        
+        .close {
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            color: #aaa;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #b21f1f;
+        }
+        
+        .modal-content h3 {
+            color: #1a2a6c;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid #1a2a6c;
+            padding-bottom: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .concept-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        
+        @media (min-width: 768px) {
+            .concept-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .concept-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid #1a2a6c;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        
+        .concept-card h4 {
+            color: #1a2a6c;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .concept-card h4 i {
+            color: #b21f1f;
+        }
+        
+        .concept-card p {
+            font-size: 0.85rem;
+        }
+        
+        .explanation-section {
+            background-color: #e2f0ff;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #b8daff;
+            font-size: 0.85rem;
+        }
+        
+        .explanation-section p {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .highlight {
+            background-color: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .modal-content ul {
+            padding-left: 18px;
+            margin-bottom: 12px;
+        }
+        
+        .modal-content li {
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+        
+        /* Mobil Uyumluluk İçin Medya Sorguları */
+        @media (min-width: 576px) {
+            .progress-container {
+                flex-direction: row;
+                gap: 0;
+            }
+            
+            .graph-header {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .btn {
+                flex: none;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            .logo i {
+                font-size: 2.2rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .graph-container {
+                padding: 20px;
+            }
+            
+            .graph-header h3 {
+                font-size: 1.3rem;
+            }
+            
+            .info-btn {
+                font-size: 1.1rem;
+            }
+            
+            .canvas-wrapper {
+                padding: 10px;
+            }
+            
+            .properties-section {
+                padding: 20px;
+            }
+            
+            .properties-section h2 {
+                font-size: 1.5rem;
+            }
+            
+            .property-card h4 {
+                font-size: 1.1rem;
+            }
+            
+            .formula-input {
+                font-size: 1rem;
+                min-height: 80px;
+            }
+            
+            .feedback {
+                font-size: 0.95rem;
+            }
+            
+            .btn {
+                font-size: 1rem;
+                padding: 12px 25px;
+            }
+            
+            .stage-title {
+                font-size: 1.4rem;
+            }
+            
+            .exam-info {
+                font-size: 1.1rem;
+            }
+            
+            .progress-container {
+                flex-direction: row;
+                padding: 10px;
+            }
+            
+            .progress-stage {
+                padding: 10px;
+            }
+            
+            .modal-content h3 {
+                font-size: 1.3rem;
+            }
+        }
+        
+        /* Yeni eklenen değerlendirme bölümü stilleri */
+        .exam-result {
+            display: none;
+            background-color: #e2f0ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            border: 2px solid #1a2a6c;
+        }
+
+        .exam-result h3 {
+            color: #1a2a6c;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #1a2a6c;
+        }
+
+        .score-details {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            margin: 15px 0;
+            border: 1px solid #dee2e6;
+        }
+
+        .score-details h4 {
+            color: #1a2a6c;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .score-details ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .score-details li {
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+        .score-details li:last-child {
+             border-bottom: none;
+        }
+
+        .score-details .score-line {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .score-details .feedback {
+            font-size: 0.9rem;
+            color: #555;
+            font-style: italic;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .score-details .score-value {
+            font-weight: bold;
+            flex-shrink: 0;
+            color: #3a5fc5;
+        }
+
+        .result-message {
+            font-size: 1.2rem;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .excellent { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .good { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .average { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+             <div class="logo">
+                <i class="fas fa-brain"></i>
+                <div>
+                    <h1>4. Basamak Değerlendirme Sınavı</h1>
+                </div>
+            </div>
+        </header>
+        
+        <div class="exam-info">
+            <p><i class="fas fa-info-circle"></i> Bu sınav iki aşamadan oluşmaktadır. Toplam puan: 25</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-stage active" onclick="changeStage(1)">1. Aşama: Bağışıklık Sistemi Fonksiyonunun Nitel Özellikleri (15 Puan)</div>
+            <div class="progress-stage" onclick="changeStage(2)">2. Aşama: Tek ve Çift Fonksiyon (10 Puan)</div>
+        </div>
+
+        <!-- Aşama 1: Bağışıklık Sistemi -->
+        <div id="stage1" class="stage active">
+            <div class="content">
+                <h2 class="stage-title">Bağışıklık Sistemi Fonksiyonunun Nitel Özellikleri</h2>
+                
+                <div class="immune-info">
+                    <p><strong>Bağışıklık ve Antikor Oluşumunun Önemi:</strong> Vücudun antijenlere karşı geliştirdiği bağışıklık tepkisi, enfeksiyonlarla mücadelede hayati öneme sahiptir. Antikorlar, vücuda giren yabancı maddeleri (antijenleri) tanıyarak onları etkisiz hale getiren proteinlerdir. Birincil karşılaşmada vücut antijeni tanır ve belirli bir süre sonra antikor üretmeye başlar. İkincil karşılaşmada ise daha hızlı ve güçlü bir antikor tepkisi oluşur. Bu durum bağışıklık hafızasının geliştiğini gösterir.</p>
+                </div>
+                <div class="relation-info">
+                    Aşağıdaki grafik, bir kişinin bir antijenle ilk ve ikinci kez karşılaşması sonucu kanındaki antikor yoğunluğunun zamana göre değişimini <strong>f(x) fonksiyonu</strong> olarak göstermektedir. Bu ilişkide <strong>zaman x-ekseniyle (bağımsız değişken)</strong>, <strong>antikor yoğunluğu (f(x)) ise y-ekseniyle (bağımlı değişken)</strong> temsil edilmektedir. Grafiği dikkatlice inceleyerek soruları cevaplayınız.
+                </div>
+
+                <div class="graph-container">
+                    <div class="graph-header">
+                        <h3>
+                            <i class="fas fa-chart-line"></i> Antikor Yoğunluğu - Zaman Grafiği [f(x)]
+                        </h3>
+                        <button class="info-btn graph-info-btn" onclick="openModal()">
+                            <i class="fas fa-info-circle"></i>
+                            GRAFİK HAKKINDA BİLGİ
+                        </button>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="antibodyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="properties-section" id="quiz">
+                     <h2><i class="fas fa-tasks"></i> Analiz Soruları <span style="font-size: 0.9rem; color: #b21f1f;">(Toplam 15 Puan)</span></h2>
+                     <div class="properties-grid">
+                        <div class="property-card">
+                            <h4><i class="fas fa-ruler-combined"></i> 1. Tanım ve Görüntü Kümesi <span class="points-badge">3 Puan</span></h4>
+                            <p>Grafikte gösterilen f(x) fonksiyonunun tanım kümesini ve görüntü kümesini yazınız. (Max 50 kelime)</p>
+                            <textarea id="q1" class="formula-input" rows="4" maxlength="300"></textarea>
+                            <div class="feedback" id="a1">
+                                <p><strong>Örnek Cevap:</strong></p>
+                                <p><strong>Tanım Kümesi (Zaman):</strong> [0, 56] gün. </p>
+                                <p><strong>Görüntü Kümesi (Antikor Yoğunluğu):</strong> [0, 100] AU/mL. Bu, gözlem süresi boyunca kandaki antikor yoğunluğunun aldığı değer aralığını gösterir.</p>
+                            </div>
+                        </div>
+
+                        <div class="property-card">
+                            <h4><i class="fas fa-plus-minus-circle"></i> 2. Pozitif / Negatif Aralıklar <span class="points-badge">2 Puan</span></h4>
+                            <p>Fonksiyonun pozitif ve negatif olduğu aralıklar var mıdır? (Max 30 kelime)</p>
+                            <textarea id="q2" class="formula-input" rows="3" maxlength="200"></textarea>
+                            <div class="feedback" id="a2">
+                                <p><strong>Örnek Cevap:</strong> Fonksiyonun (antikor yoğunluğunun) negatif olduğu bir aralık yoktur.</p>
+                            </div>
+                        </div>
+
+                        <div class="property-card">
+                            <h4><i class="fas fa-chart-area"></i> 3. Artan / Azalan Aralıklar <span class="points-badge">3 Puan</span></h4>
+                            <p>Fonksiyonun artan ve azalan olduğu zaman aralıklarını belirtiniz. (Max 60 kelime)</p>
+                            <textarea id="q3" class="formula-input" rows="5" maxlength="350"></textarea>
+                            <div class="feedback" id="a3">
+                                <p><strong>Örnek Cevap:</strong></p>
+                                <p><strong>Artan Olduğu Aralıklar:</strong> [7, 21] ve [28, 42]. </p>
+                                <p><strong>Azalan Olduğu Aralıklar:</strong> [21, 28] ve [42, 56]. </p>
+                            </div>
+                        </div>
+
+                        <div class="property-card">
+                            <h4><i class="fas fa-mountain"></i> 4. Maksimum Nokta <span class="points-badge">4 Puan</span></h4>
+                            <p>Fonksiyonun maksimum noktasını bulunuz. (Max 30 kelime)</p>
+                            <textarea id="q4" class="formula-input" rows="4" maxlength="200"></textarea>
+                            <div class="feedback" id="a4">
+                                <p><strong>Örnek Cevap:</strong> Fonksiyonun maksimum noktası (42, 100) noktasıdır.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="property-card">
+                            <h4><i class="fas fa-temperature-low"></i> 5. Minimum Değer <span class="points-badge">3 Puan</span></h4>
+                            <p>Fonksiyonun minimum değerini bulunuz. (Max 30 kelime)</p>
+                            <textarea id="q5" class="formula-input" rows="4" maxlength="200"></textarea>
+                            <div class="feedback" id="a5">
+                                <p><strong>Örnek Cevap:</strong> Fonksiyonun minimum değeri 0 dır.</p>
+                            </div>
+                        </div>
+                     </div>
+                     
+
+                     
+                     <div class="buttons">
+                        <button class="btn btn-stage" onclick="changeStage(2)">
+                            <i class="fas fa-arrow-right"></i> İkinci Aşamaya Geçiniz
+                        </button>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aşama 2: Fonksiyon Analizi -->
+        <div id="stage2" class="stage">
+            <div class="content">
+                <h2 class="stage-title">Fonksiyon Grafiği Analizi</h2>
+                <p>Aşağıda bir f fonksiyonunun [0, 10] aralığındaki grafiği verilmiştir. Bu bilgiyi kullanarak aşağıdaki soruları cevaplayınız.</p>
+
+                <div class="graph-container">
+                    <div class="graph-header">
+                        <h3>
+                            <i class="fas fa-chart-line"></i> Fonksiyon Grafiği
+                        </h3>
+                    </div>
+                    <div class="canvas-wrapper canvas-wrapper-2">
+                        <canvas id="functionChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="properties-section" id="quiz">
+                     <h2><i class="fas fa-tasks"></i> Analiz Soruları <span style="font-size: 0.9rem; color: #b21f1f;">(Toplam 10 Puan)</span></h2>
+                     <div class="properties-grid">
+                        <div class="property-card">
+                            <h4><i class="fas fa-ruler-combined"></i> 1. Çift Fonksiyon Analizi <span class="points-badge">5 Puan</span></h4>
+                            <p>Grafikte x ekseninin pozitif tarafında grafiği çizilen f fonksiyonu çift fonksiyon olduğuna göre tanım ve görüntü kümesi nedir?  f(-8), f(-10) değerlerini bulunuz. (Max 100 kelime)</p>
+                            <textarea id="q6" class="formula-input" rows="4" maxlength="600"></textarea>
+                            <div class="feedback" id="a6">
+                                <p><strong>Örnek Cevap:</strong><br>
+                                Bir fonksiyonun çift olması için grafiğinin y eksenine göre simetrik olması gerekir (f(-x) = f(x)).<br>
+                                <b>Tanım Kümesi:</b> Fonksiyon [0, 10] aralığında tanımlı olduğundan ve çift olduğundan, simetriği olan [-10, 0] aralığını da içermelidir. Dolayısıyla Tanım Kümesi = [-10, 10].<br>
+                                <b>Görüntü Kümesi:</b> y eksenine göre simetri alındığında fonksiyonun alacağı değerler (y değerleri) değişmez. Grafik [0, 9] aralığında değerler aldığı için Görüntü Kümesi = [0, 9].<br>
+                                <b>Değerler:</b><br>
+                                f(-8) = f(8) = 9<br>
+                                f(-10) = f(10) = 7</p>
+                            </div>
+                        </div>
+
+                        <div class="property-card">
+                            <h4><i class="fas fa-ruler-combined"></i> 2. Tek Fonksiyon Analizi <span class="points-badge">5 Puan</span></h4>
+                            <p>Grafikte x ekseninin pozitif tarafında grafiği çizilen f fonksiyonu tek fonksiyon olduğuna göre tanım ve görüntü kümesi nedir? f(-3), f(-5) değerlerini bulunuz. (Max 100 kelime)</p>
+                            <textarea id="q7" class="formula-input" rows="4" maxlength="600"></textarea>
+                            <div class="feedback" id="a7">
+                                <p><strong>Örnek Cevap:</strong><br>
+                                Bir fonksiyonun tek olması için grafiğinin orijine göre simetrik olması gerekir (f(-x) = -f(x)).<br>
+                                <b>Tanım Kümesi:</b> Fonksiyon [0, 10] aralığında tanımlı olduğundan ve tek olduğundan, simetriği olan [-10, 0] aralığını da içermelidir. Dolayısıyla Tanım Kümesi = [-10, 10].<br>
+                                <b>Görüntü Kümesi:</b> Orijine göre simetri alındığında, [0, 9] aralığındaki görüntü kümesinin negatif değerleri de eklenir. Dolayısıyla Görüntü Kümesi = [-9, 9].<br>
+                                <b>Değerler:</b><br>
+                                f(-3) = -f(3) = -5<br>
+                                f(-5) = -f(5) = -2<br>
+
+                            </div>
+                        </div>
+                     </div>
+                     
+
+                     
+                     <div class="buttons">
+                        <button class="btn btn-stage" onclick="changeStage(1)">
+                            <i class="fas fa-arrow-left"></i> Birinci Aşamaya Dön
+                        </button>
+                        <button class="btn btn-finish" id="ai-evaluate-btn">
+                            <i class="fas fa-robot"></i> Yapay Zeka ile Değerlendir
+                        </button>
+                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Yapay Zeka Değerlendirme Sonuçları -->
+        <div class="exam-result" id="exam-result">
+            <h3><i class="fas fa-award"></i> Yapay Zeka Sınav Değerlendirmesi</h3>
+            <div class="score-display" id="total-score">0/25</div>
+
+            <div class="score-details">
+                <h4>Kazanımlar ve Geri Bildirimler</h4>
+                <ul>
+                    <li>
+                        <div class="score-line">
+                            <span>Tanım ve görüntü kümesi analizi:</span>
+                            <span class="score-value" id="k1-score">0/3</span>
+                        </div>
+                        <div class="feedback" id="f1-feedback"></div>
+                    </li>
+                    <li>
+                        <div class="score-line">
+                            <span>Pozitif/negatif aralıklar:</span>
+                            <span class="score-value" id="k2-score">0/2</span>
+                        </div>
+                         <div class="feedback" id="f2-feedback"></div>
+                    </li>
+                    <li>
+                        <div class="score-line">
+                            <span>Artan/azalan aralıklar belirleme:</span>
+                            <span class="score-value" id="k3-score">0/3</span>
+                        </div>
+                        <div class="feedback" id="f3-feedback"></div>
+                    </li>
+                    <li>
+                        <div class="score-line">
+                            <span>Maksimum nokta tespiti:</span>
+                            <span class="score-value" id="k4-score">0/4</span>
+                        </div>
+                        <div class="feedback" id="f4-feedback"></div>
+                    </li>
+                    <li>
+                        <div class="score-line">
+                            <span>Minimum nokta tespiti:</span>
+                            <span class="score-value" id="k5-score">0/3</span>
+                        </div>
+                        <div class="feedback" id="f5-feedback"></div>
+                    </li>
+                    <li>
+                        <div class="score-line">
+                            <span>Çift fonksiyon analizi:</span>
+                            <span class="score-value" id="k6-score">0/5</span>
+                        </div>
+                        <div class="feedback" id="f6-feedback"></div>
+                    </li>
+                    <li>
+                        <div class="score-line">
+                            <span>Tek fonksiyon analizi:</span>
+                            <span class="score-value" id="k7-score">0/5</span>
+                        </div>
+                        <div class="feedback" id="f7-feedback"></div>
+                    </li>
+                    <hr>
+                    <li>
+                        <div class="score-line">
+                            <span><b>Toplam Puan:</b></span>
+                            <span class="score-value" id="final-score"><b>0/25</b></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="result-message excellent" id="result-message">
+                <p>Sınav tamamlandı! Sonuçlarınız ve yapay zeka geri bildirimleri yukarıda gösterilmektedir.</p>
+            </div>
+            
+            <div class="buttons" style="justify-content: center; margin-top: 20px;">
+                <button class="btn btn-stage" id="show-answers-btn" style="display: none;">
+                    <i class="fas fa-eye"></i> Cevapları Göster
+                </button>
+            </div>
+        </div>
+
+        <footer>
+            <p>4.Basamak Değerlendirme Sınavı</p>
+        </footer>
+    </div>
+
+    <!-- Pop-up modal eklendi -->
+    <div id="graphInfoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3><i class="fas fa-lightbulb"></i> Grafik ve Kavramlar Hakkında Bilgi</h3>
+            
+            <div class="concept-grid">
+                <div class="concept-card">
+                    <h4><i class="fas fa-biohazard"></i> Antijen Nedir?</h4>
+                    <p>Antijen, vücuda girdiğinde bağışıklık sistemini harekete geçiren ve antikor üretimine neden olan yabancı maddelerdir. Bunlar virüsler, bakteriler, toksinler veya diğer yabancı proteinler olabilir.</p>
+                </div>
+                
+                <div class="concept-card">
+                    <h4><i class="fas fa-shield-alt"></i> Antikor Nedir?</h4>
+                    <p>Antikorlar, bağışıklık sistemi tarafından üretilen ve antijenlere bağlanarak onları etkisiz hale getiren özel proteinlerdir (immünoglobulinler). Her antikor belirli bir antijeni tanır.</p>
+                </div>
+                
+                <div class="concept-card">
+                    <h4><i class="fas fa-heartbeat"></i> Bağışıklık Sistemi</h4>
+                    <p>Vücudu hastalık yapıcı mikroorganizmalara karşı koruyan karmaşık savunma mekanizmasıdır. Edinilmiş bağışıklık, belirli patojenlere karşı uzun süreli koruma sağlar.</p>
+                </div>
+                
+                <div class="concept-card">
+                    <h4><i class="fas fa-brain"></i> Bağışıklık Hafızası</h4>
+                    <p>Bağışıklık sisteminin daha önce karşılaştığı bir antijeni hatırlama ve ikinci karşılaşmada daha hızlı, güçlü bir antikor tepkisi oluşma yeteneğidir. Aşılar bu prensiple çalışır.</p>
+                </div>
+            </div>
+            
+            <div class="explanation-section">
+                <h4><i class="fas fa-chart-line"></i> Grafik Açıklaması:</h4>
+                <p>Bu grafik, vücudun aynı antijenle ilk ve ikinci kez karşılaşması durumunda antikor yoğunluğundaki değişimi göstermektedir:</p>
+                
+                <p><span class="highlight">1. Birincil Tepki (7-28 gün):</span> İlk antijen maruziyetinde vücut antijeni tanır, bağışıklık hücreleri aktive olur ve antikor üretimi başlar. Tepki nispeten yavaş gelişir ve düşük seviyede kalır.</p>
+                
+                <p><span class="highlight">2. Antikor Düşüşü (28-35 gün):</span> Antijen tehdidi ortadan kalktığında antikor seviyeleri düşmeye başlar, ancak hafıza hücreleri oluşmuştur.</p>
+                
+                <p><span class="highlight">3. İkincil Tepki (35-56 gün):</span> Aynı antijenle ikinci karşılaşmada hafıza hücreleri hızla aktive olur, daha yüksek miktarda ve daha uzun süreli antikor üretimi gerçekleşir.</p>
+                
+                <p>İkincil tepkinin daha yüksek olması, vücudun artık bu antijene karşı <span class="highlight">bağışıklık kazandığını</span> gösterir.</p>
+                
+                <p><strong>Grafikteki Önemli Noktalar:</strong></p>
+                <ul>
+                    <li>Birinci antijen maruziyeti: 7. gün</li>
+                    <li>Birincil tepki zirvesi: 21. gün (40 AU/mL)</li>
+                    <li>İkinci antijen maruziyeti: 28. gün</li>
+                    <li>İkincil tepki zirvesi: 42. gün (100 AU/mL)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let examFinished = false; // Sınavın bitip bitmediğini takip etmek için
+
+    // İki aşama arasında geçiş
+    function changeStage(stageNumber) {
+        document.querySelectorAll('.stage').forEach(stage => {
+            stage.classList.remove('active');
+        });
+        
+        document.querySelectorAll('.progress-stage').forEach((stage, index) => {
+            stage.classList.remove('active');
+            if (index < stageNumber - 1) {
+                stage.classList.add('completed');
+            }
+        });
+        
+        document.getElementById(`stage${stageNumber}`).classList.add('active');
+        document.querySelectorAll('.progress-stage')[stageNumber-1].classList.add('active');
+        
+        // İkinci aşamada grafiği çiz
+        if (stageNumber === 2) {
+            drawFunctionGraph();
+        }
+    }
+    
+    // Cevapları göster
+    function showAnswers() {
+        for (let i = 1; i <= 7; i++) {
+            document.getElementById(`a${i}`).style.display = 'block';
+        }
+        document.getElementById('show-answers-btn').style.display = 'none';
+    }
+    
+    // Modal fonksiyonları
+    function openModal() {
+        document.getElementById('graphInfoModal').style.display = 'block';
+    }
+    
+    function closeModal() {
+        document.getElementById('graphInfoModal').style.display = 'none';
+    }
+    
+    // Modal dışına tıklanınca kapat
+    window.onclick = function(event) {
+        const modal = document.getElementById('graphInfoModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+
+    // İlk grafik için çizim fonksiyonları
+    function setupAntibodyCanvas() {
+        const canvas = document.getElementById('antibodyChart');
+        const ctx = canvas.getContext('2d');
+        const canvasWrapper = document.querySelector('.canvas-wrapper');
+        
+        // Ayarlar
+        let padding, padding_bottom;
+        let width, height, innerWidth, innerHeight;
+        const maxX = 56;
+        const maxY = 120;
+        
+        // Koordinatları canvas'a dönüştüren yardımcı fonksiyonlar
+        const getCanvasX = (x) => padding + (x / maxX) * innerWidth;
+        const getCanvasY = (y) => (padding) + innerHeight - ((y / maxY) * innerHeight);
+
+        // Canvas'ı ve boyutlarını ayarlayan ana fonksiyon
+        function setupCanvas() {
+            width = canvasWrapper.clientWidth;
+            height = canvasWrapper.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+
+            // Mobil için padding azaltıldı
+            padding = width < 500 ? 30 : 50;
+            padding_bottom = padding * 3; 
+            
+            innerWidth = width - padding * 1.5;
+            innerHeight = height - padding - padding_bottom;
+
+            draw(); // Her şeyi yeniden çiz
+        }
+        
+        // Eksenleri ve grid'i çizen fonksiyon
+        function drawAxes() {
+            ctx.beginPath();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+
+            const xAxisY = height - padding_bottom;
+            ctx.moveTo(padding, xAxisY);
+            ctx.lineTo(padding, padding);
+            ctx.moveTo(padding, xAxisY);
+            ctx.lineTo(width - padding / 2, xAxisY);
+            ctx.stroke();
+
+            // Eksen okları
+            ctx.beginPath();
+            ctx.moveTo(padding - 5, padding + 10);
+            ctx.lineTo(padding, padding);
+            ctx.lineTo(padding + 5, padding + 10);
+            ctx.moveTo(width - padding / 2 - 10, xAxisY - 5);
+            ctx.lineTo(width - padding / 2, xAxisY);
+            ctx.lineTo(width - padding / 2 - 10, xAxisY + 5);
+            ctx.stroke();
+            
+            // Eksen başlıkları
+            ctx.textAlign = 'left';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.fillStyle = '#333';
+            ctx.fillText('Zaman (gün)', width - padding*2 , height - padding_bottom / 3);
+            ctx.save();
+            ctx.translate(padding / 3, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Antikor Yoğunluğu (AU/mL)', -padding*2, -2);
+            ctx.restore();
+            
+            const fontSize = width < 500 ? 10 : 12;
+            ctx.font = `${fontSize}px sans-serif`;
+
+            // X ekseni grid ve etiketleri
+            for (let i = 0; i <= maxX; i += 7) {
+                const x = getCanvasX(i);
+                ctx.fillText(i, x, xAxisY + 20);
+                 ctx.beginPath();
+                 ctx.setLineDash([2, 3]);
+                 ctx.strokeStyle = '#ccc';
+                 ctx.lineWidth = 1;
+                 ctx.moveTo(x, padding);
+                 ctx.lineTo(x, xAxisY);
+                 ctx.stroke();
+                 ctx.setLineDash([]);
+            }
+
+            // Y ekseni grid ve etiketleri
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= maxY; i += 20) {
+                const y = getCanvasY(i);
+                ctx.fillText(i, padding - 8, y + 4);
+                 ctx.beginPath();
+                 ctx.setLineDash([2, 3]);
+                 ctx.strokeStyle = '#ccc';
+                 ctx.lineWidth = 1;
+                 ctx.moveTo(padding, y);
+                 ctx.lineTo(width - padding / 2, y);
+                 ctx.stroke();
+                 ctx.setLineDash([]);
+            }
+            
+            // x, y, O etiketleri
+            ctx.font = 'italic bold 16px serif';
+            ctx.fillStyle = '#00008b';
+            ctx.textAlign = 'center';
+            ctx.fillText('y', padding + 20, padding + 15);
+            ctx.fillText('x', width - padding / 2 - 15, xAxisY - 15);
+            ctx.textAlign = 'right';
+            ctx.fillText('O', padding - 10, xAxisY + 15);
+            ctx.textAlign = 'center';
+        }
+
+        // Orijinal grafik çizimi
+        function drawOriginalCurve() {
+            ctx.beginPath();
+            ctx.strokeStyle = '#b21f1f';
+            ctx.lineWidth = 3;
+
+            // Başlangıç noktası
+            const p0 = {x: 0, y: 0};
+            const p1 = {x: 7, y: 0};
+            ctx.moveTo(getCanvasX(p0.x), getCanvasY(p0.y));
+            ctx.lineTo(getCanvasX(p1.x), getCanvasY(p1.y)); // Düz çizgi
+
+            // 1. Eğri: (7,0) -> (21,40)
+            const p2 = {x: 21, y: 40};
+            ctx.bezierCurveTo(
+                getCanvasX(12), getCanvasY(0),   // Kontrol noktası 1
+                getCanvasX(15), getCanvasY(40),  // Kontrol noktası 2
+                getCanvasX(p2.x), getCanvasY(p2.y)   // Bitiş noktası
+            );
+            
+            // 2. Eğri: (21,40) -> (28,5)
+            const p3 = {x: 28, y: 5};
+            ctx.bezierCurveTo(
+                getCanvasX(23), getCanvasY(40),  // Kontrol noktası 1
+                getCanvasX(26), getCanvasY(5),   // Kontrol noktası 2
+                getCanvasX(p3.x), getCanvasY(p3.y)   // Bitiş noktası
+            );
+
+            // 3. Eğri: (28,5) -> (42,100)
+            const p4 = {x: 42, y: 100};
+             ctx.bezierCurveTo(
+                getCanvasX(32), getCanvasY(5),   // Kontrol noktası 1
+                getCanvasX(38), getCanvasY(100), // Kontrol noktası 2
+                getCanvasX(p4.x), getCanvasY(p4.y)  // Bitiş noktası
+            );
+
+            // 4. Eğri: (42,100) -> (56,70)
+            const p5 = {x: 56, y: 70};
+            ctx.bezierCurveTo(
+                getCanvasX(46), getCanvasY(100), // Kontrol noktası 1
+                getCanvasX(52), getCanvasY(70),  // Kontrol noktası 2
+                getCanvasX(p5.x), getCanvasY(p5.y)   // Bitiş noktası
+            );
+            
+            ctx.stroke();
+        }
+        
+        // Kritik noktaları (koordinatlarıyla) işaretleyen fonksiyon
+        function drawCriticalPoints() {
+            const criticalPoints = [
+                { x: 21, y: 40, align: 'center',  offsetY: 20, color: '#1a2a6c' },
+                { x: 28, y: 5,  align: 'center', offsetY: -15, color: '#d9534f' },
+                { x: 42, y: 100,align: 'center', offsetY: 20, color: '#1a2a6c' },
+                { x: 56, y: 70, align: 'center',offsetY: -10, color: '#d9534f'}
+            ];
+
+            criticalPoints.forEach(p => {
+                const canvasX = getCanvasX(p.x);
+                const canvasY = getCanvasY(p.y);
+
+                // Noktayı çiz
+                ctx.beginPath();
+                ctx.fillStyle = p.color;
+                ctx.arc(canvasX, canvasY, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Koordinat etiketini yaz
+                ctx.fillStyle = p.color;
+                ctx.font = 'bold 10px Arial';
+                ctx.textAlign = p.align;
+                
+                let offsetX = 0;
+                if(p.align === 'left') offsetX = 8;
+                if(p.align === 'right') offsetX = -8;
+
+                ctx.fillText(`(${p.x}, ${p.y})`, canvasX + offsetX, canvasY + p.offsetY);
+            });
+            ctx.textAlign = 'center';
+        }
+
+        // "Antijenle karşılaşma", "Birincil Tepki" gibi ek bilgileri çizen fonksiyon
+        function drawAnnotations() {
+            const isSmall = width < 500;
+            ctx.fillStyle = 'red';
+            ctx.font = isSmall ? '10px sans-serif' : '12px sans-serif';
+
+            // Etiketlerin y pozisyonu ayarlandı
+            ctx.strokeStyle = 'yellow';
+            ctx.lineWidth = 1.5;
+            addArrow(6.8, -20, 6.8, -1);
+            ctx.strokeStyle = 'red';
+            addLabel('Antijenle 1.\nkarşılaşma', 7, -35);
+            
+            addArrow(27.8, -20, 27.8, 4);
+            addLabel('Antijenle 2.\nkarşılaşma', 28, -35);
+
+            ctx.font = isSmall ? 'bold 10px sans-serif' : 'bold 12px sans-serif';
+            addBracket(8, 46, 27, 46, -10);
+            addLabel('Birincil Tepki', 17.5, 54);
+            addBracket(30, 106, 55, 106, -10);
+            addLabel('İkincil Tepki', 42.5, 115);
+        }
+        
+        function addLabel(text, x, y) {
+            const canvasX = getCanvasX(x);
+            const canvasY = getCanvasY(y);
+            const lines = text.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                ctx.fillText(lines[i], canvasX, canvasY + (i * 15));
+            }
+        }
+
+        function addArrow(x1, y1, x2, y2) {
+            const startX = getCanvasX(x1);
+            const startY = getCanvasY(y1);
+            const endX = getCanvasX(x2);
+            const endY = getCanvasY(y2);
+            
+            ctx.beginPath();
+            ctx.strokeStyle = 'darkblue';
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            const angle = Math.atan2(endY - startY, endX - startX);
+            ctx.lineTo(endX - 8 * Math.cos(angle - Math.PI / 6), endY - 8 * Math.sin(angle - Math.PI / 6));
+            ctx.moveTo(endX, endY);
+            ctx.lineTo(endX - 8 * Math.cos(angle + Math.PI / 6), endY - 8 * Math.sin(angle + Math.PI / 6));
+            ctx.stroke();
+        }
+
+        function addBracket(x1, y, x2, y2, heightVal) {
+            const startX = getCanvasX(x1);
+            const endX = getCanvasX(x2);
+            const yPos = getCanvasY(y);
+            const yPos2 = getCanvasY(y2);
+
+            ctx.beginPath();
+            ctx.strokeStyle = 'chocolate';
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(startX, yPos + heightVal);
+            ctx.lineTo(startX, yPos);
+            ctx.lineTo(endX, yPos2);
+            ctx.lineTo(endX, yPos2 + heightVal);
+            ctx.stroke();
+        }
+        
+        // Ana çizim fonksiyonu: Tüm katmanları sırayla çizer
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            drawAxes();
+            drawOriginalCurve();
+            drawAnnotations();
+            drawCriticalPoints();
+        }
+        
+        // Sayfa yüklendiğinde ve yeniden boyutlandırıldığında çizimi başlatır/günceller
+        window.addEventListener('resize', setupCanvas);
+        setupCanvas();
+    }
+
+    // İkinci grafik için çizim fonksiyonları
+    function drawFunctionGraph() {
+        const canvas = document.getElementById('functionChart');
+        const ctx = canvas.getContext('2d');
+        const canvasWrapper = document.querySelector('.canvas-wrapper-2');
+        
+        // Ayarlar
+        let padding, padding_bottom;
+        let width, height, innerWidth, innerHeight;
+        const maxX = 10;
+        const maxY = 10;
+        
+        // Koordinatları canvas'a dönüştüren yardımcı fonksiyonlar
+        const getCanvasX = (x) => padding + (x / maxX) * innerWidth;
+        const getCanvasY = (y) => (padding) + innerHeight - ((y / maxY) * innerHeight);
+
+        // Canvas'ı ve boyutlarını ayarlayan ana fonksiyon
+        function setupCanvas() {
+            width = canvasWrapper.clientWidth;
+            height = canvasWrapper.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+
+            // Mobil için padding azaltıldı
+            padding = width < 500 ? 30 : 50;
+            padding_bottom = padding * 1.8; 
+            
+            innerWidth = width - padding * 1.5;
+            innerHeight = height - padding - padding_bottom;
+
+            draw(); // Her şeyi yeniden çiz
+        }
+        
+        // Eksenleri ve grid'i çizen fonksiyon
+        function drawAxes() {
+            ctx.beginPath();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+
+            const xAxisY = height - padding_bottom;
+            ctx.moveTo(padding, xAxisY);
+            ctx.lineTo(padding, padding);
+            ctx.moveTo(padding, xAxisY);
+            ctx.lineTo(width - padding / 2, xAxisY);
+            ctx.stroke();
+
+            // Eksen okları
+            ctx.beginPath();
+            ctx.moveTo(padding - 5, padding + 10);
+            ctx.lineTo(padding, padding);
+            ctx.lineTo(padding + 5, padding + 10);
+            ctx.moveTo(width - padding / 2 - 10, xAxisY - 5);
+            ctx.lineTo(width - padding / 2, xAxisY);
+            ctx.lineTo(width - padding / 2 - 10, xAxisY + 5);
+            ctx.stroke();
+            
+            // Eksen başlıkları
+            ctx.textAlign = 'left';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.fillStyle = '#333';
+            
+            
+            const fontSize = width < 500 ? 10 : 12;
+            ctx.font = `${fontSize}px sans-serif`;
+
+            // X ekseni grid ve etiketleri
+            for (let i = 1; i <= maxX; i++) {
+                const x = getCanvasX(i);
+                ctx.fillText(i, x, xAxisY + 20);
+                 ctx.beginPath();
+                 ctx.setLineDash([2, 3]);
+                 ctx.strokeStyle = '#ccc';
+                 ctx.lineWidth = 1;
+                 ctx.moveTo(x, padding);
+                 ctx.lineTo(x, xAxisY);
+                 ctx.stroke();
+                 ctx.setLineDash([]);
+            }
+
+            // Y ekseni grid ve etiketleri
+            ctx.textAlign = 'right';
+            for (let i = 1; i <= maxY; i++) {
+                const y = getCanvasY(i);
+                ctx.fillText(i, padding - 8, y + 4);
+                 ctx.beginPath();
+                 ctx.setLineDash([2, 3]);
+                 ctx.strokeStyle = '#ccc';
+                 ctx.lineWidth = 1;
+                 ctx.moveTo(padding, y);
+                 ctx.lineTo(width - padding / 2, y);
+                 ctx.stroke();
+                 ctx.setLineDash([]);
+            }
+            
+            // x, y, O etiketleri
+            ctx.font = 'italic bold 18px serif';
+            ctx.fillStyle = '#00008b';
+            ctx.textAlign = 'center';
+            ctx.fillText('y', padding + 20, padding + 15);
+            ctx.fillText('x', width - padding / 2 - 15, xAxisY - 15);
+            ctx.textAlign = 'right';
+            ctx.fillText('O', padding + 20, xAxisY +20);
+            ctx.textAlign = 'center';
+        }
+
+        // Orijinal grafik çizimi
+        function drawOriginalCurve() {
+            ctx.beginPath();
+            ctx.strokeStyle = '#1a2a6c';
+            ctx.lineWidth = 3;
+
+            // Başlangıç noktası
+            ctx.moveTo(getCanvasX(0), getCanvasY(0));
+
+            // Eğri parçaları
+            // (0,0) -> (3,5) arası
+            ctx.bezierCurveTo(
+                getCanvasX(1), getCanvasY(4), 
+                getCanvasX(2), getCanvasY(5), 
+                getCanvasX(3), getCanvasY(5)
+            );
+            // (3,5) -> (5,2) arası
+            ctx.bezierCurveTo(
+                getCanvasX(4), getCanvasY(5), 
+                getCanvasX(4), getCanvasY(2), 
+                getCanvasX(5), getCanvasY(2)
+            );
+            // (5,2) -> (8,9) arası
+            ctx.bezierCurveTo(
+                getCanvasX(6), getCanvasY(2), 
+                getCanvasX(6), getCanvasY(9), 
+                getCanvasX(8), getCanvasY(9)
+            );
+            // (8,9) -> (10,7) arası
+            ctx.bezierCurveTo(
+                getCanvasX(9), getCanvasY(9), 
+                getCanvasX(9.5), getCanvasY(8), 
+                getCanvasX(10), getCanvasY(7)
+            );
+            
+            ctx.stroke();
+        }
+        
+        // Kritik noktaları işaretleyen fonksiyon
+        function drawCriticalPoints() {
+            const criticalPoints = [
+                {x: 0, y: 0}, 
+                {x: 3, y: 5}, 
+                {x: 5, y: 2}, 
+                {x: 8, y: 9}, 
+                {x: 10, y: 7}
+            ];
+
+            criticalPoints.forEach(p => {
+                const canvasX = getCanvasX(p.x);
+                const canvasY = getCanvasY(p.y);
+
+                // Noktayı çiz
+                ctx.beginPath();
+                ctx.fillStyle = '#b21f1f';
+                ctx.arc(canvasX, canvasY, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Koordinat etiketini yaz
+                ctx.fillStyle = '#b21f1f';
+                ctx.font = 'bold 10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`(${p.x}, ${p.y})`, canvasX, canvasY - 15);
+            });
+        }
+
+        // Ana çizim fonksiyonu
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            drawAxes();
+            drawOriginalCurve();
+            drawCriticalPoints();
+        }
+        
+        // Sayfa yüklendiğinde ve yeniden boyutlandırıldığında çizimi başlatır/günceller
+        window.addEventListener('resize', setupCanvas);
+        setupCanvas();
+    }
+
+    // --- GEMINI API ENTEGRASYONU ---
+    const GEMINI_API_KEY = 'AIzaSyCEhU3erLOAJB9cADTqaGanVidc2DRbhr8';
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const aiEvaluateBtn = document.getElementById('ai-evaluate-btn');
+    const showAnswersBtn = document.getElementById('show-answers-btn');
+
+    aiEvaluateBtn.addEventListener('click', async function() {
+        if (GEMINI_API_KEY === '') {
+            alert('API Anahtarı Girilmemiş! Lütfen geçerli bir Gemini API anahtarı girin.');
+            return;
+        }
+
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yapay Zeka Değerlendiriyor...';
+
+        const answers = {
+            q1: document.getElementById('q1').value,
+            q2: document.getElementById('q2').value,
+            q3: document.getElementById('q3').value,
+            q4: document.getElementById('q4').value,
+            q5: document.getElementById('q5').value,
+            q6: document.getElementById('q6').value,
+            q7: document.getElementById('q7').value
+        };
+
+        const prompt = `
+            Sen bir matematik ve biyoloji öğretmenisin. Bir öğrencinin sınav cevaplarını değerlendiriyorsun.
+            Aşağıda 7 soru ve öğrencinin cevapları verilmiştir. Her soru için belirtilen puanlama kriterlerine göre değerlendirme yap.
+            Boş bırakılan cevaplara 0 puan ver. Sorular ve doğru cevaplar:
+
+            Soru 1 (3 Puan): Tanım ve görüntü kümesi
+            Doğru Cevap: Tanım Kümesi: [0, 56], Görüntü Kümesi: [0, 100]
+            Öğrenci Cevabı: "${answers.q1}"
+
+            Soru 2 (2 Puan): Pozitif/negatif aralıklar
+            Doğru Cevap: Fonksiyon negatif değer almaz.Pozitif değer aldığı aralık:[7,56]
+            Öğrenci Cevabı: "${answers.q2}"
+
+            Soru 3 (3 Puan): Artan/azalan aralıklar
+            Doğru Cevap: Artan: [7,21] ve [28,42], Azalan: [21,28] ve [42,56]
+            Öğrenci Cevabı: "${answers.q3}"
+
+            Soru 4 (4 Puan): Maksimum nokta
+            Doğru Cevap: (42, 100)
+            Öğrenci Cevabı: "${answers.q4}"
+
+            Soru 5 (3 Puan): Minimum değer
+            Doğru Cevap: 0
+            Öğrenci Cevabı: "${answers.q5}"
+
+            Soru 6 (5 Puan): Çift fonksiyon analizi
+            Doğru Cevap: Tanım kümesi: [-10,10], Görüntü kümesi: [0,9], f(-8)=f(8)≈9, f(-10)=f(10)≈7
+            Öğrenci Cevabı: "${answers.q6}"
+
+            Soru 7 (5 Puan): Tek fonksiyon analizi
+            Doğru Cevap: Tanım kümesi: [-10,10], Görüntü kümesi: [-9,9], f(-3)=-f(3)≈-5, f(-5)=-f(5)≈-2
+            Öğrenci Cevabı: "${answers.q7}"
+
+            ÇIKTI FORMATI: SADECE JSON formatında yanıt ver. Yanıtın geçerli bir JSON objesi olmalıdır:
+            {
+              "q1_score": 1, "q1_feedback": "Geri bildirim 1",
+              "q2_score": 2, "q2_feedback": "Geri bildirim 2",
+              "q3_score": 3, "q3_feedback": "Geri bildirim 3",
+              "q4_score": 4, "q4_feedback": "Geri bildirim 4",
+              "q5_score": 3, "q5_feedback": "Geri bildirim 5",
+              "q6_score": 5, "q6_feedback": "Geri bildirim 6",
+              "q7_score": 5, "q7_feedback": "Geri bildirim 7",
+              "total_score": 23, "overall_feedback": "Genel geri bildirim."
+            }
+        `;
+
+        let rawApiResponse = "";
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.json();
+                throw new Error(`API Hatası: ${response.status}. ${errorBody.error.message}`);
+            }
+
+            const data = await response.json();
+            rawApiResponse = data.candidates[0].content.parts[0].text;
+
+            const startIndex = rawApiResponse.indexOf('{');
+            const endIndex = rawApiResponse.lastIndexOf('}');
+
+            if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
+                throw new Error("API yanıtında geçerli bir JSON nesnesi bulunamadı.");
+            }
+
+            const jsonString = rawApiResponse.substring(startIndex, endIndex + 1);
+            const result = JSON.parse(jsonString);
+            updateUI(result);
+
+        } catch (error) {
+            console.error("DEĞERLENDİRME HATASI:", error);
+            console.error("YAPAY ZEKADAN ALINAN HAM YANIT:", rawApiResponse);
+            alert(`Değerlendirme sırasında bir hata oluştu: ${error.message}. Detaylar için tarayıcı konsolunu kontrol edin.`);
+            this.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Hata Oluştu';
+            this.style.background = 'linear-gradient(to right, #dc3545, #b21f2d)';
+            this.disabled = false;
+        }
+    });
+
+    function updateUI(result) {
+        document.getElementById('k1-score').textContent = `${result.q1_score}/3`;
+        document.getElementById('f1-feedback').textContent = result.q1_feedback;
+        document.getElementById('k2-score').textContent = `${result.q2_score}/2`;
+        document.getElementById('f2-feedback').textContent = result.q2_feedback;
+        document.getElementById('k3-score').textContent = `${result.q3_score}/3`;
+        document.getElementById('f3-feedback').textContent = result.q3_feedback;
+        document.getElementById('k4-score').textContent = `${result.q4_score}/4`;
+        document.getElementById('f4-feedback').textContent = result.q4_feedback;
+        document.getElementById('k5-score').textContent = `${result.q5_score}/3`;
+        document.getElementById('f5-feedback').textContent = result.q5_feedback;
+        document.getElementById('k6-score').textContent = `${result.q6_score}/5`;
+        document.getElementById('f6-feedback').textContent = result.q6_feedback;
+        document.getElementById('k7-score').textContent = `${result.q7_score}/5`;
+        document.getElementById('f7-feedback').textContent = result.q7_feedback;
+        
+        const totalScore = result.total_score;
+        document.getElementById('final-score').innerHTML = `<b>${totalScore}/25</b>`;
+        document.getElementById('total-score').textContent = `${totalScore}/25`;
+        
+        const messageElement = document.getElementById('result-message');
+        messageElement.innerHTML = `<p>${result.overall_feedback}</p>`;
+        
+        if (totalScore >= 20) { 
+            messageElement.className = "result-message excellent"; 
+        } else if (totalScore >= 15) { 
+            messageElement.className = "result-message good"; 
+        } else { 
+            messageElement.className = "result-message average"; 
+        }
+        
+        document.getElementById('exam-result').style.display = 'block';
+        aiEvaluateBtn.innerHTML = '<i class="fas fa-check-double"></i> Değerlendirme Tamamlandı';
+        aiEvaluateBtn.style.background = 'linear-gradient(to right, #28a745, #4caf50)';
+        aiEvaluateBtn.disabled = true;
+        
+        // Cevapları göster butonunu aktif et
+        showAnswersBtn.style.display = 'flex';
+        showAnswersBtn.onclick = showAnswers;
+        
+        document.getElementById('exam-result').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Sayfa yüklendiğinde ilk grafiği çiz
+    document.addEventListener('DOMContentLoaded', function() {
+        setupAntibodyCanvas();
+        showAnswersBtn.style.display = 'none';
+    });
+</script>
+
+</body>
+</html>
