@@ -1118,10 +1118,10 @@
             ctx.save();
             ctx.translate(padding / 3, height / 2);
             ctx.rotate(-Math.PI / 2);
-            ctx.fillText('Antikor Yoğunluğu (AU/mL)', -padding*2, -2);
+            ctx.fillText('Antikor Yoğunluğu (AU/mL)', -padding, -3);
             ctx.restore();
             
-            const fontSize = width < 500 ? 10 : 12;
+            const fontSize = width < 500 ? 8 : 12;
             ctx.font = `${fontSize}px sans-serif`;
 
             // X ekseni grid ve etiketleri
@@ -1140,7 +1140,7 @@
 
             // Y ekseni grid ve etiketleri
             ctx.textAlign = 'right';
-            for (let i = 0; i <= maxY; i += 20) {
+            for (let i = 20; i <= maxY; i += 20) {
                 const y = getCanvasY(i);
                 ctx.fillText(i, padding - 8, y + 4);
                  ctx.beginPath();
@@ -1157,10 +1157,10 @@
             ctx.font = 'italic bold 16px serif';
             ctx.fillStyle = '#00008b';
             ctx.textAlign = 'center';
-            ctx.fillText('y', padding + 20, padding + 15);
-            ctx.fillText('x', width - padding / 2 - 15, xAxisY - 15);
+            ctx.fillText('y', padding + 10, padding + 15);
+            ctx.fillText('x', width - padding / 2 - 15, xAxisY - 8);
             ctx.textAlign = 'right';
-            ctx.fillText('O', padding - 10, xAxisY + 15);
+            ctx.fillText('O', padding - 3, xAxisY + 15);
             ctx.textAlign = 'center';
         }
 
@@ -1214,6 +1214,7 @@
         // Kritik noktaları (koordinatlarıyla) işaretleyen fonksiyon
         function drawCriticalPoints() {
             const criticalPoints = [
+                 { x: 7, y: 0, align: 'center',  offsetY: -10, color: '#1a2a6c' },
                 { x: 21, y: 40, align: 'center',  offsetY: 20, color: '#1a2a6c' },
                 { x: 28, y: 5,  align: 'center', offsetY: -15, color: '#d9534f' },
                 { x: 42, y: 100,align: 'center', offsetY: 20, color: '#1a2a6c' },
@@ -1635,6 +1636,7 @@
         const totalScore = result.total_score;
         document.getElementById('final-score').innerHTML = `<b>${totalScore}/25</b>`;
         document.getElementById('total-score').textContent = `${totalScore}/25`;
+    
         
         const messageElement = document.getElementById('result-message');
         messageElement.innerHTML = `<p>${result.overall_feedback}</p>`;
@@ -1657,6 +1659,10 @@
         showAnswersBtn.onclick = showAnswers;
         
         document.getElementById('exam-result').scrollIntoView({ behavior: 'smooth' });
+
+    
+    // LMS'e puanı gönder
+        sendScoreToLMS(totalScore);
     }
 
     // Sayfa yüklendiğinde ilk grafiği çiz
@@ -1664,6 +1670,33 @@
         setupAntibodyCanvas();
         showAnswersBtn.style.display = 'none';
     });
+
+    // LMS'e puan gönderme fonksiyonu
+function sendScoreToLMS(ogrenciPuani) {
+    // LMS'e gönderilecek JSON veri (25 üzerinden puanlama)
+    var result = {
+        score: {
+            max: 25,
+            min: 0,
+            raw: ogrenciPuani,
+            scaled: ogrenciPuani / 25
+        },
+        completion: true,
+        success: (ogrenciPuani >= 12.5), // 12.5 ve üstü başarılı sayılsın
+        duration: "PT4.95S"
+    };
+
+    // LMS içindeki doğru iframe'i seç
+    var lmsWindow = window.parent.document.getElementById("frmApp-0")?.contentWindow;
+
+    // LMS penceresi bulunduysa, onCompleted() fonksiyonunu çağır
+    if (lmsWindow?.onCompleted) {
+        console.log("📡 LMS'e veri gönderiyorum...");
+        lmsWindow.onCompleted(result);
+    } else {
+        console.error("❌ LMS'ye sinyal gönderilemedi!");
+    }
+}
 </script>
 
 </body>
