@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Etkileşimli Simülasyon: Karesel Fonksiyonun Nitel Özellikleri</title>
+    <style>
+                :root {
+            --primary-color: #1e40af;
+            --secondary-color: #3b82f6;
+            --accent-color: #f59e0b;
+            --background-color: #ffffff;
+            --text-color: #1f2937;
+            --text-light: #6b7280;
+            --border-color: #e5e7eb;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --card-bg: #ffffff;
+            --canvas-bg: #fafafa;
+            --grid-color: #eef;
+            --axis-color: #555;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #60a5fa;
+            --secondary-color: #3b82f6;
+            --accent-color: #fbbf24;
+            --background-color: #111827;
+            --text-color: #f9fafb;
+            --text-light: #9ca3af;
+            --border-color: #374151;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --card-bg: #1f2937;
+            --canvas-bg: #1f2937;
+            --grid-color: #374151;
+            --axis-color: #9ca3af;
+        }
+        /* Base responsive setup */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            line-height: 1.6; 
+            color: var(--text-color); 
+            background: linear-gradient(135deg, var(--background-color) 0%, #f3f4f6 100%); 
+            margin: 0; 
+            padding: 10px; 
+            min-height: 100vh;
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
+        
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 12px 16px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        /* Keep header content from hiding under the fixed theme toggle */
+        header { padding-right: 140px; }
+        .theme-toggle:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
+        }
+        .theme-icon { 
+            width: 20px; 
+            height: 20px; 
+            transition: transform 0.3s ease; 
+        }
+        .theme-toggle:hover .theme-icon { 
+            transform: rotate(180deg); 
+        }
+
+        /* Music Control Button */
+        .music-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+        
+        .music-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .music-icon {
+            width: 24px;
+            height: 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .music-toggle.muted .music-icon {
+            opacity: 0.5;
+        }
+
+        /* --- GİRİŞ EKRANI STİLLERİ --- */
+        #intro-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100vh; 
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+            backdrop-filter: blur(15px); 
+            z-index: 1000; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        /* Vertical sliders layout (enabled via JS by adding .vertical-sliders on .controls) */
+        .controls.vertical-sliders {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(64px, 1fr));
+            column-gap: 12px;
+            align-items: center;
+            justify-items: center;
+        }
+        .controls.vertical-sliders .slider-group {
+            margin: 0 !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        /* Compact, vertical label (reads top-to-bottom) */
+        .controls.vertical-sliders .slider-group label {
+            margin: 0 !important;
+            font-size: 0.95rem;
+            line-height: 1.1;
+            writing-mode: vertical-rl; /* stack characters */
+            transform: rotate(180deg); /* keep orientation natural */
+            text-align: center;
+            white-space: nowrap;
+        }
+        /* WebKit/Blink native vertical slider */
+        .controls.vertical-sliders input[type="range"].native-vertical {
+            appearance: none; /* standard property */
+            -webkit-appearance: slider-vertical;
+            width: 28px;
+            height: 200px;
+        }
+        /* Firefox (and fallback) rotated slider */
+        .controls.vertical-sliders input[type="range"].rotate-vertical {
+            width: 200px; /* becomes the vertical length after rotation */
+            height: 28px; /* becomes the thickness */
+            transform: rotate(-90deg);
+        }
+        /* Tweak track thickness for vertical look */
+        .controls.vertical-sliders input[type="range"]::-webkit-slider-runnable-track { height: 8px; }
+        .controls.vertical-sliders input[type="range"]::-moz-range-track { height: 8px; }
+            transition: opacity 0.5s ease; 
+            /* Give more width to the graph in mobile landscape */
+            .left-column { flex: 2 1 0 !important; }
+            .right-column { flex: 1 1 0 !important; }
+
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .intro-box { 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15); 
+            max-width: 90vw; 
+            width: 100%;
+            max-width: 700px;
+            text-align: center; 
+            border: 2px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            margin: 10px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .intro-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--secondary-color));
+        }
+        .intro-box h2 { 
+            color: var(--primary-color); 
+            font-size: 2.2rem; 
+            margin-bottom: 20px; 
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .intro-box p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+        .intro-box ul { 
+            list-style: none; 
+            padding: 0; 
+            text-align: left; 
+            margin: 30px 0; 
+        }
+        .intro-box li { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+            font-size: 1.1rem; 
+            padding: 15px;
+            background: var(--background-color);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-color);
+        }
+        .intro-box svg { 
+            flex-shrink: 0; 
+        }
+        #start-btn { 
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); 
+            color: white; 
+            border: none; 
+            padding: 18px 40px; 
+            font-size: 1.3rem; 
+            font-weight: bold; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            margin-top: 25px; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        #start-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        #start-btn:hover::before {
+            left: 100%;
+        }
+        #start-btn:hover { 
+            transform: translateY(-3px) scale(1.05); 
+            box-shadow: 0 12px 35px rgba(59, 130, 246, 0.4); 
+        }
+        #start-btn:active { 
+            transform: translateY(-1px) scale(1.02); 
+        }
+        
+        /* Ana Konteyner ve Başlıklar */
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            background: var(--card-bg); 
+            border-radius: 16px; 
+            box-shadow: var(--shadow); 
+            padding: 20px; 
+            backdrop-filter: blur(10px); 
+            border: 1px solid var(--border-color); 
+            display: none; 
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: visible;
+            width: calc(100% - 20px);
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--secondary-color));
+        }
+        header h1 { 
+            text-align: center; 
+            color: var(--primary-color); 
+            font-size: 2.1rem; 
+            margin-bottom: 18px; 
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        h3 { 
+            color: var(--primary-color); 
+            margin-bottom: 20px; 
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        /* Ana Yapı ve Sütunlar */
+        .main-content { 
+            display: flex;
+            flex-wrap: nowrap; /* always side-by-side */
+            gap: 16px;
+            margin-top: 30px;
+        }
+        .left-column { 
+            flex: 1 1 0; 
+            min-width: 320px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+        }
+        .right-column { 
+            flex: 1 1 0; 
+            min-width: 320px; 
+        }
+        .left-column > div, .right-column > div { 
+            background: var(--card-bg); 
+            border: 2px solid var(--border-color); 
+            border-radius: 16px; 
+            padding: 20px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .left-column > div::before, .right-column > div::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        .left-column > div:hover, .right-column > div:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        }
+        canvas { 
+            width: 100%; 
+            height: auto; 
+            aspect-ratio: 1 / 1; 
+            border: 2px solid var(--border-color); 
+            border-radius: 12px; 
+            background: var(--canvas-bg);
+            transition: all 0.3s ease;
+        }
+        
+        /* Kontrol Paneli ve Sürgüler */
+        .controls { 
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%); 
+            padding: 25px; 
+            border-radius: 16px; 
+            border: 2px solid var(--border-color);
+            backdrop-filter: blur(5px);
+        }
+        .slider-group { 
+            margin-bottom: 20px; 
+        }
+        .slider-group label { 
+            display: block; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+        .slider-group input[type="range"] { 
+            width: 100%; 
+            cursor: pointer; 
+            -webkit-appearance: none; 
+            appearance: none; 
+            height: 8px;
+            border-radius: 4px;
+            background: var(--border-color);
+            outline: none;
+            transition: all 0.3s ease;
+            /* Allow vertical scroll while dragging horizontally on touch devices */
+            touch-action: pan-y;
+            -ms-touch-action: pan-y;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .slider-group input[type="range"]:hover {
+            background: var(--secondary-color);
+        }
+        .slider-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        .slider-group input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        .slider-group input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .slider-group input[type="range"]::-webkit-slider-runnable-track { height: 8px; background: #dbeafe; border-radius: 5px; }
+        .slider-group input[type="range"]::-moz-range-track { height: 8px; background: #dbeafe; border-radius: 5px; }
+        .slider-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -6px; height: 20px; width: 20px; background-color: var(--secondary-color); border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+        .slider-group input[type="range"]::-moz-range-thumb { height: 20px; width: 20px; background-color: var(--secondary-color); border-radius: 50%; border: 2px solid white; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+        #function-equation { 
+            font-size: clamp(1rem, 2.2vw, 1.4rem); 
+            font-weight: bold; 
+            color: var(--primary-color); 
+            text-align: center; 
+            padding: 20px; 
+            background: linear-gradient(135deg, var(--card-bg), rgba(59, 130, 246, 0.02)); 
+            border-radius: 16px; 
+            border: 2px solid var(--border-color); 
+            min-height: 30px; 
+            margin-top: 15px; 
+            overflow-wrap: break-word; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        #function-equation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--secondary-color));
+        }
+        
+        /* Tablo ve Sekme Stilleri */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 15px; 
+            font-size: 0.95rem; 
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        th, td { 
+            border: 1px solid var(--border-color); 
+            padding: 12px 15px; 
+            text-align: left; 
+            vertical-align: middle; 
+        }
+        th { 
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); 
+            color: white;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        tr:nth-child(even) { 
+            background-color: rgba(59, 130, 246, 0.02); 
+        }
+        tr:hover td { 
+            background-color: rgba(59, 130, 246, 0.05); 
+        }
+        .btn-set-values { 
+            padding: 8px 16px; 
+            font-size: 0.9rem; 
+            border: 2px solid var(--primary-color); 
+            background: linear-gradient(135deg, transparent, rgba(59, 130, 246, 0.05)); 
+            color: var(--primary-color); 
+            border-radius: 25px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-set-values::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .btn-set-values:hover::before {
+            left: 100%;
+        }
+        .btn-set-values:hover { 
+            transform: translateY(-2px) scale(1.05); 
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3); 
+            background: var(--primary-color);
+            color: white;
+        }
+        .btn-set-values:active { 
+            transform: translateY(0) scale(1.02); 
+        }
+        .tab-buttons { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+            border-bottom: 3px solid var(--border-color); 
+            margin-bottom: 20px; 
+            padding-bottom: 10px;
+        }
+
+        /* Always-2-column: allow horizontal scroll on narrow viewports */
+        .container { overflow-x: auto; overflow-y: auto; }
+        .main-content { min-width: 640px; }
+
+        /* Right column segmented switch visible on all sizes */
+        .right-column { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+        .right-column .segment-switch {
+            display: flex;
+            gap: 8px;
+            padding: 8px;
+            border-bottom: 2px solid var(--border-color);
+            border-radius: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--card-bg);
+        }
+        .right-column .segment-switch .seg-btn {
+            flex: 1 1 0;
+            min-width: 0;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            background: var(--background-color);
+            color: var(--text-light);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+            cursor: pointer;
+            white-space: nowrap;
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
+            user-select: none;
+            height: 40px;
+            min-height: 40px;
+        }
+        .right-column .segment-switch .seg-btn.active {
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(59,130,246,0.25);
+        }
+        .right-column .segment-content { display: none; min-height: 0; overflow: hidden; flex: 1 1 auto; }
+        .right-column .segment-content.active { display: block; }
+        /* Allow controls segment to scroll if content overflows */
+        .right-column .seg-controls { 
+            height: 100%;
+            max-height: 70vh;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        /* Make Keşif Tabloları scrollable */
+        .right-column .seg-tables .tables-section {
+            height: 100%;
+            max-height: 70vh;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    .tables-section .tab-buttons { position: sticky; top: 0; z-index: 2; background: var(--card-bg); }
+        .tab-button { 
+            padding: 12px 20px; 
+            cursor: pointer; 
+            border: 2px solid transparent; 
+            background: var(--card-bg); 
+            font-size: 0.95rem; 
+            font-weight: 600; 
+            color: var(--text-light); 
+            border-radius: 25px; 
+            transition: all 0.3s ease; 
+            position: relative;
+            overflow: hidden;
+        }
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        .tab-button:hover::before {
+            left: 100%;
+        }
+        .tab-button:hover { 
+            color: var(--primary-color); 
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+        }
+        .tab-button.active { 
+            color: white; 
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-color: var(--secondary-color);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .tab-content { 
+            display: none; 
+        }
+        .tab-content.active { 
+            display: block; 
+            animation: fadeIn 0.5s ease-in-out; 
+        }
+        @keyframes fadeIn { 
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            } 
+        }
+
+        /* Compact styling for Keşif Tabloları (scoped) */
+        .tables-section { 
+            --tbl-font: 0.92rem; 
+            --tbl-pad-y: 8px; 
+            --tbl-pad-x: 10px; 
+        }
+        .tables-section h3 { 
+            margin-bottom: 12px; 
+            font-size: 1.1rem; 
+        }
+        .tables-section .tab-buttons { 
+            gap: 6px; 
+            padding-bottom: 6px; 
+            margin-bottom: 12px; 
+        }
+        .tables-section .tab-button { 
+            padding: 8px 12px; 
+            font-size: 0.9rem; 
+        }
+        .tables-section table { 
+            font-size: var(--tbl-font); 
+        }
+        .tables-section th, 
+        .tables-section td { 
+            padding: var(--tbl-pad-y) var(--tbl-pad-x); 
+        }
+        .tables-section .btn-set-values { 
+            padding: 6px 10px; 
+            font-size: 0.8rem; 
+            min-width: 56px; 
+        }
+
+        /* Hide Keşif Tabloları (Tables) on mobile; show only on desktop */
+        @media (max-width: 1024px) {
+            /* Hide the segment switch bar (no need with single panel) */
+            .right-column .segment-switch { display: none !important; }
+            /* Hide the Tables tab button if any leftover */
+            .right-column .segment-switch .seg-btn[data-seg="tables"] { display: none !important; }
+            /* Hide the tables pane entirely */
+            .right-column .seg-tables { display: none !important; }
+            /* Ensure controls pane is visible regardless of .active */
+            .right-column .seg-controls { display: block !important; max-height: none; }
+        }
+
+        /* Tighter on mobile */
+        @media (max-width: 768px) {
+            .tables-section { 
+                --tbl-font: 0.84rem; 
+                --tbl-pad-y: 6px; 
+                --tbl-pad-x: 8px; 
+            }
+            .tables-section .tab-button { 
+                padding: 6px 10px; 
+                font-size: 0.82rem; 
+            }
+            /* Swap order: show tab content first, buttons after (mobile) */
+            .tables-section { display: flex; flex-direction: column; }
+            .tables-section .tab-content { order: 1; }
+            .tables-section .tab-buttons { 
+                order: 2; 
+                position: sticky; 
+                top: auto; 
+                bottom: 0; 
+                background: var(--card-bg); 
+                box-shadow: 0 -4px 10px rgba(0,0,0,0.06);
+                padding-top: 6px; 
+                padding-bottom: 6px; 
+                margin-top: 8px;
+                margin-bottom: 0;
+            }
+        }
+
+        /* Footer */
+        footer { 
+            margin-top: 40px; 
+            padding: 30px; 
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%);
+            border-left: 6px solid var(--accent-color); 
+            border-radius: 16px; 
+            backdrop-filter: blur(5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+        }
+        footer h2 { 
+            color: var(--primary-color); 
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        footer p {
+            color: var(--text-color);
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        footer ul {
+            margin: 20px 0;
+        }
+        footer li {
+            margin: 12px 0;
+            color: var(--text-color);
+            line-height: 1.7;
+        }
+
+        /* Orientation Warning */
+        .orientation-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95));
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .orientation-warning.show {
+            display: flex;
+            animation: slideInFromTop 0.5s ease-out;
+        }
+        .orientation-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            animation: rotatePhone 2s ease-in-out infinite;
+        }
+        .orientation-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .orientation-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes slideInFromTop {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes rotatePhone {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        /* Mobile Optimizations */
+        /* Mobile Touch Optimizations */
+        @media (max-width: 1024px) and (orientation: landscape) {
+            /* Intro overlay mobile landscape fixes */
+            #intro-overlay {
+                padding: 5px;
+                align-items: flex-start;
+                justify-content: center;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                height: 100vh;
+                min-height: 100vh;
+            }
+            
+            .intro-box {
+                padding: 20px;
+                margin: 5px auto;
+                max-height: 85vh;
+                overflow-y: auto;
+                border-radius: 16px;
+                transform: scale(0.9);
+                width: 95%;
+                max-width: 600px;
+            }
+            
+            .intro-box h2 {
+                font-size: 1.6rem !important;
+                margin-bottom: 15px;
+                line-height: 1.3;
+            }
+            
+            .intro-box p {
+                font-size: 1rem;
+                margin-bottom: 15px;
+            }
+            
+            .intro-box ul {
+                margin: 15px 0;
+            }
+            
+            .intro-box li {
+                padding: 8px;
+                margin-bottom: 10px;
+                font-size: 0.9rem;
+                line-height: 1.3;
+            }
+            
+            #start-btn {
+                padding: 12px 25px !important;
+                font-size: 1.1rem !important;
+                margin-top: 15px;
+            }
+            
+            /* Canvas container centering with forced layout */
+            .left-column > div:first-child {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                min-height: 300px;
+                width: 100%;
+                box-sizing: border-box;
+                padding: 6px !important; /* minimize outer padding to grow canvas */
+            }
+            
+            canvas {
+                margin: 0 auto;
+                display: block;
+                max-width: 100%; /* use full width */
+                max-height: 380px;
+                width: auto !important;
+                height: auto !important;
+                aspect-ratio: 1 / 1;
+                border-radius: 10px;
+                border-width: 1px; /* thinner border for more drawing area */
+                box-shadow: none; /* remove shadow to avoid visual padding */
+            }
+            
+            /* Canvas wrapper for better control */
+            .canvas-wrapper {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                min-height: 300px;
+                padding: 0 !important; /* remove inner padding to maximize canvas */
+                box-sizing: border-box;
+            }
+            
+            /* Larger touch targets */
+            .btn-set-values {
+                min-height: 44px;
+                min-width: 80px;
+                font-size: 0.9rem;
+            }
+            
+            .tab-button {
+                min-height: 44px;
+                padding: 10px 16px;
+            }
+            
+            /* Better slider visibility */
+            .slider-group input[type="range"] {
+                height: 12px;
+                margin: 10px 0;
+            }
+            
+            .slider-group input[type="range"]::-webkit-slider-thumb {
+                width: 28px;
+                height: 28px;
+            }
+            
+            .slider-group input[type="range"]::-moz-range-thumb {
+                width: 28px;
+                height: 28px;
+            }
+            
+            /* Prevent text selection on touch */
+            * {
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+            
+            /* Allow text selection for readable content */
+            p, td, .orientation-text, .orientation-subtitle {
+                -webkit-user-select: text;
+                -moz-user-select: text;
+                -ms-user-select: text;
+                user-select: text;
+            }
+            
+            /* Better scroll on tables */
+            .tables-section {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            table {
+                min-width: 100%;
+            }
+            
+            /* Improve readability */
+            .container {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+            
+            .left-column > div, .right-column > div {
+                margin-bottom: 15px;
+            }
+            
+            /* Canvas section specific styling */
+            .left-column > div h3 {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            
+            /* Center the equation display too */
+            #function-equation {
+                text-align: center;
+                margin: 15px auto;
+                max-width: 400px;
+            }
+            
+            /* Force layout stability */
+            .left-column {
+                min-width: 0;
+                flex-shrink: 1;
+            }
+            
+            .main-content {
+                align-items: flex-start;
+                min-height: 0;
+            }
+        }
+        
+        /* Comprehensive Mobile Responsive Design */
+        
+        /* Small Mobile Phones (320px - 480px) */
+        @media (max-width: 480px) {
+            /* Intro overlay fixes for very small screens */
+            #intro-overlay {
+                padding: 2px;
+                align-items: flex-start;
+                justify-content: center;
+            }
+            
+            .intro-box {
+                padding: 15px;
+                margin: 2px;
+                border-radius: 12px;
+                transform: scale(0.95);
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            
+            .intro-box h2 {
+                font-size: 1.4rem !important;
+                margin-bottom: 10px;
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .intro-box p {
+                font-size: 0.9rem;
+                margin-bottom: 10px;
+            }
+            
+            .intro-box ul {
+                margin: 10px 0;
+            }
+            
+            .intro-box li {
+                padding: 6px;
+                margin-bottom: 8px;
+                font-size: 0.85rem;
+                line-height: 1.2;
+            }
+            
+            #start-btn {
+                padding: 10px 20px !important;
+                font-size: 1rem !important;
+                margin-top: 10px;
+            }
+
+            /* Minimize outer padding of graph card on very small devices */
+            .left-column > div:first-child { padding: 4px !important; }
+            body {
+                padding: 5px;
+                font-size: 14px;
+            }
+            
+            .container {
+                padding: 10px;
+                border-radius: 12px;
+                margin: 0 5px;
+                width: calc(100% - 10px);
+            }
+            
+            .intro-box {
+                padding: 20px;
+                margin: 0 5px;
+                border-radius: 16px;
+            }
+            
+            .intro-box h2 {
+                font-size: 1.8rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .intro-box p {
+                font-size: 1rem;
+            }
+            
+            .intro-box li {
+                padding: 10px;
+                font-size: 0.95rem;
+            }
+            
+            #start-btn {
+                padding: 15px 25px;
+                font-size: 1.1rem;
+            }
+            
+            .theme-toggle {
+                top: 5px;
+                right: 5px;
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            /* Prevent theme toggle from overlapping header title on small screens */
+            header { padding-right: 72px !important; }
+            .theme-toggle #theme-text { display: none !important; }
+            .theme-toggle {
+                border-radius: 50% !important;
+                width: 48px !important;
+                height: 48px !important;
+                padding: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 0 !important;
+            }
+            
+            header h1 {
+                font-size: 1.3rem !important;
+                line-height: 1.15 !important;
+                margin-bottom: 6px !important;
+                flex-direction: row;
+                gap: 6px;
+            }
+            header h1 svg { display: none !important; }
+            
+            h3 {
+                font-size: 1.1rem !important;
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .main-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .left-column, .right-column {
+                min-width: 0;
+                width: 100%;
+            }
+            
+            .left-column > div, .right-column > div {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            canvas {
+                max-width: 100%;
+                max-height: 340px; /* allow a bit more height on very small screens */
+                margin: 0; /* no extra margins */
+                border-width: 1px;
+            }
+            
+            .controls {
+                padding: 10px;
+            }
+            /* Make slider rows compact and single-line: label | slider */
+            .controls .slider-group {
+                display: grid;
+                grid-template-columns: minmax(64px, auto) 1fr;
+                align-items: center;
+                column-gap: 10px;
+                margin-bottom: 8px;
+            }
+            .controls .slider-group label { 
+                margin: 0; 
+                font-size: 0.95rem; 
+                white-space: nowrap;
+                line-height: 1.1;
+            }
+            .controls input[type="range"] { height: 10px; }
+            .controls input[type="range"]::-webkit-slider-thumb { width: 24px; height: 24px; }
+            .controls input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; }
+
+            /* Reduce equation spacing under controls */
+            #function-equation { 
+                font-size: clamp(0.9rem, 2.4vw, 1.1rem);
+                padding: 8px; 
+                margin-top: 8px; 
+            }
+
+            /* In controls tab, heading is redundant — hide to save vertical space */
+            .right-column .seg-controls h3 { display: none !important; }
+            
+            .slider-group label {
+                font-size: 1rem;
+            }
+            
+            .tab-buttons {
+                gap: 4px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .tab-button {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+                margin-bottom: 5px;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 6px 8px;
+            }
+            
+            .btn-set-values {
+                padding: 5px 10px;
+                font-size: 0.75rem;
+                min-width: 60px;
+            }
+            
+            #function-equation {
+                font-size: 1.2rem;
+                padding: 15px;
+            }
+            
+            footer {
+                margin-top: 20px;
+                padding: 20px;
+            }
+            
+            footer h2 {
+                font-size: 1.4rem;
+            }
+        }
+        
+        /* Medium Mobile Phones (481px - 768px) */
+        @media (min-width: 481px) and (max-width: 768px) {
+            header h1 {
+                font-size: 1.4rem !important;
+                line-height: 1.2 !important;
+                margin-bottom: 10px !important;
+                gap: 8px;
+            }
+            header h1 svg { width: 18px; height: 18px; }
+            .container {
+                padding: 20px;
+                margin: 0 10px;
+                width: calc(100% - 20px);
+            }
+            
+            .intro-box {
+                padding: 25px;
+                margin: 0 10px;
+            }
+            
+            .main-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .left-column, .right-column {
+                min-width: 0;
+                width: 100%;
+            }
+            
+            canvas {
+                max-width: 100%;
+                max-height: 350px;
+            }
+            
+            .tab-buttons {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .tab-button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            table {
+                font-size: 0.9rem;
+            }
+            
+            .btn-set-values {
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+
+            /* Compact controls on medium mobiles too */
+            .controls { padding: 12px; }
+            .controls .slider-group {
+                display: grid;
+                grid-template-columns: minmax(72px, auto) 1fr;
+                align-items: center;
+                column-gap: 12px;
+                margin-bottom: 10px;
+            }
+            .controls .slider-group label { margin: 0; font-size: 1rem; white-space: nowrap; }
+            .controls input[type="range"] { height: 10px; }
+            .right-column .seg-controls h3 { display: none !important; }
+        }
+        
+        /* Tablets Portrait (769px - 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+            .container {
+                padding: 25px;
+                margin: 0 15px;
+                width: calc(100% - 30px);
+            }
+            
+            .main-content {
+                flex-direction: column;
+                gap: 25px;
+            }
+            
+            canvas {
+                max-width: 100%;
+                max-height: 400px;
+            }
+        }
+        
+        /* Mobile landscape specific fixes */
+        @media (max-width: 768px) and (orientation: landscape) {
+            /* On mobile, no segment switch and no tables section at all */
+            .right-column .segment-switch { display: none !important; }
+            .right-column .seg-tables { display: none !important; }
+            .right-column .seg-controls { display: block !important; }
+            #intro-overlay {
+                height: 100vh !important;
+                min-height: 100vh !important;
+                padding: 3px !important;
+                align-items: flex-start !important;
+                justify-content: center;
+                overflow-y: auto !important;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .intro-box {
+                padding: 15px !important;
+                margin: 3px auto !important;
+                max-height: 95vh !important;
+                overflow-y: auto !important;
+                border-radius: 12px !important;
+                transform: scale(0.85) !important;
+                width: 98% !important;
+                max-width: 550px !important;
+            }
+            
+            .intro-box h2 {
+                font-size: 1.4rem !important;
+                margin-bottom: 10px !important;
+                line-height: 1.2 !important;
+            }
+            
+            .intro-box p {
+                font-size: 0.9rem !important;
+                margin-bottom: 10px !important;
+            }
+            
+            .intro-box ul {
+                margin: 10px 0 !important;
+            }
+            
+            .intro-box li {
+                padding: 6px !important;
+                margin-bottom: 6px !important;
+                font-size: 0.8rem !important;
+                line-height: 1.2 !important;
+            }
+            
+            #start-btn {
+                padding: 8px 18px !important;
+                font-size: 0.95rem !important;
+                margin-top: 8px !important;
+            }
+
+            /* 2-Column landscape layout on small mobiles */
+            .container {
+                padding: 8px !important;
+                margin: 0 !important;
+                width: 100% !important;
+                height: 100vh !important;
+                max-height: 100vh !important;
+                overflow: hidden !important;
+            }
+
+            header h1 {
+                font-size: 1rem !important;
+                line-height: 1.1 !important;
+                margin-bottom: 4px !important;
+            }
+            header h1 svg { display: none !important; }
+
+            .main-content {
+                flex-direction: row !important;
+                gap: 8px !important;
+                align-items: stretch !important;
+                height: calc(100% - 44px) !important; /* leave less room for header */
+            }
+
+            .left-column, .right-column {
+                flex: 1 1 0 !important;
+                min-width: 0 !important;
+                height: 100% !important;
+            }
+
+            /* Left: Graph (bigger) + Controls (smaller) stacked */
+            .left-column {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 8px !important;
+            }
+
+            .left-column > div:first-child {
+                flex: 1 1 60% !important;
+                min-height: 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+
+            .left-column > div:first-child .canvas-wrapper {
+                flex: 1 1 auto !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                min-height: 0 !important;
+            }
+
+            /* Make the canvas as large as possible while keeping it square */
+            .left-column canvas#graphCanvas {
+                width: 100% !important;
+                height: auto !important;
+                max-height: 100% !important;
+                aspect-ratio: 1 / 1 !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                border-width: 1px !important;
+            }
+
+            /* Controls under the graph, scrollable if needed */
+            .left-column > div:nth-child(2) {
+                flex: 0 0 auto !important;
+                max-height: 40% !important;
+                overflow: auto !important;
+            }
+
+            /* Right: Tables take full column height with internal scroll */
+            .right-column {
+                display: flex !important;
+                flex-direction: column !important;
+            }
+
+            .right-column > div {
+                flex: 1 1 auto !important;
+                min-height: 0 !important;
+                overflow: auto !important;
+            }
+
+            /* Remove segment switch styles in landscape (hidden above) */
+
+            /* Only show active segment content */
+            .right-column .segment-content {
+                display: none !important;
+                flex: 1 1 auto !important; /* occupy remaining height */
+                min-height: 0 !important;
+                overflow: hidden !important;
+                padding-top: 0 !important;
+            }
+            .right-column .segment-content.active {
+                display: block !important;
+            }
+
+            /* Make function equation smaller so it fits on one line in mobile landscape */
+            #function-equation {
+                font-size: clamp(0.8rem, 2.2vw, 1.1rem) !important;
+                padding: 10px !important;
+                white-space: nowrap !important;
+            }
+
+            /* Keep tab buttons visible while scrolling tables */
+            .tables-section .tab-buttons {
+                position: sticky !important;
+                top: 0 !important; /* sticky within inner scroll container */
+                z-index: 2 !important;
+                background: var(--card-bg) !important;
+                padding-top: 8px !important;
+                padding-bottom: 8px !important;
+                margin-bottom: 8px !important;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.08) !important;
+            }
+            /* Add padding to tables-section to avoid content hiding behind sticky tabs */
+            .right-column .seg-tables .tables-section { padding-top: 8px; padding-bottom: 56px; }
+
+            /* Controls segment should scroll if needed */
+            .right-column .seg-controls { 
+                height: 100% !important; 
+                max-height: none !important; 
+                overflow: auto !important; 
+                -webkit-overflow-scrolling: touch !important; 
+            }
+
+            /* Hide control heading to save space in narrow landscape */
+            .right-column .seg-controls h3 { display: none !important; }
+
+            /* Inner scrolling for tables in landscape */
+            .right-column .seg-tables .tables-section {
+                height: 100% !important;
+                max-height: none !important;
+                overflow: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+
+            /* Compact paddings to fit more content */
+            .left-column > div, .right-column > div {
+                padding: 12px !important;
+                margin-bottom: 0 !important;
+            }
+
+            .controls { padding: 12px !important; }
+            .slider-group { margin-bottom: 12px !important; }
+            .tab-button { padding: 8px 10px !important; }
+            th, td { padding: 8px !important; }
+        }
+        
+        @media (max-width: 900px) and (orientation: portrait) {
+            /* Keep page scrollable even in portrait */
+            body, .container, .intro-overlay {
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Orientation Warning -->
+    <div class="orientation-warning" id="orientation-warning">
+        <svg class="orientation-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="2" width="16" height="20" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+            <line x1="12" y1="18" x2="12.01" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M8 6L16 14M16 6L8 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <div class="orientation-text">📱 Cihazınızı Yatay Çevirin</div>
+        <div class="orientation-subtitle">Bu simülasyon yatay ekran için optimize edilmiştir</div>
+        <div style="font-size: 3rem; animation: bounce 1s ease-in-out infinite;">📐</div>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="background-music" loop preload="auto">
+        <source src="simülasyon.mp3" type="audio/mpeg">
+        <source src="sounds/simülasyon.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Music Control Button -->
+    <button class="music-toggle" id="music-toggle" title="Müziği Aç/Kapat">
+        <svg class="music-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19.07 4.93C20.9447 6.80528 21.9979 9.34836 21.9979 12C21.9979 14.6516 20.9447 17.1947 19.07 19.07M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 12C17.0039 13.3308 16.4774 14.6024 15.54 15.54" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="theme-toggle">
+        <svg class="theme-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3V1M12 23V21M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span id="theme-text">Gece Modu</span>
+    </button>
+
+    <div id="intro-overlay">
+        <div class="intro-box">
+            <h2><svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--primary-color);"><path d="M3 3V19C3 20.1046 3.89543 21 5 21H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 5.32837C19.2325 3.56086 16.7118 2.5 14 2.5C9.58172 2.5 6 6.08172 6 10.5C6 14.9183 9.58172 18.5 14 18.5C16.8856 18.5 19.5298 17.2915 21.2307 15.4616" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Karesel Fonksiyon Simülasyonu</h2>
+            <p>Bu simülasyon ile katsayıların parabol grafiğini nasıl etkilediğini keşfedin.</p>
+            <ul>
+                <li><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--accent-color);"><path d="M5 12H3C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 12V14C5 18.9706 9.02944 23 14 23C18.9706 23 23 18.9706 23 14V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> <strong>Sürgüleri (a, r, k)</strong> kullanarak fonksiyonun katsayılarını değiştirin.</li>
+                <li><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--secondary-color);"><path d="M17.554 13.5649L15.345 11.3559L17.554 9.14691C18.113 8.58791 18.257 7.68991 17.893 6.94191L17.22 5.60191C16.857 4.85391 15.959 4.47191 15.111 4.70091L4.227 7.74291C3.379 7.97191 2.801 8.81091 2.945 9.69891L3.293 11.8979C3.437 12.7859 4.257 13.4359 5.163 13.3779L12 12.8779L14.209 15.0869C13.65 15.6459 13.506 16.5439 13.87 17.2919L14.543 18.6319C14.906 19.3799 15.804 19.7619 16.652 19.5329L19.581 18.6679C20.429 18.4389 21.007 17.5999 20.863 16.7119L20.515 14.5129C20.371 13.6249 19.551 12.9749 18.645 13.0329L17.554 13.1119V13.5649Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Grafikteki anlık değişimi ve fonksiyon denklemini <strong>gözlemleyin.</strong></li>
+                <li><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--primary-color);"><path d="M8 2H16C18.2091 2 20 3.79086 20 6V18C20 20.2091 18.2091 22 16 22H8C5.79086 22 4 20.2091 4 18V6C4 3.79086 5.79086 2 8 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 18V18.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 6V14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Sağdaki <strong>Keşif Tabloları</strong> ile özel durumları inceleyin.</li>
+            </ul>
+            <button id="start-btn">Simülasyonu Başlat</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1><svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 3V19C3 20.1046 3.89543 21 5 21H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 5.32837C19.2325 3.56086 16.7118 2.5 14 2.5C9.58172 2.5 6 6.08172 6 10.5C6 14.9183 9.58172 18.5 14 18.5C16.8856 18.5 19.5298 17.2915 21.2307 15.4616" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Karesel Fonksiyonun Nitel Özellikleri</h1>
+        </header>
+
+        <div class="main-content">
+            <div class="left-column">
+                <div>
+                    <h3><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 21L3 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 3V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 3.03126C10 3.03126 13 5 15 11C17 17 21 18.9687 21 18.9687" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Fonksiyon Grafiği</h3>
+                    <div class="canvas-wrapper">
+                        <canvas id="graphCanvas"></canvas>
+                    </div>
+                    <div id="canvas-error" style="color: red; text-align: center; margin-top: 10px; display: none;">Grafik yüklenemedi. Lütfen sayfayı yenileyin.</div>
+                </div>
+                <div>
+                    <h3><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 21V14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 10V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 21V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 21V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 12V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 14H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 8H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 16H23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Kontrol Paneli</h3>
+                    <div class="controls">
+                        <div class="slider-group"><label for="slider-a">a = <span id="value-a">1</span></label><input type="range" id="slider-a" min="-5" max="5" value="1" step="0.1"></div>
+                        <div class="slider-group"><label for="slider-r">r = <span id="value-r">0</span></label><input type="range" id="slider-r" min="-5" max="5" value="0" step="0.1"></div>
+                        <div class="slider-group"><label for="slider-k">k = <span id="value-k">0</span></label><input type="range" id="slider-k" min="-5" max="5" value="0" step="0.1"></div>
+                    </div>
+                    <div id="function-equation">g(x) = x²</div>
+                </div>
+            </div>
+            <div class="right-column">
+                <!-- Segment switch only used on mobile landscape; harmless on desktop -->
+                <div class="segment-switch" aria-label="Bölüm Seçimi">
+                    <button class="seg-btn active" data-seg="controls">Kontroller</button>
+                    <button class="seg-btn" data-seg="tables">Tablolar</button>
+                </div>
+
+                <!-- Segment: Controls (clone of left control box shown here in mobile landscape) -->
+                <div class="segment-content seg-controls">
+                    <!-- We will reuse the existing left control box by moving it via JS on mobile landscape.
+                         This placeholder stays empty; real node is moved into right column above or below tables. -->
+                </div>
+
+                <!-- Segment: Tables -->
+                <div class="segment-content seg-tables active">
+                <div class="tables-section">
+                    <h3><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 2H16C18.2091 2 20 3.79086 20 6V18C20 20.2091 18.2091 22 16 22H8C5.79086 22 4 20.2091 4 18V6C4 3.79086 5.79086 2 8 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 18V18.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 6V14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Keşif Tabloları</h3>
+                    <p>İncelemek istediğiniz parametre grubunu seçin ve "Ayarla" butonları ile grafikteki değişimleri gözlemleyin.</p>
+                    <div class="tab-buttons">
+                        <button class="tab-button active" data-target="tab1">'a' Sürgüsünün Etkisi</button>
+                        <button class="tab-button" data-target="tab2">'a' ve 'r' Sürgülerinin Etkisi</button>
+                        <button class="tab-button" data-target="tab3">'a' ve 'k' Sürgülerinin Etkisi</button>
+                        <button class="tab-button" data-target="tab4">Tüm Sürgülerin Etkisi</button>
+                    </div>
+                    <div id="tab1" class="tab-content active">
+                        <table>
+                            <thead><tr><th>Fonksiyon</th><th>a Değeri</th><th>Oluşan Fonksiyon</th><th>Dönüşüm</th></tr></thead>
+                            <tbody>
+                                <tr><td>h(x) <button class="btn-set-values" data-a="-1" data-r="0" data-k="0">Ayarla</button></td><td>a = -1</td><td>h(x) = -x²</td><td>x eksenine göre yansıma.</td></tr>
+                                <tr><td>m(x) <button class="btn-set-values" data-a="2" data-r="0" data-k="0">Ayarla</button></td><td>a = 2</td><td>m(x) = 2x²</td><td>Kollar daralır.</td></tr>
+                                <tr><td>n(x) <button class="btn-set-values" data-a="0.5" data-r="0" data-k="0">Ayarla</button></td><td>a = 0,5</td><td>n(x) = 0,5x²</td><td>Kollar genişler.</td></tr>
+                                <tr><td>s(x) <button class="btn-set-values" data-a="-3" data-r="0" data-k="0">Ayarla</button></td><td>a = -3</td><td>s(x) = -3x²</td><td>Yansıma ve kolların daralması.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tab2" class="tab-content">
+                        <table>
+                            <thead><tr><th>Fonksiyon</th><th>a ve r Değerleri</th><th>Oluşan Fonksiyon</th><th>Dönüşüm</th></tr></thead>
+                            <tbody>
+                                <tr><td>h(x) <button class="btn-set-values" data-a="0.5" data-r="-2" data-k="0">Ayarla</button></td><td>a = 0,5<br>r = -2</td><td>h(x) = 0,5(x + 2)²</td><td>2 birim sola öteleme ve genişleme.</td></tr>
+                                <tr><td>m(x) <button class="btn-set-values" data-a="1" data-r="1" data-k="0">Ayarla</button></td><td>a = 1<br>r = 1</td><td>m(x) = (x - 1)²</td><td>1 birim sağa öteleme.</td></tr>
+                                <tr><td>n(x) <button class="btn-set-values" data-a="2" data-r="3" data-k="0">Ayarla</button></td><td>a = 2<br>r = 3</td><td>n(x) = 2(x - 3)²</td><td>3 birim sağa öteleme ve daralma.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tab3" class="tab-content">
+                         <table>
+                            <thead><tr><th>Fonksiyon</th><th>a ve k Değerleri</th><th>Oluşan Fonksiyon</th><th>Dönüşüm</th></tr></thead>
+                            <tbody>
+                                <tr><td>h(x) <button class="btn-set-values" data-a="1" data-r="0" data-k="2">Ayarla</button></td><td>a = 1<br>k = 2</td><td>h(x) = x² + 2</td><td>2 birim yukarı öteleme.</td></tr>
+                                <tr><td>m(x) <button class="btn-set-values" data-a="1" data-r="0" data-k="-1">Ayarla</button></td><td>a = 1<br>k = -1</td><td>m(x) = x² - 1</td><td>1 birim aşağı öteleme.</td></tr>
+                                <tr><td>n(x) <button class="btn-set-values" data-a="-1" data-r="0" data-k="3">Ayarla</button></td><td>a = -1<br>k = 3</td><td>n(x) = -x² + 3</td><td>Yansıma ve 3 birim yukarı öteleme.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tab4" class="tab-content">
+                        <table>
+                            <thead><tr><th>Fonksiyon</th><th>a, r, k Değerleri</th><th>Oluşan Fonksiyon</th><th>Dönüşüm</th></tr></thead>
+                            <tbody>
+                                <tr><td>h(x) <button class="btn-set-values" data-a="1" data-r="1" data-k="3">Ayarla</button></td><td>a=1, r=1, k=3</td><td>h(x) = (x - 1)² + 3</td><td>1 birim sağa, 3 birim yukarı.</td></tr>
+                                <tr><td>m(x) <button class="btn-set-values" data-a="-2" data-r="-2" data-k="-1">Ayarla</button></td><td>a=-2, r=-2, k=-1</td><td>m(x) = -2(x + 2)² - 1</td><td>Yansıma, daralma, 2 birim sola, 1 birim aşağı.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer><h2>Değerlendirme</h2><p>Bu etkinlik sonucunda, g(x) = a(x - r)² + k fonksiyonundaki katsayıların grafiği nasıl etkilediğini öğrendik:<ul><li><strong>a katsayısı:</strong> Parabolün kollarının yönünü (a>0 ise yukarı, a<0 ise aşağı) ve genişliğini ( |a|>1 ise daralır, 0<|a|<1 ise genişler) belirler.</li><li><strong>r katsayısı:</strong> Grafiği yatay olarak öteler. Denklemde (x - r) olduğu için, r pozitif ise sağa, r negatif ise sola ötelenir.</li><li><strong>k katsayısı:</strong> Grafiği dikey olarak öteler. k pozitif ise yukarı, k negatif ise aşağı ötelenir.</li></ul></p></footer>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- ORIENTATION CONTROL ---
+        const orientationWarning = document.getElementById('orientation-warning');
+        const leftColumn = document.querySelector('.left-column');
+        const rightColumn = document.querySelector('.right-column');
+        let controlBoxOriginalParent = null;
+        let controlBoxPlaceholder = null;
+        let controlBoxMoved = false;
+
+        // Helper: find the Control Panel container (the whole box that includes heading + controls + equation)
+        function getControlBox() {
+            // Assumes the second box in left-column is the control panel container
+            if (!leftColumn) return null;
+            const box = leftColumn.children && leftColumn.children[1];
+            // If already moved, it will no longer be in leftColumn; try to find by heading text
+            if (!box) {
+                const allBoxes = document.querySelectorAll('.left-column > div, .right-column > div');
+                for (const el of allBoxes) {
+                    const h3 = el.querySelector('h3');
+                    if (h3 && h3.textContent.trim().toLowerCase().includes('kontrol paneli')) {
+                        // Return the closest block element containing the header
+                        const candidate = h3.parentElement?.closest('div');
+                        return candidate || el;
+                    }
+                }
+                return null;
+            }
+            return box;
+        }
+
+        function moveControlsToRight() {
+            const box = getControlBox();
+            if (!box || !rightColumn || controlBoxMoved) return;
+            // Remember original parent and position
+            controlBoxOriginalParent = box.parentElement;
+            // Insert placeholder to restore position later
+            controlBoxPlaceholder = document.createElement('div');
+            controlBoxPlaceholder.style.display = 'none';
+            controlBoxOriginalParent.insertBefore(controlBoxPlaceholder, box.nextSibling);
+            // If segment switch exists, and we are on mobile landscape, place the control box into segment area
+            const segControls = rightColumn.querySelector('.seg-controls');
+            if (segControls) {
+                // Avoid hierarchy errors: don't append a parent into its descendant
+                if (!segControls.contains(box) && !box.contains(segControls)) {
+                    segControls.appendChild(box);
+                }
+            } else {
+                // Fallback: place at top
+                const firstRightChild = rightColumn.firstElementChild;
+                if (firstRightChild) {
+                    rightColumn.insertBefore(box, firstRightChild);
+                } else {
+                    rightColumn.appendChild(box);
+                }
+            }
+            controlBoxMoved = true;
+            document.body.classList.add('landscape-two-column');
+        }
+
+        function moveControlsBack() {
+            if (!controlBoxMoved || !controlBoxOriginalParent || !controlBoxPlaceholder) return;
+            const box = getControlBox();
+            if (box) {
+                controlBoxOriginalParent.insertBefore(box, controlBoxPlaceholder.nextSibling);
+            }
+            // Clean up placeholder
+            controlBoxPlaceholder.remove();
+            controlBoxPlaceholder = null;
+            controlBoxOriginalParent = null;
+            controlBoxMoved = false;
+            document.body.classList.remove('landscape-two-column');
+        }
+        
+        function checkOrientation() {
+            const isMobile = window.innerWidth <= 1024;
+            const isPortrait = window.innerHeight > window.innerWidth;
+            
+            if (isMobile && isPortrait) {
+                orientationWarning.classList.add('show');
+                document.body.style.overflow = 'hidden';
+                // In portrait, ensure controls are back to default position
+                moveControlsBack();
+                // Hide segmented UI in portrait and show normal flow
+                updateSegmentVisibility();
+            } else {
+                orientationWarning.classList.remove('show');
+                document.body.style.overflow = 'auto';
+                
+                // Yatay moda geçildiğinde canvas'ı yeniden boyutlandır
+                if (isMobile && !isPortrait) {
+                    // On mobile landscape, move controls to the right column for a true two-column layout
+                    moveControlsToRight();
+                    // Enable compact vertical sliders layout on mobile landscape
+                    setVerticalSliders(true);
+                    // Ensure default segment is Controls visible or user’s last choice
+                    updateSegmentVisibility();
+                    setTimeout(() => {
+                        resizeCanvas();
+                        updateAndDraw();
+                    }, 100);
+                    
+                    // Ekstra güvenlik için 500ms sonra bir kez daha
+                    setTimeout(() => {
+                        resizeCanvas();
+                        updateAndDraw();
+                    }, 500);
+                } else {
+                    // Not mobile or back to portrait/desktop: restore layout
+                    moveControlsBack();
+                    // Disable vertical sliders layout
+                    setVerticalSliders(false);
+                    // Hide segmented UI on desktop and show both sections
+                    updateSegmentVisibility();
+                }
+            }
+        }
+
+        // --- SEGMENT SWITCHING (Right column: Controls / Tables) ---
+        function updateSegmentVisibility() {
+            const segSwitch = rightColumn && rightColumn.querySelector('.segment-switch');
+            const segControlsPane = rightColumn && rightColumn.querySelector('.seg-controls');
+            const segTablesPane = rightColumn && rightColumn.querySelector('.seg-tables');
+            const controlsBox = getControlBox();
+            if (!rightColumn || !segSwitch || !segControlsPane || !segTablesPane) return;
+
+            const isMobileWidth = window.innerWidth <= 1024;
+
+            // On mobile: hide Tables completely and show only Controls (no switch bar)
+            if (isMobileWidth) {
+                segSwitch.style.display = 'none';
+                if (controlsBox && !segControlsPane.contains(controlsBox) && !controlsBox.contains(segControlsPane)) {
+                    segControlsPane.appendChild(controlsBox);
+                }
+                segControlsPane.classList.add('active');
+                segTablesPane.classList.remove('active');
+                // Also ensure tables pane is hidden in inline styles (defensive)
+                segTablesPane.style.display = 'none';
+                return;
+            }
+
+            // Desktop: show switch and respect saved/active mode
+            segSwitch.style.display = 'flex';
+            if (controlsBox && !segControlsPane.contains(controlsBox) && !controlsBox.contains(segControlsPane)) {
+                segControlsPane.appendChild(controlsBox);
+            }
+            const activeBtn = segSwitch.querySelector('.seg-btn.active');
+            const saved = localStorage.getItem('seg-mode') || 'controls';
+            const mode = activeBtn ? activeBtn.getAttribute('data-seg') : saved;
+            if (mode === 'controls') {
+                segControlsPane.classList.add('active');
+                segTablesPane.classList.remove('active');
+                segTablesPane.style.display = '';
+            } else {
+                segControlsPane.classList.remove('active');
+                segTablesPane.classList.add('active');
+                segTablesPane.style.display = '';
+            }
+        }
+
+        function initSegmentSwitch() {
+            const segSwitch = rightColumn && rightColumn.querySelector('.segment-switch');
+            if (!segSwitch) return;
+            segSwitch.addEventListener('click', (e) => {
+                const btn = e.target.closest('.seg-btn');
+                if (!btn) return;
+                segSwitch.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                localStorage.setItem('seg-mode', btn.getAttribute('data-seg'));
+                updateSegmentVisibility();
+            });
+            updateSegmentVisibility();
+        }
+
+        // Initialize segment switch once DOM is ready
+        initSegmentSwitch();
+        
+        // Helper: toggle vertical sliders layout for mobile landscape
+        function setVerticalSliders(enabled) {
+            const controls = document.querySelector('.controls');
+            if (!controls) return;
+            const sliders = controls.querySelectorAll('input[type="range"]');
+            if (enabled) {
+                controls.classList.add('vertical-sliders');
+                const ua = navigator.userAgent.toLowerCase();
+                const isFirefox = ua.includes('firefox');
+                sliders.forEach(s => {
+                    s.classList.toggle('native-vertical', !isFirefox);
+                    s.classList.toggle('rotate-vertical', isFirefox);
+                });
+            } else {
+                controls.classList.remove('vertical-sliders');
+                sliders.forEach(s => {
+                    s.classList.remove('native-vertical');
+                    s.classList.remove('rotate-vertical');
+                    s.style.transform = '';
+                });
+            }
+        }
+        
+        // İlk kontrol
+        checkOrientation();
+        
+        // Orientation değişikliklerini dinle
+        window.addEventListener('orientationchange', () => {
+            // Orientation change sonrası layout'un stabilize olması için bekle
+            setTimeout(checkOrientation, 150);
+            setTimeout(checkOrientation, 300);
+            setTimeout(checkOrientation, 600);
+        });
+        
+        window.addEventListener('resize', () => {
+            // Debounce resize events
+            clearTimeout(window.resizeTimeout);
+            window.resizeTimeout = setTimeout(() => {
+                checkOrientation();
+                if (!orientationWarning.classList.contains('show')) {
+                    resizeCanvas();
+                }
+            }, 100);
+        });
+
+        // Visibility change olayını dinle (mobil tarayıcı tab switching için)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && !orientationWarning.classList.contains('show')) {
+                setTimeout(() => {
+                    resizeCanvas();
+                    updateAndDraw();
+                }, 100);
+            }
+        });
+
+        // --- TEMA YÖNETİMİ ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeText = document.getElementById('theme-text');
+        const themeIcon = themeToggle.querySelector('.theme-icon');
+        
+        // Tema durumunu localStorage'dan yükle
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeUI(savedTheme);
+        
+        function updateThemeUI(theme) {
+            if (theme === 'dark') {
+                themeText.textContent = 'Gündüz Modu';
+                themeIcon.innerHTML = `
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                `;
+            } else {
+                themeText.textContent = 'Gece Modu';
+                themeIcon.innerHTML = `
+                    <path d="M12 3V1M12 23V21M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+                `;
+            }
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeUI(newTheme);
+            
+            // Canvas'ı yeniden çiz (tema değişikliği için)
+            updateAndDraw();
+        });
+
+        // --- MÜZİK YÖNETİMİ ---
+        const backgroundMusic = document.getElementById('background-music');
+        const musicToggle = document.getElementById('music-toggle');
+        const musicIcon = musicToggle.querySelector('.music-icon');
+        
+        // Müzik durumunu localStorage'dan yükle
+        const savedMusicState = localStorage.getItem('musicEnabled') !== 'false';
+        let musicEnabled = savedMusicState;
+        
+        // Müzik başlatma fonksiyonu
+        function initializeMusic() {
+            try {
+                backgroundMusic.volume = 0.3; // Ses seviyesini düşük tut
+                if (musicEnabled) {
+                    backgroundMusic.play().catch(error => {
+                        console.log('Autoplay blocked:', error);
+                        musicEnabled = false;
+                        updateMusicUI();
+                    });
+                }
+            } catch (error) {
+                console.log('Music loading error:', error);
+                musicEnabled = false;
+            }
+            updateMusicUI();
+        }
+        
+        function updateMusicUI() {
+            if (musicEnabled && !backgroundMusic.paused) {
+                musicToggle.classList.remove('muted');
+                musicToggle.title = 'Müziği Kapat';
+                musicIcon.innerHTML = `
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M19.07 4.93C20.9447 6.80528 21.9979 9.34836 21.9979 12C21.9979 14.6516 20.9447 17.1947 19.07 19.07M15.54 8.46C16.4774 9.39764 17.0039 10.6692 17.0039 12C17.0039 13.3308 16.4774 14.6024 15.54 15.54" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                `;
+            } else {
+                musicToggle.classList.add('muted');
+                musicToggle.title = 'Müziği Aç';
+                musicIcon.innerHTML = `
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="23" y1="9" x2="17" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="17" y1="9" x2="23" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                `;
+            }
+        }
+        
+        musicToggle.addEventListener('click', () => {
+            if (musicEnabled && !backgroundMusic.paused) {
+                backgroundMusic.pause();
+                musicEnabled = false;
+            } else {
+                backgroundMusic.play().catch(error => {
+                    console.log('Play failed:', error);
+                });
+                musicEnabled = true;
+            }
+            localStorage.setItem('musicEnabled', musicEnabled);
+            updateMusicUI();
+        });
+        
+        // Müzik durumu değişikliklerini dinle
+        backgroundMusic.addEventListener('play', updateMusicUI);
+        backgroundMusic.addEventListener('pause', updateMusicUI);
+        backgroundMusic.addEventListener('ended', updateMusicUI);
+
+        // --- MOBILE TOUCH OPTIMIZATIONS ---
+        function addMobileOptimizations() {
+            // Touch feedback for buttons
+            const addTouchFeedback = (element) => {
+                const pressOn = () => { element.style.transform = 'scale(0.98)'; };
+                const pressOff = () => { element.style.transform = ''; };
+                element.addEventListener('touchstart', pressOn, { passive: true });
+                element.addEventListener('touchend', pressOff, { passive: true });
+                element.addEventListener('touchcancel', pressOff, { passive: true });
+            };
+            
+            // Apply to all interactive elements
+            document.querySelectorAll('.btn-set-values, .tab-button, #start-btn, .theme-toggle, .music-toggle').forEach(addTouchFeedback);
+            
+            // Remove aggressive touchend preventDefault that could block scrolling/slider behavior
+            // If needed, specific double-tap zoom prevention can be handled with CSS (meta viewport) and tap highlight removal.
+            
+            // Optimize slider touch handling: keep native behavior, but ensure responsive updates and no jank
+            const sliders = Array.from(document.querySelectorAll('input[type="range"]'));
+            let rafId = null;
+            const scheduleDraw = () => {
+                if (rafId) return;
+                rafId = requestAnimationFrame(() => {
+                    rafId = null;
+                    updateAndDraw();
+                });
+            };
+            sliders.forEach(slider => {
+                // Update on input for both mouse and touch
+                slider.addEventListener('input', scheduleDraw, { passive: true });
+                // Ensure tapping anywhere on track moves thumb (for some Android WebViews)
+                slider.addEventListener('pointerdown', (e) => {
+                    if (e.pointerType === 'touch') {
+                        // Do not prevent default to keep scroll; just schedule a draw
+                        scheduleDraw();
+                    }
+                }, { passive: true });
+            });
+            
+            // Smooth scroll for tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.scrollBehavior = 'smooth';
+            });
+        }
+        
+        // Apply mobile optimizations if on mobile
+        if (window.innerWidth <= 1024) {
+            addMobileOptimizations();
+        }
+
+        // --- DEĞİŞKENLER VE KURULUM ---
+        // Ses dosyaları için basit ve güvenli yükleme
+        const playSound = (soundName) => {
+            // Ses dosyaları opsiyonel - bulamazsa sessizce devam et
+            try {
+                // Workspace'te bulunan dosyalar için alias eşlemesi
+                const alias = {
+                    'achievement': 'start-exam',
+                    'page-turn': 'next-question'
+                };
+                const names = [];
+                if (alias[soundName]) names.push(alias[soundName]);
+                names.push(soundName);
+
+                const tryName = (idx) => {
+                    if (idx >= names.length) {
+                        console.log(`🔇 Sound file '${soundName}' not found - continuing without audio`);
+                        return;
+                    }
+                    const name = names[idx];
+                    const audio = new Audio();
+                    audio.volume = 0.2;
+                    // Dosyalar kök dizinde var; önce kökü dene, olmadıysa sounds altını deneriz
+                    const order = [`./${name}.mp3`, `./sounds/${name}.mp3`];
+                    let srcIdx = 0;
+                    const trySrc = () => {
+                        if (srcIdx >= order.length) {
+                            tryName(idx + 1);
+                            return;
+                        }
+                        audio.src = order[srcIdx++];
+                        audio.onerror = () => trySrc();
+                        audio.oncanplaythrough = () => {
+                            audio.play().catch(() => {/* sessizce geç */});
+                        };
+                        audio.load();
+                    };
+                    trySrc();
+                };
+                tryName(0);
+            } catch (e) {
+                // Ses desteği yoksa sessizce devam et
+                console.log('🔇 Audio not supported - continuing without sound');
+            }
+        };
+        
+        const introOverlay = document.getElementById('intro-overlay');
+        const startBtn = document.getElementById('start-btn');
+        const container = document.querySelector('.container');
+        const canvas = document.getElementById('graphCanvas');
+        const errorDiv = document.getElementById('canvas-error');
+        
+        let ctx;
+        try {
+            ctx = canvas.getContext('2d');
+            if (!ctx) throw new Error('2D context not supported');
+        } catch (e) {
+            canvas.style.display = 'none';
+            errorDiv.style.display = 'block';
+            return; 
+        }
+
+        const sliderA = document.getElementById('slider-a');
+        const sliderR = document.getElementById('slider-r');
+        const sliderK = document.getElementById('slider-k');
+        const valueA = document.getElementById('value-a');
+        const valueR = document.getElementById('value-r');
+        const valueK = document.getElementById('value-k');
+        const equationDisplay = document.getElementById('function-equation');
+        
+        let width, height, originX, originY;
+        const scale = 25;
+
+        // --- FONKSİYONLAR ---
+        const formatNumber = (num) => String(parseFloat(num.toFixed(1))).replace('.', ',');
+
+        function drawAxes() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Tema renklerini al
+            const computedStyle = getComputedStyle(document.documentElement);
+            const gridColor = computedStyle.getPropertyValue('--grid-color').trim();
+            const axisColor = computedStyle.getPropertyValue('--axis-color').trim();
+            
+            // Grid koordinatlarını hesapla (tam hizalama için)
+            const startX = originX % scale;
+            const startY = originY % scale;
+            
+            // Grid çizgileri - tam hizalı
+            ctx.strokeStyle = gridColor; 
+            ctx.lineWidth = 1; 
+            ctx.beginPath();
+            
+            // Dikey grid çizgileri
+            for (let x = startX; x <= width; x += scale) {
+                ctx.moveTo(x, 0); 
+                ctx.lineTo(x, height); 
+            }
+            for (let x = startX - scale; x >= 0; x -= scale) {
+                ctx.moveTo(x, 0); 
+                ctx.lineTo(x, height); 
+            }
+            
+            // Yatay grid çizgileri
+            for (let y = startY; y <= height; y += scale) {
+                ctx.moveTo(0, y); 
+                ctx.lineTo(width, y); 
+            }
+            for (let y = startY - scale; y >= 0; y -= scale) {
+                ctx.moveTo(0, y); 
+                ctx.lineTo(width, y); 
+            }
+            ctx.stroke();
+            
+            // Ana eksenler - daha kalın
+            ctx.strokeStyle = axisColor; 
+            ctx.lineWidth = 3; 
+            ctx.beginPath();
+            ctx.moveTo(0, originY); 
+            ctx.lineTo(width, originY); 
+            ctx.moveTo(originX, 0); 
+            ctx.lineTo(originX, height);
+            ctx.stroke();
+            
+            // Ok uçları - tüm uçlarda
+            ctx.fillStyle = axisColor; 
+            ctx.beginPath();
+            
+            // X ekseni sağ ok
+            ctx.moveTo(width - 12, originY - 6); 
+            ctx.lineTo(width - 3, originY); 
+            ctx.lineTo(width - 12, originY + 6);
+            ctx.closePath();
+            ctx.fill();
+            
+            // X ekseni sol ok
+            ctx.beginPath();
+            ctx.moveTo(12, originY - 6); 
+            ctx.lineTo(3, originY); 
+            ctx.lineTo(12, originY + 6);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Y ekseni yukarı ok
+            ctx.beginPath();
+            ctx.moveTo(originX - 6, 12); 
+            ctx.lineTo(originX, 3); 
+            ctx.lineTo(originX + 6, 12);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Y ekseni aşağı ok
+            ctx.beginPath();
+            ctx.moveTo(originX - 6, height - 12); 
+            ctx.lineTo(originX, height - 3); 
+            ctx.lineTo(originX + 6, height - 12);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Etiketler
+            ctx.font = 'bold 16px Inter, Arial'; 
+            ctx.textAlign = 'center'; 
+            ctx.textBaseline = 'middle';
+            ctx.fillText('x', width - 25, originY + 25); 
+            ctx.fillText('y', originX - 25, 20); 
+            ctx.fillText('O', originX - 20, originY + 20);
+            
+            // Sayı etiketleri - grid ile hizalı
+            ctx.font = '12px Inter, Arial'; 
+            ctx.fillStyle = axisColor;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            
+            // X ekseni etiketleri
+            for (let i = 1; i <= Math.floor((width - originX) / scale); i++) {
+                const x = originX + i * scale;
+                if (x < width - 30) {
+                    ctx.fillText(i.toString(), x, originY + 8);
+                }
+            }
+            for (let i = 1; i <= Math.floor(originX / scale); i++) {
+                const x = originX - i * scale;
+                if (x > 30) {
+                    ctx.fillText((-i).toString(), x, originY + 8);
+                }
+            }
+            
+            // Y ekseni etiketleri
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            for (let i = 1; i <= Math.floor(originY / scale); i++) {
+                const y = originY - i * scale;
+                if (y > 30) {
+                    ctx.fillText(i.toString(), originX - 8, y);
+                }
+            }
+            for (let i = 1; i <= Math.floor((height - originY) / scale); i++) {
+                const y = originY + i * scale;
+                if (y < height - 30) {
+                    ctx.fillText((-i).toString(), originX - 8, y);
+                }
+            }
+        }
+
+        function drawFunction(a, r, k, color, isDashed = false) {
+            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+            ctx.setLineDash(isDashed ? [5, 5] : []);
+            for (let canvasX = 0; canvasX < width; canvasX++) {
+                const x = (canvasX - originX) / scale;
+                const y = a * Math.pow(x - parseFloat(r), 2) + parseFloat(k);
+                const canvasY = originY - y * scale;
+                canvasX === 0 ? ctx.moveTo(canvasX, canvasY) : ctx.lineTo(canvasX, canvasY);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        function updateAndDraw() {
+            if(!ctx) return;
+            const a = parseFloat(sliderA.value);
+            const r = parseFloat(sliderR.value);
+            const k = parseFloat(sliderK.value);
+            valueA.textContent = formatNumber(a); valueR.textContent = formatNumber(r); valueK.textContent = formatNumber(k);
+            let a_str = (a === 1) ? "" : (a === -1) ? "-" : formatNumber(a);
+            let r_part = (r === 0) ? "" : (r > 0) ? ` - ${formatNumber(r)}` : ` + ${formatNumber(Math.abs(r))}`;
+            let x_part_str = (r === 0) ? "x²" : `(x${r_part})²`;
+            let k_str = (k === 0) ? "" : (k > 0) ? ` + ${formatNumber(k)}` : ` - ${formatNumber(Math.abs(k))}`;
+            let equation = "g(x) = " + a_str + x_part_str + k_str;
+            if (a === 0) equation = `g(x) = ${formatNumber(k)}`;
+            equationDisplay.innerHTML = equation;
+            drawAxes();
+            drawFunction(1, 0, 0, '#aaa', true);
+            if (a !== 0) drawFunction(a, r, k, '#1d4ed8');
+            else { ctx.beginPath(); ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 2.5; ctx.moveTo(0, originY - k * scale); ctx.lineTo(width, originY - k * scale); ctx.stroke(); }
+        }
+
+        function resizeCanvas() {
+            if(!ctx) return;
+            const canvasWrapper = canvas.parentElement;
+            if (!canvasWrapper) return;
+            // Fit canvas into wrapper while keeping it square
+            const rect = canvasWrapper.getBoundingClientRect();
+            const targetSize = Math.max(200, Math.min(rect.width, rect.height || rect.width));
+            if (Math.abs(targetSize - width) <= 1 && width) return;
+            width = height = targetSize;
+            // CSS size
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            // Reset transform then set DPR
+            const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+            canvas.width = Math.round(width * dpr);
+            canvas.height = Math.round(height * dpr);
+            ctx.setTransform(1,0,0,1,0,0);
+            ctx.scale(dpr, dpr);
+            originX = width / 2;
+            originY = height / 2;
+            requestAnimationFrame(updateAndDraw);
+        }
+
+        // Observe canvas wrapper size to react to layout changes precisely (guarded for older browsers)
+        let ro = null;
+        if (window.ResizeObserver) {
+            ro = new ResizeObserver(() => {
+                resizeCanvas();
+            });
+        }
+        // Will be connected after canvas wrapper exists
+
+        // --- OLAY DİNLEYİCİLERİ (EVENT LISTENERS) ---
+    startBtn.addEventListener('click', () => {
+            // Başlangıç sesini çal
+            playSound('achievement');
+            
+            // Müziği başlat (eğer etkinse)
+            initializeMusic();
+            
+            introOverlay.style.opacity = '0';
+            container.style.display = 'block';
+            
+            setTimeout(() => { 
+                introOverlay.style.display = 'none';
+                // *** DÜZELTME: Canvas görünür olduktan SONRA boyutlandır ve çiz. ***
+                // Start observing for precise size updates
+                try {
+                    const wrapper = canvas.parentElement;
+                    if (wrapper) ro.observe(wrapper);
+                } catch {}
+                requestAnimationFrame(resizeCanvas);
+            }, 500); // CSS animasyon süresiyle eşleşmeli
+        });
+
+        // Avoid duplicate handlers on mobile (mobile uses rAF throttled handler inside addMobileOptimizations)
+        if (window.innerWidth > 1024) {
+            [sliderA, sliderR, sliderK].forEach(slider => slider.addEventListener('input', updateAndDraw));
+        }
+
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                playSound('page-turn');
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(this.dataset.target).classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.btn-set-values').forEach(button => {
+            button.addEventListener('click', function() {
+                playSound('click');
+                sliderA.value = this.dataset.a;
+                sliderR.value = this.dataset.r;
+                sliderK.value = this.dataset.k;
+                updateAndDraw();
+            });
+        });
+        
+        window.addEventListener('resize', resizeCanvas);
+
+    });
+</script>
+</body>
+</html>
