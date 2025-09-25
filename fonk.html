@@ -263,13 +263,13 @@
         header h1 { 
             text-align: center; 
             color: var(--primary-color); 
-            font-size: 2.5rem; 
-            margin-bottom: 30px; 
+            font-size: 2.1rem; 
+            margin-bottom: 18px; 
             font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
         }
         h3 { 
             color: var(--primary-color); 
@@ -303,7 +303,7 @@
             background: var(--card-bg); 
             border: 2px solid var(--border-color); 
             border-radius: 16px; 
-            padding: 25px; 
+            padding: 20px; 
             box-shadow: 0 8px 25px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
             position: relative;
@@ -541,9 +541,23 @@
             border-color: var(--primary-color);
             box-shadow: 0 4px 12px rgba(59,130,246,0.25);
         }
-        .right-column .segment-content { display: none; min-height: 0; overflow: auto; }
+        .right-column .segment-content { display: none; min-height: 0; overflow: hidden; flex: 1 1 auto; }
         .right-column .segment-content.active { display: block; }
-        .tables-section .tab-buttons { position: sticky; top: 56px; z-index: 2; background: var(--card-bg); }
+        /* Allow controls segment to scroll if content overflows */
+        .right-column .seg-controls { 
+            height: 100%;
+            max-height: 70vh;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        /* Make Keşif Tabloları scrollable */
+        .right-column .seg-tables .tables-section {
+            height: 100%;
+            max-height: 70vh;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    .tables-section .tab-buttons { position: sticky; top: 0; z-index: 2; background: var(--card-bg); }
         .tab-button { 
             padding: 12px 20px; 
             cursor: pointer; 
@@ -598,6 +612,66 @@
                 opacity: 1; 
                 transform: translateY(0); 
             } 
+        }
+
+        /* Compact styling for Keşif Tabloları (scoped) */
+        .tables-section { 
+            --tbl-font: 0.92rem; 
+            --tbl-pad-y: 8px; 
+            --tbl-pad-x: 10px; 
+        }
+        .tables-section h3 { 
+            margin-bottom: 12px; 
+            font-size: 1.1rem; 
+        }
+        .tables-section .tab-buttons { 
+            gap: 6px; 
+            padding-bottom: 6px; 
+            margin-bottom: 12px; 
+        }
+        .tables-section .tab-button { 
+            padding: 8px 12px; 
+            font-size: 0.9rem; 
+        }
+        .tables-section table { 
+            font-size: var(--tbl-font); 
+        }
+        .tables-section th, 
+        .tables-section td { 
+            padding: var(--tbl-pad-y) var(--tbl-pad-x); 
+        }
+        .tables-section .btn-set-values { 
+            padding: 6px 10px; 
+            font-size: 0.8rem; 
+            min-width: 56px; 
+        }
+
+        /* Tighter on mobile */
+        @media (max-width: 768px) {
+            .tables-section { 
+                --tbl-font: 0.84rem; 
+                --tbl-pad-y: 6px; 
+                --tbl-pad-x: 8px; 
+            }
+            .tables-section .tab-button { 
+                padding: 6px 10px; 
+                font-size: 0.82rem; 
+            }
+            /* Swap order: show tab content first, buttons after (mobile) */
+            .tables-section { display: flex; flex-direction: column; }
+            .tables-section .tab-content { order: 1; }
+            .tables-section .tab-buttons { 
+                order: 2; 
+                position: sticky; 
+                top: auto; 
+                bottom: 0; 
+                background: var(--card-bg); 
+                box-shadow: 0 -4px 10px rgba(0,0,0,0.06);
+                padding-top: 6px; 
+                padding-bottom: 6px; 
+                margin-top: 8px;
+                margin-bottom: 0;
+            }
         }
 
         /* Footer */
@@ -745,18 +819,20 @@
                 min-height: 300px;
                 width: 100%;
                 box-sizing: border-box;
+                padding: 6px !important; /* minimize outer padding to grow canvas */
             }
             
             canvas {
                 margin: 0 auto;
                 display: block;
-                max-width: 90%;
-                max-height: 350px;
+                max-width: 100%; /* use full width */
+                max-height: 380px;
                 width: auto !important;
                 height: auto !important;
                 aspect-ratio: 1 / 1;
-                border-radius: 12px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                border-radius: 10px;
+                border-width: 1px; /* thinner border for more drawing area */
+                box-shadow: none; /* remove shadow to avoid visual padding */
             }
             
             /* Canvas wrapper for better control */
@@ -766,7 +842,7 @@
                 align-items: center;
                 width: 100%;
                 min-height: 300px;
-                padding: 10px;
+                padding: 0 !important; /* remove inner padding to maximize canvas */
                 box-sizing: border-box;
             }
             
@@ -908,14 +984,16 @@
                 font-size: 1rem !important;
                 margin-top: 10px;
             }
-            
+
+            /* Minimize outer padding of graph card on very small devices */
+            .left-column > div:first-child { padding: 4px !important; }
             body {
                 padding: 5px;
                 font-size: 14px;
             }
             
             .container {
-                padding: 15px;
+                padding: 10px;
                 border-radius: 12px;
                 margin: 0 5px;
                 width: calc(100% - 10px);
@@ -968,10 +1046,13 @@
             }
             
             header h1 {
-                font-size: 1.8rem !important;
-                flex-direction: column;
-                gap: 8px;
+                font-size: 1.3rem !important;
+                line-height: 1.15 !important;
+                margin-bottom: 6px !important;
+                flex-direction: row;
+                gap: 6px;
             }
+            header h1 svg { display: none !important; }
             
             h3 {
                 font-size: 1.1rem !important;
@@ -996,12 +1077,41 @@
             
             canvas {
                 max-width: 100%;
-                max-height: 280px;
+                max-height: 340px; /* allow a bit more height on very small screens */
+                margin: 0; /* no extra margins */
+                border-width: 1px;
             }
             
             .controls {
-                padding: 15px;
+                padding: 10px;
             }
+            /* Make slider rows compact and single-line: label | slider */
+            .controls .slider-group {
+                display: grid;
+                grid-template-columns: minmax(64px, auto) 1fr;
+                align-items: center;
+                column-gap: 10px;
+                margin-bottom: 8px;
+            }
+            .controls .slider-group label { 
+                margin: 0; 
+                font-size: 0.95rem; 
+                white-space: nowrap;
+                line-height: 1.1;
+            }
+            .controls input[type="range"] { height: 10px; }
+            .controls input[type="range"]::-webkit-slider-thumb { width: 24px; height: 24px; }
+            .controls input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; }
+
+            /* Reduce equation spacing under controls */
+            #function-equation { 
+                font-size: clamp(0.9rem, 2.4vw, 1.1rem);
+                padding: 8px; 
+                margin-top: 8px; 
+            }
+
+            /* In controls tab, heading is redundant — hide to save vertical space */
+            .right-column .seg-controls h3 { display: none !important; }
             
             .slider-group label {
                 font-size: 1rem;
@@ -1050,6 +1160,13 @@
         
         /* Medium Mobile Phones (481px - 768px) */
         @media (min-width: 481px) and (max-width: 768px) {
+            header h1 {
+                font-size: 1.4rem !important;
+                line-height: 1.2 !important;
+                margin-bottom: 10px !important;
+                gap: 8px;
+            }
+            header h1 svg { width: 18px; height: 18px; }
             .container {
                 padding: 20px;
                 margin: 0 10px;
@@ -1094,6 +1211,19 @@
                 padding: 6px 12px;
                 font-size: 0.85rem;
             }
+
+            /* Compact controls on medium mobiles too */
+            .controls { padding: 12px; }
+            .controls .slider-group {
+                display: grid;
+                grid-template-columns: minmax(72px, auto) 1fr;
+                align-items: center;
+                column-gap: 12px;
+                margin-bottom: 10px;
+            }
+            .controls .slider-group label { margin: 0; font-size: 1rem; white-space: nowrap; }
+            .controls input[type="range"] { height: 10px; }
+            .right-column .seg-controls h3 { display: none !important; }
         }
         
         /* Tablets Portrait (769px - 1024px) */
@@ -1177,15 +1307,17 @@
             }
 
             header h1 {
-                font-size: 1.2rem !important;
-                margin-bottom: 8px !important;
+                font-size: 1rem !important;
+                line-height: 1.1 !important;
+                margin-bottom: 4px !important;
             }
+            header h1 svg { display: none !important; }
 
             .main-content {
                 flex-direction: row !important;
                 gap: 8px !important;
                 align-items: stretch !important;
-                height: calc(100% - 56px) !important; /* leave room for header */
+                height: calc(100% - 44px) !important; /* leave less room for header */
             }
 
             .left-column, .right-column {
@@ -1223,6 +1355,8 @@
                 max-height: 100% !important;
                 aspect-ratio: 1 / 1 !important;
                 max-width: 100% !important;
+                margin: 0 !important;
+                border-width: 1px !important;
             }
 
             /* Controls under the graph, scrollable if needed */
@@ -1286,8 +1420,8 @@
                 display: none !important;
                 flex: 1 1 auto !important; /* occupy remaining height */
                 min-height: 0 !important;
-                overflow: auto !important;
-                padding-top: 6px !important; /* small gap under switch */
+                overflow: hidden !important;
+                padding-top: 0 !important;
             }
             .right-column .segment-content.active {
                 display: block !important;
@@ -1303,13 +1437,31 @@
             /* Keep tab buttons visible while scrolling tables */
             .tables-section .tab-buttons {
                 position: sticky !important;
-                top: 56px !important; /* leave space for segment switch */
+                top: 0 !important; /* sticky within inner scroll container */
                 z-index: 2 !important;
                 background: var(--card-bg) !important;
                 padding-top: 8px !important;
                 padding-bottom: 8px !important;
                 margin-bottom: 8px !important;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.08) !important;
+            }
+            /* Add padding to tables-section to avoid content hiding behind sticky tabs */
+            .right-column .seg-tables .tables-section { padding-top: 8px; padding-bottom: 56px; }
+
+            /* Controls segment should scroll if needed */
+            .right-column .seg-controls { 
+                height: 100% !important; 
+                max-height: none !important; 
+                overflow: auto !important; 
+                -webkit-overflow-scrolling: touch !important; 
+            }
+
+            /* Inner scrolling for tables in landscape */
+            .right-column .seg-tables .tables-section {
+                height: 100% !important;
+                max-height: none !important;
+                overflow: auto !important;
+                -webkit-overflow-scrolling: touch !important;
             }
 
             /* Compact paddings to fit more content */
