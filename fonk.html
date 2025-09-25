@@ -248,7 +248,7 @@
             display: none; 
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             width: calc(100% - 20px);
         }
         .container::before {
@@ -283,21 +283,21 @@
 
         /* Ana Yapı ve Sütunlar */
         .main-content { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 30px; 
-            margin-top: 30px; 
+            display: flex;
+            flex-wrap: nowrap; /* always side-by-side */
+            gap: 16px;
+            margin-top: 30px;
         }
         .left-column { 
-            flex: 1 1 500px; 
-            min-width: 300px; 
+            flex: 1 1 0; 
+            min-width: 320px; 
             display: flex; 
             flex-direction: column; 
-            gap: 25px; 
+            gap: 20px; 
         }
         .right-column { 
-            flex: 1 1 500px; 
-            min-width: 300px; 
+            flex: 1 1 0; 
+            min-width: 320px; 
         }
         .left-column > div, .right-column > div { 
             background: var(--card-bg); 
@@ -360,6 +360,10 @@
             background: var(--border-color);
             outline: none;
             transition: all 0.3s ease;
+            /* Allow vertical scroll while dragging horizontally on touch devices */
+            touch-action: pan-y;
+            -ms-touch-action: pan-y;
+            -webkit-tap-highlight-color: transparent;
         }
         .slider-group input[type="range"]:hover {
             background: var(--secondary-color);
@@ -490,6 +494,56 @@
             margin-bottom: 20px; 
             padding-bottom: 10px;
         }
+
+        /* Always-2-column: allow horizontal scroll on narrow viewports */
+        .container { overflow-x: auto; overflow-y: auto; }
+        .main-content { min-width: 640px; }
+
+        /* Right column segmented switch visible on all sizes */
+        .right-column { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+        .right-column .segment-switch {
+            display: flex;
+            gap: 8px;
+            padding: 8px;
+            border-bottom: 2px solid var(--border-color);
+            border-radius: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--card-bg);
+        }
+        .right-column .segment-switch .seg-btn {
+            flex: 1 1 0;
+            min-width: 0;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            background: var(--background-color);
+            color: var(--text-light);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+            cursor: pointer;
+            white-space: nowrap;
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
+            user-select: none;
+            height: 40px;
+            min-height: 40px;
+        }
+        .right-column .segment-switch .seg-btn.active {
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(59,130,246,0.25);
+        }
+        .right-column .segment-content { display: none; min-height: 0; overflow: auto; }
+        .right-column .segment-content.active { display: block; }
+        .tables-section .tab-buttons { position: sticky; top: 56px; z-index: 2; background: var(--card-bg); }
         .tab-button { 
             padding: 12px 20px; 
             cursor: pointer; 
@@ -1271,8 +1325,10 @@
         }
         
         @media (max-width: 900px) and (orientation: portrait) {
+            /* Keep page scrollable even in portrait */
             body, .container, .intro-overlay {
-                overflow: hidden;
+                overflow-x: hidden;
+                overflow-y: auto;
             }
         }
     </style>
@@ -1538,36 +1594,26 @@
 
         // --- SEGMENT SWITCHING (Right column: Controls / Tables) ---
         function updateSegmentVisibility() {
-            const isMobileLandscape = window.innerWidth <= 768 && window.innerWidth > window.innerHeight;
             const segSwitch = rightColumn && rightColumn.querySelector('.segment-switch');
             const segControlsPane = rightColumn && rightColumn.querySelector('.seg-controls');
             const segTablesPane = rightColumn && rightColumn.querySelector('.seg-tables');
             const controlsBox = getControlBox();
             if (!rightColumn || !segSwitch || !segControlsPane || !segTablesPane) return;
 
-            if (isMobileLandscape) {
-                // Show switch
-                segSwitch.style.display = 'flex';
-                // Ensure the moved control box stays inside the controls segment pane
-                if (controlsBox && !segControlsPane.contains(controlsBox) && !controlsBox.contains(segControlsPane)) {
-                    segControlsPane.appendChild(controlsBox);
-                }
-                // Respect active button
-                const activeBtn = segSwitch.querySelector('.seg-btn.active');
-                const mode = activeBtn ? activeBtn.getAttribute('data-seg') : 'controls';
-                if (mode === 'controls') {
-                    segControlsPane.classList.add('active');
-                    segTablesPane.classList.remove('active');
-                    // Controls pane doesn’t contain the box (we moved real box outside); it’s a visual divider
-                } else {
-                    segControlsPane.classList.remove('active');
-                    segTablesPane.classList.add('active');
-                }
-            } else {
-                // Hide segmented switch on non-mobile-landscape
-                segSwitch.style.display = 'none';
-                // Show both normally
+            // Always show segmented switch and keep controls inside the controls pane
+            segSwitch.style.display = 'flex';
+            if (controlsBox && !segControlsPane.contains(controlsBox) && !controlsBox.contains(segControlsPane)) {
+                segControlsPane.appendChild(controlsBox);
+            }
+            // Use saved mode if any
+            const activeBtn = segSwitch.querySelector('.seg-btn.active');
+            const saved = localStorage.getItem('seg-mode') || 'controls';
+            const mode = activeBtn ? activeBtn.getAttribute('data-seg') : saved;
+            if (mode === 'controls') {
                 segControlsPane.classList.add('active');
+                segTablesPane.classList.remove('active');
+            } else {
+                segControlsPane.classList.remove('active');
                 segTablesPane.classList.add('active');
             }
         }
@@ -1580,6 +1626,7 @@
                 if (!btn) return;
                 segSwitch.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+                localStorage.setItem('seg-mode', btn.getAttribute('data-seg'));
                 updateSegmentVisibility();
             });
             updateSegmentVisibility();
@@ -1726,61 +1773,39 @@
         function addMobileOptimizations() {
             // Touch feedback for buttons
             const addTouchFeedback = (element) => {
-                element.addEventListener('touchstart', function(e) {
-                    e.preventDefault();
-                    this.style.transform = 'scale(0.95)';
-                    // Haptic feedback if available
-                    if ('vibrate' in navigator) {
-                        navigator.vibrate(10);
-                    }
-                });
-                
-                element.addEventListener('touchend', function(e) {
-                    e.preventDefault();
-                    this.style.transform = '';
-                    // Trigger click
-                    this.click();
-                });
+                const pressOn = () => { element.style.transform = 'scale(0.98)'; };
+                const pressOff = () => { element.style.transform = ''; };
+                element.addEventListener('touchstart', pressOn, { passive: true });
+                element.addEventListener('touchend', pressOff, { passive: true });
+                element.addEventListener('touchcancel', pressOff, { passive: true });
             };
             
             // Apply to all interactive elements
             document.querySelectorAll('.btn-set-values, .tab-button, #start-btn, .theme-toggle, .music-toggle').forEach(addTouchFeedback);
             
-            // Prevent zoom on double tap for specific elements
-            document.querySelectorAll('canvas, .controls, table').forEach(element => {
-                element.addEventListener('touchend', function(e) {
-                    e.preventDefault();
-                });
-            });
+            // Remove aggressive touchend preventDefault that could block scrolling/slider behavior
+            // If needed, specific double-tap zoom prevention can be handled with CSS (meta viewport) and tap highlight removal.
             
-            // Optimize slider touch handling
-            document.querySelectorAll('input[type="range"]').forEach(slider => {
-                let isTouch = false;
-                
-                slider.addEventListener('touchstart', function() {
-                    isTouch = true;
-                    this.style.height = '12px'; // Larger touch target
-                    if ('vibrate' in navigator) {
-                        navigator.vibrate(5);
+            // Optimize slider touch handling: keep native behavior, but ensure responsive updates and no jank
+            const sliders = Array.from(document.querySelectorAll('input[type="range"]'));
+            let rafId = null;
+            const scheduleDraw = () => {
+                if (rafId) return;
+                rafId = requestAnimationFrame(() => {
+                    rafId = null;
+                    updateAndDraw();
+                });
+            };
+            sliders.forEach(slider => {
+                // Update on input for both mouse and touch
+                slider.addEventListener('input', scheduleDraw, { passive: true });
+                // Ensure tapping anywhere on track moves thumb (for some Android WebViews)
+                slider.addEventListener('pointerdown', (e) => {
+                    if (e.pointerType === 'touch') {
+                        // Do not prevent default to keep scroll; just schedule a draw
+                        scheduleDraw();
                     }
-                });
-                
-                slider.addEventListener('touchmove', function(e) {
-                    if (isTouch) {
-                        e.preventDefault();
-                        const touch = e.touches[0];
-                        const rect = this.getBoundingClientRect();
-                        const percent = (touch.clientX - rect.left) / rect.width;
-                        const value = this.min + (this.max - this.min) * Math.max(0, Math.min(1, percent));
-                        this.value = value;
-                        updateAndDraw();
-                    }
-                });
-                
-                slider.addEventListener('touchend', function() {
-                    isTouch = false;
-                    this.style.height = '8px';
-                });
+                }, { passive: true });
             });
             
             // Smooth scroll for tab content
@@ -2032,64 +2057,38 @@
 
         function resizeCanvas() {
             if(!ctx) return;
-            
-            // Container boyutunu al
             const canvasWrapper = canvas.parentElement;
             if (!canvasWrapper) return;
-            
-            // Mobile ve screen size detection
-            const screenWidth = window.innerWidth;
-            const isMobile = screenWidth <= 768;
-            const isSmallMobile = screenWidth <= 480;
-            const isTablet = screenWidth > 768 && screenWidth <= 1024;
-            
-            // Canvas boyutunu responsive olarak hesapla
-            let targetSize;
-            if (isSmallMobile) {
-                // Küçük mobiller için
-                targetSize = Math.min(screenWidth - 30, 280);
-            } else if (isMobile) {
-                // Orta mobiller için
-                targetSize = Math.min(screenWidth - 40, 350);
-            } else if (isTablet) {
-                // Tabletler için
-                targetSize = Math.min(screenWidth * 0.6, 400);
-            } else {
-                // Desktop için
-                const containerWidth = canvasWrapper.clientWidth || 500;
-                targetSize = Math.min(containerWidth, 500);
-            }
-            
-            // Minimum boyut kontrolü
-            targetSize = Math.max(targetSize, 200);
-            
-            // Boyut değişikliği gerekiyorsa uygula
-            if (Math.abs(targetSize - width) > 5 || !width) {
-                width = targetSize;
-                height = targetSize;
-                
-                // Canvas element boyutlarını ayarla
-                canvas.style.width = width + 'px';
-                canvas.style.height = height + 'px';
-                
-                // DPI scaling for crisp lines
-                const dpr = window.devicePixelRatio || 1;
-                canvas.width = width * dpr;
-                canvas.height = height * dpr;
-                ctx.scale(dpr, dpr);
-                
-                originX = width / 2; 
-                originY = height / 2;
-                
-                // Force repaint with small delay
-                setTimeout(() => {
-                    updateAndDraw();
-                }, 10);
-            }
+            // Fit canvas into wrapper while keeping it square
+            const rect = canvasWrapper.getBoundingClientRect();
+            const targetSize = Math.max(200, Math.min(rect.width, rect.height || rect.width));
+            if (Math.abs(targetSize - width) <= 1 && width) return;
+            width = height = targetSize;
+            // CSS size
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            // Reset transform then set DPR
+            const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+            canvas.width = Math.round(width * dpr);
+            canvas.height = Math.round(height * dpr);
+            ctx.setTransform(1,0,0,1,0,0);
+            ctx.scale(dpr, dpr);
+            originX = width / 2;
+            originY = height / 2;
+            requestAnimationFrame(updateAndDraw);
         }
 
+        // Observe canvas wrapper size to react to layout changes precisely (guarded for older browsers)
+        let ro = null;
+        if (window.ResizeObserver) {
+            ro = new ResizeObserver(() => {
+                resizeCanvas();
+            });
+        }
+        // Will be connected after canvas wrapper exists
+
         // --- OLAY DİNLEYİCİLERİ (EVENT LISTENERS) ---
-        startBtn.addEventListener('click', () => {
+    startBtn.addEventListener('click', () => {
             // Başlangıç sesini çal
             playSound('achievement');
             
@@ -2102,11 +2101,19 @@
             setTimeout(() => { 
                 introOverlay.style.display = 'none';
                 // *** DÜZELTME: Canvas görünür olduktan SONRA boyutlandır ve çiz. ***
-                resizeCanvas();
+                // Start observing for precise size updates
+                try {
+                    const wrapper = canvas.parentElement;
+                    if (wrapper) ro.observe(wrapper);
+                } catch {}
+                requestAnimationFrame(resizeCanvas);
             }, 500); // CSS animasyon süresiyle eşleşmeli
         });
 
-        [sliderA, sliderR, sliderK].forEach(slider => slider.addEventListener('input', updateAndDraw));
+        // Avoid duplicate handlers on mobile (mobile uses rAF throttled handler inside addMobileOptimizations)
+        if (window.innerWidth > 1024) {
+            [sliderA, sliderR, sliderK].forEach(slider => slider.addEventListener('input', updateAndDraw));
+        }
 
         document.querySelectorAll('.tab-button').forEach(button => {
             button.addEventListener('click', function() {
