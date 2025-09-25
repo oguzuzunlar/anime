@@ -20,6 +20,22 @@
             --axis-color: #555;
         }
 
+        /* Tablet ve dar ekranlar için (<=1024px) 3 sütun görünümü uygula */
+        @media (max-width: 1024px) {
+            .tables-section table th:nth-child(3),
+            .tables-section table td:nth-child(3) { display: none !important; }
+            .tables-section table th:nth-child(1),
+            .tables-section table td:nth-child(1),
+            .tables-section table th:nth-child(2),
+            .tables-section table td:nth-child(2),
+            .tables-section table th:nth-child(4),
+            .tables-section table td:nth-child(4) { width: 33.33% !important; }
+            #canvas-equation { display: block !important; }
+                /* Hide function names like h(x) in first column, keep only the button */
+                .tables-section table td:nth-child(1) { font-size: 0 !important; white-space: nowrap; }
+                .tables-section table td:nth-child(1) .btn-set-values { font-size: 0.92rem !important; display: inline-block; }
+        }
+
         [data-theme="dark"] {
             --primary-color: #60a5fa;
             --secondary-color: #3b82f6;
@@ -635,6 +651,9 @@
                 min-height: clamp(320px, 56vh, 480px);
                 max-height: 85vh;
             }
+                /* Also hide function names on tablets */
+                .tables-section table td:nth-child(1) { font-size: 0 !important; white-space: nowrap; }
+                .tables-section table td:nth-child(1) .btn-set-values { font-size: 0.94rem !important; }
         }
     .tables-section .tab-buttons { position: sticky; top: 0; z-index: 2; background: var(--card-bg); }
         .tab-button { 
@@ -760,15 +779,16 @@
                 --tbl-pad-y: 6px; 
                 --tbl-pad-x: 8px; 
             }
-            /* Mobile: equal column widths (4 columns) */
-            .tables-section th:nth-child(1),
-            .tables-section td:nth-child(1) { width: 25%; }
-            .tables-section th:nth-child(2),
-            .tables-section td:nth-child(2) { width: 25%; }
-            .tables-section th:nth-child(3),
-            .tables-section td:nth-child(3) { width: 25%; }
-            .tables-section th:nth-child(4),
-            .tables-section td:nth-child(4) { width: 25%; }
+            /* Mobile: show 3 columns (hide 'Oluşan Fonksiyon' 3rd column) */
+            .tables-section table th:nth-child(3),
+            .tables-section table td:nth-child(3) { display: none !important; }
+            /* Redistribute widths to 3 columns: 1st, 2nd, 4th */
+            .tables-section table th:nth-child(1),
+            .tables-section table td:nth-child(1) { width: 33.33% !important; }
+            .tables-section table th:nth-child(2),
+            .tables-section table td:nth-child(2) { width: 33.33% !important; }
+            .tables-section table th:nth-child(4),
+            .tables-section table td:nth-child(4) { width: 33.33% !important; }
             /* On phones, shrink the dense columns a bit more */
             .tables-section td:nth-child(2),
             .tables-section td:nth-child(3) { font-size: 0.86em; }
@@ -776,6 +796,8 @@
                 padding: 6px 10px; 
                 font-size: 0.82rem; 
             }
+            /* Show equation badge on mobile */
+            #canvas-equation { display: block; }
             /* Swap order: show tab content first, buttons after (mobile) */
             .tables-section { display: flex; flex-direction: column; padding-bottom: 56px; }
             .tables-section .tab-content { order: 1; }
@@ -963,6 +985,29 @@
                 min-height: 300px;
                 padding: 0 !important; /* remove inner padding to maximize canvas */
                 box-sizing: border-box;
+                position: relative; /* for overlay badge positioning */
+            }
+
+            /* Equation badge shown over canvas (mobile) */
+            #canvas-equation {
+                position: absolute;
+                top: 12px;
+                left: 12px;
+                padding: 6px 10px;
+                font-size: 0.95rem;
+                border-radius: 8px;
+                background: var(--card-bg);
+                color: var(--text-color);
+                box-shadow: var(--shadow);
+                border: 1px solid rgba(0,0,0,0.08);
+                pointer-events: none; /* let canvas interactions pass through */
+                opacity: 0.95;
+                display: none; /* visible on mobile via media query */
+                max-width: calc(100% - 24px);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                z-index: 3; /* ensure it overlays the canvas */
             }
             
             /* Larger touch targets */
@@ -1640,6 +1685,7 @@
                     <h3><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 21L3 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 3V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 3.03126C10 3.03126 13 5 15 11C17 17 21 18.9687 21 18.9687" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Fonksiyon Grafiği</h3>
                     <div class="canvas-wrapper">
                         <canvas id="graphCanvas"></canvas>
+                        <div id="canvas-equation">g(x) = x²</div>
                     </div>
                     <div id="canvas-error" style="color: red; text-align: center; margin-top: 10px; display: none;">Grafik yüklenemedi. Lütfen sayfayı yenileyin.</div>
                 </div>
@@ -2162,7 +2208,8 @@
         const valueA = document.getElementById('value-a');
         const valueR = document.getElementById('value-r');
         const valueK = document.getElementById('value-k');
-        const equationDisplay = document.getElementById('function-equation');
+    const equationDisplay = document.getElementById('function-equation');
+    const canvasEquation = document.getElementById('canvas-equation');
         
         let width, height, originX, originY;
         const scale = 25;
@@ -2313,6 +2360,51 @@
             ctx.setLineDash([]);
         }
 
+        // Draw equation text directly on the canvas (fallback for devices where DOM badge might not appear)
+        function drawEquationBadgeOnCanvas(text) {
+            try {
+                // Theme colors
+                const cs = getComputedStyle(document.documentElement);
+                const bg = cs.getPropertyValue('--card-bg').trim() || '#fff';
+                const fg = cs.getPropertyValue('--text-color').trim() || '#111';
+
+                // Badge metrics
+                const padX = 10, padY = 6;
+                ctx.font = '600 14px Inter, Arial';
+                const metrics = ctx.measureText(text);
+                const textWidth = Math.min(metrics.width, width - 24);
+                const badgeW = textWidth + padX * 2;
+                const badgeH = 24 + (text.includes('<br>') ? 12 : 0); // simple height
+                const x = 12, y = 12;
+
+                // Rounded rectangle background
+                ctx.save();
+                ctx.beginPath();
+                const r = 8;
+                const right = x + badgeW, bottom = y + badgeH;
+                ctx.moveTo(x + r, y);
+                ctx.arcTo(right, y, right, bottom, r);
+                ctx.arcTo(right, bottom, x, bottom, r);
+                ctx.arcTo(x, bottom, x, y, r);
+                ctx.arcTo(x, y, right, y, r);
+                ctx.closePath();
+                ctx.fillStyle = bg;
+                ctx.globalAlpha = 0.96;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+                ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Text
+                ctx.fillStyle = fg;
+                ctx.textBaseline = 'middle';
+                ctx.textAlign = 'left';
+                ctx.fillText(text, x + padX, y + badgeH / 2);
+                ctx.restore();
+            } catch {}
+        }
+
         function updateAndDraw() {
             if(!ctx) return;
             const a = parseFloat(sliderA.value);
@@ -2325,11 +2417,16 @@
             let k_str = (k === 0) ? "" : (k > 0) ? ` + ${formatNumber(k)}` : ` - ${formatNumber(Math.abs(k))}`;
             let equation = "g(x) = " + a_str + x_part_str + k_str;
             if (a === 0) equation = `g(x) = ${formatNumber(k)}`;
+            // Update desktop equation display
             equationDisplay.innerHTML = equation;
+            // Mirror equation to canvas badge (used on mobile when 3rd column hidden)
+            if (canvasEquation) canvasEquation.textContent = equation;
             drawAxes();
             drawFunction(1, 0, 0, '#aaa', true);
             if (a !== 0) drawFunction(a, r, k, '#1d4ed8');
             else { ctx.beginPath(); ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 2.5; ctx.moveTo(0, originY - k * scale); ctx.lineTo(width, originY - k * scale); ctx.stroke(); }
+            // Draw equation onto canvas as well (ensures visibility everywhere)
+            drawEquationBadgeOnCanvas(equation);
         }
 
         function resizeCanvas() {
