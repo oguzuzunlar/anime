@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>f(x) = x² Fonksiyonu: Adım Adım Değerlendirme</title>
+    <title>f: ℝ → ℝ, f(x) = x² Fonksiyonu: Adım Adım Değerlendirme</title>
     <style>
         :root {
-            --bg-color: #f0f2f5; --text-color: #333; --card-bg: #ffffff; --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            --primary-gradient: linear-gradient(135deg, #6a82fb 0%, #fc5c7d 100%); --secondary-bg: #e2e8f0; --secondary-text: #4a5568;
-            --border-color: #e2e8f0; --correct-bg: #f0fff4; --correct-border: #48bb78; --correct-text: #22543d;
+            --bg-color: #ecfdf5; --text-color: #1f2937; --card-bg: #ffffff; --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --primary-gradient: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            --secondary-bg: #d1fae5; --secondary-text: #065f46;
+            --border-color: #a7f3d0;
+            --correct-bg: #f0fff4; --correct-border: #48bb78; --correct-text: #22543d;
             --incorrect-bg: #fff5f5; --incorrect-border: #f56565; --incorrect-text: #742a2a;
-            --warning-bg: #fffaf0; --warning-border: #f6e05e; --warning-text: #744210;
-            --grid-color: rgba(0, 0, 0, 0.1);
-            --animation-bg: linear-gradient(to bottom, #87CEEB 0%, #e0e0e0 70%, #ffffff 100%);
+            --warning-bg: #f7fee7; --warning-border: #eab308; --warning-text: #854d0e;
+            --grid-color: rgba(4, 120, 87, 0.15);
+            --animation-bg: linear-gradient(to bottom, #ecfdf5 0%, #d1fae5 70%, #ffffff 100%);
         }
         .dark-mode {
             --bg-color: #0f172a;
@@ -48,15 +50,15 @@
         @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         h2 { margin-bottom: 15px; font-size: 1.5rem; }
         h4 { margin-bottom: 10px; font-size: 1.1rem; color: var(--text-color); }
-        .button { background: var(--primary-gradient); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; margin: 5px; }
-        .button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(106, 130, 251, 0.4); }
+    .button { background: var(--primary-gradient); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; margin: 5px; }
+    .button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35); }
         .button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
         .button.secondary { background: var(--secondary-bg); color: var(--secondary-text); }
         .feedback { padding: 15px; border-radius: 8px; margin: 15px 0; font-weight: 500; text-align: center; }
         .feedback.success { background: var(--correct-bg); color: var(--correct-text); border: 1px solid var(--correct-border); }
         .feedback.wrong { background: var(--incorrect-bg); color: var(--incorrect-text); border: 1px solid var(--incorrect-border); }
         .feedback.warning { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border); }
-        .badge-score { background:linear-gradient(135deg,#0ea5e9,#2563eb); color:#fff; display:inline-block; padding:8px 16px; border-radius:999px; font-size:1rem; font-weight:800; }
+    .badge-score { background:linear-gradient(135deg,#10b981,#059669); color:#fff; display:inline-block; padding:8px 16px; border-radius:999px; font-size:1rem; font-weight:800; }
         .value-table { width: 100%; max-width: 250px; margin: 20px auto; border-collapse: separate; border-spacing: 0; text-align: center; font-size: 1.1rem; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
         .value-table td, .value-table th { padding: 12px; border-bottom: 1px solid var(--border-color); }
         .value-table tr:last-child td { border-bottom: none; }
@@ -77,14 +79,14 @@
         .option input { margin-right: 12px; }
         .intro-list { list-style: none; padding: 0 20px; margin: 25px 0; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; }
         .intro-list li { padding-left: 1.5em; text-indent: -1.5em; margin-bottom: 12px; line-height: 1.6; }
-        .intro-list li::before { content: '•'; color: #6a82fb; font-weight: bold; display: inline-block; width: 1.5em; }
+    .intro-list li::before { content: '•'; color: #16a34a; font-weight: bold; display: inline-block; width: 1.5em; }
         .text-list { text-align: left; max-width: 600px; margin: 20px auto; padding-left: 20px; }
         .text-list li { margin-bottom: 10px; }
         .learn-more-btn { 
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); 
+            background: linear-gradient(45deg, #34d399 0%, #10b981 100%); 
             color: white; border: none; padding: 15px 30px; border-radius: 25px; 
             cursor: pointer; font-size: 1.1rem; font-weight: 600; 
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); 
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35); 
             transition: all 0.3s ease; margin: 20px 10px;
             position: relative; overflow: hidden;
         }
@@ -95,7 +97,7 @@
         }
         .learn-more-btn:hover { 
             transform: translateY(-3px) scale(1.05); 
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.55);
         }
         .learn-more-btn:hover::before { left: 10px; }
         .modal { 
@@ -146,8 +148,8 @@
         <!-- Header ve Progress Bar -->
         <div class="header">
             <button id="theme-toggle" title="Temayı Değiştir">☀️</button>
-            <h1 style="color: #2563eb; font-weight: 800; margin-bottom: 0;">1. Basamak</h1>
-            <h2 style="color: var(--text-color); font-weight: 700; margin-top: 8px;">Karesel Fonksiyonlar</h2>
+            <h1 style="color: #10b981; font-weight: 800; margin-bottom: 0;">1. Basamak</h1>
+            <h2 style="color: #10b981; font-weight: 700; margin-top: 8px;">Karesel Fonksiyonlar</h2>
             <div class="badge badge-score" style="margin-top: 10px;">Toplam Puan: <span id="total-score">0</span> / 10</div>
         </div>
         <div class="progress-bar"> <div class="progress-step" id="progress-1"></div><div class="progress-step" id="progress-2"></div><div class="progress-step" id="progress-3"></div><div class="progress-step" id="progress-4"></div><div class="progress-step" id="progress-5"></div> </div>
@@ -172,10 +174,12 @@
         <!-- Adım 1: Keşfet (YENİLENMİŞ İÇERİK) -->
         <div class="step" id="step-1">
             <h2>💨 Hızlanmanın Matematiği: Yavaş Başla, Hızlan!</h2>
-            <p>Gerçek dünyada hiçbir nesne anında tam hıza ulaşmaz veya tam hızdayken anında durmaz. Bu temel fizik kuralı, animasyonun en önemli prensiplerinden biridir: <strong>"Yavaş Giriş ve Yavaş Çıkış"</strong>. Cisimler harekete yavaş başlar, hızlanır ve durmadan önce yavaşlar. Bu prensibin arkasındaki matematiksel sır, <strong>f(x) = x²</strong> parabol fonksiyonunda gizlidir.</p>
-            
+            <p>Karesel fonksiyonlar, bilimde ve doğada pek çok olgunun modellenmesinde temel bir yere sahiptir. Serbest düşme hareketi, yansıtıcı yüzeylerde ışığın izlediği yol, köprü kablolarının biçimi ve atış hareketinin yörüngesi gibi pek çok durum, karesel ilişkilerle açıklanır. Bu açıdan, karesel fonksiyonları anlamak; gözlemlediğimiz olayların neden ve sonuçlarını matematiksel olarak temellendirmemize yardımcı olur.</p>
+
+            <p>Animasyon tasarımında da aynı ilke geçerlidir: Bir nesnenin <strong>yavaş başlayıp giderek hızlanması</strong> ve durmadan önce <strong>yeniden yavaşlaması</strong> “yavaş giriş – yavaş çıkış (ease-in/ease-out)” prensibiyle modellenir. Bu prensibin ardındaki matematik, <strong>f(x) = x²</strong> gibi karesel fonksiyonlarla ifade edilir ve hareketi daha gerçekçi, daha anlaşılır kılar.</p>
+
             <p class="anim-info-box">
-                <strong>🎯</strong> <span class="anim-info">Sınavda çözeceğiniz <strong>f(x) = x²</strong> fonksiyonu ile ilgili sorular tam da bu animasyon prensibini açıklar! Tablo değerlerini hesaplarken, grafikte noktaları işaretlerken ve çoktan seçmeli sorularda fonksiyonun özelliklerini değerlendirirken, aslında "yavaş giriş ve yavaş çıkış" hareketinin matematiksel temelini keşfedeceksiniz.</span>
+                <strong>🎯</strong> <span class="anim-info">Bu çalışmada odaklandığımız <strong>f(x) = x²</strong> fonksiyonu, karesel fonksiyonların en temel örneğidir. Aşağıdaki değerlendirme; hem bu fonksiyonun <em>nicel</em> (tablo ve grafik üzerinden sayısal ilişkiler) hem de <em>nitel</em> (şekil, yönelme, tepe noktası ve değişim yönü gibi kavramsal özellikler) boyutlarıyla ilgili bilgi ve becerilerinizi ölçmeyi amaçlamaktadır. Etkinlikleri tamamlarken aynı zamanda “yavaş giriş – yavaş çıkış” hareketinin matematiksel temelini deneyimleyerek öğreneceksiniz.</span>
             </p>
             
             <div style="text-align:center; margin: 25px 0;">
@@ -203,10 +207,16 @@
                     </div>
                     
                     <div id="ball" style="position: absolute; width: 40px; height: 40px; background: radial-gradient(circle at 10px 10px, #ff7e5f, #feb47b); border-radius: 50%; left: calc(50% -20px); top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 5;"></div>
+                    <!-- Karşılaştırma modu topları ve etiketleri -->
+                    <div id="ball-linear" style="display:none; position: absolute; width: 40px; height: 40px; background: radial-gradient(circle at 10px 10px, #60a5fa, #2563eb); border-radius: 50%; left: calc(25% - 20px); top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 6;"></div>
+                    <div id="ball-parabolic" style="display:none; position: absolute; width: 40px; height: 40px; background: radial-gradient(circle at 10px 10px, #fca5a5, #ef4444); border-radius: 50%; left: calc(75% - 20px); top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 6;"></div>
+                    <div id="label-linear" style="display:none; position:absolute; top: 10px; left: calc(25% - 30px); background: rgba(0,0,0,0.6); color:#fff; font-size: 12px; padding: 3px 6px; border-radius: 10px; z-index:7;">Linear</div>
+                    <div id="label-parabolic" style="display:none; position:absolute; top: 10px; left: calc(75% - 36px); background: rgba(0,0,0,0.6); color:#fff; font-size: 12px; padding: 3px 6px; border-radius: 10px; z-index:7;">Doğal</div>
                 </div>
                 <div style="margin: 15px 0;">
                     <button class="button secondary" onclick="startAnimation('linear')" style="margin: 5px;">🤖 Sabit Hızla Düşür (Robotik)</button>
                     <button class="button" onclick="startAnimation('parabolic')" style="margin: 5px;">🌍 Yer Çekimiyle Düşür (Doğal)</button>
+                    <button class="button" onclick="startComparison()" style="margin: 5px; background: linear-gradient(135deg,#34d399,#059669);">↔️ Karşılaştırmalı Oynat</button>
                 </div>
                 <p style="font-size: 0.85em; color: var(--secondary-text); margin-top: 10px; max-width: 380px; margin-left: auto; margin-right: auto;">
                     💡 <strong>Farkları Gözlemleyin:</strong><br>
@@ -224,7 +234,7 @@
         </div>
 
         <!-- Adım 2: Hesapla -->
-        <div class="step" id="step-2"> <h2>Hesapla: Değerleri Bul (2 Puan)</h2> <p>f(x) = x² fonksiyonu için verilen x değerlerine karşılık gelen y değerlerini hesaplayarak aşağıdaki tabloyu doldurunuz.</p> <table class="value-table" id="value-table"> <thead> <tr> <th>x</th> <th>f(x) = x²</th> </tr> </thead> <tbody> <tr> <td class="table-label">-3</td> <td><input type="number" data-x="-3"></td> </tr> <tr> <td class="table-label">-2</td> <td><input type="number" data-x="-2"></td> </tr> <tr> <td class="table-label">-1</td> <td><input type="number" data-x="-1"></td> </tr> <tr> <td class="table-label">0</td> <td><input type="number" data-x="0"></td> </tr> <tr> <td class="table-label">1</td> <td><input type="number" data-x="1"></td> </tr> <tr> <td class="table-label">2</td> <td><input type="number" data-x="2"></td> </tr> <tr> <td class="table-label">3</td> <td><input type="number" data-x="3"></td> </tr> </tbody> </table> <div class="feedback" id="table-feedback" style="display: none;"></div> <div style="text-align: center; margin-top: 20px;"> <button class="button secondary" id="check-table-btn" onclick="checkTable()">Değerleri Kontrol Et</button> <button class="button" id="to-graph-btn" onclick="nextStep()" disabled>Grafiği Çizmeye Başla ✏️</button> </div> </div>
+        <div class="step" id="step-2"> <h2>Hesapla: Değerleri Bul (2 Puan)</h2> <p>f: ℝ → ℝ, f(x) = x² fonksiyonu için verilen x değerlerine karşılık gelen y değerlerini hesaplayarak aşağıdaki tabloyu doldurunuz.</p> <table class="value-table" id="value-table"> <thead> <tr> <th>x</th> <th>f: ℝ → ℝ, f(x) = x²</th> </tr> </thead> <tbody> <tr> <td class="table-label">-3</td> <td><input type="number" data-x="-3"></td> </tr> <tr> <td class="table-label">-2</td> <td><input type="number" data-x="-2"></td> </tr> <tr> <td class="table-label">-1</td> <td><input type="number" data-x="-1"></td> </tr> <tr> <td class="table-label">0</td> <td><input type="number" data-x="0"></td> </tr> <tr> <td class="table-label">1</td> <td><input type="number" data-x="1"></td> </tr> <tr> <td class="table-label">2</td> <td><input type="number" data-x="2"></td> </tr> <tr> <td class="table-label">3</td> <td><input type="number" data-x="3"></td> </tr> </tbody> </table> <div class="feedback" id="table-feedback" style="display: none;"></div> <div style="text-align: center; margin-top: 20px;"> <button class="button secondary" id="check-table-btn" onclick="checkTable()">Değerleri Kontrol Et</button> <button class="button" id="to-graph-btn" onclick="nextStep()" disabled>Grafiği Çizmeye Başla ✏️</button> </div> </div>
         
         <!-- Adım 3: Uygula -->
         <div class="step" id="step-3"> <h2>Uygula: Noktaları İşaretle (3 Puan)</h2> <p>Hesapladığın noktaları koordinat düzleminde doğru yerlere tıklayarak işaretleyiniz...</p> <div id="graph-container"> <canvas id="graph-canvas"></canvas> <div id="points-to-plot"><h4>İŞARETLENECEK NOKTALAR</h4></div> </div> <div class="feedback" id="graph-feedback" style="display: none;"></div> <div style="text-align: center; margin-top: 20px;"> <button class="button secondary" id="check-graph-btn" onclick="checkGraph()">Noktaları Kontrol Et</button> <button class="button" id="to-exam-btn" onclick="nextStep()" disabled>Değerlendirme Sınavına Geç 🧠</button> </div> </div>
@@ -328,11 +338,11 @@
     }
     
     const questions = [
-        { type: 'multiple-select', q: '1. Fonksiyonun tanım ve görüntü kümesi için hangileri doğrudur?', options: ['Tanım kümesi gerçek sayılardır.', 'Görüntü kümesi gerçek sayılardır.', 'Tanım kümesi [0, ∞) aralığıdır.', 'Görüntü kümesi [0, ∞) aralığıdır.'], answer: [0, 3] }, 
-        { type: 'multiple-select', q: '2. Fonksiyonun artan ve azalan olduğu aralıklar için hangileri doğrudur?', options: ['(-∞, 0) aralığında artandır.', '(-∞, 0) aralığında azalandır.', '(0, ∞) aralığında artandır.', '(0, ∞) aralığında azalandır.'], answer: [1, 2] }, 
-        { type: 'multiple-select', q: '3. Fonksiyonun simetri özellikleri için hangileri doğrudur?', options: ['Grafiği y eksenine göre simetriktir.', 'Çift fonksiyondur.', 'Grafiği orijine göre simetriktir.', 'Tek fonksiyondur.'], answer: [0, 1] }, 
-        { type: 'multiple-select', q: '4. Fonksiyonun özel noktaları ve değerleri için hangileri doğrudur?', options: ['Minimum değeri 0\'dır.', 'Tepe noktası (0, 0) koordinatıdır.', 'Maksimum değeri yoktur.', 'Fonksiyonun sıfırı x=0 noktasıdır.'], answer: [0, 1, 2, 3] }, 
-        { type: 'multiple-select', q: '5. Fonksiyonun genel özellikleri için hangileri doğrudur?', options: ['Bire bir fonksiyondur.', 'Bire bir fonksiyon değildir.', 'Örten fonksiyondur (Değer kümesi ℝ iken).', 'Örten fonksiyon değildir (Değer kümesi ℝ iken).'], answer: [1, 3] }
+        { type: 'multiple-select', q: '1. f: ℝ → ℝ, f(x) = x² referans fonksiyonu için aşağıdaki eşitliklerden hangileri doğrudur?', options: ['f(-3) = 9', 'f(1/2) = 1/4', 'f(-1) = -1', 'f(2) = -4'], answer: [0, 1] }, 
+        { type: 'multiple-select', q: '2. f: ℝ → ℝ, f(x) = x² referans fonksiyonunun artan ve azalan olduğu aralıklar için hangileri doğrudur?', options: ['(-∞, 0) aralığında artandır.', '(-∞, 0) aralığında azalandır.', '(0, ∞) aralığında artandır.', '(0, ∞) aralığında azalandır.'], answer: [1, 2] }, 
+        { type: 'multiple-select', q: '3. f: ℝ → ℝ, f(x) = x² referans fonksiyonunun simetri özellikleri için hangileri doğrudur?', options: ['Grafiği y eksenine göre simetriktir.', 'Çift fonksiyondur.', 'Grafiği orijine göre simetriktir.', 'Tek fonksiyondur.'], answer: [0, 1] }, 
+        { type: 'multiple-select', q: '4. f: ℝ → ℝ, f(x) = x² referans fonksiyonunun özel noktaları ve değerleri için hangileri doğrudur?', options: ['Minimum değeri 0\'dır.', 'Tepe noktası (0, 0) koordinatıdır.', 'Maksimum değeri yoktur.', 'Fonksiyonun sıfırı x=0 noktasıdır.'], answer: [0, 1, 2, 3] }, 
+        { type: 'multiple-select', q: '5. f: ℝ → ℝ, f(x) = x² referans fonksiyonunun genel özellikleri için hangileri doğrudur?', options: ['Bire bir fonksiyondur.', 'Bire bir fonksiyon değildir.', 'Örten fonksiyondur.', 'Örten fonksiyon değildir.'], answer: [1, 3] }
     ];
 
     document.addEventListener('DOMContentLoaded', () => { 
@@ -484,23 +494,35 @@
     }
 
     let animationFrameId = null; 
+    let indicatorHideTimeoutId = null; // Hız/zaman etiketlerini gizleyen zamanlayıcıyı takip eder
 
     function startAnimation(type) { 
         playMusicEffect('animation');
         if (animationFrameId) { 
-            cancelAnimationFrame(animationFrameId); 
-        } 
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null; 
+        }
+        // Önceki gizleme zamanlayıcısı kaldıysa iptal et
+        if (indicatorHideTimeoutId) {
+            clearTimeout(indicatorHideTimeoutId);
+            indicatorHideTimeoutId = null;
+        }
         const ball = document.getElementById('ball'); 
         const speedIndicator = document.getElementById('speed-indicator');
         const speedValue = document.getElementById('speed-value');
         const timeIndicator = document.getElementById('time-indicator');
         const timeValue = document.getElementById('time-value');
+
+        // Güvenlik: Elemanlar yoksa çık
+        if (!ball) return;
+
         const startPosition = 10; 
         const endPosition = 280; 
         const distance = endPosition - startPosition; 
-        const duration = 4000; // Daha uzun süre (4 saniye) için farkı çok daha iyi görmek
+        const duration = 4000; // 4 saniye
         let startTime = null; 
         let lastPosition = startPosition;
+        let lastTimestamp = null;
         
         // Topun başlangıç pozisyonuna sıfırla
         ball.style.top = `${startPosition}px`;
@@ -509,47 +531,50 @@
         ball.style.transition = '';
         
         // Hız ve zaman göstergelerini göster
-        speedIndicator.style.opacity = '1';
-        timeIndicator.style.opacity = '1';
+        if (speedIndicator) speedIndicator.style.opacity = '1';
+        if (timeIndicator) timeIndicator.style.opacity = '1';
+        if (speedValue) speedValue.textContent = '0';
+        if (timeValue) timeValue.textContent = '0.0';
         
         function animateFrame(timestamp) { 
             if (!startTime) startTime = timestamp; 
             const elapsed = timestamp - startTime; 
+            const dt = lastTimestamp ? (timestamp - lastTimestamp) : 0;
             let progress = Math.min(elapsed / duration, 1); 
             let position; 
-            let speed = 0;
+            let speedPxPerSec = 0;
             
             if (type === 'linear') { 
                 // Sabit hız - doğrusal hareket
                 position = startPosition + distance * progress; 
-                speed = Math.abs(position - lastPosition) * 60; // Yaklaşık fps için 60
                 // Gölge ve boyut değişimi yok
                 ball.style.transform = 'scale(1)';
                 ball.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
-                speedIndicator.style.background = 'rgba(128, 128, 128, 0.8)'; // Gri - sabit
-            } else if (type === 'parabolic') { 
-                // Gerçekçi yer çekimi etkisi - karesel hızlanma (x²)
-                let easedProgress = Math.pow(progress, 2.2); // Daha belirgin hızlanma
+                if (speedIndicator) speedIndicator.style.background = 'rgba(128, 128, 128, 0.8)'; // Gri - sabit
+            } else {
+                // Varsayılan: parabolik
+                const easedProgress = Math.pow(progress, 2.4); // farkı biraz daha artır
                 position = startPosition + distance * easedProgress; 
-                speed = Math.abs(position - lastPosition) * 60;
                 
                 // Sadece gölge efektleri - top boyutu sabit kalır
-                let shadowIntensity = 0.2 + (progress * 0.7); // Daha koyu gölge
-                let shadowSize = 4 + (progress * 25); // Daha büyük gölge
-                
-                // Top boyutu sabit kalır, sadece gölge değişir
+                const shadowIntensity = 0.2 + (progress * 0.7);
+                const shadowSize = 4 + (progress * 25);
                 ball.style.transform = 'scale(1)';
                 ball.style.boxShadow = `0 ${shadowSize}px ${shadowSize * 2}px rgba(0,0,0,${shadowIntensity})`;
-                
-                // Hız göstergesi rengi - yeşilden kırmızıya geçiş
-                let intensity = Math.min(progress * 2, 1);
-                speedIndicator.style.background = `rgba(${255 * intensity}, ${200 * (1-intensity)}, 0, 0.9)`;
-            } 
-            
-            // Hız ve zaman değerlerini güncelle
-            speedValue.textContent = Math.round(speed);
-            timeValue.textContent = (elapsed / 1000).toFixed(1);
+                if (speedIndicator) {
+                    const intensity = Math.min(progress * 2, 1);
+                    speedIndicator.style.background = `rgba(${255 * intensity}, ${200 * (1-intensity)}, 0, 0.9)`;
+                }
+            }
+
+            // Hızı gerçek zamanlı hesapla (px/s)
+            if (dt > 0) {
+                speedPxPerSec = Math.abs(position - lastPosition) / (dt / 1000);
+            }
+            if (speedValue) speedValue.textContent = String(Math.round(speedPxPerSec));
+            if (timeValue) timeValue.textContent = (elapsed / 1000).toFixed(1);
             lastPosition = position;
+            lastTimestamp = timestamp;
             
             ball.style.top = `${position}px`; 
             
@@ -557,37 +582,31 @@
                 animationFrameId = requestAnimationFrame(animateFrame); 
             } else {
                 // Animasyon bittiğinde
-                setTimeout(() => {
-                    speedIndicator.style.opacity = '0';
-                    timeIndicator.style.opacity = '0';
-                }, 1500);
+                indicatorHideTimeoutId = setTimeout(() => {
+                    if (speedIndicator) speedIndicator.style.opacity = '0';
+                    if (timeIndicator) timeIndicator.style.opacity = '0';
+                    indicatorHideTimeoutId = null;
+                }, 1200);
                 
-                // Zıplama efekti (her animasyon türü için farklı)
+                // Zıplama efekti
                 if (type === 'linear') {
-                    // Basit, mekanik zıplama
                     setTimeout(() => {
-                        ball.style.transition = 'all 0.2s linear'; // Linear geçiş
+                        ball.style.transition = 'all 0.2s linear';
                         ball.style.top = `${endPosition - 20}px`;
                         setTimeout(() => {
                             ball.style.top = `${endPosition}px`;
-                            setTimeout(() => {
-                                ball.style.transition = '';
-                            }, 200);
+                            setTimeout(() => { ball.style.transition = ''; }, 200);
                         }, 100);
                     }, 100);
-                } else if (type === 'parabolic') {
-                    // Doğal, gerçekçi zıplama - sadece pozisyon değişir, boyut sabit
+                } else {
                     setTimeout(() => {
-                        ball.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)'; // Doğal easing
+                        ball.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                         ball.style.top = `${endPosition - 35}px`;
-                        // Boyut sabit kalır, sadece gölge hafifçe değişir
                         ball.style.boxShadow = '0 15px 30px rgba(0,0,0,0.3)';
                         setTimeout(() => {
                             ball.style.top = `${endPosition}px`;
                             ball.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
-                            setTimeout(() => {
-                                ball.style.transition = '';
-                            }, 400);
+                            setTimeout(() => { ball.style.transition = ''; }, 400);
                         }, 200);
                     }, 100);
                 }
@@ -596,6 +615,96 @@
         playSound('advance'); 
         animationFrameId = requestAnimationFrame(animateFrame); 
     } 
+
+    // Karşılaştırmalı oynatma: aynı anda linear ve parabolik
+    function startComparison() {
+        playMusicEffect('animation');
+        // Önceki animasyonu durdur ve gizleme zamanlayıcısını iptal et
+        if (animationFrameId) { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
+        if (indicatorHideTimeoutId) { clearTimeout(indicatorHideTimeoutId); indicatorHideTimeoutId = null; }
+
+        const box = document.getElementById('animation-box');
+        const bLin = document.getElementById('ball-linear');
+        const bPar = document.getElementById('ball-parabolic');
+        const lLin = document.getElementById('label-linear');
+        const lPar = document.getElementById('label-parabolic');
+        if (!box || !bLin || !bPar || !lLin || !lPar) return;
+
+        // Ana topu gizle, iki topu göster
+        const ball = document.getElementById('ball');
+        if (ball) ball.style.display = 'none';
+        bLin.style.display = 'block';
+        bPar.style.display = 'block';
+        lLin.style.display = 'block';
+        lPar.style.display = 'block';
+
+        const startPosition = 10;
+        const endPosition = 280;
+        const distance = endPosition - startPosition;
+        const duration = 4500; // biraz daha uzun
+        let startTime = null;
+
+        // Başlangıç durumları
+        bLin.style.top = `${startPosition}px`;
+        bPar.style.top = `${startPosition}px`;
+        bLin.style.transition = '';
+        bPar.style.transition = '';
+        bLin.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+        bPar.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+
+        function frame(t) {
+            if (!startTime) startTime = t;
+            const elapsed = t - startTime;
+            const p = Math.min(elapsed / duration, 1);
+
+            // Linear
+            const posLin = startPosition + distance * p;
+            bLin.style.top = `${posLin}px`;
+
+            // Parabolic (biraz daha güçlü easing)
+            const eased = Math.pow(p, 2.5);
+            const posPar = startPosition + distance * eased;
+            // Parabolikte gölge büyüsün, top sabit kalsın
+            const shadowSize = 4 + (p * 25);
+            const shadowIntensity = 0.2 + (p * 0.7);
+            bPar.style.top = `${posPar}px`;
+            bPar.style.boxShadow = `0 ${shadowSize}px ${shadowSize*2}px rgba(0,0,0,${shadowIntensity})`;
+
+            if (p < 1) {
+                animationFrameId = requestAnimationFrame(frame);
+            } else {
+                // Zıplamalar
+                setTimeout(() => {
+                    bLin.style.transition = 'all 0.2s linear';
+                    bLin.style.top = `${endPosition - 20}px`;
+                    setTimeout(() => {
+                        bLin.style.top = `${endPosition}px`;
+                        setTimeout(() => { bLin.style.transition = ''; }, 200);
+                    }, 100);
+                }, 100);
+
+                setTimeout(() => {
+                    bPar.style.transition = 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    bPar.style.top = `${endPosition - 35}px`;
+                    setTimeout(() => {
+                        bPar.style.top = `${endPosition}px`;
+                        setTimeout(() => { bPar.style.transition = ''; }, 300);
+                    }, 200);
+                }, 100);
+
+                // Bitince eski duruma dön
+                setTimeout(() => {
+                    bLin.style.display = 'none';
+                    bPar.style.display = 'none';
+                    lLin.style.display = 'none';
+                    lPar.style.display = 'none';
+                    if (ball) { ball.style.display = 'block'; ball.style.top = `${startPosition}px`; }
+                }, 1500);
+            }
+        }
+
+        animationFrameId = requestAnimationFrame(frame);
+    }
 
     function redrawGraph() { 
         if (currentStep >= 3 && g_ctx) { 
