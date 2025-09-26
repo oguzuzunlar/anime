@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>f(x) = x² Fonksiyonu: Adım Adım Değerlendirme</title>
+    <style>
+        :root {
+            --bg-color: #f0f2f5; --text-color: #333; --card-bg: #ffffff; --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --primary-gradient: linear-gradient(135deg, #6a82fb 0%, #fc5c7d 100%); --secondary-bg: #e2e8f0; --secondary-text: #4a5568;
+            --border-color: #e2e8f0; --correct-bg: #f0fff4; --correct-border: #48bb78; --correct-text: #22543d;
+            --incorrect-bg: #fff5f5; --incorrect-border: #f56565; --incorrect-text: #742a2a;
+            --warning-bg: #fffaf0; --warning-border: #f6e05e; --warning-text: #744210;
+            --grid-color: rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode {
+            --bg-color: #1a202c; --text-color: #e2e8f0; --card-bg: #2d3748; --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            --secondary-bg: #4a5568; --secondary-text: #e2e8f0; --border-color: #4a5568; --correct-bg: #2f4438;
+            --correct-border: #48bb78; --correct-text: #c6f6d5; --incorrect-bg: #4c3030; --incorrect-border: #f56565; --incorrect-text: #fed7d7;
+            --warning-bg: #4a3a1d; --warning-border: #f6e05e; --warning-text: #fffaf0;
+            --grid-color: rgba(255, 255, 255, 0.15);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg-color); color: var(--text-color); min-height: 100vh; transition: background-color 0.3s, color 0.3s; line-height: 1.6; }
+        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+        .header { background: var(--card-bg); border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: var(--card-shadow); position: relative; }
+        .header h1 { margin-bottom: 10px; font-size: 1.8rem; }
+        #theme-toggle { position: absolute; top: 15px; right: 15px; background: var(--secondary-bg); color: var(--secondary-text); border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+        .progress-bar { display: flex; justify-content: space-between; margin-bottom: 20px; background: var(--secondary-bg); border-radius: 10px; padding: 10px; }
+        .progress-step { flex: 1; height: 8px; background: rgba(100, 100, 100, 0.2); margin: 0 2px; border-radius: 4px; transition: all 0.3s ease; }
+        .progress-step.active { background: #48bb78; }
+        .step { display: none; background: var(--card-bg); border-radius: 15px; padding: 30px; box-shadow: var(--card-shadow); animation: slideIn 0.5s ease; }
+        .step.active { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        h2 { margin-bottom: 15px; font-size: 1.5rem; }
+        h4 { margin-bottom: 10px; font-size: 1.1rem; color: var(--text-color); }
+        .button { background: var(--primary-gradient); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; margin: 5px; }
+        .button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(106, 130, 251, 0.4); }
+        .button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+        .button.secondary { background: var(--secondary-bg); color: var(--secondary-text); }
+        .feedback { padding: 15px; border-radius: 8px; margin: 15px 0; font-weight: 500; text-align: center; }
+        .feedback.success { background: var(--correct-bg); color: var(--correct-text); border: 1px solid var(--correct-border); }
+        .feedback.wrong { background: var(--incorrect-bg); color: var(--incorrect-text); border: 1px solid var(--incorrect-border); }
+        .feedback.warning { background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border); }
+        .badge-score { background:linear-gradient(135deg,#0ea5e9,#2563eb); color:#fff; display:inline-block; padding:8px 16px; border-radius:999px; font-size:1rem; font-weight:800; }
+        .value-table { width: 100%; max-width: 250px; margin: 20px auto; border-collapse: separate; border-spacing: 0; text-align: center; font-size: 1.1rem; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+        .value-table td, .value-table th { padding: 12px; border-bottom: 1px solid var(--border-color); }
+        .value-table tr:last-child td { border-bottom: none; }
+        .value-table th { background: var(--secondary-bg); font-weight: 600; }
+        .value-table .table-label { background-color: var(--secondary-bg); font-weight: bold; }
+        .value-table input { width: 80px; text-align: center; padding: 8px; border: 2px solid var(--border-color); border-radius: 6px; background-color: var(--bg-color); color: var(--text-color); font-size: 1rem; }
+        #graph-container { text-align: center; margin: 20px auto; max-width: 600px; }
+        #graph-canvas { border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-color); cursor: crosshair; width: 100%; height: auto; }
+        #points-to-plot { margin-top: 20px; padding: 15px; background: var(--secondary-bg); border-radius: 8px; text-align: center; }
+        #points-to-plot h4 { margin-bottom: 10px; font-size: 0.9rem; color: var(--secondary-text); }
+        .point-tag { display: inline-block; font-family: monospace; font-size: 1rem; background: var(--card-bg); color: var(--text-color); padding: 5px 10px; border-radius: 5px; margin: 5px; border: 1px solid var(--border-color); transition: all 0.3s ease; }
+        .point-tag.plotted { background: var(--correct-bg); color: var(--correct-text); text-decoration: line-through; opacity: 0.7; }
+        .question { margin-bottom: 30px; }
+        .question h3 { font-size: 1.1rem; margin-bottom: 15px; }
+        .option { display: flex; align-items: center; padding: 12px; margin: 8px 0; background: var(--bg-color); border: 2px solid var(--border-color); border-radius: 8px; cursor: pointer; }
+        .option.correct { border-color: var(--correct-border); background: var(--correct-bg); }
+        .option.incorrect { border-color: var(--incorrect-border); background: var(--incorrect-bg); }
+        .option input { margin-right: 12px; }
+        .intro-list { list-style: none; padding: 0 20px; margin: 25px 0; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .intro-list li { padding-left: 1.5em; text-indent: -1.5em; margin-bottom: 12px; line-height: 1.6; }
+        .intro-list li::before { content: '•'; color: #6a82fb; font-weight: bold; display: inline-block; width: 1.5em; }
+        .text-list { text-align: left; max-width: 600px; margin: 20px auto; padding-left: 20px; }
+        .text-list li { margin-bottom: 10px; }
+        .learn-more-btn { 
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); 
+            color: white; border: none; padding: 15px 30px; border-radius: 25px; 
+            cursor: pointer; font-size: 1.1rem; font-weight: 600; 
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); 
+            transition: all 0.3s ease; margin: 20px 10px;
+            position: relative; overflow: hidden;
+        }
+        .learn-more-btn::before {
+            content: '✨'; position: absolute; left: -30px; top: 50%; 
+            transform: translateY(-50%); font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        .learn-more-btn:hover { 
+            transform: translateY(-3px) scale(1.05); 
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+        .learn-more-btn:hover::before { left: 10px; }
+        .modal { 
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; 
+            width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); 
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content { 
+            background-color: var(--card-bg); margin: 5% auto; padding: 30px; 
+            border-radius: 15px; width: 90%; max-width: 700px; max-height: 80vh; 
+            overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideInDown 0.3s ease;
+        }
+        .modal-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 20px; border-bottom: 2px solid var(--border-color); 
+            padding-bottom: 15px;
+        }
+        .close { 
+            color: var(--secondary-text); font-size: 28px; font-weight: bold; 
+            cursor: pointer; transition: color 0.3s;
+        }
+        .close:hover { color: var(--text-color); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header ve Progress Bar -->
+        <div class="header">
+            <button id="theme-toggle" title="Temayı Değiştir">☀️</button>
+            <h1 style="color: #2563eb; font-weight: 800; margin-bottom: 0;">1. Basamak</h1>
+            <h2 style="color: var(--text-color); font-weight: 700; margin-top: 8px;">Karesel Fonksiyonlar</h2>
+            <div class="badge badge-score" style="margin-top: 10px;">Toplam Puan: <span id="total-score">0</span> / 10</div>
+        </div>
+        <div class="progress-bar"> <div class="progress-step" id="progress-1"></div><div class="progress-step" id="progress-2"></div><div class="progress-step" id="progress-3"></div><div class="progress-step" id="progress-4"></div><div class="progress-step" id="progress-5"></div> </div>
+        
+        <!-- Adım 0: Giriş -->
+        <div class="step active" id="step-0">
+            <div style="text-align: center;">
+                <h2 style="color: #6a82fb;">Bilgilendirme</h2>
+                <ul class="intro-list">
+                    <li>Bu bir <strong>değerlendirme sınavıdır</strong>. Sınavın amacı, karesel fonksiyonlar ile ilgili temel düzeydeki bilgilerinizi ölçmektir.</li>
+                    <li>Önce karesel fonksiyonların gerçek hayattaki kullanımını, özellikle animasyonlarda nasıl uygulandığını gösteren interaktif bir simülasyon izleyeceksiniz.</li>
+                    <li>Simülasyon sonrasında sınava geçeceksiniz. Sınav; tablo doldurma, grafik çizimi ve çoktan seçmeli sorulardan oluşmaktadır.</li>
+                    <li>Her bölümdeki soruları yanıtlayarak ilerleyebilirsiniz.</li>
+                    <li>Sınav sonunda toplam puanınızı ve her bölümden aldığınız puanları görebileceksiniz.</li>
+                    <li>Toplamda <strong>10 puan</strong> alabilirsiniz. (Tablo: 2 puan, Grafik: 3 puan, Sınav: 5 puan)</li>
+                    <li style="color: #d32f2f; font-weight: 600;">Lütfen dikkat: Sınavı bitirdikten sonra tekrar çözme imkanı bulunmamaktadır.</li>
+                </ul>
+                <button class="button" onclick="nextStep()">Başla</button>
+            </div>
+        </div>
+
+        <!-- Adım 1: Keşfet (YENİLENMİŞ İÇERİK) -->
+        <div class="step" id="step-1">
+            <h2>💨 Hızlanmanın Matematiği: Yavaş Başla, Hızlan!</h2>
+            <p>Gerçek dünyada hiçbir nesne anında tam hıza ulaşmaz veya tam hızdayken anında durmaz. Bu temel fizik kuralı, animasyonun en önemli prensiplerinden biridir: <strong>"Yavaş Giriş ve Yavaş Çıkış"</strong>. Cisimler harekete yavaş başlar, hızlanır ve durmadan önce yavaşlar. Bu prensibin arkasındaki matematiksel sır, <strong>f(x) = x²</strong> parabol fonksiyonunda gizlidir.</p>
+            
+            <p style="background: linear-gradient(135deg, #e3f2fd, #f3e5f5); padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2196f3;">
+                <strong>    🎯</strong> Sınavda çözeceğiniz <strong>f(x) = x²</strong> fonksiyonu ile ilgili sorular tam da bu animasyon prensibini açıklar! Tablo değerlerini hesaplarken, grafikte noktaları işaretlerken ve çoktan seçmeli sorularda fonksiyonun özelliklerini değerlendirirken, aslında "yavaş giriş ve yavaş çıkış" hareketinin matematiksel temelini keşfedeceksiniz.
+            </p>
+            
+            <div style="text-align:center; margin: 25px 0;">
+                <h4>İnteraktif Simülasyon: Zıplayan Topun Canlılığı</h4>
+                <p style="margin-bottom: 15px; font-size: 0.9em; color: var(--secondary-text);">Gerçekçi ve sahte hareket arasındaki farkı kendin gör! "Yer Çekimiyle Düşür" seçeneği, parabolik hızlanmanın (Yavaş Giriş) gücünü gösterir.</p>
+                <div id="animation-box" style="position: relative; max-width: 400px; height: 350px; background: linear-gradient(to top, #e0e0e0, #ffffff); border: 2px solid var(--border-color); border-radius: 8px; margin: 10px auto; overflow: hidden;">
+                    <div id="ball" style="position: absolute; width: 40px; height: 40px; background: radial-gradient(circle at 10px 10px, #ff7e5f, #feb47b); border-radius: 50%; left: calc(50% - 20px); top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);"></div>
+                </div>
+                <button class="button secondary" onclick="startAnimation('linear')">Sabit Hızla Düşür (Sahte)</button>
+                <button class="button" onclick="startAnimation('parabolic')">Yer Çekimiyle Düşür (Gerçekçi)</button>
+            </div>
+
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="learn-more-btn" onclick="openModal()">🎭 Daha Fazlasını Öğren</button>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;"><button class="button" onclick="nextStep()">Sınava Başla ➡️</button></div>
+        </div>
+
+        <!-- Adım 2: Hesapla -->
+        <div class="step" id="step-2"> <h2>Hesapla: Değerleri Bul (2 Puan)</h2> <p>f(x) = x² fonksiyonu için verilen x değerlerine karşılık gelen y değerlerini hesaplayarak aşağıdaki tabloyu doldurunuz.</p> <table class="value-table" id="value-table"> <thead> <tr> <th>x</th> <th>f(x) = x²</th> </tr> </thead> <tbody> <tr> <td class="table-label">-3</td> <td><input type="number" data-x="-3"></td> </tr> <tr> <td class="table-label">-2</td> <td><input type="number" data-x="-2"></td> </tr> <tr> <td class="table-label">-1</td> <td><input type="number" data-x="-1"></td> </tr> <tr> <td class="table-label">0</td> <td><input type="number" data-x="0"></td> </tr> <tr> <td class="table-label">1</td> <td><input type="number" data-x="1"></td> </tr> <tr> <td class="table-label">2</td> <td><input type="number" data-x="2"></td> </tr> <tr> <td class="table-label">3</td> <td><input type="number" data-x="3"></td> </tr> </tbody> </table> <div class="feedback" id="table-feedback" style="display: none;"></div> <div style="text-align: center; margin-top: 20px;"> <button class="button secondary" id="check-table-btn" onclick="checkTable()">Değerleri Kontrol Et</button> <button class="button" id="to-graph-btn" onclick="nextStep()" disabled>Grafiği Çizmeye Başla ✏️</button> </div> </div>
+        
+        <!-- Adım 3: Uygula -->
+        <div class="step" id="step-3"> <h2>Uygula: Noktaları İşaretle (3 Puan)</h2> <p>Hesapladığın noktaları koordinat düzleminde doğru yerlere tıklayarak işaretleyiniz...</p> <div id="graph-container"> <canvas id="graph-canvas"></canvas> <div id="points-to-plot"><h4>İŞARETLENECEK NOKTALAR</h4></div> </div> <div class="feedback" id="graph-feedback" style="display: none;"></div> <div style="text-align: center; margin-top: 20px;"> <button class="button secondary" id="check-graph-btn" onclick="checkGraph()">Noktaları Kontrol Et</button> <button class="button" id="to-exam-btn" onclick="nextStep()" disabled>Değerlendirme Sınavına Geç 🧠</button> </div> </div>
+
+        <!-- Adım 4: Değerlendir -->
+        <div class="step" id="step-4"> <h2>Değerlendir: Bilgini Test Et (5 Puan)</h2> <div id="question-container"></div> <div style="text-align: center; margin: 25px 0 10px;"><button class="button" id="finish-exam-btn" onclick="finishExam()">Sınavı Bitir</button></div> </div>
+        
+        <!-- Adım 5: Sonuç -->
+        <div class="step" id="step-5">
+            <div style="text-align: center;">
+                <h2>🎉 Sınav Tamamlandı!</h2>
+                <div class="badge badge-score" style="font-size: 1.5rem; padding: 15px 25px; margin: 20px 0;">
+                    Toplam Puanınız: <span id="final-total-score">0</span> / 10
+                </div>
+                <p id="score-breakdown" style="margin: 20px 0;"></p>
+                <button class="button" onclick="showAnswers()" style="margin-top: 20px;">Cevapları Gör</button>
+            </div>
+            <div id="answers-section" style="display:none; margin-top:30px; text-align:left; max-width:600px; margin-left:auto; margin-right:auto;"></div>
+        </div>
+    </div>
+
+    <!-- Modal - Daha Fazla Bilgi -->
+    <div id="learnMoreModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="color: #667eea; margin: 0;">🎭 Evrensel Bir Kural</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 1em; margin-bottom: 20px; color: var(--secondary-text);">Bu prensip, animasyona ağırlık ve inandırıcılık kattığı için neredeyse tüm çizgi filmlerde kullanılır:</p>
+                
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">🐱 Tom ve Jerry:</h4>
+                    <p>Tom, Jerry'yi kovalamaya başlamadan önce olduğu yerde bir an patinaj yapar. Bu hazırlık anı, onun patlayıcı hızlanması için mükemmel bir "Yavaş Giriş" örneğidir.</p>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">🐺 Wile E. Coyote:</h4>
+                    <p>Uçurumdan koştuktan sonra boşlukta anında düşmez. Bir anlığına havada asılı kalıp kameraya bakması, hareketinin komik bir "Yavaş Çıkış" ile sonlanmasıdır.</p>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">🦔 Sonic the Hedgehog:</h4>
+                    <p>Ünlü "Spin Dash" hareketi, hızla fırlamadan önce olduğu yerde dönerek enerji biriktirmesidir. Bu, bariz bir "Yavaş Giriş" tekniğidir.</p>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">🐭 Speedy Gonzales:</h4>
+                    <p>Tıpkı Road Runner gibi, koşmaya başlamadan önce yerinde bir toz bulutu oluşturarak hızlanmaya hazırlanır.</p>
+                </div>
+
+                <div style="background: var(--warning-bg); border: 1px solid var(--warning-border); border-radius: 8px; padding: 20px; margin-top: 25px;">
+                    <h4 style="margin-bottom: 10px; text-align: center; color: var(--warning-text);">🎬 Animasyon Köşesi: Gerçekçiliğin Sırrı</h4>
+                    <p style="font-size: 0.9em; color: var(--warning-text);">Bir topu yere bıraktığınızda sabit hızla mı düşer? Hayır, yer çekimi sayesinde sürekli hızlanır. Animatörler bu etkiyi yaratmak için hareketin başlangıcına daha çok, ortasına ise daha az resim karesi çizerler. Bu karelerin zamana bağlı konumunu bir grafiğe dökersek, ortaya çıkan eğri tam olarak bir parabol olur: <strong>Konum = k . Zaman²</strong>. İşte matematik, animasyona böyle can verir!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let currentStep = 0; 
+    let pointsToPlot = []; 
+    let plottedPoints = []; 
+    let tableScore = 0, graphScore = 0, quizScore = 0; 
+    let tableTries = 0, graphTries = 0; 
+    let g_ctx;
+    
+    // LMS'e puanı gönderme fonksiyonu
+    function sendScoreToLMS(ogrenciPuani) {
+        var result = {
+            score: {
+                max: 10,
+                min: 0,
+                raw: ogrenciPuani,
+                scaled: ogrenciPuani / 10
+            },
+            completion: true,
+            success: true,
+            duration: "PT4.95S"
+        };
+        
+        var lmsWindow = window.parent.document.getElementById("frmApp-0")?.contentWindow;
+        
+        if (lmsWindow?.onCompleted) {
+            console.log("📡 LMS'e veri gönderiyorum...");
+            lmsWindow.onCompleted(result);
+        } else {
+            console.error("❌ LMS'ye sinyal gönderilemedi!");
+        }
+    }
+
+    // Müzik efektleri için fonksiyon
+    function playMusicEffect(effectName) {
+        try {
+            const audio = new Audio(`${effectName}.mp3`);
+            audio.volume = 0.3;
+            audio.play().catch(e => console.log('Müzik çalınamadı:', e));
+        } catch (e) {
+            console.log('Müzik efekti yüklenemedi:', effectName);
+        }
+    }
+    
+    const questions = [
+        { type: 'multiple-select', q: '1. Fonksiyonun tanım ve görüntü kümesi için hangileri doğrudur?', options: ['Tanım kümesi gerçek sayılardır.', 'Görüntü kümesi gerçek sayılardır.', 'Tanım kümesi [0, ∞) aralığıdır.', 'Görüntü kümesi [0, ∞) aralığıdır.'], answer: [0, 3] }, 
+        { type: 'multiple-select', q: '2. Fonksiyonun artan ve azalan olduğu aralıklar için hangileri doğrudur?', options: ['(-∞, 0) aralığında artandır.', '(-∞, 0) aralığında azalandır.', '(0, ∞) aralığında artandır.', '(0, ∞) aralığında azalandır.'], answer: [1, 2] }, 
+        { type: 'multiple-select', q: '3. Fonksiyonun simetri özellikleri için hangileri doğrudur?', options: ['Grafiği y eksenine göre simetriktir.', 'Çift fonksiyondur.', 'Grafiği orijine göre simetriktir.', 'Tek fonksiyondur.'], answer: [0, 1] }, 
+        { type: 'multiple-select', q: '4. Fonksiyonun özel noktaları ve değerleri için hangileri doğrudur?', options: ['Minimum değeri 0\'dır.', 'Tepe noktası (0, 0) koordinatıdır.', 'Maksimum değeri yoktur.', 'Fonksiyonun sıfırı x=0 noktasıdır.'], answer: [0, 1, 2, 3] }, 
+        { type: 'multiple-select', q: '5. Fonksiyonun genel özellikleri için hangileri doğrudur?', options: ['Bire bir fonksiyondur.', 'Bire bir fonksiyon değildir.', 'Örten fonksiyondur (Değer kümesi ℝ iken).', 'Örten fonksiyon değildir (Değer kümesi ℝ iken).'], answer: [1, 3] }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => { 
+        loadExamQuestions(); 
+        setupThemeToggle(); 
+    });
+
+    function loadExamQuestions() { 
+        const container = document.getElementById('question-container'); 
+        container.innerHTML = ''; 
+        questions.forEach((item, index) => { 
+            const qDiv = document.createElement('div'); 
+            qDiv.className = 'question'; 
+            let content = `<h3>${item.q}</h3>`; 
+            item.options.forEach((opt, i) => { 
+                content += `<label class="option"><input type="checkbox" name="q${index}" value="${i}"> ${opt}</label>`; 
+            }); 
+            qDiv.innerHTML = content; 
+            container.appendChild(qDiv); 
+        }); 
+    }
+
+    function finishExam() { 
+        playMusicEffect('exam');
+        let correctQuizAnswers = 0; 
+        questions.forEach((q, index) => { 
+            const checked = Array.from(document.querySelectorAll(`input[name="q${index}"]:checked`)).map(cb => parseInt(cb.value)); 
+            const answer = q.answer; 
+            if (checked.length === answer.length && checked.every(val => answer.includes(val))) { 
+                correctQuizAnswers++; 
+            } 
+            document.querySelectorAll(`input[name="q${index}"]`).forEach(cb => { 
+                const cbVal = parseInt(cb.value); 
+                if(answer.includes(cbVal)) { 
+                    cb.parentElement.classList.add('correct'); 
+                } else if (cb.checked) { 
+                    cb.parentElement.classList.add('incorrect'); 
+                } 
+                cb.disabled = true; 
+            }); 
+        }); 
+        quizScore = correctQuizAnswers; 
+        updateTotalScore(); 
+        document.getElementById('finish-exam-btn').disabled = true; 
+        playSound('complete'); 
+        setTimeout(nextStep, 3000); 
+    }
+
+    function updateTotalScore() { 
+        const total = tableScore + graphScore + quizScore; 
+        document.getElementById('total-score').textContent = total; 
+    }
+
+    function checkTable() { 
+        playMusicEffect('check');
+        tableTries++; 
+        const inputs = document.querySelectorAll('#value-table input'); 
+        let correctCount = 0; 
+        pointsToPlot = []; 
+        inputs.forEach(input => { 
+            const x = parseInt(input.dataset.x); 
+            const correctY = x * x; 
+            const userY = parseInt(input.value); 
+            if (userY === correctY) { 
+                input.classList.remove('incorrect'); 
+                input.classList.add('correct'); 
+                correctCount++; 
+            } else { 
+                input.classList.remove('correct'); 
+                input.classList.add('incorrect'); 
+            } 
+        }); 
+        if (correctCount === inputs.length) { 
+            if (tableTries === 1) { 
+                tableScore = 2; 
+                showFeedback('table-feedback', 'success', 'Harika! İlk denemede doğru. +2 Puan kazandın.'); 
+                playMusicEffect('success');
+            } else { 
+                tableScore = 1; 
+                showFeedback('table-feedback', 'success', 'Çok güzel! Düzeltmelerle başardın. +1 Puan kazandın.'); 
+                playMusicEffect('success');
+            } 
+            playSound('complete'); 
+            document.getElementById('to-graph-btn').disabled = false; 
+            document.getElementById('check-table-btn').disabled = true; 
+            inputs.forEach(input => input.disabled = true); 
+        } else { 
+            if (tableTries === 1) { 
+                showFeedback('table-feedback', 'warning', `Dikkat! ${inputs.length - correctCount} hata var. Son bir deneme hakkın kaldı!`); 
+                playSound('error'); 
+                playMusicEffect('error');
+            } else { 
+                tableScore = 0; 
+                showFeedback('table-feedback', 'wrong', 'Doğru cevaplar gösteriliyor. Lütfen incele. Bu aşamadan puan alamadın.'); 
+                inputs.forEach(input => { 
+                    const x = parseInt(input.dataset.x); 
+                    input.value = x * x; 
+                    input.classList.remove('incorrect'); 
+                    input.disabled = true; 
+                }); 
+                playSound('fail'); 
+                playMusicEffect('fail');
+                document.getElementById('to-graph-btn').disabled = false; 
+                document.getElementById('check-table-btn').disabled = true; 
+            } 
+        } 
+        inputs.forEach(input => { 
+            pointsToPlot.push({x: parseInt(input.dataset.x), y: parseInt(input.value)}); 
+        }); 
+        updateTotalScore(); 
+    }
+    
+    function checkGraph() { 
+        playMusicEffect('check');
+        graphTries++; 
+        if (plottedPoints.length < pointsToPlot.length) { 
+            if (graphTries === 1) { 
+                showFeedback('graph-feedback', 'warning', `Eksik noktalar var. ${pointsToPlot.length} noktanın tamamını işaretlemelisin. Son hakkın!`); 
+                playSound('error'); 
+                playMusicEffect('error');
+            } else { 
+                graphScore = 0; 
+                showFeedback('graph-feedback', 'wrong', 'Doğru noktalar otomatik olarak işaretlendi. Bu aşamadan puan alamadın.'); 
+                plottedPoints = [...pointsToPlot]; 
+                redrawGraph(); 
+                document.getElementById('to-exam-btn').disabled = false; 
+                document.getElementById('check-graph-btn').disabled = true; 
+                if(g_ctx) g_ctx.canvas.style.cursor = 'default'; 
+                playSound('fail'); 
+                playMusicEffect('fail');
+            } 
+        } else { 
+            if (graphTries === 1) { 
+                graphScore = 3; 
+                showFeedback('graph-feedback', 'success', 'Mükemmel! Tüm noktalar ilk denemede doğru. +3 Puan kazandın.'); 
+                playMusicEffect('success');
+            } else { 
+                graphScore = 2; 
+                showFeedback('graph-feedback', 'success', 'Başardın! Düzeltmelerle noktaları tamamladın. +2 Puan kazandın.'); 
+                playMusicEffect('success');
+            } 
+            playSound('complete'); 
+            redrawGraph(); 
+            document.getElementById('to-exam-btn').disabled = false; 
+            document.getElementById('check-graph-btn').disabled = true; 
+            if(g_ctx) g_ctx.canvas.style.cursor = 'default'; 
+        } 
+        updateTotalScore(); 
+    }
+
+    let animationFrameId = null; 
+
+    function startAnimation(type) { 
+        playMusicEffect('animation');
+        if (animationFrameId) { 
+            cancelAnimationFrame(animationFrameId); 
+        } 
+        const ball = document.getElementById('ball'); 
+        const startPosition = 10; 
+        const endPosition = 300; 
+        const distance = endPosition - startPosition; 
+        const duration = 2000; 
+        let startTime = null; 
+        function animateFrame(timestamp) { 
+            if (!startTime) startTime = timestamp; 
+            const elapsed = timestamp - startTime; 
+            let progress = Math.min(elapsed / duration, 1); 
+            let position; 
+            if (type === 'linear') { 
+                position = startPosition + distance * progress; 
+            } else if (type === 'parabolic') { 
+                let easedProgress = Math.pow(progress, 2); 
+                position = startPosition + distance * easedProgress; 
+            } 
+            ball.style.top = `${position}px`; 
+            if (progress < 1) animationFrameId = requestAnimationFrame(animateFrame); 
+        } 
+        playSound('advance'); 
+        animationFrameId = requestAnimationFrame(animateFrame); 
+    } 
+
+    function redrawGraph() { 
+        if (currentStep >= 3 && g_ctx) { 
+            drawGraphContent(); 
+            if (plottedPoints.length === pointsToPlot.length) { 
+                drawFinalParabola(); 
+            } 
+        } 
+    } 
+
+    function initializeGraphCanvas() { 
+        const container = document.getElementById('graph-container'); 
+        try { 
+            if (g_ctx) { 
+                redrawGraph(); 
+                return; 
+            } 
+            const canvas = document.getElementById('graph-canvas'); 
+            if (!canvas || !canvas.getContext) throw new Error("Canvas desteklenmiyor."); 
+            g_ctx = canvas.getContext('2d'); 
+            canvas.width = Math.min(container.clientWidth, 600); 
+            canvas.height = canvas.width; 
+            const pointsList = document.getElementById('points-to-plot'); 
+            pointsList.innerHTML = '<h4>İŞARETLENECEK NOKTALAR</h4>'; 
+            pointsToPlot.forEach(p => { 
+                const pointEl = document.createElement('span'); 
+                pointEl.className = 'point-tag'; 
+                pointEl.id = `p-${p.x}`; 
+                pointEl.textContent = `(${p.x}, ${p.y})`; 
+                pointsList.appendChild(pointEl); 
+            }); 
+            plottedPoints = []; 
+            drawGraphContent(); 
+            canvas.addEventListener('click', handleCanvasClick); 
+        } catch (e) { 
+            console.error("Grafik oluşturulamadı:", e); 
+            container.innerHTML = `<div class="feedback wrong">Grafik yüklenirken bir sorun oluştu. <button class="button" onclick="initializeGraphCanvas()">Tekrar Dene</button></div>`; 
+        } 
+    } 
+
+    function drawGraphContent() { 
+        const w = g_ctx.canvas.width, h = g_ctx.canvas.height; 
+        const margin = 30; 
+        const centerX = w / 2, centerY = h - margin - 10; 
+        const xRange = 8; 
+        const yRange = 12; 
+        const xUnit = (w - margin*2) / xRange; 
+        const yUnit = (h - margin*2) / yRange; 
+        g_ctx.clearRect(0, 0, w, h); 
+        g_ctx.font = "12px Segoe UI"; 
+        g_ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--grid-color'); 
+        g_ctx.lineWidth = 1; 
+        g_ctx.beginPath(); 
+        for (let i = -xRange/2; i <= xRange/2; i++) { 
+            const cX = centerX + i * xUnit; 
+            g_ctx.moveTo(cX, 0); 
+            g_ctx.lineTo(cX, h); 
+        } 
+        for (let i = 0; i <= yRange; i++) { 
+            const cY = centerY - i * yUnit; 
+            g_ctx.moveTo(0, cY); 
+            g_ctx.lineTo(w, cY); 
+        } 
+        g_ctx.stroke(); 
+        g_ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--secondary-text'); 
+        g_ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--secondary-text'); 
+        g_ctx.lineWidth = 2; 
+        g_ctx.beginPath(); 
+        drawArrow(g_ctx, 0, centerY, w, centerY, 10); 
+        drawArrow(g_ctx, centerX, h, centerX, 0, 10); 
+        g_ctx.stroke(); 
+        g_ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-color'); 
+        g_ctx.font = "bold 14px Segoe UI"; 
+        g_ctx.fillText('O', centerX - 12, centerY + 15); 
+        g_ctx.fillText('x', w - 15, centerY + 18); 
+        g_ctx.fillText('y', centerX - 18, 15); 
+        g_ctx.font = "12px Segoe UI"; 
+        g_ctx.textAlign = 'center'; 
+        g_ctx.textBaseline = 'top'; 
+        for (let i = -xRange/2 + 1; i < xRange/2; i++) { 
+            if (i === 0) continue; 
+            g_ctx.fillText(i, centerX + i * xUnit, centerY + 5); 
+        } 
+        g_ctx.textAlign = 'right'; 
+        g_ctx.textBaseline = 'middle'; 
+        for (let i = 1; i <= yRange; i++) { 
+            g_ctx.fillText(i, centerX - 5, centerY - i * yUnit); 
+        } 
+        plottedPoints.forEach(p => { 
+            const cX = centerX + p.x * xUnit, cY = centerY - p.y * yUnit; 
+            g_ctx.fillStyle = '#48bb78'; 
+            g_ctx.beginPath(); 
+            g_ctx.arc(cX, cY, 6, 0, 2 * Math.PI); 
+            g_ctx.fill(); 
+        }); 
+    } 
+
+    function drawArrow(ctx, fromX, fromY, toX, toY, headLength) { 
+        ctx.moveTo(fromX, fromY); 
+        ctx.lineTo(toX, toY); 
+        let angle = Math.atan2(toY - fromY, toX - fromX); 
+        ctx.moveTo(toX, toY); 
+        ctx.lineTo(toX - headLength * Math.cos(angle - Math.PI / 6), toY - headLength * Math.sin(angle - Math.PI / 6)); 
+        ctx.moveTo(toX, toY); 
+        ctx.lineTo(toX - headLength * Math.cos(angle + Math.PI / 6), toY - headLength * Math.sin(angle + Math.PI / 6)); 
+        angle = Math.atan2(fromY - toY, fromX - toX); 
+        ctx.moveTo(fromX, fromY); 
+        ctx.lineTo(fromX - headLength * Math.cos(angle - Math.PI / 6), fromY - headLength * Math.sin(angle - Math.PI / 6)); 
+        ctx.moveTo(fromX, fromY); 
+        ctx.lineTo(fromX - headLength * Math.cos(angle + Math.PI / 6), fromY - headLength * Math.sin(angle + Math.PI / 6)); 
+    } 
+
+    function handleCanvasClick(e) { 
+        if (plottedPoints.length === pointsToPlot.length) return; 
+        const rect = e.target.getBoundingClientRect(); 
+        const clickX = e.clientX - rect.left, clickY = e.clientY - rect.top; 
+        const w = g_ctx.canvas.width, h = g_ctx.canvas.height; 
+        const margin = 30; 
+        const centerX = w / 2, centerY = h - margin - 10; 
+        const xRange = 8, yRange = 12; 
+        const xUnit = (w - margin*2) / xRange, yUnit = (h - margin*2) / yRange; 
+        const tolerance = 0.4; 
+        const mathClickX = (clickX - centerX) / xUnit; 
+        const mathClickY = (centerY - clickY) / yUnit; 
+        for (const point of pointsToPlot) { 
+            if (plottedPoints.find(p => p.x === point.x && p.y === point.y)) continue; 
+            if (Math.abs(mathClickX - point.x) < tolerance && Math.abs(mathClickY - point.y) < tolerance) { 
+                plottedPoints.push(point); 
+                document.querySelector(`#p-${point.x}`).classList.add('plotted'); 
+                redrawGraph(); 
+                playSound('success'); 
+                showFeedback('graph-feedback', 'success', `${plottedPoints.length}/${pointsToPlot.length} nokta işaretlendi.`); 
+                return; 
+            } 
+        } 
+        showFeedback('graph-feedback', 'wrong', 'Hatalı nokta! Lütfen listedeki noktalardan birini hedefle.'); 
+        playSound('error');
+    } 
+
+    function drawFinalParabola() { 
+        const w = g_ctx.canvas.width, h = g_ctx.canvas.height; 
+        const margin = 30; 
+        const centerX = w / 2, centerY = h - margin - 10; 
+        const xRange = 8, yRange = 12; 
+        const xUnit = (w - margin*2) / xRange, yUnit = (h - margin*2) / yRange; 
+        g_ctx.strokeStyle = '#fc5c7d'; 
+        g_ctx.lineWidth = 4; 
+        g_ctx.beginPath(); 
+        for (let i = -xRange/2; i <= xRange/2; i += 0.1) { 
+            const x = centerX + i * xUnit; 
+            const y = centerY - (i*i) * yUnit; 
+            if (i === -xRange/2) g_ctx.moveTo(x, y); 
+            else g_ctx.lineTo(x, y); 
+        } 
+        g_ctx.stroke(); 
+    } 
+
+    function setupThemeToggle() { 
+        const toggle = document.getElementById('theme-toggle'); 
+        toggle.addEventListener('click', () => { 
+            document.body.classList.toggle('dark-mode'); 
+            toggle.textContent = document.body.classList.contains('dark-mode') ? '🌙' : '☀️'; 
+            if (currentStep >= 3) redrawGraph(); 
+        }); 
+    } 
+
+    function showFeedback(id, type, msg) { 
+        const el = document.getElementById(id); 
+        el.className = `feedback ${type}`; 
+        el.textContent = msg; 
+        el.style.display = 'block'; 
+    } 
+
+    function playSound(type) { 
+        try { 
+            const a={'success':[523,0.1],'error':[207,0.2],'complete':[659,0.3],'advance':[440,0.1], 'fail':[164,0.4]};
+            const [f,d]=a[type]; 
+            const c=new(window.AudioContext||window.webkitAudioContext)();
+            const o=c.createOscillator();
+            const g=c.createGain();
+            o.connect(g);
+            g.connect(c.destination);
+            o.frequency.value=f;
+            o.type='sine';
+            g.gain.setValueAtTime(0.1,c.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+d);
+            o.start(c.currentTime);
+            o.stop(c.currentTime+d); 
+        } catch (e) {} 
+    } 
+
+    function nextStep() { 
+        playMusicEffect('step');
+        if (currentStep > 0 && currentStep <= 5) { 
+            document.getElementById(`progress-${currentStep}`).classList.add('active'); 
+        } 
+        if (currentStep < 5) { 
+            document.getElementById(`step-${currentStep}`).classList.remove('active'); 
+            currentStep++; 
+            document.getElementById(`step-${currentStep}`).classList.add('active'); 
+            if (currentStep === 3) initializeGraphCanvas(); 
+            if (currentStep === 5) { 
+                const total = tableScore + graphScore + quizScore; 
+                document.getElementById('final-total-score').textContent = total; 
+                document.getElementById('score-breakdown').innerHTML = `<strong>Puan Dökümü:</strong> Tablo (${tableScore} puan), Grafik (${graphScore} puan), Sınav (${quizScore} puan)`;
+            } 
+        } 
+    }
+    
+    function showAnswers() {
+        playMusicEffect('reveal');
+        const totalScore = tableScore + graphScore + quizScore;
+        
+        try {
+            sendScoreToLMS(totalScore);
+        } catch (error) {
+            console.error("LMS'e puan gönderilirken hata oluştu:", error);
+        }
+        
+        const answersDiv = document.getElementById('answers-section');
+        answersDiv.innerHTML = '';
+        answersDiv.innerHTML += '<h3>Sınav Yanıtları</h3>';
+        questions.forEach((q, i) => {
+            const checked = Array.from(document.querySelectorAll(`input[name='q${i}']:checked`)).map(cb => parseInt(cb.value));
+            answersDiv.innerHTML += `<div style='margin-bottom:10px;'><strong>${q.q}</strong><br>`;
+            answersDiv.innerHTML += '<strong>Verdiğiniz Yanıtlar:</strong> ' + (checked.length ? checked.map(idx => q.options[idx]).join(' ') : 'Yanıt yok') + '<br>';
+            answersDiv.innerHTML += '<strong>Doğru Yanıtlar:</strong> ' + q.answer.map(idx => q.options[idx]).join(' ');
+            answersDiv.innerHTML += '</div>';
+        });
+        answersDiv.style.display = 'block';
+    }
+
+    function openModal() {
+        playMusicEffect('modal');
+        document.getElementById('learnMoreModal').style.display = 'block';
+        playSound('advance');
+    }
+
+    function closeModal() {
+        document.getElementById('learnMoreModal').style.display = 'none';
+    }
+
+    // Modal dışına tıklayınca kapat
+    window.onclick = function(event) {
+        const modal = document.getElementById('learnMoreModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+</body>
+</html>
