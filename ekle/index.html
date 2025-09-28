@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>f: ℝ → ℝ, f(x) = x² Fonksiyonu: Adım Adım Değerlendirme</title>
+    <title>1. Basamak Değerlendirme</title>
     <style>
         :root {
             --bg-color: #ecfdf5; --text-color: #1f2937; --card-bg: #ffffff; --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
@@ -148,8 +148,8 @@
         <!-- Header ve Progress Bar -->
         <div class="header">
             <button id="theme-toggle" title="Temayı Değiştir">☀️</button>
-            <h1 style="color: #10b981; font-weight: 800; margin-bottom: 0;">1. Basamak</h1>
-            <h2 style="color: #10b981; font-weight: 700; margin-top: 8px;">Karesel Fonksiyonlar</h2>
+            <h1 style="color: #10b981; font-weight: 800; margin-bottom: 0;">1. Basamak Değerlendirme</h1>
+            <h2 style="color: #10b981; font-weight: 700; margin-top: 8px;">Gerçek Sayılarda Tanımlı Karesel Fonksiyonlar</h2>
             <div class="badge badge-score" style="margin-top: 10px;">Toplam Puan: <span id="total-score">0</span> / 10</div>
         </div>
         <div class="progress-bar"> <div class="progress-step" id="progress-1"></div><div class="progress-step" id="progress-2"></div><div class="progress-step" id="progress-3"></div><div class="progress-step" id="progress-4"></div><div class="progress-step" id="progress-5"></div> </div>
@@ -159,7 +159,7 @@
             <div style="text-align: center;">
                 <h2 style="color: #6a82fb;">Bilgilendirme</h2>
                 <ul class="intro-list">
-                    <li>Bu bir <strong>değerlendirme sınavıdır</strong>. Sınavın amacı, karesel fonksiyonlar ile ilgili temel düzeydeki bilgilerinizi ölçmektir.</li>
+                    <li>Bu bir <strong>değerlendirme sınavıdır</strong>. Sınavın amacı, gerçek sayılarda tanımlı karesel fonksiyonlar ile ilgili temel düzeydeki bilgilerinizi ölçmektir.</li>
                     <li>Önce karesel fonksiyonların gerçek hayattaki kullanımını, özellikle animasyonlarda nasıl uygulandığını gösteren interaktif bir simülasyon izleyeceksiniz.</li>
                     <li>Simülasyon sonrasında sınava geçeceksiniz. Sınav; tablo doldurma, grafik çizimi ve çoktan seçmeli sorulardan oluşmaktadır.</li>
                     <li>Her bölümdeki soruları yanıtlayarak ilerleyebilirsiniz.</li>
@@ -386,6 +386,13 @@
         }); 
         quizScore = correctQuizAnswers; 
         updateTotalScore(); 
+        // Sınav biter bitmez toplam puanı LMS'ye gönder
+        const totalScoreAfterExam = tableScore + graphScore + quizScore;
+        try {
+            sendScoreToLMS(totalScoreAfterExam);
+        } catch (error) {
+            console.error("LMS'e puan gönderilirken hata oluştu:", error);
+        }
         document.getElementById('finish-exam-btn').disabled = true; 
         playSound('complete'); 
         setTimeout(nextStep, 3000); 
@@ -916,14 +923,6 @@
     
     function showAnswers() {
         playMusicEffect('reveal');
-        const totalScore = tableScore + graphScore + quizScore;
-        
-        try {
-            sendScoreToLMS(totalScore);
-        } catch (error) {
-            console.error("LMS'e puan gönderilirken hata oluştu:", error);
-        }
-        
         const answersDiv = document.getElementById('answers-section');
         answersDiv.innerHTML = '';
         answersDiv.innerHTML += '<h3>Sınav Yanıtları</h3>';
