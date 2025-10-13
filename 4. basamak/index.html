@@ -3,544 +3,595 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4. Basamak Değerlendirme Sınavı</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>4. Basamak Değerlendirme | Gelir Optimizasyonu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        MathJax = { tex: { macros: { rm: ['\\mathrm{#1}', 1] } }, loader: { load: ['[tex]/noerrors'] } };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --bg-color: #fef2f2; --text-color: #7f1d1d; --card-bg: #ffffff; --card-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);
+            --primary-gradient: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+            --secondary-bg: #fee2e2; --secondary-text: #b91c1c;
+            --header-color: #dc2626;
+            --border-color: #fca5a5;
+            --evaluation-card-bg: rgba(255, 255, 255, 0.7);
+            --grid-color: rgba(239, 68, 68, 0.1);
         }
-        
-        body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
-            color: #333;
-            line-height: 1.6;
-            min-height: 100vh;
-            padding: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow-x: hidden;
+        .dark-mode {
+            --bg-color: #1c0b0b; --text-color: #fecaca; --card-bg: #2c1d1d; --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --secondary-bg: #451a1a; --secondary-text: #f87171;
+            --header-color: #fca5a5;
+            --border-color: #991b1b;
+            --evaluation-card-bg: rgba(0, 0, 0, 0.2);
+            --grid-color: rgba(248, 113, 113, 0.1);
         }
-        
-        .dna-animation {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
+    * { box-sizing: border-box; margin: 0; padding: 0; font-style: normal !important; }
+    body, input, textarea, button { font-family: 'Poppins', sans-serif; }
+        /* MathJax: tüm matematik ifadelerini dik (non-italic) yap */
+        mjx-container, mjx-container * { font-style: normal !important; }
+        /* CHTML çıktısındaki tüm MathJax düğümleri için fontu da düz aileye çekiyoruz */
+        mjx-container[jax="CHTML"], mjx-container[jax="CHTML"] * { 
+            font-style: normal !important; 
+            font-weight: normal !important; 
+            font-family: 'Poppins', Arial, sans-serif !important; 
         }
-        
-        .dna-strand {
-            position: absolute;
-            width: 3px;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            animation: floatRight 15s infinite linear;
+        .mjx-chtml, .mjx-chtml * { 
+            font-style: normal !important; 
+            font-weight: normal !important; 
+            font-family: 'Poppins', Arial, sans-serif !important; 
         }
-        
-        @keyframes floatRight {
-            0% {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.5;
-            }
-            90% {
-                opacity: 0.3;
-            }
-            100% {
-                transform: translateX(100vw);
-                opacity: 0;
-            }
+        /* MathJax class adlarının gerçek halleri (MJX-TEX-I / MJX-TEX-BI) ve inline italic stillerini de zorla kapat */
+        .mjx-chtml .MJX-TEX-I, .mjx-chtml .MJX-TEX-BI, .mjx-chtml .TEX-I, .mjx-chtml .TEX-BI, .mjx-chtml .mjx-i, .mjx-chtml mjx-mi { 
+            font-style: normal !important; 
+            font-weight: normal !important; 
+            font-family: 'Poppins', Arial, sans-serif !important; 
         }
-        
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            background-color: rgba(255, 255, 255, 0.98);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            margin: 10px 0;
+        /* Inline style ile gelen italic'leri de kapat */
+        .mjx-chtml [style*="font-style:italic"], .mjx-chtml [style*="font-style: italic"] { font-style: normal !important; }
+        /* Temel MathJax elementleri */
+        mjx-mi, mjx-mo, mjx-mn, mjx-mtext { font-style: normal !important; }
+    /* HTML italik etiketleri de devre dışı */
+    em, i { font-style: normal !important; }
+        body { background: var(--bg-color); color: var(--text-color); min-height: 100vh; transition: background-color 0.3s, color 0.3s; line-height: 1.6; }
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+        .header { background: var(--card-bg); border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: var(--card-shadow); position: relative; }
+        #theme-toggle { position: absolute; top: 15px; right: 15px; background: var(--secondary-bg); color: var(--secondary-text); border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+        .page { display: none; background: var(--card-bg); border-radius: 15px; padding: 30px; box-shadow: var(--card-shadow); animation: slideIn 0.5s ease; }
+        .page.active { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        h1, h2, h3, h4, h5 { margin-bottom: 15px; color: var(--header-color); font-weight: 600; }
+        h1 { font-size: 2rem; } h2 { font-size: 1.7rem; } h3 { font-size: 1.4rem; }
+        .button { background: var(--primary-gradient); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; margin: 5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+        .button.secondary { background: var(--secondary-bg); color: var(--secondary-text); text-shadow: none; }
+        .button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3); }
+        .button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .simulation-container { display: grid; grid-template-columns: 350px 1fr; gap: 25px; align-items: start; }
+        .problem-container { display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; align-items: start; }
+        .problem-context .context-image { width: 100%; border-radius: 10px; margin-bottom: 20px; box-shadow: var(--card-shadow); }
+        #sim-canvas { border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-color); width: 100%; height: auto; }
+        .controls { background: var(--secondary-bg); padding: 20px; border-radius: 8px; }
+        .control-group { margin-bottom: 15px; }
+        .control-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--secondary-text); }
+        .control-group .value-display { font-weight: bold; color: var(--header-color); }
+        .info-box { padding: 15px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; margin-top: 10px; }
+        .formula-box { background: var(--secondary-bg); padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .formula-box code { font-family: 'Courier New', Courier, monospace; font-size: 1.1rem; color: var(--secondary-text); display: block; word-wrap: break-word; }
+        .question-group { 
+            margin-bottom: 20px; 
+            background-color: var(--secondary-bg);
+            padding: 20px;
+            border-radius: 12px;
         }
+        .question-group > label { font-weight: bold; display: block; margin-bottom: 8px; }
+        .question-group input, .question-group textarea { width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 6px; background: var(--bg-color); color: var(--text-color); font-size: 1rem; }
+        .input-row { display: flex; gap: 20px; }
+        .coeff-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .point-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--card-bg); color: var(--secondary-text); border: 1px solid var(--border-color); font-size: 0.85rem; font-weight: 700; }
+        .evaluation-card { background: var(--evaluation-card-bg); border-left: 5px solid; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .warning-note { background: var(--secondary-bg); border-left: 5px solid var(--header-color); padding: 15px 20px; margin-top: 25px; border-radius: 8px; font-size: 0.9em; text-align: left; }
+        .warning-note h3 { font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+        .warning-note p { margin: 0; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
+        .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 25px; border-radius: 15px; max-width: 700px; width: 90%; }
+        .close-button { color: #aaa; position: absolute; top: 10px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .answer-block { background: var(--secondary-bg); padding: 20px; border-radius: 8px; margin-bottom: 15px; text-align: left; }
+        .answer-block h4 { color: var(--secondary-text); border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 12px; }
+        .answer-block p { word-wrap: break-word; }
         
-        header {
-            background: linear-gradient(to right, #1a2a6c, #b21f1f);
-            color: white;
-            padding: 15px 10px;
-            text-align: center;
-            position: relative;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        
-        .logo i {
-            font-size: 1.5rem;
-            color: #FFD700;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        h1 {
-            font-size: 1.4rem;
-            margin-bottom: 6px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-        }
-        
-        .exam-level {
-            background-color: #8e44ad;
-            color: #fff;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            display: inline-block;
-            margin: 8px 0;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-        }
-        
-        .content {
-            padding: 15px 10px;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-        
-        .info-section {
-            background-color: #f0f7ff;
-            border-radius: 8px;
-            padding: 15px 12px;
-            border-left: 4px solid #1a2a6c;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-        }
-        
-        .info-section h2 {
-            color: #1a2a6c;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1.3rem;
-        }
-        
-        .info-section h2 i {
-            color: #b21f1f;
-        }
-        
-        .info-section p {
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-        
-        .learning-outcomes {
-            margin: 12px 0;
-        }
-        
-        .outcome {
-            background-color: #fff;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 12px;
-            border: 1px solid #dee2e6;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-        }
-        
-        .outcome h3 {
-            color: #1a2a6c;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 1.1rem;
-        }
-        
-        .outcome h3 i {
-            color: #e74c3c;
-        }
-        
-        .outcome ul {
-            padding-left: 20px;
-            margin-top: 8px;
-        }
-        
-        .outcome li {
-            margin-bottom: 6px;
-            line-height: 1.5;
-            font-size: 0.9rem;
-        }
-        
-        .exam-details {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 15px;
-        }
-        
-        .detail-card {
-            background: linear-gradient(135deg, #1a2a6c, #3a5fc5);
-            color: white;
-            border-radius: 8px;
-            padding: 12px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-        
-        .detail-card i {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-            color: #FFD700;
-        }
-        
-        .detail-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 6px;
-        }
-        
-        .detail-card p {
-            font-size: 0.9rem;
-        }
-        
-        .start-section {
-            text-align: center;
-            margin: 15px 0;
-            padding: 12px;
-        }
-        
-        .start-btn {
-            display: inline-block;
-            background: linear-gradient(to right, #1a2a6c, #3a5fc5);
-            color: white;
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: bold;
-            padding: 12px 35px;
-            border-radius: 40px;
-            margin: 12px 0;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            border: none;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            animation: pulse-btn 3s infinite;
-        }
-        
-        @keyframes pulse-btn {
-            0% { transform: scale(1); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-            50% { transform: scale(1.03); box-shadow: 0 6px 15px rgba(0,0,0,0.25); }
-            100% { transform: scale(1); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        }
-        
-        .start-btn:hover {
-            background: linear-gradient(to right, #0d1b4d, #2a4bbd);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
-            animation: none;
-        }
-        
-        .start-btn:active {
-            transform: translateY(-1px);
-        }
-        
-        .start-btn i {
-            margin-left: 6px;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 15px;
-            background-color: #1a2a6c;
-            color: white;
-            font-size: 0.85rem;
-        }
-        
-        .info-note {
-            background-color: #fff3cd;
-            color: #856404;
-            padding: 10px;
-            border-radius: 6px;
-            margin: 12px 0;
-            border-left: 3px solid #ffc107;
-            font-size: 0.9rem;
-        }
-        
-        .warning-note {
-            background-color: #fcefec;
-            color: #c0392b;
-            padding: 12px;
-            border-radius: 6px;
-            margin: 15px 0;
-            border-left: 3px solid #e74c3c;
-            font-size: 0.9rem;
-        }
-        
-        .warning-note h3 {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 1.1rem;
-            color: #c0392b;
-        }
-        
-        .warning-note h3 i {
-            color: #c0392b;
-        }
-        
-        .image-container {
-            text-align: center;
-            margin: 15px 0;
-            padding: 10px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .graph-preview {
-            width: 100%;
-            max-width: 300px;
-            margin: 8px 0;
-            padding: 12px;
-            background-color: #f8f9fa;
-            border-radius: 6px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.08);
-        }
-        
-        .graph-preview h4 {
-            margin-bottom: 8px;
-            color: #1a2a6c;
-            font-size: 1rem;
-        }
-        
-        .graph-placeholder {
-            width: 100%;
-            height: 120px;
-            background: linear-gradient(to bottom, #e3f2fd, #bbdefb);
-            border-radius: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #1a2a6c;
-            font-weight: bold;
-            border: 1px dashed #1a2a6c;
-            font-size: 0.9rem;
-        }
-        
-        .graph-placeholder i {
-            font-size: 1.5rem;
-            margin-right: 8px;
-        }
-        
-        /* Mobil için optimize edilmiş stiller */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.3rem;
-            }
-            
-            .exam-level {
-                font-size: 0.9rem;
-                padding: 4px 10px;
-            }
-            
-            .content {
-                padding: 12px;
-                gap: 12px;
-            }
-            
-            .info-section {
-                padding: 12px 10px;
-            }
-            
-            .info-section h2 {
-                font-size: 1.2rem;
-            }
-            
-            .outcome h3 {
-                font-size: 1rem;
-            }
-            
-            .outcome {
-                padding: 10px;
-            }
-            
-            .detail-card {
-                padding: 10px;
-            }
-            
-            .start-btn {
-                font-size: 1rem;
-                padding: 10px 30px;
-            }
-            
-            .graph-preview {
-                min-width: auto;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            body {
-                padding: 5px;
-            }
-            
-            header {
-                padding: 12px 8px;
-            }
-            
-            h1 {
-                font-size: 1.2rem;
-            }
-            
-            .logo i {
-                font-size: 1.3rem;
-            }
-            
-            .exam-level {
-                font-size: 0.85rem;
-                padding: 3px 8px;
-            }
-            
-            .info-section h2 {
-                font-size: 1.1rem;
-            }
-            
-            .info-section p, .info-note, .warning-note {
-                font-size: 0.85rem;
-            }
-            
-            .content {
-                padding: 10px;
-                gap: 10px;
-            }
-            
-            .info-section {
-                padding: 10px 8px;
-            }
-            
-            .outcome h3 {
-                font-size: 0.95rem;
-            }
-            
-            .outcome ul {
-                padding-left: 18px;
-            }
-            
-            .detail-card h3 {
-                font-size: 1rem;
-            }
-            
-            .detail-card p {
-                font-size: 0.85rem;
-            }
-            
-            .start-btn {
-                font-size: 0.95rem;
-                padding: 10px 25px;
-            }
-            
-            footer {
-                padding: 12px;
-                font-size: 0.8rem;
-            }
+        @media (max-width: 900px) {
+            .simulation-container, .problem-container { grid-template-columns: 1fr; }
+            .page { padding: 20px; }
+            h1 { font-size: 1.8rem; } h2 { font-size: 1.5rem; }
+            .input-row { flex-direction: column; gap: 15px; }
         }
     </style>
 </head>
 <body>
-    <!-- Animasyonlu DNA iplikleri -->
-    <div class="dna-animation" id="dnaAnimation"></div>
-    
     <div class="container">
-        <header>
-            <div class="logo">
-                <i class="fas fa-brain"></i>
-                <div>
-                    <h1>4. Basamak Değerlendirme Sınavı</h1>
-                    <div class="exam-level">Fonksiyonun Nitel Özellikleri</div>
-                </div>
-            </div>
-        </header>
+        <div class="header">
+            <button id="theme-toggle" title="Temayı Değiştir">☀️</button>
+            <h1 style="margin-bottom:0.3em;">4. Basamak Değerlendirme</h1>
+            <h2 style="margin-top:0; font-size:1.5rem;">Gerçek Sayılarda Tanımlı Karesel Fonksiyonlar ve Nitel Özellikleri</h2>
+        </div>
         
-        <div class="content">
-            <div class="info-section">
-                <h2><i class="fas fa-info-circle"></i> Sınav Hakkında</h2>
-                
-                <div class="info-note">
-                    <i class="fas fa-exclamation-circle"></i> Bu sınav iki aşamadan oluşmaktadır. Toplam puan: 25
-                </div>
-                
-                <p>Bu sınav, bağışıklık sisteminin matematiksel modellemesi ve fonksiyon özelliklerini analiz etme becerilerinizi ölçmek üzere tasarlanmıştır. Antikor yoğunluğu-zaman grafiğini yorumlayarak fonksiyon özelliklerini belirleme ve tek-çift fonksiyon analizi yapma becerileriniz değerlendirilecektir.</p>
-                
-
-                
-                <div class="warning-note">
-                    <h3><i class="fas fa-exclamation-triangle"></i> UYARI</h3>
-                    <p>Bu uygulamada yer alan değerlendirme ve geri bildirimler, yapay zeka (YZ) destekli sistemler tarafından oluşturulmaktadır. Bu değerlendirmeler, öğrenmenizi desteklemek, eksiklerinizi fark etmenizi sağlamak ve size yol göstermek amacıyla sunulmuştur. Ancak YZ değerlendirmeleri uzman görüşünün yerine geçmez. Sonuçları dikkatle yorumlamanız ve anlamadığınız ya da emin olamadığınız durumlarda geri bildirimde bulunmanız önerilir.</p>
-                </div>
-            </div>
-            
-            <div class="start-section">
-                <p>Sınava başlamak için aşağıdaki butona tıklayınız.</p>
-                <a href="matbioyapayzeka.html" class="start-btn">
-                    Sınava Başla <i class="fas fa-arrow-right"></i>
-                </a>
-                <div class="info-note">
-                    <i class="fas fa-exclamation-triangle"></i> Sınav başladıktan sonra sayfayı kapatmayınız veya yenilemeyiniz.
+        <div class="page active" id="page-intro">
+             <div style="text-align: center;">
+                <div style="max-width: 700px; margin: 20px auto 0; background: var(--secondary-bg); border-radius: 18px; box-shadow: var(--card-shadow); padding: 32px 28px 28px 28px; color: var(--secondary-text);">
+                    <h2 style="color: var(--header-color); font-size:2rem; margin-bottom:18px;">Bilgilendirme</h2>
+                    <ul style="list-style-type: none; padding-left: 0; font-size:1.08em; text-align:left; margin-bottom:28px; color: var(--text-color);">
+                        <li style="margin-bottom:12px;">Bu değerlendirme, gerçek sayılarda tanımlı karesel fonksiyonlar ve nitel özellikleri konusundaki modelleme ve analiz becerilerinizi ölçmek amacıyla hazırlanmıştır.</li>
+                        <li style="margin-bottom:12px;"><strong>Uygulama Akışı:</strong> Önce bir kavramı ve simülasyonu keşfedecek, ardından gerçek bir senaryoya dayalı problemi çözeceksiniz.</li>
+                        <li style="margin-bottom:12px;"><strong>Puanlama (Toplam 25 Puan):</strong> Sınavdaki adımların puan değerleri yanlarında belirtilmiştir. Cevaplarınız yapay zeka tarafından değerlendirilecektir.</li>
+                        <li style="color: var(--header-color); font-weight: bold; margin-top:20px;">Lütfen dikkat: Sınavı bitirdikten sonra puanınız sisteme gönderilecektir.</li>
+                    </ul>
+                     <div class="warning-note">
+                        <h3>⚠️ YZ Destekli Değerlendirme Hakkında</h3>
+                        <p>Bu etkinlikte verilen otomatik değerlendirmeler ve geri bildirimler yapay zeka tarafından sağlanmaktadır. Amaç, öğrenmenize destek olmak ve farklı çözüm yollarını göstermektir. YZ çıktıları bir uzman görüşünün yerine geçmez ve nadiren hatalar içerebilir. Kararsız kaldığınız noktalarda öğretmeninizden teyit alınız.</p>
+                    </div>
+                    <button class="button" onclick="showPage('page-concept')" style="border-radius:24px; padding:12px 38px; font-size:1.15rem; margin-top: 25px;">Başla</button>
                 </div>
             </div>
         </div>
         
-        <footer>
-            <p>4. Basamak Değerlendirme Sınavı</p>
-        </footer>
-    </div>
-    
-    <script>
-        // DNA iplikleri animasyonu oluşturma (mobil için optimize edilmiş)
-        function createDNAAnimation() {
-            const container = document.getElementById('dnaAnimation');
-            // Mobilde daha az sayıda iplik oluştur
-            const strandCount = window.innerWidth < 768 ? 4 : 6;
-            
-            for (let i = 0; i < strandCount; i++) {
-                const strand = document.createElement('div');
-                strand.classList.add('dna-strand');
-                
-                // Rastgele pozisyon
-                strand.style.left = `${Math.random() * 100}%`;
-                
-                // Rastgele animasyon süresi
-                const duration = Math.random() * 10 + 20;
-                strand.style.animationDuration = `${duration}s`;
-                strand.style.animationDelay = `${Math.random() * 10}s`;
-                
-                container.appendChild(strand);
-            }
-        }
+        <div class="page" id="page-concept">
+            <h2 style="text-align: center;">Gelir Modellemesi</h2>
+            <p>Ekonomide en temel hedeflerden biri, kârı veya geliri en üst düzeye çıkarmaktır. Bir ürünün fiyatını belirlerken hassas bir denge kurulmalıdır: Fiyat çok yüksek olursa müşteri sayısı düşer, çok düşük olursa birim kâr azalır. En uygun fiyat nerede gizlidir?</p>
+            <p>Bu "en uygun" noktayı bulma problemi, genellikle karesel fonksiyonlar kullanılarak modellenir. Gelir, basitçe <strong>Fiyat × Satış Miktarı</strong> olarak hesaplanır. Fiyat ile satış miktarı arasındaki ters ilişki (biri artarken diğeri azalır), bu iki doğrusal fonksiyonun çarpımının bize kolları aşağıya bakan bir parabol vermesine neden olur.</p>
+            <img src="gorsel.PNG" alt="Karesel fonksiyonun tepe noktası gelir maksimizasyonunu gösterir" style="width: 100%; max-width: 600px; margin: 15px auto 25px; display: block; border-radius: 10px;">
+            <p>Bu parabolün <strong>maksimum noktası</strong>, gelirin maksimum olduğu sihirli noktadır. Bu aktivitede, önce bu ilişkiyi dinamik bir simülasyonla keşfedecek, ardından bu keşiflerinizle farklı bir problemi adım adım çözeceksiniz.</p>
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="button" onclick="showPage('page-simulation')">Simülasyonu Başlat</button>
+            </div>
+        </div>
+
+        <div class="page" id="page-simulation">
+            <h2>İnteraktif Simülasyon: Pide Salonu Senaryosu</h2>
+            <p>Bu simülasyonda başlangıç durumu şöyle: Birim fiyatı <strong>100 TL</strong> olan ve ortalama <strong>200 adet</strong> satış yapan bir pide salonu, gelirini artırmak için farklı fiyatlandırma stratejileri deniyor. Aşağıdaki kontrol panelinden indirim miktarını ve buna tepki olarak satıştaki artışı değiştirerek, <strong>fiyat–satış ilişkisine</strong> bağlı gelirin <em>(G(x) = F(x) • S(x))</em> nasıl değiştiğini anlık olarak gözlemleyin.</p>
+            <div class="simulation-container">
+                <div class="controls">
+                    <h4>Senaryo Değişkenleri</h4>
+                    <div class="control-group">
+                        <label for="discount-slider">İndirim Miktarı (TL)</label>
+                        <input type="range" id="discount-slider" min="1" max="10" value="5" step="1" style="width: 100%;">
+                        <div class="value-display">Her adımda <span id="discount-display">5</span> TL indirim</div>
+                    </div>
+                    <div class="control-group">
+                        <label for="sales-increase-slider">Artan Satış Adedi</label>
+                        <input type="range" id="sales-increase-slider" min="5" max="50" value="20" step="5" style="width: 100%;">
+                        <div class="value-display">Her indirimde <span id="sales-increase-display">20</span> adet satış artışı</div>
+                    </div>
+                    <hr style="border-color: var(--border-color); margin: 20px 0;">
+                    <h4>Fonksiyon Tanımları</h4>
+                    <div class="formula-box" style="text-align: left; padding: 10px;">
+                        <code><strong>Fiyat Fonksiyonu</strong><br>F(x) = <span id="formula-fx">100 - 5x</span></code>
+                        <code style="margin-top: 10px;"><strong>Satış Fonksiyonu</strong><br>S(x) = <span id="formula-sx">200 + 20x</span></code>
+                    </div>
+                    <h4>Gelir Fonksiyonu ve Maksimum Noktası</h4>
+                    <div class="formula-box" style="text-align: left; padding: 10px;">
+                        <code><strong>Gelir G(x) = F(x) • S(x)</strong><br><span id="formula-gx-standard">G(x) = -100x² + 1000x + 20000</span></code>
+                        <code style="margin-top: 10px;"><strong>Tam Kare Formu </strong><br><span id="formula-gx-vertex">G(x) = -100(x - 5)² + 22500</span></code>
+                    </div>
+                </div>
+                <div>
+                    <canvas id="sim-canvas"></canvas>
+                     <div class="info-box" style="text-align: center;">
+                        <p><strong>İndirim Sayısı (x):</strong> <span id="x-display">0</span> | <strong>Fiyat:</strong> <span id="price-display">100</span> TL | <strong>Satış:</strong> <span id="sales-display">200</span> | <strong>Gelir:</strong> <span id="revenue-display">20000</span> TL</p>
+                    </div>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <label for="x-slider">İndirim Sayısını Değiştirerek Grafiği Keşfet</label>
+                        <input type="range" id="x-slider" min="0" max="20" value="0" step="1" style="width: 100%;">
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="button" onclick="showPage('page-exam')">Anladım, Sınava Geç</button>
+            </div>
+        </div>
         
-        // Sayfa yüklendiğinde animasyonları başlat
-        window.onload = function() {
-            createDNAAnimation();
+        <div class="page" id="page-exam">
+            <h2>Sınav: Tiyatro Problemi (25 Puan)</h2>
+            <div class="problem-container">
+                <div class="problem-context">
+                    <img src="resim.PNG" alt="Boş bir tiyatro sahnesi ve koltuklar" class="context-image">
+                    <h4>Problem Senaryosu</h4>
+                    <p>Bir tiyatro salonunda bir biletin fiyatı <strong>80 TL</strong> olarak belirlendiğinde oyunu <strong>300 kişi</strong> izlemektedir. Bilet fiyatında yapılan her <strong>10 TL</strong>'lik artışın izleyici sayısını <strong>20 kişi</strong> azalttığı gözlemlenmiştir.</p>
+                    <p>Bu bilgilere göre, geliri en üst düzeye çıkarmak için aşağıdaki adımları tamamlayınız. (Değişken olarak 'x' yapılan zam sayısını temsil etmektedir)</p>
+                </div>
+                <div class="problem-questions">
+                    <h3>Çözüm Adımları</h3>
+                    <div class="question-group">
+                        <label><strong>Adım 1 <span class="point-badge">5 Puan</span>:</strong> Fiyat F(x) ve İzleyici Sayısı S(x) fonksiyonlarını yazınız.</label>
+                        <div class="input-row"><input type="text" id="p2_q1_price" placeholder="Fiyat F(x) = ?"><input type="text" id="p2_q1_sales" placeholder="Satış S(x) = ?"></div>
+                    </div>
+                    <div class="question-group">
+                        <label><strong>Adım 2 <span class="point-badge">5 Puan</span>:</strong> Gelir fonksiyonunu G(x) standart biçimde (ax²+bx+c) yazınız.</label>
+                        <div class="coeff-row">
+                            <span>G(x) =</span>
+                            <input type="text" id="p2_q2_a" style="width: 80px;" placeholder="a"> x² +
+                            <input type="text" id="p2_q2_b" style="width: 80px;" placeholder="b"> x +
+                            <input type="text" id="p2_q2_c" style="width: 100px;" placeholder="c">
+                        </div>
+                    </div>
+                    <div class="question-group">
+                        <label><strong>Adım 3 <span class="point-badge">5 Puan</span>:</strong> Geliri en uygun yapan 'x' kaçtır? (Virgül kullanınız.)</label>
+                        <input type="text" id="p2_q3_x" style="width: 120px;" placeholder="x değeri">
+                    </div>
+                    <div class="question-group">
+                        <label><strong>Adım 4 <span class="point-badge">5 Puan</span>:</strong> En uygun bilet fiyatını ve maksimum geliri hesaplayınız.</label>
+                        <div class="input-row"><input type="text" id="p2_q4_price" placeholder="Fiyat (TL)"><input type="text" id="p2_q4_revenue" placeholder="Gelir (TL)"></div>
+                    </div>
+                     <hr style="margin: 25px 0; border-color: var(--border-color);">
+                    <div class="question-group">
+                        <label><strong>Adım 5 <span class="point-badge">3 Puan</span> [Yorum]:</strong> Fiyatı tepe noktasından daha da yükseltmek geliri neden düşürür?</label>
+                        <textarea id="p2_q5_comment1" placeholder="Parabol ve tepe noktası ile açıklayınız..."></textarea>
+                    </div>
+                    <div class="question-group">
+                        <label><strong>Adım 6 <span class="point-badge">2 Puan</span> [Yorum]:</strong> Eğer her zamda 20 yerine 10 izleyici azalsaydı, en uygun fiyat daha mı yüksek olurdu?</label>
+                        <textarea id="p2_q6_comment2" placeholder="Nedenini kısaca açıklayınız..."></textarea>
+                    </div>
+                </div>
+            </div>
+             <div style="text-align: center; margin-top: 30px;">
+                <button class="button secondary" onclick="showPage('page-simulation')">Simülasyona Geri Dön</button>
+                <button class="button" id="finish-exam-btn" onclick="checkAndFinish()">Sınavı Bitir ve Değerlendir</button>
+            </div>
+        </div>
+        
+        <div class="page" id="page-evaluation">
+             <h2 style="text-align:center;">Değerlendirme Sonuçları</h2>
+            <p id="evaluation-subtitle" style="text-align:center; margin-top:-10px; margin-bottom:20px; color:var(--secondary-text);">Yanıtlarınız yapay zeka tarafından analiz ediliyor.</p>
+            <div id="scoreCard" style="padding: 20px; border-radius: 12px; text-align: center; margin: 20px 0; color: white;">
+                <div style="font-size: 1rem; opacity: 0.8;">TOPLAM PUAN</div>
+                <div id="finalScore" style="font-size: 3rem; font-weight: 700;">-- / 25</div>
+                <div id="finalPercentage" style="font-size: 1.2rem; font-weight: 600;">--%</div>
+            </div>
+            <div id="evaluationContent">
+                <div style="text-align: center; padding: 40px 0;"><div class="spinner-border" role="status" style="width: 3rem; height: 3rem; color: var(--header-color);"></div><h4 style="margin-top: 20px;">Değerlendirme Sürüyor...</h4></div>
+            </div>
+            <div style="text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <button class="button secondary" onclick="showPage('page-exam')">← Sınava Dön</button>
+                <button id="viewSolutionsBtn" class="button" onclick="openSolutionsModal()" style="display:none;">Çözümleri Gör</button>
+            </div>
+             <div class="warning-note">
+                <h3>⚠️ YZ Destekli Değerlendirme Hakkında</h3>
+                <p>Bu etkinlikte verilen otomatik değerlendirmeler ve geri bildirimler yapay zeka tarafından sağlanmaktadır. Amaç, öğrenmenize destek olmak ve farklı çözüm yollarını göstermektir. YZ çıktıları bir uzman görüşünün yerine geçmez ve nadiren hatalar içerebilir. Kararsız kaldığınız noktalarda öğretmeninizden teyit alınız.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Solution Modal -->
+    <div id="solution-modal" class="modal"><div class="modal-content"><span class="close-button" onclick="closeSolutionsModal()">&times;</span><h2 style="text-align:center;">Detaylı Çözümler</h2><div id="solutionContent"></div></div></div>
+    
+    <audio id="clickSound" src="click.mp3" preload="auto"></audio>
+
+<script>
+    const simParams = { basePrice: 100, baseSales: 200, discount: 5, salesIncrease: 20 };
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        setupThemeToggle();
+        showPage('page-intro');
+        
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', playClickSound);
+        });
+    });
+
+    function playClickSound() {
+        try {
+            const sound = document.getElementById('clickSound');
+            if (sound) { sound.currentTime = 0; sound.play().catch(e => {}); }
+        } catch (e) { console.error("Ses dosyası hatası:", e); }
+    }
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        if (pageId === 'page-simulation') {
+            initializeSimulation();
+        }
+    }
+
+    function setupThemeToggle() {
+        const toggle = document.getElementById('theme-toggle');
+        const isDarkMode = localStorage.getItem('theme') === 'dark';
+        if (isDarkMode) { document.body.classList.add('dark-mode'); toggle.textContent = '🌙'; }
+        toggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+            toggle.textContent = theme === 'dark' ? '🌙' : '☀️';
+            localStorage.setItem('theme', theme);
+            if (document.getElementById('page-simulation').classList.contains('active')) {
+                updateSimulation();
+            }
+        });
+    }
+
+    // --- HELPER FUNCTIONS ---
+    function formatNumber(num) {
+        if (isNaN(num)) return num;
+        let formattedNum = parseFloat(num.toFixed(2));
+        return formattedNum.toString().replace('.', ',');
+    }
+    
+    // --- SIMULATION (Pide Salonu) ---
+    function initializeSimulation() {
+        ['discount-slider', 'sales-increase-slider', 'x-slider'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateSimulation);
+        });
+        const canvas = document.getElementById('sim-canvas');
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = Math.max(400, container.clientWidth * 0.7);
+        updateSimulation();
+    }
+
+    function updateSimulation() {
+        simParams.discount = parseInt(document.getElementById('discount-slider').value);
+        simParams.salesIncrease = parseInt(document.getElementById('sales-increase-slider').value);
+        const x = parseFloat(document.getElementById('x-slider').value);
+        
+        document.getElementById('discount-display').textContent = simParams.discount;
+        document.getElementById('sales-increase-display').textContent = simParams.salesIncrease;
+        document.getElementById('x-display').textContent = formatNumber(x);
+
+        const currentPrice = simParams.basePrice - simParams.discount * x;
+        const currentSales = simParams.baseSales + simParams.salesIncrease * x;
+        const currentRevenue = currentPrice * currentSales;
+
+        document.getElementById('price-display').textContent = formatNumber(currentPrice);
+        document.getElementById('sales-display').textContent = formatNumber(currentSales);
+        document.getElementById('revenue-display').textContent = formatNumber(currentRevenue);
+        
+        const { a, b, c } = getSimRevenueFunction(simParams);
+        const vertexX = -b / (2 * a);
+        const vertexY = a * vertexX * vertexX + b * vertexX + c;
+
+        document.getElementById('formula-fx').textContent = `${simParams.basePrice} - ${simParams.discount}x`;
+        document.getElementById('formula-sx').textContent = `${simParams.baseSales} + ${simParams.salesIncrease}x`;
+        document.getElementById('formula-gx-standard').textContent = `G(x) = ${a}x² + ${b}x + ${c}`;
+        document.getElementById('formula-gx-vertex').textContent = `G(x) = ${a}(x - ${formatNumber(vertexX)})² + ${formatNumber(vertexY)}`;
+        
+        drawSimulationGraph(x);
+    }
+
+    function getSimRevenueFunction(params) {
+        const a = -params.discount * params.salesIncrease;
+        const b = params.basePrice * params.salesIncrease - params.baseSales * params.discount;
+        const c = params.basePrice * params.baseSales;
+        return { a, b, c, G: (x) => a * x * x + b * x + c };
+    }
+
+    function drawSimulationGraph(currentX) {
+        const canvas = document.getElementById('sim-canvas');
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width, h = canvas.height, padding = 60;
+        
+        const { a, b, G } = getSimRevenueFunction(simParams);
+        const vertexX = -b / (2 * a);
+        const vertexY = G(vertexX);
+
+        const xMax = Math.max(20, vertexX * 2.2);
+        const yMax = vertexY > 0 ? vertexY * 1.15 : 20000;
+
+        ctx.clearRect(0, 0, w, h);
+        const textColor = getComputedStyle(document.body).getPropertyValue('--text-color');
+        const gridColor = getComputedStyle(document.body).getPropertyValue('--grid-color');
+        const headerColor = getComputedStyle(document.body).getPropertyValue('--header-color');
+        
+        const toX = val => padding + (val / xMax) * (w - 2 * padding);
+        const toY = val => (h - padding) - (val / yMax) * (h - 2 * padding);
+        
+        const drawArrow = (x, y, angle) => { ctx.save(); ctx.translate(x, y); ctx.rotate(angle); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-10, 5); ctx.lineTo(-10, -5); ctx.closePath(); ctx.fill(); ctx.restore(); };
+
+        ctx.strokeStyle = gridColor; ctx.lineWidth = 1;
+        for (let i = 1; i <= 5; i++) {
+            let y = h - padding - i * (h - 2 * padding) / 5;
+            ctx.beginPath(); ctx.moveTo(padding, y); ctx.lineTo(w - padding, y); ctx.stroke();
+            let x = padding + i * (w - 2 * padding) / 5;
+            ctx.beginPath(); ctx.moveTo(x, padding); ctx.lineTo(x, h - padding); ctx.stroke();
+        }
+        ctx.strokeStyle = textColor; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(padding, h - padding); ctx.lineTo(w - padding, h - padding); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(padding, h - padding); ctx.lineTo(padding, padding); ctx.stroke();
+        
+        ctx.fillStyle = textColor;
+        drawArrow(w - padding, h - padding, 0);
+        drawArrow(padding, padding, -Math.PI / 2);
+
+    ctx.font = 'normal 12px Poppins';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        for (let i = 1; i <= 5; i++) ctx.fillText(formatNumber(i * xMax / 5), toX(i * xMax / 5), h - padding + 8);
+        ctx.fillText("İndirim Sayısı (x)", w / 2, h - padding + 30);
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        for (let i = 1; i <= 5; i++) ctx.fillText(Math.round(i * yMax / 5), padding - 8, toY(i * yMax / 5));
+        ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+        ctx.fillText("O", padding - 5, h-padding + 5);
+        ctx.save(); ctx.translate(padding - 45, h / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = 'center'; ctx.fillText("Gelir (TL)", 0, 0); ctx.restore();
+
+        ctx.beginPath(); ctx.strokeStyle = headerColor; ctx.lineWidth = 3;
+        for (let x = 0; x <= xMax; x += xMax / 100) {
+            const y = G(x);
+            if(y < 0 && x > vertexX) continue;
+            if (x === 0) ctx.moveTo(toX(x), toY(y)); else ctx.lineTo(toX(x), toY(y));
+        }
+        ctx.stroke();
+
+        if (vertexY > 0) {
+            ctx.fillStyle = '#16a34a'; ctx.beginPath(); ctx.arc(toX(vertexX), toY(vertexY), 6, 0, 2*Math.PI); ctx.fill();
+        }
+        ctx.fillStyle = textColor; ctx.beginPath(); ctx.arc(toX(currentX), toY(G(currentX)), 6, 0, 2*Math.PI); ctx.fill();
+    }
+    
+    // --- EXAM (Tiyatro Problemi) ---
+    async function checkAndFinish() {
+        document.getElementById('finish-exam-btn').disabled = true;
+        showPage('page-evaluation');
+        let totalScore = 0;
+        try {
+            if (!navigator.onLine) throw new Error('İnternet bağlantısı yok.');
+            const userPayload = collectUserResponses();
+            const prompt = buildAIScoringPrompt(userPayload);
+            const result = await callGemini(prompt);
+            const evaluation = formatAIScoringResponse(result);
+            document.getElementById('evaluationContent').innerHTML = evaluation.html;
+            totalScore = evaluation.score || 0;
+        } catch (err) {
+            console.error("AI Evaluation Failed:", err);
+            totalScore = runFallbackEvaluation(err);
+        }
+        updateAllScoreDisplays(totalScore);
+        populateSolutionModal();
+        document.getElementById('viewSolutionsBtn').style.display = 'inline-block';
+    }
+    
+    function cleanNumber(value) { return value.trim().replace(/\s/g, '').replace(',', '.'); }
+    function cleanExpression(value) { return value.trim().replace(/\s/g, '').toLowerCase(); }
+    
+    function runFallbackEvaluation(error) {
+        document.getElementById('evaluation-subtitle').textContent = "Standart Değerlendirme Sonuçları";
+        const user = collectUserResponses();
+        const correct = {
+            f: '80+10x', s: '300-20x',
+            a: '-200', b: '1400', c: '24000',
+            x: '3.5', price: '115', revenue: '26450'
         };
-    </script>
+        let score = 0;
+        let feedbackHTML = `<div style="padding:15px; background:var(--incorrect-bg); color:var(--incorrect-text); border:1px solid var(--incorrect-border); border-radius:8px; text-align:center; margin-bottom:20px;"><strong>YZ Değerlendirmesi Başarısız:</strong> ${error.message}. Standart puanlama devreye girdi.</div>`;
+        
+        const q_scores = {};
+        q_scores.q1 = (cleanExpression(user['Adim-1'].fiyat) === correct.f ? 2.5 : 0) + (cleanExpression(user['Adim-1'].satis) === correct.s ? 2.5 : 0);
+        q_scores.q2 = (cleanNumber(user['Adim-2'].a) === correct.a ? 2 : 0) + (cleanNumber(user['Adim-2'].b) === correct.b ? 2 : 0) + (cleanNumber(user['Adim-2'].c) === correct.c ? 1 : 0);
+        q_scores.q3 = Math.abs(cleanNumber(user['Adim-3'].x) - correct.x) < 0.01 ? 5 : 0;
+        q_scores.q4 = (Math.abs(cleanNumber(user['Adim-4'].fiyat) - correct.price) < 1 ? 2.5 : 0) + (Math.abs(cleanNumber(user['Adim-4'].gelir) - correct.revenue) < 1 ? 2.5 : 0);
+        q_scores.q5 = user['Adim-5'].trim().length > 10 ? 1.5 : 0;
+        q_scores.q6 = user['Adim-6'].trim().length > 10 ? 1 : 0;
+        
+        feedbackHTML += createEvalCard('Adım 1: Fonksiyonlar', q_scores.q1, 5, `Doğru: F(x)=${correct.f}, S(x)=${correct.s}`);
+        feedbackHTML += createEvalCard('Adım 2: Gelir Denklemi', q_scores.q2, 5, `Doğru: a=${correct.a}, b=${correct.b}, c=${correct.c}`);
+        feedbackHTML += createEvalCard('Adım 3: En Uygun \'x\'', q_scores.q3, 5, `Doğru: x = 3,5`);
+        feedbackHTML += createEvalCard('Adım 4: Sonuçlar', q_scores.q4, 5, `Doğru: Fiyat=${correct.price}, Gelir=${correct.revenue}`);
+        feedbackHTML += createEvalCard('Adım 5: Yorum 1', q_scores.q5, 3, 'Yanıtınız deneme olarak kabul edildi.');
+        feedbackHTML += createEvalCard('Adım 6: Yorum 2', q_scores.q6, 2, 'Yanıtınız deneme olarak kabul edildi.');
+        
+        score = Object.values(q_scores).reduce((a, b) => a + b, 0);
+        document.getElementById('evaluationContent').innerHTML = feedbackHTML;
+        return score;
+    }
+    
+    function createEvalCard(title, score, max, body) {
+        const perc = max > 0 ? (score/max)*100 : 0;
+        const color = perc >= 99 ? '#22c55e' : (perc >= 50 ? '#f59e0b' : '#ef4444');
+        const bodySection = body ? `<div class="evaluation-body">${body}</div>` : '';
+        return `<div class="evaluation-card" style="border-left-color: ${color};"><div class="evaluation-header"><h4>${title}</h4><div class="evaluation-score">${formatNumber(score)} / ${max} Puan</div></div>${bodySection}</div>`;
+    }
+
+    function updateAllScoreDisplays(finalScore) {
+        const roundedScore = Math.round(finalScore);
+        const scorePercentage = (roundedScore / 25) * 100;
+        document.getElementById('finalScore').textContent = `${roundedScore} / 25`;
+        document.getElementById('finalPercentage').textContent = `${scorePercentage.toFixed(0)}%`;
+        const scoreCard = document.getElementById('scoreCard');
+        if (scorePercentage >= 80) scoreCard.style.background = 'linear-gradient(135deg, #16a34a, #22c55e)';
+        else if (scorePercentage >= 50) scoreCard.style.background = 'linear-gradient(135deg, #f59e0b, #facc15)';
+        else scoreCard.style.background = 'linear-gradient(135deg, #dc2626, #ef4444)';
+    }
+
+    function collectUserResponses(){
+        return {
+            'Adim-1': { fiyat: document.getElementById('p2_q1_price').value, satis: document.getElementById('p2_q1_sales').value },
+            'Adim-2': { a: document.getElementById('p2_q2_a').value, b: document.getElementById('p2_q2_b').value, c: document.getElementById('p2_q2_c').value },
+            'Adim-3': { x: document.getElementById('p2_q3_x').value },
+            'Adim-4': { fiyat: document.getElementById('p2_q4_price').value, gelir: document.getElementById('p2_q4_revenue').value },
+            'Adim-5': document.getElementById('p2_q5_comment1').value,
+            'Adim-6': document.getElementById('p2_q6_comment2').value
+        };
+    }
+
+    function buildAIScoringPrompt(data){
+        return `YALNIZCA JSON FORMATINDA CEVAP VER. Genel performans yorumu ekleme. Her soru için kısa bir açıklama (açıklama) ve puan ver. "Hata taşıma" kuralını uygula.
+
+        DOĞRU CEVAPLAR VE PUANLAMA (TOPLAM 25 PUAN):
+        1. (5 Puan) Fonksiyonlar: F(x) = 80 + 10x (2.5p), S(x) = 300 - 20x (2.5p)
+        2. (5 Puan) Gelir Denklemi: a = -200 (2p), b = 1400 (2p), c = 24000 (1p)
+        3. (5 Puan) En Uygun 'x': x = 3,5
+        4. (5 Puan) Sonuçlar: Fiyat = 115 TL (2.5p), Gelir = 26450 TL (2.5p)
+        5. (3 Puan) Yorum 1 (Tepe Noktası)
+        6. (2 Puan) Yorum 2 (Senaryo Değişimi)
+
+        ÖĞRENCİNİN YANITLARI: ${JSON.stringify(data)}
+
+        JSON ÇIKTISI (GENEL YORUM YOK):
+        {
+            "q1": {"puan": 0-5, "açıklama": "..."}, "q2": {"puan": 0-5, "açıklama": "..."}, "q3": {"puan": 0-5, "açıklama": "..."},
+            "q4": {"puan": 0-5, "açıklama": "..."}, "q5": {"puan": 0-3, "açıklama": "..."}, "q6": {"puan": 0-2, "açıklama": "..."},
+            "toplam_puan": 0-25
+        }`;
+    }
+
+    async function callGemini(prompt) {
+        const apiKey = "AIzaSyCEhU3erLOAJB9cADTqaGanVidc2DRbhr8";
+        // 404'nin en yaygın nedeni: model adının hatalı olması. Doğrusu 'gemini-2.0-flash'.
+        const model = 'gemini-2.0-flash';
+        // Bazı 2.0 modelleri v1beta yerine v1 altında sunulur; v1 kullanıyoruz.
+        const url = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${apiKey}`;
+        const body = { contents: [{ parts: [{ text: prompt }] }] };
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 20000);
+        const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal });
+        clearTimeout(timeoutId);
+        if (!response.ok) {
+            let errorText = '';
+            try { errorText = await response.text(); } catch (_) {}
+            throw new Error(`API Hatası: ${response.status} ${errorText}`.trim());
+        }
+        const json = await response.json();
+        const text = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) throw new Error("API'den boş yanıt alındı.");
+        return text;
+    }
+
+    function formatAIScoringResponse(raw) {
+        let parsed;
+        try { parsed = JSON.parse(raw.trim().replace(/^```json\s*|```\s*$/g, ''));
+        } catch (e) { throw new Error("YZ yanıtı JSON formatında değil."); }
+        const questions = [
+            { id: 'q1', title: 'Adım 1: Fonksiyonlar', max: 5 }, { id: 'q2', title: 'Adım 2: Gelir Denklemi', max: 5 },
+            { id: 'q3', title: 'Adım 3: En Uygun "x"', max: 5 }, { id: 'q4', title: 'Adım 4: Sonuçlar', max: 5 },
+            { id: 'q5', title: 'Adım 5: Yorum 1', max: 3 }, { id: 'q6', title: 'Adım 6: Yorum 2', max: 2 }
+        ];
+        let html = '';
+        questions.forEach(q => {
+            const data = parsed[q.id];
+            if (data) html += createEvalCard(q.title, data.puan || 0, q.max, data.açıklama || '');
+        });
+        return { html, score: parsed.toplam_puan || 0 };
+    }
+
+    function populateSolutionModal() {
+        document.getElementById('solutionContent').innerHTML = `
+            <div class="answer-block"><h4>Adım 1: Fonksiyonlar</h4><p>\\[F(x) = 80 + 10x\\]\\[S(x) = 300 - 20x\\]</p></div>
+            <div class="answer-block"><h4>Adım 2: Gelir Denklemi</h4><p>\\[G(x) = (80 + 10x)(300 - 20x)\\] <br>\\[= -200x^2 + 1400x + 24000\\]</p></div>
+            <div class="answer-block"><h4>Adım 3: Tam Kareye Tamamlama ve En Uygun 'x'</h4>
+            <p>G(x) = -200(x² - 7x) + 24000<br>
+            G(x) = -200(x² - 7x + 12,25 - 12,25) + 24000<br>
+            G(x) = -200[(x - 3,5)² - 12,25] + 24000<br>
+            G(x) = -200(x - 3,5)² + 2450 + 24000<br>
+            G(x) = -200(x - 3,5)² + 26450<br>
+            Maksimum gelir için maksimum noktasının apsisi olan x = 3,5 olmalıdır.</p></div>
+            <div class="answer-block"><h4>Adım 4: Sonuçlar</h4><p>Fiyat: \\(F(3,5) = 80 + 10(3,5) = 115\\) TL<br>Maks. Gelir: \\(G(3,5) = 26450\\) TL</p></div>
+            <hr>
+            <div class="answer-block"><h4>Adım 5: Yorum (Maksimum Noktası)</h4><p>Gelir fonksiyonu, başkatsayısı (-200) negatif olduğu için kolları aşağıya bakan bir paraboldür. Bu tür paraboller, maksimum noktasında (x=3,5) maksimum değerine ulaşır. Fiyatı bu noktanın ötesinde artırmak, parabolün azalan kolu üzerinde hareket etmek anlamına gelir, bu da geliri düşürür.</p></div>
+            <div class="answer-block"><h4>Adım 6: Yorum (Senaryo Değişimi)</h4><p>Eğer her 10 TL'lik artışta 10 izleyici azalsaydı, yeni Gelir Fonksiyonu \\(G(x) = -100x^2 + 2200x + 24000\\) olurdu. Bu yeni parabolün maksimum noktası x=11'de bulunur, bu da 190 TL'lik bir bilet fiyatına karşılık gelir. Sonuç: Fiyat <strong>daha yüksek</strong> olurdu.</p></div>
+            `;
+        MathJax.typesetPromise();
+    }
+    
+    const modal = document.getElementById('solution-modal');
+    function openSolutionsModal() { modal.style.display = "block"; }
+    function closeSolutionsModal() { modal.style.display = "none"; }
+    window.onclick = function(event) { if (event.target == modal) modal.style.display = "none"; }
+</script>
 </body>
 </html>
