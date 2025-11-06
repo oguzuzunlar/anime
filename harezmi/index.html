@@ -561,6 +561,14 @@
 
             function requestRender() { if (!rafPending) { rafPending = true; requestAnimationFrame(render); } }
 
+            // Bazen Safari'de tam temizleme gerekli olabilir; backing store'u sıfırlar
+            function hardClear() {
+                // canvas.width'e aynı değeri atamak backing store'u resetler
+                const w = canvas.width; const h = canvas.height;
+                canvas.width = w; canvas.height = h;
+                ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+            }
+
             function animate(updateFunc, duration) { let startTime = null; isAnimating = true; function step(timestamp) { if (!startTime) startTime = timestamp; const progress = Math.min((timestamp - startTime) / duration, 1); updateFunc(progress); render(); if (progress < 1) requestAnimationFrame(step); else isAnimating = false; } requestAnimationFrame(step); }
             
             function updateButtonStates(stage) {
@@ -581,6 +589,8 @@
                 stageDescriptionContainer.innerHTML = data.description;
                 updateButtonStates(stage);
                 document.getElementById('success-message').style.display = 'none';
+                // Safari ghosting'ini önlemek için sahne geçişinde bir kez sert temizleme yap
+                hardClear();
                 
                 const W = canvas.clientWidth, H = canvas.clientHeight;
                 const { unit, startX, startY } = computeLayoutUnits(W, H);
@@ -647,6 +657,8 @@
                     // play success sound and continue
                     playSound('success');
                     lowEffects = false;
+                    // Bazen animasyon sonrası Safari'de kalıntı olabilir; sert temizleme
+                    hardClear();
                     setTimeout(() => { document.getElementById('success-message').style.display = 'none'; transitionToStage(currentStage + 1); }, 1500);
                 }, 300); 
             }
@@ -661,7 +673,7 @@
             function handleMouseMove(e) { if (!draggedShape) return; e.preventDefault(); const { x, y } = getMousePos(e); draggedShape.x = x - dragOffsetX; draggedShape.y = y - dragOffsetY; const target = draggedShape.target; if (Math.abs(draggedShape.x - target.x) < 20 && Math.abs(draggedShape.y - target.y) < 20) snapShape(draggedShape); else requestRender(); }
             function handleMouseUp(e) { if (!draggedShape) return; e.preventDefault(); draggedShape = null; lowEffects = false; requestRender(); }
 
-            buttons.start.addEventListener('click', () => { showScreen('activity'); setupCanvas(); transitionToStage(1); playSound('start'); if (SOUNDS.bgm) { SOUNDS.bgm.play().catch(()=>{}); } updateMusicButtons(); });
+            buttons.start.addEventListener('click', () => { showScreen('activity'); setupCanvas(); hardClear(); transitionToStage(1); playSound('start'); if (SOUNDS.bgm) { SOUNDS.bgm.play().catch(()=>{}); } updateMusicButtons(); });
             [buttons.next, buttons.nextDesktop].forEach(b => b.addEventListener('click', () => { if (!isAnimating) { playSound('next'); transitionToStage(currentStage === totalStages ? 1 : currentStage + 1); } }));
             [buttons.prev, buttons.prevDesktop].forEach(b => b.addEventListener('click', () => { if (!isAnimating && currentStage > 1) { playSound('prev'); transitionToStage(1); } }));
             [buttons.music, buttons.musicDesktop].forEach(b => b && b.addEventListener('click', toggleBgm));
