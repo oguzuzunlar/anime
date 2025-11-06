@@ -222,7 +222,7 @@
                     <div class="left-column">
                         <figure class="harezmi-figure">
                             <img src="harezmi.PNG" alt="Harizmi portresi ve el yazması çalışmaları">
-                            <figcaption>Şekil 1</figcaption>
+                    
                         </figure>
                         <figure class="resim-small">
                             <img src="resim.PNG" alt="x² ve 10x alanlarının toplamının 39 olduğu model">
@@ -250,6 +250,7 @@
                     <button id="next-btn" class="btn btn-nav">İleri</button>
                     <button id="finish-btn" class="btn btn-nav btn-finish" style="display: none;">Bitir</button>
                     <button id="music-toggle" class="btn btn-nav" aria-pressed="false" title="Müziği Aç/Kapat">🔇 Müzik</button>
+                    <button id="refresh-btn" class="btn btn-nav" title="Kanvası yenile (R)">↻ Yenile</button>
                 </div>
                 <div class="info-column">
                     <div id="info-content">
@@ -263,6 +264,7 @@
                         <button id="next-btn-desktop" class="btn btn-nav">İleri</button>
                         <button id="finish-btn-desktop" class="btn btn-nav btn-finish" style="display: none;">Bitir</button>
                         <button id="music-toggle-desktop" class="btn btn-nav" aria-pressed="false" title="Müziği Aç/Kapat">🔇 Müzik</button>
+                        <button id="refresh-btn-desktop" class="btn btn-nav" title="Kanvası yenile (R)">↻ Yenile</button>
                     </div>
                 </div>
                     <!-- Variant prompt modal -->
@@ -294,7 +296,8 @@
                 start: document.getElementById('start-btn'), next: document.getElementById('next-btn'), prev: document.getElementById('prev-btn'), 
                 nextDesktop: document.getElementById('next-btn-desktop'), prevDesktop: document.getElementById('prev-btn-desktop'),
                 finish: document.getElementById('finish-btn'), finishDesktop: document.getElementById('finish-btn-desktop'),
-                music: document.getElementById('music-toggle'), musicDesktop: document.getElementById('music-toggle-desktop')
+                music: document.getElementById('music-toggle'), musicDesktop: document.getElementById('music-toggle-desktop'),
+                refresh: document.getElementById('refresh-btn'), refreshDesktop: document.getElementById('refresh-btn-desktop')
             };
             const canvas = document.getElementById('geometry-canvas');
             const ctx = canvas.getContext('2d');
@@ -380,7 +383,7 @@
                 ` };
 
                 stageData[4] = { title: 'Aşama 4: Çözümü Tamamlama', description: `
-                    <p>Bu yerleştirmeler sonucunda kenar uzunluğu <strong>(x + ${split})</strong> birim olan tam bir kare elde edilir. Karşı tarafta alan <strong>${baseTotal} + ${addSquare} = ${finalTotal}</strong> olduğundan, aşağıdaki cebirsel adımlar izlenir:</p>
+                    <p>Bu yerleştirmeler sonucunda kenar uzunluğu <br><strong>(x + ${split})</strong> birim olan tam bir kare elde edilir. Karşı tarafta alan <strong>${baseTotal} + ${addSquare} = ${finalTotal}</strong> olduğundan, aşağıdaki cebirsel adımlar izlenir:</p>
                         <div class="solution-steps">
                             (x + ${split})² = ${formatNumber(finalTotal)}<br>
                             x + ${split} = ${formatNumber(Math.sqrt(finalTotal))}<br>
@@ -637,6 +640,13 @@
                 }
             }
 
+            // Kullanıcının manuel olarak tüm katmanları tazelemesi için buton işlevi
+            function refreshCanvas() {
+                // Ön ve arka tamponu sıfırla ve mevcut şekilleri yeniden çiz
+                hardClear();
+                render();
+            }
+
             function effectiveDuration(ms) { return (prefersReduced ? Math.round(ms * 0.7) : ms); }
             function animate(updateFunc, duration) { let startTime = null; isAnimating = true; const dur = effectiveDuration(duration); function step(timestamp) { if (!startTime) startTime = timestamp; const progress = Math.min((timestamp - startTime) / dur, 1); updateFunc(progress); render(); if (progress < 1) requestAnimationFrame(step); else isAnimating = false; } requestAnimationFrame(step); }
             
@@ -746,6 +756,15 @@
             [buttons.next, buttons.nextDesktop].forEach(b => b.addEventListener('click', () => { if (!isAnimating) { playSound('next'); transitionToStage(currentStage === totalStages ? 1 : currentStage + 1); } }));
             [buttons.prev, buttons.prevDesktop].forEach(b => b.addEventListener('click', () => { if (!isAnimating && currentStage > 1) { playSound('prev'); transitionToStage(1); } }));
             [buttons.music, buttons.musicDesktop].forEach(b => b && b.addEventListener('click', toggleBgm));
+            // Yenile butonları: iz kalması gibi nadir durumlarda tam temizleme ve yeniden çizim yapar
+            [buttons.refresh, buttons.refreshDesktop].forEach(b => b && b.addEventListener('click', () => { refreshCanvas(); }));
+            // Kısayol: R tuşu ile yenile
+            document.addEventListener('keydown', (e) => {
+                if ((e.key === 'r' || e.key === 'R') && screens.activity.style.display === 'block') {
+                    e.preventDefault();
+                    refreshCanvas();
+                }
+            });
             
             // show variant prompt when finishing
             function showTryVariantPrompt() { document.getElementById('variant-modal-backdrop').style.display = 'flex'; }
