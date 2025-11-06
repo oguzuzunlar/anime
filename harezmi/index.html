@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="data:,">
+    <title>Harizmi Yöntemiyle Tam Kareye Tamamlama</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        /* NEON TEMA RENK PALETİ */
+        :root { 
+            --dark-bg: #0d0221;
+            --panel-bg: rgba(26, 12, 53, 0.8);
+            --neon-pink: #f900ff;
+            --neon-cyan: #00f5d4;
+            --neon-yellow: #fef001;
+            --light-text: #e0e0e0;
+            --strong-text: #ffffff;
+            --primary-color: var(--neon-cyan);
+            --border-color: var(--neon-cyan);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Poppins', 'Inter', sans-serif; 
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1f0441 100%);
+            color: var(--light-text); 
+            margin: 0; 
+            display: flex; justify-content: center; align-items: flex-start; 
+            min-height: 100vh; line-height: 1.6;
+            overflow-x: hidden; overflow-y: auto;
+        }
+        /* iOS/Safari'ye özgü performans iyileştirmeleri */
+        @supports (-webkit-touch-callout: none) {
+            .container { -webkit-backdrop-filter: none; backdrop-filter: none; }
+            .canvas-column { box-shadow: 0 0 8px rgba(0, 245, 212, 0.18); transform: translateZ(0); contain: paint; }
+        }
+        /* Varsayılan scrollbar (masaüstü + destekleyen tarayıcılar) */
+        html { scrollbar-width: thin; scrollbar-color: var(--neon-cyan) transparent; }
+        /* WebKit tabanlı tarayıcılar için */
+        body::-webkit-scrollbar { width: 10px; }
+        body::-webkit-scrollbar-track { background: rgba(0,245,212,0.10); border-radius: 999px; }
+        body::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--neon-cyan), var(--neon-pink)); border-radius: 999px; border: 2px solid rgba(13,2,33,0.9); }
+        body::-webkit-scrollbar-thumb:hover { background: var(--neon-pink); }
+        .container { 
+            width: 95%; max-width: 1400px; 
+            background: var(--panel-bg); border-radius: 20px; 
+            box-shadow: 0 0 25px rgba(0, 245, 212, 0.2);
+            margin: 20px; border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+        }
+        
+    .screen { padding: 40px 50px; text-align: center; background: transparent; }
+    /* Intro media: place framed image on the left, text on the right */
+    .intro-media { display: flex; gap: 20px; align-items: flex-start; max-width: 1000px; margin: 2rem auto; padding: 18px; border-radius: 14px; }
+    .left-column { width: 260px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+    .intro-text { color: var(--light-text); font-size: 1rem; line-height: 1.7; text-align: left; flex: 1; }
+    .intro-media figure { width: 260px; margin: 0; }
+    .intro-media img { width: 100%; height: auto; display: block; border-radius: 8px; border: 4px solid var(--neon-pink); box-shadow: 0 8px 30px rgba(249,0,255,0.12); background: #080010; }
+    .intro-media figcaption { text-align: center; margin-top: 8px; color: var(--neon-yellow); font-weight: 700; }
+    .highlight { color: var(--neon-yellow); background: rgba(254,240,1,0.04); padding: 2px 6px; border-radius: 6px; font-weight: 700; }
+        #intro-screen { padding: 40px 30px; }
+        #activity-screen { display: none; padding: 20px 15px; }
+        
+        h1, h2, h3 { font-weight: 800; letter-spacing: -0.02em; color: var(--light-text); }
+
+        h1 {
+            font-size: clamp(2.2rem, 4.5vw, 3rem); color: var(--neon-pink);
+            /* Daha net görünüm için parıltıyı yumuşat */
+            text-shadow: 0 0 1px rgba(255,255,255,0.35), 0 0 4px rgba(249,0,255,0.35);
+        }
+        h2 {
+            font-size: clamp(1.6rem, 3.2vw, 2.2rem); color: var(--neon-cyan);
+            text-shadow: 0 0 2px rgba(255,255,255,0.7), 0 0 10px var(--neon-cyan);
+        }
+        h3 { font-size: clamp(1.25rem, 2.6vw, 1.6rem); }
+        p { font-size: clamp(1.05rem, 2.1vw, 1.2rem); max-width: 800px; margin: 0 auto 1.5rem; }
+
+        .btn { 
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            background: linear-gradient(135deg, var(--neon-pink), var(--neon-cyan)); 
+            color: var(--dark-bg); 
+            padding: 14px 28px; border: none; border-radius: 12px; 
+            font-size: 1rem; font-weight: 700; cursor: pointer; text-decoration: none; 
+            transition: var(--transition);
+            box-shadow: 0 0 10px rgba(249, 0, 255, 0.5), 0 0 15px rgba(0, 245, 212, 0.4);
+        }
+        .btn:hover:not(:disabled) { 
+            transform: translateY(-2px); 
+            box-shadow: 0 0 15px rgba(249, 0, 255, 0.7), 0 0 25px rgba(0, 245, 212, 0.6);
+        }
+        
+    .activity-layout { display: grid; grid-template-columns: 1.6fr 0.6fr; gap: 20px; width: 100%; align-items: start; }
+        
+        .canvas-column { 
+            display: flex; justify-content: center; align-items: center; 
+            background: rgba(13, 2, 33, 0.7);
+            border: 2px solid var(--border-color); border-radius: 12px; 
+            min-height: 800px;
+            position: relative;
+            box-shadow: 0 0 12px rgba(0, 245, 212, 0.2);
+            overflow: hidden; padding: 8px;
+        }
+        /* Canvas'ı ayrı bir kompozisyon katmanına al ve tam konteyneri kapla */
+        #geometry-canvas { display: block; width: 100%; height: 100%; will-change: transform; transform: translateZ(0); }
+        
+        
+        .info-column { 
+            text-align: left; padding: 20px; background: var(--panel-bg);
+            border-radius: 18px; box-shadow: 0 0 12px rgba(249, 0, 255, 0.2);
+            border: 2px solid var(--neon-pink);
+        }
+        
+        .solution-steps, .historical-note { 
+            background: rgba(35, 17, 73, 0.9); border-radius: 12px;
+            padding: 18px; margin: 1.5rem 0; color: var(--light-text);
+        }
+        .solution-steps { border-left: 8px solid var(--neon-pink); font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; }
+        .historical-note { border-left: 6px solid var(--neon-yellow); }
+        
+        .desktop-navigation, .mobile-navigation {
+            background: var(--panel-bg); color: var(--light-text);
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 12px rgba(0, 245, 212, 0.2);
+            padding: 1rem; border-radius: 12px;
+        }
+        .desktop-navigation { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; gap: 20px; }
+        .mobile-navigation { display: none; }
+        
+        .btn-nav { 
+            background: rgba(13, 2, 33, 0.9); color: var(--light-text); 
+            box-shadow: none; border: 1px solid var(--neon-cyan);
+            padding: 10px 18px; font-size: 0.9rem;
+        }
+        .btn-nav:hover:not(:disabled) { background: rgba(35, 17, 73, 0.9); box-shadow: 0 0 10px var(--neon-cyan); }
+        .btn-nav:disabled { 
+            background: #2a3d45; color: #5b7380; cursor: not-allowed; opacity: 0.7; 
+            transform: none; box-shadow: none; border-color: #5b7380;
+        }
+        
+        #stage-indicator, #stage-indicator-desktop { 
+            border: 1px solid var(--neon-cyan); 
+            padding: 8px 12px; 
+            font-size: 0.9rem; 
+            text-align: center; 
+            display: inline-block;
+            line-height: 1.2;
+        }
+        .stage-fraction { color: var(--strong-text); }
+        .success-feedback { background: linear-gradient(145deg, #052e16, #064e3b); border: 1px solid #22c55e; color: #bbf7d0; }
+        code { color: var(--neon-yellow); font-weight: 700; white-space: nowrap; }
+        .highlight { white-space: nowrap; }
+        
+        @media (max-width: 1024px) { .activity-layout { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) {
+            .container { width: 98%; margin: 10px; }
+            .screen { padding: 20px 15px; }
+            .mobile-navigation { display: flex !important; flex-direction: column; gap: 15px; margin: 15px 0 20px 0; }
+            .desktop-navigation { display: none !important; }
+            .mobile-navigation button { width: 100%; justify-content: center; }
+            /* Mobil dik (portrait) ekranlar için tuvale ayrılan alanı daha kompakt tut */
+            .canvas-column { min-height: clamp(260px, 40vh, 520px); }
+            /* Mobilde sayfa kaydırıcısını daha görünür yap */
+            html { scrollbar-width: auto; }
+            body { -webkit-overflow-scrolling: touch; }
+            body::-webkit-scrollbar { width: 16px; height: 16px; }
+            body::-webkit-scrollbar-track { background: rgba(0,245,212,0.14); }
+            body::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--neon-cyan), var(--neon-pink)); border: 2px solid rgba(13,2,33,0.95); }
+        }
+        /* Küçük telefonlar (<=600px) için giriş bölümünü dikey akışa çevir ve görselleri ölçekle */
+        @media (max-width: 600px) {
+            .intro-media { flex-direction: column; align-items: center; }
+            .left-column { width: 100%; max-width: 520px; }
+            .intro-media figure { width: min(85vw, 360px); }
+            .intro-text { font-size: 0.98rem; text-align: left; }
+        }
+        /* Güvenli alan (iOS çentik) boşlukları */
+        html, body { padding-bottom: env(safe-area-inset-bottom); }
+        /* variant prompt modal */
+        .variant-modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1200; align-items: center; justify-content: center; }
+        .variant-modal { background: linear-gradient(180deg,#0b0530 0%, #1a0b3a 100%); color: var(--light-text); border: 2px solid var(--neon-cyan); padding: 20px; border-radius: 12px; width: min(560px, 94%); box-shadow: 0 10px 40px rgba(0,0,0,0.6); text-align: center; }
+        .variant-modal p { margin: 12px 0 18px; }
+        .variant-modal .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .variant-modal .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.12); color: var(--light-text); padding: 10px 16px; border-radius: 10px; }
+    /* Rotate-to-landscape overlay (mobile only) */
+    .rotate-overlay { display: none; position: fixed; inset: 0; z-index: 2200; align-items: center; justify-content: center; background: linear-gradient(180deg, rgba(2,6,23,0.95), rgba(10,6,20,0.95)); color: var(--light-text); }
+    .rotate-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 22px; border-radius: 14px; width: min(92%, 480px); display: flex; flex-direction: column; align-items: center; gap: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); transform: translateY(-6px); animation: floatIn 640ms ease both; }
+    @keyframes floatIn { from { opacity: 0; transform: translateY(-20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .rotate-icon { width: 72px; height: 72px; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 34px; background: linear-gradient(135deg, var(--neon-cyan), var(--neon-pink)); box-shadow: 0 8px 30px rgba(0,0,0,0.45); color: #051018; animation: rotatePulse 1.6s infinite; }
+    @keyframes rotatePulse { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.06); } 100% { transform: rotate(360deg) scale(1); } }
+    .rotate-overlay h2 { margin: 0; color: var(--neon-pink); text-shadow: 0 0 6px rgba(249,0,255,0.08); }
+    .rotate-overlay p { margin: 0; font-size: 1rem; color: var(--light-text); }
+    .rotate-overlay .hint { margin-top: 6px; color: var(--neon-yellow); font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Giriş Ekranı -->
+        <div id="intro-screen" class="screen">
+            <h1>Harizmi Yöntemiyle Tam Kareye Tamamlama</h1>
+            <section class="intro-media">
+                    <div class="left-column">
+                        <figure class="harezmi-figure">
+                            <img src="harezmi.PNG" alt="Harizmi portresi ve el yazması çalışmaları">
+                            <figcaption>Şekil 1</figcaption>
+                        </figure>
+                        <figure class="resim-small">
+                            <img src="resim.PNG" alt="x² ve 10x alanlarının toplamının 39 olduğu model">
+                        </figure>
+                    </div>
+                <div class="intro-text">
+                    <p><span class="highlight">Harizmi</span>'nin <span class="highlight">tam kareye tamamlama</span> yöntemi, hem geometrik hem de cebirsel yaklaşımları birleştiren yenilikçi bir yöntemdir. Bu yöntem, denklemleri bir kare veya dikdörtgen alanı şeklinde görselleştirerek eksik alanları tamamlayıp tam kare bir ifade oluşturmayı hedefler. <span class="highlight">Harizmi</span>, bu yaklaşımı sistematik bir çözüm yolu hâline getirerek cebir alanında bir devrim gerçekleştirmiştir. Geometri ile cebiri birleştiren bu yöntem, Avrupa matematiğine de ilham kaynağı olmuştur.</p>
+                    <p>Harizmi yaşadığı dönemde henüz sembol dili gelişmediği için ikinci dereceden denklemleri çözerken geometrik modellerden faydalanmıştır.</p>
+                    <p><span class="highlight">x² + 10x = 39</span> denkleminin çözümünde “<span class="highlight">x²</span>” bir kenar uzunluğu <span class="highlight">x</span> birim olan kare; “<span class="highlight">10x</span>” ise bir kenarı <span class="highlight">10</span> birim, diğer kenarı <span class="highlight">x</span> birim olan dikdörtgen ile modellenir. Toplam alan <span class="highlight">39</span> birimkaredir.</p>
+                </div>
+            </section>
+            <p>"Tam Kareye Tamamlama" yöntemini bizzat görerek öğrenmeye hazır mısın?</p>
+            <button id="start-btn" class="btn">Etkinliğe Başla!</button>
+        </div>
+
+        <!-- Etkinlik Ekranı -->
+        <div id="activity-screen" class="screen">
+            <div class="activity-layout">
+                <div class="canvas-column">
+                    <canvas id="geometry-canvas"></canvas>
+                </div>
+                <div class="mobile-navigation">
+                    <button id="prev-btn" class="btn btn-nav">Geri</button>
+                    <span id="stage-indicator">Aşama<br><span class="stage-fraction">1 / 4</span></span>
+                    <button id="next-btn" class="btn btn-nav">İleri</button>
+                    <button id="finish-btn" class="btn btn-nav btn-finish" style="display: none;">Bitir</button>
+                    <button id="music-toggle" class="btn btn-nav" aria-pressed="false" title="Müziği Aç/Kapat">🔇 Müzik</button>
+                </div>
+                <div class="info-column">
+                    <div id="info-content">
+                        <h3 id="stage-title">Başlık</h3>
+                        <div id="stage-description-container"></div>
+                        <div id="success-message" class="success-feedback" style="display: none;">Harika! Sonraki adıma geçiliyor...</div>
+                    </div>
+                    <div class="desktop-navigation">
+                        <button id="prev-btn-desktop" class="btn btn-nav">Geri</button>
+                        <span id="stage-indicator-desktop">Aşama<br><span class="stage-fraction">1 / 4</span></span>
+                        <button id="next-btn-desktop" class="btn btn-nav">İleri</button>
+                        <button id="finish-btn-desktop" class="btn btn-nav btn-finish" style="display: none;">Bitir</button>
+                        <button id="music-toggle-desktop" class="btn btn-nav" aria-pressed="false" title="Müziği Aç/Kapat">🔇 Müzik</button>
+                    </div>
+                </div>
+                    <!-- Variant prompt modal -->
+                    <div id="variant-modal-backdrop" class="variant-modal-backdrop">
+                        <div class="variant-modal" role="dialog" aria-modal="true" aria-labelledby="variant-modal-title">
+                            <h3 id="variant-modal-title"></h3>
+                            <p id="variant-modal-text"></p>
+                            <div class="modal-actions" id="variant-modal-actions"></div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rotate-to-landscape overlay for mobile -->
+    <div id="rotate-overlay" class="rotate-overlay" aria-hidden="true" style="display:none;">
+        <div class="rotate-box" role="dialog" aria-modal="true">
+            <div class="rotate-icon">⤾</div>
+            <h2>Lütfen cihazınızı yatay konuma getirin</h2>
+            <p>Bu etkinlik mobilde yalnızca yatay (landscape) kullanım için tasarlanmıştır. Lütfen cihazınızı döndürün.</p>
+            <div class="hint">Cihaz yatay konuma geldiğinde otomatik olarak devam edecektir.</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const screens = { intro: document.getElementById('intro-screen'), activity: document.getElementById('activity-screen') };
+            const buttons = { 
+                start: document.getElementById('start-btn'), next: document.getElementById('next-btn'), prev: document.getElementById('prev-btn'), 
+                nextDesktop: document.getElementById('next-btn-desktop'), prevDesktop: document.getElementById('prev-btn-desktop'),
+                finish: document.getElementById('finish-btn'), finishDesktop: document.getElementById('finish-btn-desktop'),
+                music: document.getElementById('music-toggle'), musicDesktop: document.getElementById('music-toggle-desktop')
+            };
+            const canvas = document.getElementById('geometry-canvas');
+            const ctx = canvas.getContext('2d');
+            let DPR = Math.max(1, window.devicePixelRatio || 1);
+            let lowEffects = false; // Safari'de sürükleme sırasında ağır efektleri kapat
+            let rafPending = false; // rAF ile çizimi sırala
+            const stageTitle = document.getElementById('stage-title');
+            const stageDescriptionContainer = document.getElementById('stage-description-container');
+            const stageIndicator = document.getElementById('stage-indicator');
+            const stageIndicatorDesktop = document.getElementById('stage-indicator-desktop');
+            const canvasContainer = document.querySelector('.canvas-column');
+            
+            let currentStage = 0; const totalStages = 4; let shapes = [];
+            let draggedShape = null, isAnimating = false;
+            let dragOffsetX, dragOffsetY;
+            // Kullanıcı ölçeği kaldırıldı; layout otomatik hesaplanır
+
+            // Variant system: supports configurable multiplier (10x default and 8x variant)
+            const VARIANTS = {
+                '10x': { mult: 10, baseTotal: 39 },
+                '8x': { mult: 8, baseTotal: 33 }
+            };
+            let currentVariantKey = '10x';
+            let variantConfig = {};
+            let xValue = 3; // will be updated by applyVariant
+
+            function formatNumber(n) {
+                if (n == null || isNaN(n)) return String(n);
+                // if integer, show without decimals, otherwise keep up to 3 decimals but trim trailing zeros
+                if (Number.isInteger(n)) return String(n);
+                return parseFloat(n.toFixed(3)).toString();
+            }
+
+            // placeholder for stage data so buildStageDataFromVariant can populate it before use
+            const stageData = {};
+
+            function buildStageDataFromVariant() {
+                const mult = variantConfig.mult;
+                const split = variantConfig.split;
+                const addSquare = variantConfig.addSquare;
+                const baseTotal = variantConfig.baseTotal;
+                const finalTotal = variantConfig.finalTotal;
+
+                stageData[1] = { title: 'Aşama 1: Temsil Şekillerini Tanıma', description: `
+                    <p>Denklemdeki <code>x²</code> terimi, bir kenarı <strong>x</strong> birim olan mavi bir kare ile; <strong><code>${mult}x</code></strong> terimi, kenar uzunlukları <strong>${mult}</strong> birim ve <strong>x</strong> birim olan yeşil bir dikdörtgen ile modellenir.</p>
+                    <div class="historical-note" style="background: linear-gradient(145deg,#e6f8ff,#f1fdff); color: #022; border-left: 6px solid var(--neon-cyan); margin: 0.8rem 0; padding: 12px;">
+                        <strong>Bu iki alanın toplamı ${baseTotal} birimkaredir.</strong>
+                    </div>
+                    <p>İleri düğmesine basarak şekilleri bir araya getirip tam kareyi oluşturma adımlarına geçiniz.</p>
+                ` };
+
+                stageData[2] = { title: 'Aşama 2: Simetri İçin Hazırlık', description: `
+                    <p>Tam bir kare oluşturabilmek için <strong><code>${mult}x</code></strong> dikdörtgeni, her biri kenarları <strong>${split}</strong> birim ve <strong>x</strong> birim olan iki eş parçaya ayrılır. Parçalardan biri karenin yanına, diğeri altına yerleştirilir.</p>
+                    <div class="historical-note" style="background: linear-gradient(145deg,#e8fff3,#f3fff6); color: #023; border-left: 6px solid #059669; margin: 0.8rem 0; padding: 12px;">
+                        <strong>Yapılacak işlem:</strong> Yeşil parçalardan birini sürükleyip mavi karenin altındaki hedef alana bırakınız.
+                    </div>
+                ` };
+
+                stageData[3] = { title: 'Aşama 3: Kareyi Tamamlama', description: `
+                    <p>Yerleştirme sonrası sağ alt köşede kenarları <strong>${split}</strong> birim ve <strong>${split}</strong> birim olan bir boşluk oluşur. Bu boşluğun alanı <strong>${addSquare}</strong> birimkaredir.</p>
+                    <div class="historical-note" style="background: linear-gradient(145deg,#fff0f0,#fff6f6); color: #6b0b0b; border-left: 6px solid #dc2626; margin: 0.8rem 0; padding: 12px;">
+                        <strong>Yapılacak işlem:</strong> Alanı <strong>${addSquare} birimkare</strong> olan kırmızı kareyi hedef bölgeye sürükleyiniz.
+                    </div>
+                ` };
+
+                stageData[4] = { title: 'Aşama 4: Çözümü Tamamlama', description: `
+                    <p>Bu yerleştirmeler sonucunda kenar uzunluğu <strong>(x + ${split})</strong> birim olan tam bir kare elde edilir. Karşı tarafta alan <strong>${baseTotal} + ${addSquare} = ${finalTotal}</strong> olduğundan, aşağıdaki cebirsel adımlar izlenir:</p>
+                        <div class="solution-steps">
+                            (x + ${split})² = ${formatNumber(finalTotal)}<br>
+                            x + ${split} = ${formatNumber(Math.sqrt(finalTotal))}<br>
+                            <strong>x = ${formatNumber(variantConfig.xSolution)}</strong>
+                        </div>
+                    <div class="historical-note">
+                        <strong>Tarihsel Not:</strong> Harizmi tam kare gösterimi uzunluklar üzerinden hesapladığından, yalnızca pozitif kök esas alınır. Bu nedenle çözüm <strong>x = ${formatNumber(variantConfig.xSolution)}</strong> olarak elde edilir.
+                    </div>
+                ` };
+            }
+
+            function applyVariant(key) {
+                currentVariantKey = key;
+                const v = VARIANTS[key] || VARIANTS['10x'];
+                variantConfig = { mult: v.mult, baseTotal: v.baseTotal };
+                variantConfig.split = variantConfig.mult / 2;
+                variantConfig.addSquare = Math.pow(variantConfig.split, 2);
+                variantConfig.finalTotal = variantConfig.baseTotal + variantConfig.addSquare;
+                variantConfig.xSolution = Math.sqrt(variantConfig.finalTotal) - variantConfig.split;
+                xValue = variantConfig.xSolution;
+                buildStageDataFromVariant();
+            }
+
+            // initialize with default (10x)
+            applyVariant('10x');
+            const NEON_CYAN = '#00f5d4';
+            const NEON_PINK = '#f900ff';
+            const LIGHT_TEXT = '#ffffff';
+            const DARK_TEXT = '#0d0221';
+
+            // Visual coding colors for shapes
+            const BLUE = '#3b82f6';   // x² square
+            const GREEN = '#16a34a';  // 10x rectangle and its parts
+            const RED = '#dc2626';    // added square (area split^2)
+
+            // small snap sound fallback and audio system (copied from index.html)
+            const SNAP_SOUND = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=");
+
+            const SOUNDS = {
+                start: null,
+                next: null,
+                prev: null,
+                snap: null,
+                success: null,
+                bgm: null
+            };
+
+            function initSounds() {
+                try { SOUNDS.start = new Audio('sounds/start.mp3'); } catch(e) { SOUNDS.start = null; }
+                try { SOUNDS.next = new Audio('sounds/next.mp3'); } catch(e) { SOUNDS.next = null; }
+                try { SOUNDS.prev = new Audio('sounds/prev.mp3'); } catch(e) { SOUNDS.prev = null; }
+                try { SOUNDS.snap = new Audio('sounds/snap.mp3'); } catch(e) { SOUNDS.snap = null; }
+                try { SOUNDS.success = new Audio('sounds/success.mp3'); } catch(e) { SOUNDS.success = null; }
+                try { SOUNDS.bgm = new Audio('sounds/bgm.mp3'); SOUNDS.bgm.loop = true; SOUNDS.bgm.volume = 0.35; } catch(e) { SOUNDS.bgm = null; }
+            }
+
+            function playSound(name) {
+                const s = SOUNDS[name];
+                if (!s) return;
+                s.currentTime = 0;
+                s.play().catch(() => {});
+            }
+
+            // Initialize audio placeholders (won't throw if files don't exist)
+            initSounds();
+
+            // Music control helpers
+            function isBgmAvailable() { return !!SOUNDS.bgm; }
+            function isBgmPlaying() { const a = SOUNDS.bgm; return !!(a && !a.paused && !a.ended && a.currentTime > 0); }
+            function updateMusicButtons() {
+                const playing = isBgmPlaying();
+                const label = playing ? '🔊 Müzik' : '🔇 Müzik';
+                [buttons.music, buttons.musicDesktop].forEach(b => {
+                    if (!b) return;
+                    b.textContent = label;
+                    b.setAttribute('aria-pressed', playing ? 'true' : 'false');
+                    b.style.display = isBgmAvailable() ? '' : 'none';
+                });
+            }
+            async function toggleBgm() {
+                if (!SOUNDS.bgm) return;
+                try {
+                    if (isBgmPlaying()) {
+                        SOUNDS.bgm.pause();
+                    } else {
+                        await SOUNDS.bgm.play();
+                    }
+                } catch (e) { /* ignore */ }
+                updateMusicButtons();
+            }
+
+            // YENİ: %70 Küçültme ve Akıllı Ortalama
+            function computeLayoutUnits(W, H) {
+                const mult = (variantConfig && variantConfig.mult) || 10;
+                const split = (variantConfig && variantConfig.split) || 5;
+                const totalUnits = xValue + split;
+                const labelOffset = 40;
+
+                const usableWidth = (W - labelOffset) * 0.70;
+                const usableHeight = (H - labelOffset) * 0.70;
+
+                const unit = Math.min(usableWidth / (xValue + mult), usableHeight / (xValue + mult));
+
+                const figureWidth = unit * (xValue + split);
+                const figureHeight = unit * (xValue + split);
+
+                const startX = (W - figureWidth) / 2;
+                const startY = (H - figureHeight) / 2;
+
+                return { unit, startX, startY };
+            }
+
+            // stageData will be populated by applyVariant -> buildStageDataFromVariant
+
+            class Shape {
+                constructor(x, y, w, h, color, label = '', id = null) { this.id = id; this.x = x; this.y = y; this.w = w; this.h = h; this.color = color; this.label = label; this.draggable = false; this.isSnapped = false; this.target = null; }
+                
+                draw(context) { 
+                    context.fillStyle = this.color; 
+                    context.shadowColor = this.color;
+                    context.shadowBlur = lowEffects ? 0 : 15;
+                    if (this === draggedShape) context.globalAlpha = 0.7;
+                    context.fillRect(this.x, this.y, this.w, this.h); 
+                    context.globalAlpha = 1; 
+                    context.shadowBlur = 0;
+                    
+                    if (this.label) { 
+                        context.font = `bold ${Math.min(this.w, this.h) * 0.3}px Inter, sans-serif`; 
+                        context.textAlign = 'center'; context.textBaseline = 'middle';
+                        context.strokeStyle = DARK_TEXT; context.lineWidth = 4;
+                        context.strokeText(this.label, this.x + this.w / 2, this.y + this.h / 2);
+                        context.fillStyle = LIGHT_TEXT; 
+                        context.fillText(this.label, this.x + this.w / 2, this.y + this.h / 2); 
+                    } 
+                }
+                contains(mx, my) { return (mx >= this.x && mx <= this.x + this.w && my >= this.y && my <= this.y + this.h); }
+            }
+            function setupCanvas() { 
+                const rect = canvasContainer.getBoundingClientRect();
+                const cssW = Math.max(0, rect.width - 16);
+                const cssH = Math.max(0, rect.height - 16);
+                DPR = Math.max(1, window.devicePixelRatio || 1);
+                canvas.style.width = cssW + 'px';
+                canvas.style.height = cssH + 'px';
+                canvas.width = Math.round(cssW * DPR);
+                canvas.height = Math.round(cssH * DPR);
+                ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+            }
+            
+            function drawDimensionLine(ctx, x1, y1, x2, y2, text, color, vertical = false) {
+                const tick = 6;
+                ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+                if (vertical) { ctx.moveTo(x1 - tick, y1); ctx.lineTo(x1 + tick, y1); ctx.moveTo(x2 - tick, y2); ctx.lineTo(x2 + tick, y2); }
+                else { ctx.moveTo(x1, y1 - tick); ctx.lineTo(x1, y1 + tick); ctx.moveTo(x2, y2 - tick); ctx.lineTo(x2, y2 + tick); }
+                ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+
+                ctx.fillStyle = color;
+                const fontSize = Math.max(12, Math.min(18, (xValue*10) * 0.12));
+                ctx.font = `600 ${fontSize}px Poppins, sans-serif`;
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                
+                if (vertical) {
+                    ctx.save(); ctx.translate(x1 - 20, (y1 + y2) / 2); ctx.rotate(-Math.PI / 2);
+                    ctx.fillText(text, 0, 0); ctx.restore();
+                } else {
+                    ctx.fillText(text, (x1 + x2) / 2, y1 - 20);
+                }
+            }
+
+            function drawLabels() {
+                const { unit, startX, startY } = computeLayoutUnits(canvas.clientWidth, canvas.clientHeight);
+                const mult = (variantConfig && variantConfig.mult) || 10;
+                const split = (variantConfig && variantConfig.split) || 5;
+                const xDim = unit * xValue, splitDim = unit * split, multDim = unit * mult;
+
+                if (currentStage === 1) {
+                    const x_square = shapes.find(s=>s.id === 'x_square');
+                    const rectMult = shapes.find(s=>s.id === `${mult}x_rect`);
+                    if (x_square) {
+                        drawDimensionLine(ctx, x_square.x, x_square.y - 20, x_square.x + xDim, x_square.y - 20, 'x', LIGHT_TEXT);
+                        drawDimensionLine(ctx, x_square.x - 20, x_square.y, x_square.x - 20, x_square.y + xDim, 'x', LIGHT_TEXT, true);
+                    }
+                    if (rectMult) drawDimensionLine(ctx, rectMult.x - 20, rectMult.y, rectMult.x - 20, rectMult.y + multDim, String(mult), GREEN, true);
+                } else if (currentStage === 2 || currentStage === 3) {
+                    drawDimensionLine(ctx, startX, startY - 20, startX + xDim, startY - 20, 'x', LIGHT_TEXT);
+                    drawDimensionLine(ctx, startX + xDim, startY - 20, startX + xDim + splitDim, startY - 20, String(split), NEON_PINK);
+                    drawDimensionLine(ctx, startX - 20, startY, startX - 20, startY + xDim, 'x', LIGHT_TEXT, true);
+                } else if (currentStage === 4) {
+                    drawDimensionLine(ctx, startX, startY - 25, startX + xDim + splitDim, startY - 25, `x + ${split}`, NEON_CYAN);
+                    drawDimensionLine(ctx, startX - 25, startY, startX - 25, startY + xDim + splitDim, `x + ${split}`, NEON_CYAN, true);
+                }
+            }
+
+            function render() {
+                // Tam temizleme (DPR uyumlu)
+                if (ctx.reset) { try { ctx.reset(); } catch(_) {} }
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+                shapes.forEach(s => { 
+                    if (s.target && !s.isSnapped) {
+                        const isHovering = draggedShape === s && (Math.abs(s.x-s.target.x)<20 && Math.abs(s.y-s.target.y)<20);
+                        ctx.strokeStyle = isHovering ? '#22c55e' : NEON_CYAN;
+                        ctx.lineWidth = 2;
+                        if (!lowEffects) ctx.setLineDash([6, 6]); else ctx.setLineDash([]);
+                        ctx.strokeRect(s.target.x, s.target.y, s.target.w, s.target.h);
+                        ctx.setLineDash([]);
+                    }
+                });
+                shapes.forEach(s => s.draw(ctx));
+                drawLabels();
+                rafPending = false;
+            }
+
+            function requestRender() { if (!rafPending) { rafPending = true; requestAnimationFrame(render); } }
+
+            function animate(updateFunc, duration) { let startTime = null; isAnimating = true; function step(timestamp) { if (!startTime) startTime = timestamp; const progress = Math.min((timestamp - startTime) / duration, 1); updateFunc(progress); render(); if (progress < 1) requestAnimationFrame(step); else isAnimating = false; } requestAnimationFrame(step); }
+            
+            function updateButtonStates(stage) {
+                [buttons.prev, buttons.prevDesktop].forEach(btn => btn.disabled = (stage === 1));
+                [buttons.next, buttons.nextDesktop].forEach(btn => btn.disabled = true);
+                const showFinish = (stage === totalStages);
+                [buttons.finish, buttons.finishDesktop].forEach(btn => btn.style.display = showFinish ? 'inline-flex' : 'none');
+                const fractionHtml = `<span>Aşama<br><span class="stage-fraction">${stage} / ${totalStages}</span></span>`;
+                stageIndicator.innerHTML = fractionHtml; stageIndicatorDesktop.innerHTML = fractionHtml;
+            }
+            
+            function enableNextButtons() { [buttons.next, buttons.nextDesktop].forEach(btn => btn.disabled = false); }
+
+            function transitionToStage(stage) {
+                currentStage = stage;
+                const data = stageData[stage];
+                stageTitle.innerHTML = `${data.title}`;
+                stageDescriptionContainer.innerHTML = data.description;
+                updateButtonStates(stage);
+                document.getElementById('success-message').style.display = 'none';
+                
+                const W = canvas.clientWidth, H = canvas.clientHeight;
+                const { unit, startX, startY } = computeLayoutUnits(W, H);
+                const mult = (variantConfig && variantConfig.mult) || 10;
+                const split = (variantConfig && variantConfig.split) || 5;
+                const xDim = unit * xValue, splitDim = unit * split, multDim = unit * mult;
+                const safeSpawnX = W - splitDim - 20;
+                const safeSpawnY = 20;
+
+                if (stage === 1) {
+                    shapes = [
+                        new Shape(startX, startY, xDim, xDim, BLUE, 'x²', 'x_square'),
+                        new Shape(startX, startY + xDim + 10, xDim, multDim, GREEN, `${mult}x`, `${mult}x_rect`)
+                    ];
+                    enableNextButtons(); render();
+                } else if (stage === 2) {
+                    const rectMult = shapes.find(s => s.id === `${mult}x_rect`);
+                    const initialY = rectMult ? rectMult.y : startY + xDim + 10;
+                    shapes = shapes.filter(s => s.id !== `${mult}x_rect`);
+
+                    const rectSide = new Shape(startX, initialY, splitDim, xDim, GREEN, `${split}x`, `${split}x_side`);
+                    const rectBottom = new Shape(startX, initialY + splitDim, xDim, splitDim, GREEN, `${split}x`, `${split}x_bottom`);
+                    shapes.push(rectSide, rectBottom);
+
+                    animate(p => { 
+                        const ease = 1 - Math.pow(1 - p, 3);
+                        rectSide.x = startX + (startX + xDim - startX) * ease;
+                        rectSide.y = initialY + (startY - initialY) * ease;
+                    }, 800);
+
+                    setTimeout(() => {
+                        rectBottom.draggable = true;
+                        rectBottom.target = { x: startX, y: startY + xDim, w: xDim, h: splitDim };
+                        shapes.sort((a, b) => (a.draggable ? 1 : -1));
+                        render(); 
+                    }, 800);
+                } else if (stage === 3) {
+                    const finalPiece = new Shape(safeSpawnX, safeSpawnY, splitDim, splitDim, RED, String(variantConfig.addSquare), `${variantConfig.addSquare}_square`);
+                    finalPiece.draggable = true; finalPiece.target = { x: startX + xDim, y: startY + xDim, w: splitDim, h: splitDim };
+                    shapes.push(finalPiece); render();
+                } else if (stage === 4) {
+                    enableNextButtons(); render();
+                }
+            }
+            function snapShape(shape) { 
+                if (!shape || isAnimating) return; 
+                const startX = shape.x, startY = shape.y; const target = shape.target; 
+                draggedShape = null; 
+                // visual feedback
+                document.getElementById('success-message').style.display = 'block';
+                // play snapping sounds (fallback data-uri + optional user-provided file)
+                try { SNAP_SOUND.play().catch(()=>{}); } catch(e) {}
+                playSound('snap');
+
+                animate(p => { const ease = 1 - Math.pow(1 - p, 4); shape.x = startX + (target.x - startX) * ease; shape.y = startY + (target.y - startY) * ease; }, 300); 
+                setTimeout(() => { 
+                    shape.isSnapped = true; shape.draggable = false; 
+                    if(shape.id === '5x_bottom'){
+                        const rectSide = shapes.find(s=>s.id === '5x_side');
+                        if (rectSide) {
+                             // Konumunu düzeltme işlemi artık gereksiz, animasyon hallediyor
+                        }
+                    }
+                    // play success sound and continue
+                    playSound('success');
+                    lowEffects = false;
+                    setTimeout(() => { document.getElementById('success-message').style.display = 'none'; transitionToStage(currentStage + 1); }, 1500);
+                }, 300); 
+            }
+            function getMousePos(e) { 
+                const rect = canvas.getBoundingClientRect(); 
+                let clientX, clientY;
+                if (e.touches && e.touches.length > 0) { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; } 
+                else { clientX = e.clientX; clientY = e.clientY; }
+                return { x: (clientX - rect.left), y: (clientY - rect.top) }; 
+            }
+            function handleMouseDown(e) { if (isAnimating) return; e.preventDefault(); const { x, y } = getMousePos(e); for (let i = shapes.length - 1; i >= 0; i--) { if (shapes[i].draggable && shapes[i].contains(x, y)) { draggedShape = shapes[i]; dragOffsetX = x - draggedShape.x; dragOffsetY = y - draggedShape.y; lowEffects = true; requestRender(); return; } } }
+            function handleMouseMove(e) { if (!draggedShape) return; e.preventDefault(); const { x, y } = getMousePos(e); draggedShape.x = x - dragOffsetX; draggedShape.y = y - dragOffsetY; const target = draggedShape.target; if (Math.abs(draggedShape.x - target.x) < 20 && Math.abs(draggedShape.y - target.y) < 20) snapShape(draggedShape); else requestRender(); }
+            function handleMouseUp(e) { if (!draggedShape) return; e.preventDefault(); draggedShape = null; lowEffects = false; requestRender(); }
+
+            buttons.start.addEventListener('click', () => { showScreen('activity'); setupCanvas(); transitionToStage(1); playSound('start'); if (SOUNDS.bgm) { SOUNDS.bgm.play().catch(()=>{}); } updateMusicButtons(); });
+            [buttons.next, buttons.nextDesktop].forEach(b => b.addEventListener('click', () => { if (!isAnimating) { playSound('next'); transitionToStage(currentStage === totalStages ? 1 : currentStage + 1); } }));
+            [buttons.prev, buttons.prevDesktop].forEach(b => b.addEventListener('click', () => { if (!isAnimating && currentStage > 1) { playSound('prev'); transitionToStage(1); } }));
+            [buttons.music, buttons.musicDesktop].forEach(b => b && b.addEventListener('click', toggleBgm));
+            
+            // show variant prompt when finishing
+            function showTryVariantPrompt() { document.getElementById('variant-modal-backdrop').style.display = 'flex'; }
+            function hideTryVariantPrompt() { document.getElementById('variant-modal-backdrop').style.display = 'none'; }
+
+            function showCompletionModal() {
+                const modalTitle = document.getElementById('variant-modal-title');
+                const modalText = document.getElementById('variant-modal-text');
+                const modalActions = document.getElementById('variant-modal-actions');
+                
+                if (currentVariantKey === '10x') {
+                    // İlk etkinlik bittiğinde
+                    modalTitle.textContent = 'Etkinlik bitti!';
+                    modalText.innerHTML = 'Başka bir denklem denemek ister misiniz? Şimdi <strong><code>x² + 8x</code></strong> versiyonunu deneyebilirsiniz.';
+                    modalActions.innerHTML = `
+                        <button id="variant-yes" class="btn">Evet, dene</button>
+                        <button id="variant-close" class="btn btn-ghost">Bitir</button>
+                    `;
+                    
+                    document.getElementById('variant-yes').addEventListener('click', () => {
+                        hideTryVariantPrompt(); 
+                        applyVariant('8x'); 
+                        showScreen('activity'); 
+                        setupCanvas(); 
+                        transitionToStage(1);
+                    });
+                    document.getElementById('variant-close').addEventListener('click', () => {
+                        window.close();
+                    });
+                } else {
+                    // x² + 8x etkinliği bittiğinde
+                    modalTitle.textContent = 'Tebrikler! Etkinliği tamamladınız!';
+                    modalText.innerHTML = 'Her iki denklem versiyonunu başarıyla çözdünüz. 🎉';
+                    modalActions.innerHTML = `
+                        <button id="restart-btn" class="btn">Etkinliği Tekrar Başlat</button>
+                        <button id="close-btn" class="btn btn-ghost">Bitir</button>
+                    `;
+                    
+                    document.getElementById('restart-btn').addEventListener('click', () => {
+                        hideTryVariantPrompt();
+                        applyVariant('10x');
+                        showScreen('intro'); 
+                        currentStage = 0;
+                    });
+                    document.getElementById('close-btn').addEventListener('click', () => {
+                        window.close();
+                    });
+                }
+                
+                showTryVariantPrompt();
+            }
+
+            [buttons.finish, buttons.finishDesktop].forEach(b => b.addEventListener('click', () => { showCompletionModal(); }));
+            
+            function showScreen(name) { Object.keys(screens).forEach(key => screens[key].style.display = (key === name) ? 'block' : 'none'); }
+            
+            canvas.addEventListener('mousedown', handleMouseDown); canvas.addEventListener('mousemove', handleMouseMove); canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('touchstart', handleMouseDown, { passive: false }); canvas.addEventListener('touchmove', handleMouseMove, { passive: false }); canvas.addEventListener('touchend', handleMouseUp);
+            window.addEventListener('resize', () => { if(screens.activity.style.display === 'block') { setupCanvas(); transitionToStage(currentStage); } });
+            // initialize music button visibility/state
+            updateMusicButtons();
+            // Kaydırıcı kaldırıldı
+        });
+    </script>
+    <script>
+        // Overlay logic pasifleştirildi: Etkinlik artık mobil dik (portrait) ekranda da çalışır.
+        (function(){
+            const overlay = document.getElementById('rotate-overlay');
+            if (!overlay) return;
+            // Kapalı tutmak için her zaman false döndür
+            function shouldShow() { return false; }
+            function updateOverlay() {
+                try {
+                    if (shouldShow()) {
+                        overlay.style.display = 'flex';
+                        overlay.setAttribute('aria-hidden','false');
+                        // prevent scrolling underneath
+                        document.documentElement.style.overflow = 'hidden';
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        overlay.style.display = 'none';
+                        overlay.setAttribute('aria-hidden','true');
+                        document.documentElement.style.overflow = '';
+                        document.body.style.overflow = '';
+                    }
+                } catch(e) { console.warn('rotate overlay update failed', e); }
+            }
+            window.addEventListener('resize', updateOverlay);
+            window.addEventListener('orientationchange', () => { setTimeout(updateOverlay, 250); });
+            document.addEventListener('visibilitychange', updateOverlay);
+            // initial check and a small delayed check to catch orientation events
+            document.addEventListener('DOMContentLoaded', () => { updateOverlay(); setTimeout(updateOverlay, 400); });
+            // also check immediately in case script loads after DOMContentLoaded
+            updateOverlay();
+        })();
+    </script>
+</body>
+</html>
