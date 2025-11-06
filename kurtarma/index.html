@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kurtarma Operasyonu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet" />
+  <script>
+    MathJax = { tex: { inlineMath: [["$","$"],["\\(","\\)"]] }, svg: { fontCache: 'global' } };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root { --bg-color:#000812; --primary-neon:#00ffff; --secondary-neon:#ff00ff; --tertiary-neon:#00ff00; --text-color:#ffffff; --border-color:rgba(0,255,255,0.9); --error-color:#ff0033; }
+    *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth}
+    body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #000812 0%, #0a1628 100%);color:var(--text-color);overflow:hidden;height:100vh;width:100vw;position:relative}
+    body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 20% 50%, rgba(0,255,255,0.05) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(255,0,255,0.05) 0%, transparent 50%);pointer-events:none;z-index:0}
+    em,i{font-style:normal}
+    .container{display:flex;width:100%;height:100vh;position:relative;z-index:1}
+    .canvas-container{width:70%;height:100vh;padding:20px;display:flex;justify-content:center;align-items:center;background:linear-gradient(to right, rgba(0,255,255,0.02) 0%, transparent 100%)}
+    canvas{background:radial-gradient(ellipse at center, rgba(0,20,40,0.9) 0%, rgba(0,5,15,0.95) 100%);border:3px solid var(--primary-neon);box-shadow:0 0 25px var(--primary-neon), inset 0 0 20px rgba(0,255,255,0.1);max-width:100%;max-height:100%;aspect-ratio:1/1}
+    .controls-container{width:30%;height:100%;background:linear-gradient(135deg, rgba(10,5,30,0.95) 0%, rgba(5,10,25,0.95) 100%);padding:30px;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;border-left:4px solid var(--primary-neon);box-shadow:-8px 0 25px rgba(0,255,255,0.15)}
+    header{text-align:center;margin-bottom:15px;font-family:'Orbitron',sans-serif}
+    header h1{color:var(--primary-neon);text-shadow:0 0 15px var(--primary-neon);margin-bottom:5px;font-size:1.8rem;letter-spacing:2px}
+    header h2{color:var(--secondary-neon);text-shadow:0 0 12px var(--secondary-neon);font-size:1.2rem;letter-spacing:1px}
+    .game-info{display:flex;justify-content:space-between;background:linear-gradient(90deg, rgba(0,255,255,0.08) 0%, rgba(255,0,255,0.08) 100%);padding:12px 18px;border-radius:12px;margin-bottom:15px;border:2px solid var(--primary-neon);font-family:'Orbitron',sans-serif;font-size:1.1rem;box-shadow:0 0 20px rgba(0,255,255,0.3), inset 0 0 10px rgba(0,255,255,0.1);color:#00ffff;text-shadow:0 0 10px rgba(0,255,255,0.6)}
+    #level-display{color:var(--primary-neon);font-weight:bold;text-shadow:0 0 15px rgba(0,255,255,0.8);letter-spacing:1px}
+    .timer{color:var(--tertiary-neon);font-weight:bold;transition:color .3s;text-shadow:0 0 12px var(--tertiary-neon);letter-spacing:1px}
+    .timer.low-time{color:var(--error-color);text-shadow:0 0 12px var(--error-color)}
+    .mission-status{background:linear-gradient(135deg, rgba(0,255,255,0.08) 0%, rgba(0,255,255,0.04) 100%);padding:18px;border-radius:12px;margin-bottom:20px;border:2px solid var(--primary-neon);box-shadow:0 0 20px rgba(0,255,255,0.2), inset 0 0 10px rgba(0,255,255,0.08)}
+    .points-display p{font-size:1.1rem;font-weight:bold;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;color:var(--primary-neon);text-shadow:0 0 10px rgba(0,255,255,0.6);letter-spacing:0.5px}
+    .points-display span{color:var(--tertiary-neon);font-family:'Orbitron',sans-serif;text-shadow:0 0 10px var(--tertiary-neon);font-weight:bold}
+    .score-display{font-size:1.3rem;font-weight:bold;color:var(--tertiary-neon);text-shadow:0 0 12px var(--tertiary-neon);text-align:right;margin-top:10px;letter-spacing:1px}
+    .task-group{background:linear-gradient(135deg, rgba(255,0,255,0.08) 0%, rgba(255,0,255,0.04) 100%);padding:22px;border-radius:12px;margin-bottom:20px;border:2px solid var(--secondary-neon);box-shadow:0 0 20px rgba(255,0,255,0.2), inset 0 0 10px rgba(255,0,255,0.08)}
+    .task-group h3{font-family:'Orbitron',sans-serif;color:var(--secondary-neon);margin-bottom:16px;border-bottom:2px solid var(--secondary-neon);padding-bottom:12px;text-shadow:0 0 12px var(--secondary-neon);letter-spacing:1px}
+    .input-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .input-row label{flex-basis:50%;font-size:.95rem;padding-right:10px;color:var(--primary-neon);text-shadow:0 0 10px rgba(0,255,255,0.6);font-weight:bold;letter-spacing:0.5px}
+    .input-wrapper{display:flex;flex-basis:50%;align-items:center}
+    input[type=number],input[type=text]{width:100%;background:rgba(0,20,50,0.6);border:2px solid var(--primary-neon);color:var(--tertiary-neon);padding:10px;border-radius:6px;font-size:1rem;text-align:center;transition:all .3s ease;box-shadow:0 0 15px rgba(0,255,255,0.2), inset 0 0 8px rgba(0,255,255,0.1);font-weight:bold;text-shadow:0 0 5px rgba(0,255,0,0.4)}
+    input[type=number]:focus,input[type=text]:focus{outline:none;border-color:var(--secondary-neon);box-shadow:0 0 15px rgba(0,255,255,0.3), inset 0 0 8px rgba(0,255,255,0.08)}
+    input:disabled{background:rgba(50,50,50,0.5);cursor:not-allowed;opacity:0.6}
+    .symbol-btn{background:linear-gradient(135deg, rgba(0,255,255,0.1) 0%, rgba(0,255,255,0.05) 100%);border:2px solid var(--primary-neon);color:var(--primary-neon);padding:0 12px;height:37px;margin-left:5px;border-radius:6px;cursor:pointer;font-size:1.5rem;font-weight:bold;line-height:1;transition:all .3s ease;flex-shrink:0;box-shadow:0 0 12px rgba(0,255,255,0.3);text-shadow:0 0 5px rgba(0,255,255,0.4)}
+    .symbol-btn:hover{background:var(--primary-neon);color:var(--bg-color);box-shadow:0 0 20px var(--primary-neon);transform:scale(1.05)}
+    .feedback-area{padding:18px 16px;text-align:left;font-size:1rem;min-height:150px;border-radius:12px;margin:15px 0 20px;display:block;border:2px solid transparent;transition:all .3s ease;overflow:auto;background:linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(10,5,20,0.4) 100%);color:#ffffff;text-shadow:0 0 8px rgba(255,255,255,0.3)}
+    .feedback-area.success{color:var(--tertiary-neon);border-color:var(--tertiary-neon);box-shadow:0 0 20px var(--tertiary-neon), inset 0 0 10px rgba(0,255,0,0.08);text-shadow:0 0 8px var(--tertiary-neon);background:linear-gradient(135deg, rgba(0,50,0,0.3) 0%, rgba(0,30,0,0.3) 100%)}
+    .feedback-area.error{color:var(--error-color);border-color:var(--error-color);box-shadow:0 0 20px var(--error-color), inset 0 0 10px rgba(255,0,51,0.08);text-shadow:0 0 8px var(--error-color);background:linear-gradient(135deg, rgba(50,0,0,0.3) 0%, rgba(30,0,0,0.3) 100%)}
+    .feedback-area p{text-align:center;width:100%}
+    .feedback-area mjx-container{margin:0.4em 0;display:block;max-width:100%;overflow:hidden}
+    .feedback-area mjx-container:first-child{margin-top:0.2em}
+    .feedback-area mjx-container:last-child{margin-bottom:0.2em}
+    .feedback-area mjx-mi{font-style:normal !important}
+    em{font-style: normal;}
+    mjx-container[jax="SVG"] svg{font-style: normal !important}
+    mjx-container[jax="SVG"] [style*="font-style:italic"]{font-style: normal !important}
+    mjx-container *{font-style: normal !important}
+    .button-group{display:grid;grid-template-columns:1fr;gap:15px;margin-top:auto}
+    button{padding:16px;border:2px solid;border-radius:8px;background:linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(10,5,20,0.3) 100%);color:var(--text-color);font-family:'Orbitron',sans-serif;font-size:1rem;cursor:pointer;transition:all .3s ease;text-transform:uppercase;text-shadow:0 0 8px rgba(255,255,255,0.3);letter-spacing:1px;font-weight:bold}
+    button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,255,255,0.4)}
+    #checkBtn{border-color:var(--tertiary-neon);color:var(--tertiary-neon);box-shadow:0 0 15px rgba(0,255,0,0.3)}
+    #checkBtn:hover:not(:disabled){background:linear-gradient(135deg, rgba(0,255,0,0.3) 0%, rgba(0,200,0,0.2) 100%);color:var(--bg-color);box-shadow:0 0 20px var(--tertiary-neon)}
+    #nextBtn{border-color:var(--secondary-neon);color:var(--secondary-neon);box-shadow:0 0 15px rgba(255,0,255,0.3)}
+    #nextBtn:hover:not(:disabled){background:linear-gradient(135deg, rgba(255,0,255,0.3) 0%, rgba(200,0,255,0.2) 100%);color:var(--bg-color);box-shadow:0 0 20px var(--secondary-neon)}
+    button:disabled{border-color:#444;color:#666;cursor:not-allowed;opacity:0.5}
+    #intro-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:999;pointer-events:none;opacity:.3;filter:drop-shadow(0 0 20px rgba(0,255,255,0.1))}
+    .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:2000}
+    .modal-content{background:linear-gradient(135deg, rgba(10,5,30,0.95) 0%, rgba(5,10,25,0.95) 100%);padding:45px;border-radius:20px;text-align:center;border:3px solid var(--primary-neon);box-shadow:0 0 50px var(--primary-neon), 0 0 100px rgba(0,255,255,0.4), inset 0 0 30px rgba(0,255,255,0.15);max-width:600px;max-height:85vh;overflow:auto;-webkit-overflow-scrolling:touch}
+    .modal-content h2{font-family:'Orbitron';color:var(--primary-neon);margin-bottom:25px;font-size:2rem;letter-spacing:2px;text-shadow:0 0 20px var(--primary-neon), 0 0 40px rgba(0,255,255,0.5)}
+    .modal-content p{line-height:1.8;margin-bottom:25px;font-size:1.1rem;color:#e0e0ff;text-shadow:0 0 8px rgba(255,255,255,0.3)}
+    .modal-content button{border-color:var(--tertiary-neon);color:var(--tertiary-neon);padding:16px 40px;box-shadow:0 0 15px rgba(0,255,0,0.3)}
+    .modal-content button:hover{background:linear-gradient(135deg, rgba(0,255,0,0.3) 0%, rgba(0,200,0,0.2) 100%);color:var(--bg-color);box-shadow:0 0 30px var(--tertiary-neon), 0 0 50px rgba(0,255,0,0.4)}
+    @media (max-width:1200px){
+      body{height:auto;width:100%;overflow:auto; -webkit-overflow-scrolling:touch}
+      .container{flex-direction:column;height:auto;overflow:visible}
+      .canvas-container{width:100%;height:60vh;padding:10px}
+      .controls-container{width:100%;height:auto;border-left:none;border-top:3px solid var(--primary-neon)}
+    }
+    @media (max-width:768px){
+      header h1{font-size:clamp(1rem, 4vw, 1.5rem)}
+      header h2{font-size:clamp(0.9rem, 3.5vw, 1.2rem)}
+      .game-info{font-size:clamp(0.9rem, 3.4vw, 1.1rem)}
+      input[type=number],input[type=text]{font-size:clamp(16px, 4vw, 18px); padding:10px}
+      .symbol-btn{height:44px; font-size:1.6rem; padding:0 14px}
+      button{min-height:48px; font-size:clamp(0.9rem, 3.6vw, 1rem)}
+      .canvas-container{width:98vw;height:58vh}
+    }
+  </style>
+</head>
+<body>
+  <canvas id="intro-canvas"></canvas>
+  <div class="modal-overlay" id="start-modal">
+    <div class="modal-content">
+  <h2>Kurtarma Operasyonu</h2>
+      <p>
+  Şehirde orta şiddetli bir deprem oldu; elektrikler kesildi ve acil yardım çağrıları artıyor. <strong>A</strong> noktasındaki Afet Koordinasyon Merkezinden çıkan
+        <strong>Ambulans</strong> caddeleri yanlızca yatay ve dikey olarak takip ederek ilerlerken,
+        <strong>İHA</strong> ise gökyüzünden <strong>B</strong> noktasına en kısa doğrusal hat üzerinden uçar.
+      </p>
+      <p>
+        Görevin, her turda A ve B arasında:
+        Ambulansın izleyeceği yolun yatay ve dikey uzunluklarını (|x₂-x₁|, |y₂-y₁|) ile İHA'nın kuş uçuşu mesafesini (Pisagor teoremi ile hipotenüs),
+        doğru hesaplamak. Doğru yanıt verdiğinde kalan süre kadar puan alırsın.
+      </p>
+  <p style="margin-bottom:10px;">Arkaplan müziğini oyun ekranının üstündeki Müzik düğmesiyle açıp kapatabilirsin.</p>
+      <button id="start-btn">Operasyona Başla!</button>
+    </div>
+  </div>
+
+  <!-- OYUN BİTİŞ MODALİ -->
+  <div class="modal-overlay" id="end-modal" style="display:none;">
+    <div class="modal-content">
+  <h2>Operasyon Tamamlandı</h2>
+      <p id="end-summary">Tebrikler! Final seviyesindeki görevi başarıyla tamamladın.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button id="replay-btn">Yeniden Oyna</button>
+        <button id="menu-btn">Ana Menüye Dön</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="visibility:hidden;">
+    <div class="canvas-container"><canvas id="gameCanvas"></canvas></div>
+    <div class="controls-container">
+      <header>
+  <h1>Kurtarma Operasyonu</h1>
+  <h2></h2>
+      </header>
+  <div class="game-info"><div id="level-display">Seviye 1 (Hedef: 150 Puan)</div><div class="timer" id="timer-display">Süre: 60</div><button id="bgMusicBtn" style="margin-left:8px;">Müzik: Açık</button></div>
+      <div class="mission-status">
+        <div class="points-display" id="points-display"></div>
+        <div class="score-display">Puan: <span id="score">0</span></div>
+      </div>
+      
+      <div class="task-group" id="stage-1-tasks">
+        <h3>Görev: Mesafeleri Hesapla (km)</h3>
+        <div class="input-row"><label for="deltaX">Ambulans Yatay Yol:</label><div class="input-wrapper"><input type="number" id="deltaX" placeholder="|x₂ - x₁|"></div></div>
+        <div class="input-row"><label for="deltaY">Ambulans Dikey Yol:</label><div class="input-wrapper"><input type="number" id="deltaY" placeholder="|y₂ - y₁|"></div></div>
+  <div class="input-row"><label for="distance">İHA Uçuş Mesafesi:</label><div class="input-wrapper"><input type="text" id="distance" placeholder="Hipotenüs (d)"><button type="button" class="symbol-btn" id="sqrt-btn">√</button></div></div>
+      </div>
+      <div class="feedback-area" id="feedback-area"><p>Oyuna başlamak için butona tıkla.</p></div>
+      <div class="button-group">
+        <button id="checkBtn">Cevapları Kontrol Et</button>
+        <button id="nextBtn" disabled>Yeni Görev</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', ()=>{
+    // DOM
+    const container=document.querySelector('.container');
+    const startModal=document.getElementById('start-modal');
+    const startBtn=document.getElementById('start-btn');
+    const canvas=document.getElementById('gameCanvas'); const ctx=canvas.getContext('2d');
+    const introCanvas=document.getElementById('intro-canvas'); const introCtx=introCanvas.getContext('2d');
+    const levelDisplay=document.getElementById('level-display'); const timerDisplay=document.getElementById('timer-display');
+    const pointsDisplay=document.getElementById('points-display'); const scoreEl=document.getElementById('score');
+    const deltaXInput=document.getElementById('deltaX'); const deltaYInput=document.getElementById('deltaY'); const distanceInput=document.getElementById('distance'); const sqrtBtn=document.getElementById('sqrt-btn');
+  const checkBtn=document.getElementById('checkBtn'); const nextBtn=document.getElementById('nextBtn'); const feedbackArea=document.getElementById('feedback-area');
+  const badgesEl=document.getElementById('badges');
+  const bgMusicBtn=document.getElementById('bgMusicBtn');
+  // End modal elements
+  const endModal=document.getElementById('end-modal');
+  const endSummary=document.getElementById('end-summary');
+  const replayBtn=document.getElementById('replay-btn');
+  const menuBtn=document.getElementById('menu-btn');
+
+    // State
+  let pointA, pointB, answers, score=0, gridRange=15, unit; let currentLevel=1; const LEVEL_2_SCORE=150; const END_SCORE=300; const LEVEL_TIME=60; let timerInterval=null, timeLeft=LEVEL_TIME; let animationFrameId=null;
+  const pythagoreanTriples=[[3,4,5],[5,12,13],[8,15,17],[7,24,25]];
+
+    // -------- Ses Efektleri (dosyadan) + Arkaplan Müzik --------
+    const sfxMap = {
+      correct: new Audio('correct.mp3'),
+      wrong: new Audio('wrong.mp3'),
+      levelup: new Audio('levelup.mp3'),
+      finish: new Audio('finish.mp3'),
+      timelow: new Audio('timelow.mp3'),
+      open: new Audio('open.mp3'),
+      close: new Audio('close.mp3'),
+      click: new Audio('click.mp3')
+    };
+    Object.values(sfxMap).forEach(a=>{ a.preload='auto'; a.volume=0.6; });
+    function playSfx(name){ const a=sfxMap[name]; if(!a) return; const c=a.cloneNode(true); c.volume=a.volume; c.play().catch(()=>{}); }
+    function addClickSfx(btn){ if(!btn) return; btn.addEventListener('click', ()=>playSfx('click')); }
+
+  const backgroundMusic = new Audio('arkaplan.mp3');
+    backgroundMusic.loop = true; backgroundMusic.preload = 'auto'; backgroundMusic.volume = 0.35;
+    const LS_KEY = 'ambulansGame-bgm';
+    function setBgmEnabled(on){ try{ localStorage.setItem(LS_KEY, on? '1':'0'); }catch{}; if(on){ backgroundMusic.play().catch(()=>{}); bgMusicBtn.textContent='Müzik: Açık'; } else { backgroundMusic.pause(); bgMusicBtn.textContent='Müzik: Kapalı'; } }
+    function getBgmEnabled(){ try{ const v=localStorage.getItem(LS_KEY); return v===null? true : v==='1'; }catch{ return true; } }
+    bgMusicBtn.addEventListener('click', ()=> setBgmEnabled(backgroundMusic.paused));
+    addClickSfx(bgMusicBtn);
+
+    // Hareket SFX'leri (animasyon boyunca çalan)
+    const ambulanceMove = new Audio('ambulance.mp3');
+    ambulanceMove.loop = true; ambulanceMove.preload = 'auto'; ambulanceMove.volume = 0.35;
+    const droneMove = new Audio('drone.mp3');
+    droneMove.loop = true; droneMove.preload = 'auto'; droneMove.volume = 0.30;
+    function startMoveSfx(){
+      try{ ambulanceMove.currentTime = 0; ambulanceMove.play().catch(()=>{}); }catch{}
+      try{ droneMove.currentTime = 0; droneMove.play().catch(()=>{}); }catch{}
+    }
+    function stopMoveSfx(){ [ambulanceMove, droneMove].forEach(a=>{ try{ a.pause(); a.currentTime = 0; }catch{} }); }
+
+    // -------- Rozetler --------
+    const achievements = {
+      first: { title:'İlk Müdahale', unlocked:false },
+      speedy: { title:'Hızlı Kurtarıcı', unlocked:false },
+      precise: { title:'Kesin Hesap', unlocked:false },
+      finale: { title:'Final Uzmanı', unlocked:false }
+    };
+    function renderBadges(){
+      // If badges container does not exist (UI removed), do nothing
+      if(!badgesEl) return;
+      badgesEl.innerHTML = '';
+      Object.keys(achievements).forEach(k=>{
+        const b=document.createElement('span');
+        b.className = 'badge'+(achievements[k].unlocked?' unlocked':'');
+        b.textContent = achievements[k].title;
+        badgesEl.appendChild(b);
+      });
+    }
+    function unlockBadge(key){ if(!achievements[key].unlocked){ achievements[key].unlocked=true; renderBadges(); }}
+
+  // Canvas helpers
+  function setupCanvas(){ const cont=document.querySelector('.canvas-container'); const size=Math.min(cont.clientWidth, cont.clientHeight); canvas.width=size; canvas.height=size; unit=canvas.width/(gridRange*2); drawGrid(); }
+    function toCanvasCoords(p){ return { x: canvas.width/2 + p.x*unit, y: canvas.height/2 - p.y*unit }; }
+  function drawGrid(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.font=`${Math.max(10,unit/1.5)}px Roboto`;
+      // İnce grid çizgileri (hafif)
+      for(let i=-gridRange;i<=gridRange;i++){
+        ctx.strokeStyle='rgba(0,255,255,0.3)';
+        const pos=canvas.width/2+i*unit;
+        ctx.beginPath(); ctx.moveTo(pos,0); ctx.lineTo(pos,canvas.height); ctx.moveTo(0,pos); ctx.lineTo(canvas.width,pos); ctx.stroke();
+      }
+      // Eksenler - neon parlaklık
+      const axis=getComputedStyle(document.documentElement).getPropertyValue('--primary-neon');
+      ctx.save();
+      ctx.strokeStyle=axis; ctx.lineWidth=2; ctx.shadowColor=axis; ctx.shadowBlur=6;
+      ctx.beginPath(); ctx.moveTo(0,canvas.height/2); ctx.lineTo(canvas.width,canvas.height/2); ctx.moveTo(canvas.width/2,0); ctx.lineTo(canvas.width/2,canvas.height); ctx.stroke();
+      // Oklar
+      const arrow=10; ctx.fillStyle=axis; ctx.beginPath(); ctx.moveTo(canvas.width,canvas.height/2); ctx.lineTo(canvas.width-arrow,canvas.height/2-arrow/2); ctx.lineTo(canvas.width-arrow,canvas.height/2+arrow/2); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(0,canvas.height/2); ctx.lineTo(arrow,canvas.height/2-arrow/2); ctx.lineTo(arrow,canvas.height/2+arrow/2); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(canvas.width/2,0); ctx.lineTo(canvas.width/2-arrow/2,arrow); ctx.lineTo(canvas.width/2+arrow/2,arrow); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(canvas.width/2,canvas.height); ctx.lineTo(canvas.width/2-arrow/2,canvas.height-arrow); ctx.lineTo(canvas.width/2+arrow/2,canvas.height-arrow); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      // Eksen etiketleri (5'te bir) - hafif neon
+      ctx.lineWidth=1;
+      const label=getComputedStyle(document.documentElement).getPropertyValue('--tertiary-neon');
+      ctx.fillStyle=label; ctx.shadowColor=label; ctx.shadowBlur=5;
+      for(let i=-gridRange;i<=gridRange;i++){
+        if(i===0||i%5!==0) continue;
+        ctx.fillText(i, canvas.width/2+i*unit, canvas.height/2+15);
+        ctx.fillText(i, canvas.width/2-15, canvas.height/2-i*unit);
+      }
+      ctx.font=`bold ${Math.max(12,unit)}px Orbitron`;
+      ctx.fillText('O', canvas.width/2-15, canvas.height/2+15);
+      // Gölgeyi kapat
+      ctx.shadowBlur=0; ctx.shadowColor='transparent';
+    }
+  function drawPoint(p,label,color){ 
+    const {x,y}=toCanvasCoords(p); 
+    ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); 
+    ctx.fillStyle=color; ctx.fill(); 
+    ctx.fillStyle='#ffffff'; 
+    ctx.font=`bold ${Math.max(12,unit)}px Orbitron`; 
+    
+    // Etiketin konumunu basit şekilde ayarla
+    const labelText = `${label}(${p.x}, ${p.y})`;
+    let offsetX = 0, offsetY = -25;
+    
+    // Canvas kenarlarına yakın olup olmadığını kontrol et (basit)
+    if(x > canvas.width - 80) offsetX = -80;
+    if(x < 80) offsetX = 0;
+    if(y < 40) offsetY = 35;
+    
+    ctx.fillText(labelText, x + offsetX, y + offsetY); 
+  }
+
+    function updateUI(){
+      scoreEl.textContent=score;
+      pointsDisplay.innerHTML = `<p>Merkez A: <span>(${pointA.x}, ${pointA.y})</span></p><p>Afet Bölgesi B: <span>(${pointB.x}, ${pointB.y})</span></p>`;
+      levelDisplay.textContent = (currentLevel===1)
+        ? `Seviye 1 (Hedef: ${LEVEL_2_SCORE} Puan)`
+        : `Seviye 2 (Hedef: ${END_SCORE} Puan)`;
+    }
+    function resetInputs(){ [deltaXInput,deltaYInput,distanceInput].forEach(i=>i.value=''); setFeedback('<p>Süre başladı! Hesaplamaları yap.</p>',''); }
+    function drawInitialState(){ drawGrid(); if(pointA && pointB){ drawPoint(pointA,'A','#ff00ff'); drawPoint(pointB,'B','#00ff00'); } }
+
+    let lowWarned=false;
+    function startTimer(){
+      clearInterval(timerInterval); timeLeft=LEVEL_TIME; timerDisplay.textContent=`Süre: ${timeLeft}`; timerDisplay.classList.remove('low-time');
+      lowWarned=false;
+      timerInterval=setInterval(()=>{
+        timeLeft--; timerDisplay.textContent=`Süre: ${timeLeft}`;
+        if(timeLeft<10 && !lowWarned){ timerDisplay.classList.add('low-time'); playSfx('timelow'); lowWarned=true; }
+        if(timeLeft<=0){
+          clearInterval(timerInterval);
+          setFeedback('<p>Süre bitti! Yeni göreve geçmek için butona tıkla.</p>','error');
+          [deltaXInput,deltaYInput,distanceInput].forEach(i=>i.disabled=true);
+          checkBtn.disabled=true; nextBtn.disabled=false; playSfx('wrong');
+          // Süre bittiğinde çözümü otomatik göster
+          showSolution();
+        }
+      },1000);
+    }
+
+    function generateProblem(){ let dx,dy; if(currentLevel===1){ const t=pythagoreanTriples[Math.floor(Math.random()*pythagoreanTriples.length)]; dx = Math.random()<0.5 ? t[0] : t[1]; dy = (dx===t[0]) ? t[1] : t[0]; } else { do { dx=Math.floor(Math.random()*10)+2; dy=Math.floor(Math.random()*10)+2; } while (Number.isInteger(Math.sqrt(dx*dx+dy*dy))); } const margin=5, safe=gridRange-margin; let x1,y1,x2,y2; do{ x1=Math.floor(Math.random()*(2*safe+1))-safe; y1=Math.floor(Math.random()*(2*safe+1))-safe; x2=x1 + (Math.random()<0.5?dx:-dx); y2=y1 + (Math.random()<0.5?dy:-dy);} while(Math.abs(x2)>safe || Math.abs(y2)>safe); pointA={x:x1,y:y1}; pointB={x:x2,y:y2}; answers={ deltaX:dx, deltaY:dy, distance: parseFloat(Math.sqrt(dx*dx+dy*dy).toFixed(2)) }; updateUI(); resetInputs(); drawInitialState(); }
+
+    function parseDistanceInput(s){ const str=s.trim().replace(',', '.'); if(str.startsWith('√')){ const n=parseFloat(str.substring(1)); return isNaN(n)?NaN:Math.sqrt(n);} return parseFloat(str); }
+
+    function checkAnswers(){
+      const ux=parseFloat(deltaXInput.value), uy=parseFloat(deltaYInput.value), ud=parseDistanceInput(distanceInput.value);
+      const legsOk=(ux===answers.deltaX && uy===answers.deltaY);
+      const hypOk=Math.abs(ud-answers.distance)<0.02;
+      if(legsOk && hypOk){
+        clearInterval(timerInterval);
+        const prev=score;
+        score += timeLeft;
+        updateUI();
+        [deltaXInput,deltaYInput,distanceInput].forEach(i=>i.disabled=true);
+        checkBtn.disabled=true;
+        setFeedback('<p>Doğru! Animasyon başlıyor...</p>','success');
+        playSfx('correct');
+        // Rozet kontrolü
+        unlockBadge('first');
+        if(timeLeft>=45) unlockBadge('speedy');
+        if(Number.isInteger(answers.distance)) unlockBadge('precise');
+        const leveled = (currentLevel===1 && prev<LEVEL_2_SCORE && score>=LEVEL_2_SCORE);
+        const completed = (score >= END_SCORE);
+        const after=()=>{
+          showSolution();
+          if(completed){
+            setTimeout(endGame, 1500);
+          } else if(leveled){
+            currentLevel=2;
+            updateUI();
+            // Çözüm ekranda kalsın, yeni görev butonu ile ilerle
+            nextBtn.disabled=false;
+            playSfx('levelup');
+          } else {
+            // Çözüm ekranda kalsın, yeni görev butonu ile ilerle
+            nextBtn.disabled=false;
+          }
+        };
+        playAnimation(after);
+      } else if(!legsOk){
+        setFeedback('<p>Ambulansın yollarında hata var, tekrar dene!</p>','error'); playSfx('wrong');
+      } else {
+        setFeedback('<p>İHA mesafesi hatalı, Pisagor\'u kontrol et!</p>','error'); playSfx('wrong');
+      }
+    }
+
+    function setFeedback(html,type){ feedbackArea.innerHTML=html; feedbackArea.className='feedback-area'; if(type) feedbackArea.classList.add(type); }
+
+  function playAnimation(done){
+      if(animationFrameId) cancelAnimationFrame(animationFrameId);
+      const start=toCanvasCoords(pointA), end=toCanvasCoords(pointB), corner=toCanvasCoords({x:pointB.x, y:pointA.y});
+      const droneAngle=Math.atan2(end.y-start.y, end.x-start.x);
+      const TAXI_TOTAL=2.6; // taksi daha geç ulaşsın
+      const DRONE_TOTAL=1.3; // drone daha erken bitsin
+      let t=0, prop=0;
+      startMoveSfx();
+      function anim(){
+        if(t>TAXI_TOTAL){ stopMoveSfx(); if(done) done(); return; }
+        drawGrid();
+  // Yollar (daha canlı ve neon)
+  ctx.save();
+  ctx.beginPath(); ctx.moveTo(start.x,start.y); ctx.lineTo(corner.x,start.y); ctx.lineTo(corner.x,end.y);
+  ctx.strokeStyle='rgba(255,0,255,0.8)'; ctx.lineWidth=3; ctx.setLineDash([5,5]); ctx.shadowColor='rgba(255,0,255,0.9)'; ctx.shadowBlur=8; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(start.x,start.y); ctx.lineTo(end.x,end.y);
+  ctx.strokeStyle='rgba(0,255,0,0.85)'; ctx.lineWidth=3; ctx.setLineDash([]); ctx.shadowColor='rgba(0,255,0,0.9)'; ctx.shadowBlur=8; ctx.stroke();
+  ctx.restore();
+        // Taksi hareketi (iki bacak, toplam süre TAXI_TOTAL)
+        const tTaxi=Math.min(1, t/TAXI_TOTAL);
+        let aAng,cx,cy;
+        if(tTaxi<=0.5){
+          const legP=tTaxi/0.5;
+          cx=start.x + (corner.x-start.x)*legP; cy=start.y; aAng=(corner.x>=start.x)?0:Math.PI;
+        } else {
+          const legP=(tTaxi-0.5)/0.5;
+          cx=corner.x; cy=corner.y + (end.y-corner.y)*legP; aAng=(end.y>=corner.y)?Math.PI/2:-Math.PI/2;
+        }
+        drawAmbulance(cx,cy,aAng);
+        // Drone hareketi (doğrusal, daha kısa süre)
+        const tDrone=Math.min(1, t/DRONE_TOTAL);
+        const dx=start.x + (end.x-start.x)*tDrone;
+        const dy=start.y + (end.y-start.y)*tDrone;
+        prop++; const pr=(prop%10<5)?4:5; drawDrone(dx,dy,droneAngle,pr);
+        // Noktalar
+        drawPoint(pointA,'A','#ff00ff'); drawPoint(pointB,'B','#00ff00');
+        t += 0.015;
+        animationFrameId=requestAnimationFrame(anim);
+      }
+      anim();
+    }
+    function drawAmbulance(x,y,a){ ctx.save(); ctx.translate(x,y); ctx.rotate(a); const w=25,h=12; ctx.fillStyle='#fff'; ctx.fillRect(-w/2,-h/2,w,h); ctx.fillStyle='#ff0000'; ctx.fillRect(-w/2+10,-h/2-3,5,3); ctx.fillStyle='#00ffff'; ctx.fillRect(-w/2+3,-h/2+2,w-12,5); ctx.fillStyle='#333'; ctx.beginPath(); ctx.arc(-w/4,h/2,4,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(w/4,h/2,4,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+    function drawDrone(x,y,angle,pr){ ctx.save(); ctx.translate(x,y); ctx.rotate(angle); const arm=15,off=10; ctx.strokeStyle='#ccc'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(-off,-off); ctx.lineTo(-arm,-arm); ctx.moveTo(off,-off); ctx.lineTo(arm,-arm); ctx.moveTo(-off,off); ctx.lineTo(-arm,arm); ctx.moveTo(off,off); ctx.lineTo(arm,arm); ctx.stroke(); ctx.fillStyle='#f0f0f0'; ctx.beginPath(); ctx.arc(0,0,8,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#333'; ctx.beginPath(); ctx.arc(0,0,4,0,Math.PI*2); ctx.fill(); ctx.fillStyle='rgba(0,255,255,1)'; ctx.beginPath(); ctx.arc(-arm,-arm,pr,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(arm,-arm,pr,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(-arm,arm,pr,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(arm,arm,pr,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+
+    function startNewQuestion(){
+      if(animationFrameId) cancelAnimationFrame(animationFrameId);
+      stopMoveSfx();
+      document.querySelectorAll('input').forEach(i=>i.disabled=false);
+      checkBtn.disabled=false; nextBtn.disabled=true;
+      setupCanvas();
+      generateProblem();
+      startTimer();
+    }
+
+    function showSolution(){
+      const {x:x1,y:y1}=pointA, {x:x2,y:y2}=pointB; const {deltaX,deltaY,distance}=answers; const d2=deltaX**2+deltaY**2; const sqrtv=Math.sqrt(d2);
+      const final = Number.isInteger(sqrtv)
+        ? `\\mathrm{d} = ${sqrtv}`
+        : `\\mathrm{d} = \\sqrt{${d2}} \\approx ${distance}`;
+      const html = `<div style="width:100%;text-align:left;padding:0 10px;"><strong>Çözüm Adımları:</strong>
+      $$\\mathrm{d} = \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
+      $$\\mathrm{d} = \\sqrt{(${x2} - (${x1}))^2 + (${y2} - (${y1}))^2}$$
+      $$\\mathrm{d} = \\sqrt{(${deltaX})^2 + (${deltaY})^2} = \\sqrt{${d2}}$$
+      $$${final} \\text{ km}$$
+      </div>`;
+      setFeedback(html,'success'); MathJax.typesetPromise([feedbackArea]);
+    }
+
+    function insertSqrtSymbol(){ const input=distanceInput; const pos=input.selectionStart; const val=input.value; input.value = val.substring(0,pos)+'√'+val.substring(pos); input.focus(); input.selectionStart = input.selectionEnd = pos+1; }
+
+    function endGame(){
+      // Bitiş özetini güncelle ve modalı göster
+      endSummary.innerHTML = `OYUN TAMAMLANDI!<br>Toplam Puan: <strong>${score}</strong><br><small>${END_SCORE}+ puan barajını geçtin.</small>`;
+      endModal.style.display = 'flex';
+      checkBtn.disabled = true;
+      unlockBadge('finale');
+      playSfx('finish');
+    }
+
+    function resetCoreState(){
+      // Zamanlayıcı ve animasyonu durdur
+      if(animationFrameId) cancelAnimationFrame(animationFrameId);
+      clearInterval(timerInterval);
+      stopMoveSfx();
+      // Temel state
+      pointA = undefined; pointB = undefined; answers = undefined;
+      score = 0; currentLevel = 1; timeLeft = LEVEL_TIME;
+      // UI
+      scoreEl.textContent = score;
+      timerDisplay.textContent = `Süre: ${timeLeft}`;
+      feedbackArea.className = 'feedback-area';
+      feedbackArea.innerHTML = '<p>Oyuna başlamak için butona tıkla.</p>';
+      [deltaXInput,deltaYInput,distanceInput].forEach(i=>{ i.value=''; i.disabled=false; });
+      checkBtn.disabled=false; nextBtn.disabled=true;
+      setupCanvas();
+      drawGrid();
+    }
+
+    function showStartMenu(){
+      endModal.style.display = 'none';
+      resetCoreState();
+      container.style.visibility = 'hidden';
+      startModal.style.display = 'flex';
+      playSfx('open');
+      startIntroAnimation();
+    }
+
+    function replayRun(){
+      endModal.style.display = 'none';
+      resetCoreState();
+      container.style.visibility = 'visible';
+      startNewQuestion();
+      playSfx('close');
+    }
+
+  window.addEventListener('resize', ()=>{ if(animationFrameId) cancelAnimationFrame(animationFrameId); stopMoveSfx(); setupCanvas(); drawInitialState(); });
+  startBtn.addEventListener('click', ()=>{ startModal.style.display='none'; container.style.visibility='visible'; renderBadges(); setBgmEnabled(getBgmEnabled()); stopIntroAnimation(); playSfx('close'); startNewQuestion(); });
+    checkBtn.addEventListener('click', checkAnswers);
+    sqrtBtn.addEventListener('click', insertSqrtSymbol);
+  nextBtn.addEventListener('click', startNewQuestion);
+  replayBtn.addEventListener('click', replayRun);
+    menuBtn.addEventListener('click', showStartMenu);
+    [startBtn, checkBtn, nextBtn, replayBtn, menuBtn, sqrtBtn].forEach(addClickSfx);
+
+    // Kısayol: R tuşu ile hızlı yeniden başlat (end modal açıkken)
+    document.addEventListener('keydown', (e)=>{
+      if(endModal.style.display !== 'none' && (e.key==='r' || e.key==='R')){
+        replayRun();
+      }
+    });
+
+    // Intro animasyonunu başlat
+    function resizeIntro(){ introCanvas.width=window.innerWidth; introCanvas.height=window.innerHeight; }
+    let introRAF=null; let drones=[]; let reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function spawnDrones(n=6){ drones=Array.from({length:n},()=>({x:Math.random()*introCanvas.width,y:Math.random()*introCanvas.height*0.6+introCanvas.height*0.2,a:Math.random()*Math.PI*2,s:0.4+Math.random()*0.8})); }
+    function drawIntro(){ introCtx.clearRect(0,0,introCanvas.width,introCanvas.height); introCtx.strokeStyle='rgba(255,255,255,0.15)'; introCtx.lineWidth=2; drones.forEach(d=>{ introCtx.save(); introCtx.translate(d.x,d.y); introCtx.rotate(d.a); const arm=12; introCtx.beginPath(); introCtx.moveTo(-arm,-arm); introCtx.lineTo(arm,arm); introCtx.moveTo(arm,-arm); introCtx.lineTo(-arm,arm); introCtx.stroke(); introCtx.restore(); d.x += d.s*1.2; d.y += Math.sin(d.x*0.01)*0.2; if(d.x>introCanvas.width+20) d.x=-20; }); introRAF=requestAnimationFrame(drawIntro); }
+    function startIntroAnimation(){ if(reduceMotion) return; resizeIntro(); spawnDrones(); cancelAnimationFrame(introRAF); drawIntro(); }
+    function stopIntroAnimation(){ cancelAnimationFrame(introRAF); introCtx.clearRect(0,0,introCanvas.width,introCanvas.height); }
+    window.addEventListener('resize', ()=>{ resizeIntro(); });
+
+    // Başlangıç durumları
+    setupCanvas();
+    renderBadges();
+    if(startModal.style.display!== 'none'){ playSfx('open'); setBgmEnabled(getBgmEnabled()); startIntroAnimation(); }
+  });
+  </script>
+</body>
+</html>
