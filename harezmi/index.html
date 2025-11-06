@@ -33,6 +33,12 @@
             min-height: 100vh; line-height: 1.6;
             overflow-x: hidden; overflow-y: auto;
         }
+        /* Düşük efekt modu: gölgeler ve parıltılar kapatılır */
+        .low-effects .container { backdrop-filter: none !important; box-shadow: none !important; }
+        .low-effects .canvas-column { box-shadow: none !important; }
+        .low-effects .info-column { box-shadow: none !important; }
+        .low-effects h1, .low-effects h2 { text-shadow: none !important; }
+        .low-effects .btn { box-shadow: none !important; }
         /* iOS/Safari'ye özgü performans iyileştirmeleri */
         @supports (-webkit-touch-callout: none) {
             .container { -webkit-backdrop-filter: none; backdrop-filter: none; }
@@ -50,7 +56,8 @@
             background: var(--panel-bg); border-radius: 20px; 
             box-shadow: 0 0 25px rgba(0, 245, 212, 0.2);
             margin: 20px; border: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
+            /* Arka plan bulanıklığı ağır olabilir; mobil ve low-effects modda kapatılır */
+            backdrop-filter: blur(6px);
         }
         
     .screen { padding: 40px 50px; text-align: center; background: transparent; }
@@ -70,11 +77,11 @@
         h1 {
             font-size: clamp(2.2rem, 4.5vw, 3rem); color: var(--neon-pink);
             /* Daha net görünüm için parıltıyı yumuşat */
-            text-shadow: 0 0 1px rgba(255,255,255,0.35), 0 0 4px rgba(249,0,255,0.35);
+            text-shadow: 0 0 1px rgba(255,255,255,0.25), 0 0 3px rgba(249,0,255,0.25);
         }
         h2 {
             font-size: clamp(1.6rem, 3.2vw, 2.2rem); color: var(--neon-cyan);
-            text-shadow: 0 0 2px rgba(255,255,255,0.7), 0 0 10px var(--neon-cyan);
+            text-shadow: 0 0 1px rgba(255,255,255,0.5), 0 0 6px rgba(0,245,212,0.5);
         }
         h3 { font-size: clamp(1.25rem, 2.6vw, 1.6rem); }
         p { font-size: clamp(1.05rem, 2.1vw, 1.2rem); max-width: 800px; margin: 0 auto 1.5rem; }
@@ -104,8 +111,8 @@
             box-shadow: 0 0 12px rgba(0, 245, 212, 0.2);
             overflow: hidden; padding: 8px;
         }
-        /* Canvas'ı ayrı bir kompozisyon katmanına al ve tam konteyneri kapla */
-        #geometry-canvas { display: block; width: 100%; height: 100%; will-change: transform; transform: translateZ(0); }
+    /* Canvas'ı ayrı bir kompozisyon katmanına al ve tam konteyneri kapla */
+    #geometry-canvas { display: block; width: 100%; height: 100%; will-change: transform; transform: translateZ(0); background: rgba(13, 2, 33, 0.7); }
         
         
         .info-column { 
@@ -163,12 +170,22 @@
             .mobile-navigation button { width: 100%; justify-content: center; }
             /* Mobil dik (portrait) ekranlar için tuvale ayrılan alanı daha kompakt tut */
             .canvas-column { min-height: clamp(260px, 40vh, 520px); }
+            /* Mobilde ağır görsel efektleri azalt */
+            .container { backdrop-filter: none; }
+            .canvas-column, .info-column { box-shadow: none; }
+            h1, h2 { text-shadow: none; }
             /* Mobilde sayfa kaydırıcısını daha görünür yap */
             html { scrollbar-width: auto; }
             body { -webkit-overflow-scrolling: touch; }
             body::-webkit-scrollbar { width: 16px; height: 16px; }
             body::-webkit-scrollbar-track { background: rgba(0,245,212,0.14); }
             body::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--neon-cyan), var(--neon-pink)); border: 2px solid rgba(13,2,33,0.95); }
+        }
+        /* Hareketi azalt tercihine saygı göster */
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.6s !important; transition-duration: 0.12s !important; }
+            .btn:hover:not(:disabled) { transform: none; }
+            .rotate-icon { animation: none; }
         }
         /* Küçük telefonlar (<=600px) için giriş bölümünü dikey akışa çevir ve görselleri ölçekle */
         @media (max-width: 600px) {
@@ -282,7 +299,26 @@
             const canvas = document.getElementById('geometry-canvas');
             const ctx = canvas.getContext('2d');
             let DPR = Math.max(1, window.devicePixelRatio || 1);
-            let lowEffects = false; // Safari'de sürükleme sırasında ağır efektleri kapat
+            // Erişilebilirlik ve iOS temelli düşük efekt modu
+            const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+            let prefersReduced = !!reduceMotionQuery && reduceMotionQuery.matches;
+            const isIOS = /iP(ad|hone|od)|Macintosh/.test(navigator.userAgent || '') && 'ontouchend' in document;
+            let lowEffects = false; // düşük efektler: gölgeler/dash kapalı
+            const baseLowEffects = isIOS || prefersReduced;
+            if (baseLowEffects) {
+                lowEffects = true;
+                document.documentElement.classList.add('low-effects');
+            }
+            if (reduceMotionQuery && reduceMotionQuery.addEventListener) {
+                reduceMotionQuery.addEventListener('change', (e) => {
+                    prefersReduced = e.matches;
+                    const enable = isIOS || prefersReduced;
+                    if (enable) document.documentElement.classList.add('low-effects');
+                    else document.documentElement.classList.remove('low-effects');
+                    lowEffects = enable;
+                    requestRender();
+                });
+            }
             let rafPending = false; // rAF ile çizimi sırala
             const stageTitle = document.getElementById('stage-title');
             const stageDescriptionContainer = document.getElementById('stage-description-container');
@@ -487,11 +523,21 @@
                 const cssW = Math.max(0, rect.width - 16);
                 const cssH = Math.max(0, rect.height - 16);
                 DPR = Math.max(1, window.devicePixelRatio || 1);
+                // iOS'ta çok yüksek DPR pahalı olabilir, 2x ile sınırla
+                if (isIOS) DPR = Math.min(DPR, 2);
                 canvas.style.width = cssW + 'px';
                 canvas.style.height = cssH + 'px';
                 canvas.width = Math.round(cssW * DPR);
                 canvas.height = Math.round(cssH * DPR);
                 ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+                // Arka tamponu da eşle
+                if (!backCanvas) {
+                    backCanvas = document.createElement('canvas');
+                    backCtx = backCanvas.getContext('2d');
+                }
+                backCanvas.width = canvas.width;
+                backCanvas.height = canvas.height;
+                backCtx.setTransform(DPR, 0, 0, DPR, 0, 0);
             }
             
             function drawDimensionLine(ctx, x1, y1, x2, y2, text, color, vertical = false) {
@@ -514,7 +560,7 @@
                 }
             }
 
-            function drawLabels() {
+            function drawLabels(targetCtx) {
                 const { unit, startX, startY } = computeLayoutUnits(canvas.clientWidth, canvas.clientHeight);
                 const mult = (variantConfig && variantConfig.mult) || 10;
                 const split = (variantConfig && variantConfig.split) || 5;
@@ -524,52 +570,75 @@
                     const x_square = shapes.find(s=>s.id === 'x_square');
                     const rectMult = shapes.find(s=>s.id === `${mult}x_rect`);
                     if (x_square) {
-                        drawDimensionLine(ctx, x_square.x, x_square.y - 20, x_square.x + xDim, x_square.y - 20, 'x', LIGHT_TEXT);
-                        drawDimensionLine(ctx, x_square.x - 20, x_square.y, x_square.x - 20, x_square.y + xDim, 'x', LIGHT_TEXT, true);
+                        drawDimensionLine(targetCtx, x_square.x, x_square.y - 20, x_square.x + xDim, x_square.y - 20, 'x', LIGHT_TEXT);
+                        drawDimensionLine(targetCtx, x_square.x - 20, x_square.y, x_square.x - 20, x_square.y + xDim, 'x', LIGHT_TEXT, true);
                     }
-                    if (rectMult) drawDimensionLine(ctx, rectMult.x - 20, rectMult.y, rectMult.x - 20, rectMult.y + multDim, String(mult), GREEN, true);
+                    if (rectMult) drawDimensionLine(targetCtx, rectMult.x - 20, rectMult.y, rectMult.x - 20, rectMult.y + multDim, String(mult), GREEN, true);
                 } else if (currentStage === 2 || currentStage === 3) {
-                    drawDimensionLine(ctx, startX, startY - 20, startX + xDim, startY - 20, 'x', LIGHT_TEXT);
-                    drawDimensionLine(ctx, startX + xDim, startY - 20, startX + xDim + splitDim, startY - 20, String(split), NEON_PINK);
-                    drawDimensionLine(ctx, startX - 20, startY, startX - 20, startY + xDim, 'x', LIGHT_TEXT, true);
+                    drawDimensionLine(targetCtx, startX, startY - 20, startX + xDim, startY - 20, 'x', LIGHT_TEXT);
+                    drawDimensionLine(targetCtx, startX + xDim, startY - 20, startX + xDim + splitDim, startY - 20, String(split), NEON_PINK);
+                    drawDimensionLine(targetCtx, startX - 20, startY, startX - 20, startY + xDim, 'x', LIGHT_TEXT, true);
                 } else if (currentStage === 4) {
-                    drawDimensionLine(ctx, startX, startY - 25, startX + xDim + splitDim, startY - 25, `x + ${split}`, NEON_CYAN);
-                    drawDimensionLine(ctx, startX - 25, startY, startX - 25, startY + xDim + splitDim, `x + ${split}`, NEON_CYAN, true);
+                    drawDimensionLine(targetCtx, startX, startY - 25, startX + xDim + splitDim, startY - 25, `x + ${split}`, NEON_CYAN);
+                    drawDimensionLine(targetCtx, startX - 25, startY, startX - 25, startY + xDim + splitDim, `x + ${split}`, NEON_CYAN, true);
                 }
             }
 
+            let backCanvas = null, backCtx = null;
             function render() {
-                // Tam temizleme (DPR uyumlu)
-                if (ctx.reset) { try { ctx.reset(); } catch(_) {} }
-                ctx.setTransform(1, 0, 0, 1, 0, 0);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+                // Back buffer'a çiz
+                if (!backCanvas || !backCtx) {
+                    backCanvas = document.createElement('canvas');
+                    backCtx = backCanvas.getContext('2d');
+                    backCanvas.width = canvas.width;
+                    backCanvas.height = canvas.height;
+                    backCtx.setTransform(DPR, 0, 0, DPR, 0, 0);
+                }
+                backCtx.setTransform(1, 0, 0, 1, 0, 0);
+                backCtx.clearRect(0, 0, backCanvas.width, backCanvas.height);
+                backCtx.setTransform(DPR, 0, 0, DPR, 0, 0);
                 shapes.forEach(s => { 
                     if (s.target && !s.isSnapped) {
                         const isHovering = draggedShape === s && (Math.abs(s.x-s.target.x)<20 && Math.abs(s.y-s.target.y)<20);
-                        ctx.strokeStyle = isHovering ? '#22c55e' : NEON_CYAN;
-                        ctx.lineWidth = 2;
-                        if (!lowEffects) ctx.setLineDash([6, 6]); else ctx.setLineDash([]);
-                        ctx.strokeRect(s.target.x, s.target.y, s.target.w, s.target.h);
-                        ctx.setLineDash([]);
+                        backCtx.strokeStyle = isHovering ? '#22c55e' : NEON_CYAN;
+                        backCtx.lineWidth = 2;
+                        if (!lowEffects) backCtx.setLineDash([6, 6]); else backCtx.setLineDash([]);
+                        backCtx.strokeRect(s.target.x, s.target.y, s.target.w, s.target.h);
+                        backCtx.setLineDash([]);
                     }
                 });
-                shapes.forEach(s => s.draw(ctx));
-                drawLabels();
+                shapes.forEach(s => s.draw(backCtx));
+                drawLabels(backCtx);
+                // Tek seferde ana kanvasa aktar
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                // Tüm kareyi atomik olarak KOPYALA; bir önceki frame ile karışmayı önler
+                const prevComp = ctx.globalCompositeOperation;
+                ctx.globalCompositeOperation = 'copy';
+                ctx.drawImage(backCanvas, 0, 0, backCanvas.width, backCanvas.height, 0, 0, canvas.width, canvas.height);
+                ctx.globalCompositeOperation = prevComp;
                 rafPending = false;
             }
 
             function requestRender() { if (!rafPending) { rafPending = true; requestAnimationFrame(render); } }
 
             // Bazen Safari'de tam temizleme gerekli olabilir; backing store'u sıfırlar
+            let lastHardClearTime = 0;
             function hardClear() {
+                const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+                if (now - lastHardClearTime < 120) return; // ani tekrarları engelle
+                lastHardClearTime = now;
                 // canvas.width'e aynı değeri atamak backing store'u resetler
                 const w = canvas.width; const h = canvas.height;
                 canvas.width = w; canvas.height = h;
                 ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+                if (backCanvas && backCtx) {
+                    backCanvas.width = w; backCanvas.height = h;
+                    backCtx.setTransform(DPR, 0, 0, DPR, 0, 0);
+                }
             }
 
-            function animate(updateFunc, duration) { let startTime = null; isAnimating = true; function step(timestamp) { if (!startTime) startTime = timestamp; const progress = Math.min((timestamp - startTime) / duration, 1); updateFunc(progress); render(); if (progress < 1) requestAnimationFrame(step); else isAnimating = false; } requestAnimationFrame(step); }
+            function effectiveDuration(ms) { return (prefersReduced ? Math.round(ms * 0.7) : ms); }
+            function animate(updateFunc, duration) { let startTime = null; isAnimating = true; const dur = effectiveDuration(duration); function step(timestamp) { if (!startTime) startTime = timestamp; const progress = Math.min((timestamp - startTime) / dur, 1); updateFunc(progress); render(); if (progress < 1) requestAnimationFrame(step); else isAnimating = false; } requestAnimationFrame(step); }
             
             function updateButtonStates(stage) {
                 [buttons.prev, buttons.prevDesktop].forEach(btn => btn.disabled = (stage === 1));
@@ -626,7 +695,7 @@
                         rectBottom.target = { x: startX, y: startY + xDim, w: xDim, h: splitDim };
                         shapes.sort((a, b) => (a.draggable ? 1 : -1));
                         render(); 
-                    }, 800);
+                    }, effectiveDuration(800));
                 } else if (stage === 3) {
                     const finalPiece = new Shape(safeSpawnX, safeSpawnY, splitDim, splitDim, RED, String(variantConfig.addSquare), `${variantConfig.addSquare}_square`);
                     finalPiece.draggable = true; finalPiece.target = { x: startX + xDim, y: startY + xDim, w: splitDim, h: splitDim };
@@ -656,11 +725,11 @@
                     }
                     // play success sound and continue
                     playSound('success');
-                    lowEffects = false;
-                    // Bazen animasyon sonrası Safari'de kalıntı olabilir; sert temizleme
-                    hardClear();
-                    setTimeout(() => { document.getElementById('success-message').style.display = 'none'; transitionToStage(currentStage + 1); }, 1500);
-                }, 300); 
+                    lowEffects = baseLowEffects;
+                    // Sert temizleme yerine yalnızca yeniden çizim planla; flicker riskini azaltır
+                    requestRender();
+                    setTimeout(() => { document.getElementById('success-message').style.display = 'none'; transitionToStage(currentStage + 1); }, effectiveDuration(1500));
+                }, effectiveDuration(300)); 
             }
             function getMousePos(e) { 
                 const rect = canvas.getBoundingClientRect(); 
@@ -671,7 +740,7 @@
             }
             function handleMouseDown(e) { if (isAnimating) return; e.preventDefault(); const { x, y } = getMousePos(e); for (let i = shapes.length - 1; i >= 0; i--) { if (shapes[i].draggable && shapes[i].contains(x, y)) { draggedShape = shapes[i]; dragOffsetX = x - draggedShape.x; dragOffsetY = y - draggedShape.y; lowEffects = true; requestRender(); return; } } }
             function handleMouseMove(e) { if (!draggedShape) return; e.preventDefault(); const { x, y } = getMousePos(e); draggedShape.x = x - dragOffsetX; draggedShape.y = y - dragOffsetY; const target = draggedShape.target; if (Math.abs(draggedShape.x - target.x) < 20 && Math.abs(draggedShape.y - target.y) < 20) snapShape(draggedShape); else requestRender(); }
-            function handleMouseUp(e) { if (!draggedShape) return; e.preventDefault(); draggedShape = null; lowEffects = false; requestRender(); }
+            function handleMouseUp(e) { if (!draggedShape) return; e.preventDefault(); draggedShape = null; lowEffects = baseLowEffects; requestRender(); }
 
             buttons.start.addEventListener('click', () => { showScreen('activity'); setupCanvas(); hardClear(); transitionToStage(1); playSound('start'); if (SOUNDS.bgm) { SOUNDS.bgm.play().catch(()=>{}); } updateMusicButtons(); });
             [buttons.next, buttons.nextDesktop].forEach(b => b.addEventListener('click', () => { if (!isAnimating) { playSound('next'); transitionToStage(currentStage === totalStages ? 1 : currentStage + 1); } }));
