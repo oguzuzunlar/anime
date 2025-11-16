@@ -175,6 +175,13 @@
   const replayBtn=document.getElementById('replay-btn');
   const menuBtn=document.getElementById('menu-btn');
 
+    const isMobileView = () => window.matchMedia ? window.matchMedia('(max-width: 900px)').matches : window.innerWidth <= 900;
+    function scrollCanvasIntoView(){
+      if(!isMobileView()) return;
+      const targetTop = canvas.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0) - 20;
+      window.scrollTo({ top: Math.max(targetTop, 0), behavior: 'smooth' });
+    }
+
     // State
   let pointA, pointB, answers, score=0, gridRange=15, unit; let currentLevel=1; const LEVEL_2_SCORE=150; const END_SCORE=300; const LEVEL_TIME=60; let timerInterval=null, timeLeft=LEVEL_TIME; let animationFrameId=null; let isAnimating=false;
   const pythagoreanTriples=[[3,4,5],[5,12,13],[8,15,17],[7,24,25]];
@@ -518,6 +525,7 @@
         checkBtn.disabled=true;
         setFeedback('<p>Doğru! Animasyon başlıyor...</p>','success');
         playSfx('correct');
+        scrollCanvasIntoView();
         // Rozet kontrolü
         unlockBadge('first');
         if(timeLeft>=45) unlockBadge('speedy');
