@@ -12,13 +12,13 @@
   <style>
     :root { --bg-color:#000812; --primary-neon:#00ffff; --secondary-neon:#ff00ff; --tertiary-neon:#00ff00; --text-color:#ffffff; --border-color:rgba(0,255,255,0.9); --error-color:#ff0033; }
     *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth}
-    body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #000812 0%, #0a1628 100%);color:var(--text-color);overflow:hidden;height:100vh;width:100vw;position:relative}
-    body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle at 20% 50%, rgba(0,255,255,0.05) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(255,0,255,0.05) 0%, transparent 50%);pointer-events:none;z-index:0}
+  body{font-family:'Roboto',sans-serif;background:linear-gradient(135deg, #001329 0%, #081f3d 100%);color:var(--text-color);overflow:auto;height:100vh;min-height:100vh;min-height:100dvh;width:100vw;position:relative}
+  body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:transparent;pointer-events:none;z-index:0}
     em,i{font-style:normal}
     .container{display:flex;width:100%;height:100vh;position:relative;z-index:1}
-    .canvas-container{width:70%;height:100vh;padding:20px;display:flex;justify-content:center;align-items:center;background:linear-gradient(to right, rgba(0,255,255,0.02) 0%, transparent 100%)}
-    canvas{background:radial-gradient(ellipse at center, rgba(0,20,40,0.9) 0%, rgba(0,5,15,0.95) 100%);border:3px solid var(--primary-neon);box-shadow:0 0 25px var(--primary-neon), inset 0 0 20px rgba(0,255,255,0.1);max-width:100%;max-height:100%;aspect-ratio:1/1}
-    .controls-container{width:30%;height:100%;background:linear-gradient(135deg, rgba(10,5,30,0.95) 0%, rgba(5,10,25,0.95) 100%);padding:30px;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;border-left:4px solid var(--primary-neon);box-shadow:-8px 0 25px rgba(0,255,255,0.15)}
+  .canvas-container{width:70%;height:100vh;padding:20px;display:flex;justify-content:center;align-items:center;background:transparent}
+  canvas{background:transparent;border:3px solid var(--primary-neon);box-shadow:0 0 20px rgba(0,255,255,0.3);max-width:100%;max-height:100%;aspect-ratio:1/1}
+  .controls-container{width:30%;height:100%;background:transparent;padding:30px;padding-bottom:80px;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;border-left:4px solid var(--primary-neon);box-shadow:none}
     header{text-align:center;margin-bottom:15px;font-family:'Orbitron',sans-serif}
     header h1{color:var(--primary-neon);text-shadow:0 0 15px var(--primary-neon);margin-bottom:5px;font-size:1.8rem;letter-spacing:2px}
     header h2{color:var(--secondary-neon);text-shadow:0 0 12px var(--secondary-neon);font-size:1.2rem;letter-spacing:1px}
@@ -26,11 +26,11 @@
     #level-display{color:var(--primary-neon);font-weight:bold;text-shadow:0 0 15px rgba(0,255,255,0.8);letter-spacing:1px}
     .timer{color:var(--tertiary-neon);font-weight:bold;transition:color .3s;text-shadow:0 0 12px var(--tertiary-neon);letter-spacing:1px}
     .timer.low-time{color:var(--error-color);text-shadow:0 0 12px var(--error-color)}
-    .mission-status{background:linear-gradient(135deg, rgba(0,255,255,0.08) 0%, rgba(0,255,255,0.04) 100%);padding:18px;border-radius:12px;margin-bottom:20px;border:2px solid var(--primary-neon);box-shadow:0 0 20px rgba(0,255,255,0.2), inset 0 0 10px rgba(0,255,255,0.08)}
+  .mission-status{background:transparent;padding:18px;border-radius:12px;margin-bottom:20px;border:2px solid var(--primary-neon);box-shadow:none}
     .points-display p{font-size:1.1rem;font-weight:bold;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;color:var(--primary-neon);text-shadow:0 0 10px rgba(0,255,255,0.6);letter-spacing:0.5px}
     .points-display span{color:var(--tertiary-neon);font-family:'Orbitron',sans-serif;text-shadow:0 0 10px var(--tertiary-neon);font-weight:bold}
     .score-display{font-size:1.3rem;font-weight:bold;color:var(--tertiary-neon);text-shadow:0 0 12px var(--tertiary-neon);text-align:right;margin-top:10px;letter-spacing:1px}
-    .task-group{background:linear-gradient(135deg, rgba(255,0,255,0.08) 0%, rgba(255,0,255,0.04) 100%);padding:22px;border-radius:12px;margin-bottom:20px;border:2px solid var(--secondary-neon);box-shadow:0 0 20px rgba(255,0,255,0.2), inset 0 0 10px rgba(255,0,255,0.08)}
+  .task-group{background:transparent;padding:22px;border-radius:12px;margin-bottom:20px;border:2px solid var(--secondary-neon);box-shadow:none}
     .task-group h3{font-family:'Orbitron',sans-serif;color:var(--secondary-neon);margin-bottom:16px;border-bottom:2px solid var(--secondary-neon);padding-bottom:12px;text-shadow:0 0 12px var(--secondary-neon);letter-spacing:1px}
     .input-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
     .input-row label{flex-basis:50%;font-size:.95rem;padding-right:10px;color:var(--primary-neon);text-shadow:0 0 10px rgba(0,255,255,0.6);font-weight:bold;letter-spacing:0.5px}
@@ -40,11 +40,13 @@
     input:disabled{background:rgba(50,50,50,0.5);cursor:not-allowed;opacity:0.6}
     .symbol-btn{background:linear-gradient(135deg, rgba(0,255,255,0.1) 0%, rgba(0,255,255,0.05) 100%);border:2px solid var(--primary-neon);color:var(--primary-neon);padding:0 12px;height:37px;margin-left:5px;border-radius:6px;cursor:pointer;font-size:1.5rem;font-weight:bold;line-height:1;transition:all .3s ease;flex-shrink:0;box-shadow:0 0 12px rgba(0,255,255,0.3);text-shadow:0 0 5px rgba(0,255,255,0.4)}
     .symbol-btn:hover{background:var(--primary-neon);color:var(--bg-color);box-shadow:0 0 20px var(--primary-neon);transform:scale(1.05)}
-    .feedback-area{padding:18px 16px;text-align:left;font-size:1rem;min-height:150px;border-radius:12px;margin:15px 0 20px;display:block;border:2px solid transparent;transition:all .3s ease;overflow:auto;background:linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(10,5,20,0.4) 100%);color:#ffffff;text-shadow:0 0 8px rgba(255,255,255,0.3)}
+  .feedback-area{padding:18px 16px;text-align:left;font-size:1rem;min-height:150px;border-radius:12px;margin:15px 0 20px;display:block;border:2px solid transparent;transition:all .3s ease;overflow:auto;background:transparent;color:#ffffff;text-shadow:0 0 8px rgba(255,255,255,0.2)}
     .feedback-area.success{color:var(--tertiary-neon);border-color:var(--tertiary-neon);box-shadow:0 0 20px var(--tertiary-neon), inset 0 0 10px rgba(0,255,0,0.08);text-shadow:0 0 8px var(--tertiary-neon);background:linear-gradient(135deg, rgba(0,50,0,0.3) 0%, rgba(0,30,0,0.3) 100%)}
     .feedback-area.error{color:var(--error-color);border-color:var(--error-color);box-shadow:0 0 20px var(--error-color), inset 0 0 10px rgba(255,0,51,0.08);text-shadow:0 0 8px var(--error-color);background:linear-gradient(135deg, rgba(50,0,0,0.3) 0%, rgba(30,0,0,0.3) 100%)}
     .feedback-area p{text-align:center;width:100%}
-    .feedback-area mjx-container{margin:0.4em 0;display:block;max-width:100%;overflow:hidden}
+    .feedback-area mjx-container{margin:0.4em 0;display:block;max-width:100%;overflow-x:auto;overflow-y:hidden;padding-bottom:4px}
+    .feedback-area mjx-container::-webkit-scrollbar{height:6px}
+    .feedback-area mjx-container::-webkit-scrollbar-thumb{background:rgba(0,255,255,0.4);border-radius:3px}
     .feedback-area mjx-container:first-child{margin-top:0.2em}
     .feedback-area mjx-container:last-child{margin-bottom:0.2em}
     .feedback-area mjx-mi{font-style:normal !important}
@@ -52,6 +54,10 @@
     mjx-container[jax="SVG"] svg{font-style: normal !important}
     mjx-container[jax="SVG"] [style*="font-style:italic"]{font-style: normal !important}
     mjx-container *{font-style: normal !important}
+    @media (max-width:768px){
+      .feedback-area mjx-container{font-size:0.9rem}
+      .feedback-area strong{font-size:1rem}
+    }
     .button-group{display:grid;grid-template-columns:1fr;gap:15px;margin-top:auto}
     button{padding:16px;border:2px solid;border-radius:8px;background:linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(10,5,20,0.3) 100%);color:var(--text-color);font-family:'Orbitron',sans-serif;font-size:1rem;cursor:pointer;transition:all .3s ease;text-transform:uppercase;text-shadow:0 0 8px rgba(255,255,255,0.3);letter-spacing:1px;font-weight:bold}
     button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,255,255,0.4)}
@@ -70,8 +76,8 @@
     @media (max-width:1200px){
       body{height:auto;width:100%;overflow:auto; -webkit-overflow-scrolling:touch}
       .container{flex-direction:column;height:auto;overflow:visible}
-      .canvas-container{width:100%;height:60vh;padding:10px}
-      .controls-container{width:100%;height:auto;border-left:none;border-top:3px solid var(--primary-neon)}
+  .canvas-container{width:100%;height:60vh;padding:10px}
+  .controls-container{width:100%;height:auto;border-left:none;border-top:3px solid var(--primary-neon);padding-bottom:120px}
     }
     @media (max-width:768px){
       header h1{font-size:clamp(1rem, 4vw, 1.5rem)}
@@ -92,7 +98,7 @@
       <p>
   Şehirde orta şiddetli bir deprem oldu; elektrikler kesildi ve acil yardım çağrıları artıyor. <strong>A</strong> noktasındaki Afet Koordinasyon Merkezinden çıkan
         <strong>Ambulans</strong> caddeleri yanlızca yatay ve dikey olarak takip ederek ilerlerken,
-        <strong>İHA</strong> ise gökyüzünden <strong>B</strong> noktasına en kısa doğrusal hat üzerinden uçar.
+        <strong>İHA</strong> ise gökyüzünden <strong>B</strong> noktasına en kısa doğrusal hat üzerinden uçuyor.
       </p>
       <p>
         Görevin, her turda A ve B arasında:
@@ -149,8 +155,14 @@
     const container=document.querySelector('.container');
     const startModal=document.getElementById('start-modal');
     const startBtn=document.getElementById('start-btn');
-    const canvas=document.getElementById('gameCanvas'); const ctx=canvas.getContext('2d');
-    const introCanvas=document.getElementById('intro-canvas'); const introCtx=introCanvas.getContext('2d');
+    const canvas=document.getElementById('gameCanvas');
+    const ctx=canvas?canvas.getContext('2d'):null;
+    const introCanvas=document.getElementById('intro-canvas');
+    const introCtx=introCanvas?introCanvas.getContext('2d'):null;
+    if(!canvas || !ctx || !introCanvas || !introCtx){
+      console.error('Canvas API is not available on this platform.');
+      return;
+    }
     const levelDisplay=document.getElementById('level-display'); const timerDisplay=document.getElementById('timer-display');
     const pointsDisplay=document.getElementById('points-display'); const scoreEl=document.getElementById('score');
     const deltaXInput=document.getElementById('deltaX'); const deltaYInput=document.getElementById('deltaY'); const distanceInput=document.getElementById('distance'); const sqrtBtn=document.getElementById('sqrt-btn');
@@ -164,42 +176,110 @@
   const menuBtn=document.getElementById('menu-btn');
 
     // State
-  let pointA, pointB, answers, score=0, gridRange=15, unit; let currentLevel=1; const LEVEL_2_SCORE=150; const END_SCORE=300; const LEVEL_TIME=60; let timerInterval=null, timeLeft=LEVEL_TIME; let animationFrameId=null;
+  let pointA, pointB, answers, score=0, gridRange=15, unit; let currentLevel=1; const LEVEL_2_SCORE=150; const END_SCORE=300; const LEVEL_TIME=60; let timerInterval=null, timeLeft=LEVEL_TIME; let animationFrameId=null; let isAnimating=false;
   const pythagoreanTriples=[[3,4,5],[5,12,13],[8,15,17],[7,24,25]];
 
     // -------- Ses Efektleri (dosyadan) + Arkaplan Müzik --------
-    const sfxMap = {
-      correct: new Audio('correct.mp3'),
-      wrong: new Audio('wrong.mp3'),
-      levelup: new Audio('levelup.mp3'),
-      finish: new Audio('finish.mp3'),
-      timelow: new Audio('timelow.mp3'),
-      open: new Audio('open.mp3'),
-      close: new Audio('close.mp3'),
-      click: new Audio('click.mp3')
+    const audioSupported = typeof Audio !== 'undefined';
+    const createSilentAudio = () => {
+      let time = 0;
+      return {
+        loop:false,
+        preload:'none',
+        volume:0,
+        play:()=>Promise.resolve(),
+        pause:()=>{},
+        cloneNode:()=>createSilentAudio(),
+        get currentTime(){ return time; },
+        set currentTime(v){ time = v; },
+        get paused(){ return true; }
+      };
     };
-    Object.values(sfxMap).forEach(a=>{ a.preload='auto'; a.volume=0.6; });
-    function playSfx(name){ const a=sfxMap[name]; if(!a) return; const c=a.cloneNode(true); c.volume=a.volume; c.play().catch(()=>{}); }
+    const createAudio = (src, { volume = 1, loop = false, preload = 'auto' } = {}) => {
+      if(!audioSupported) return createSilentAudio();
+      const audio = new Audio(src);
+      audio.volume = volume;
+      audio.loop = loop;
+      audio.preload = preload;
+      return audio;
+    };
+    const sfxMap = {
+      correct: createAudio('correct.mp3', { volume: 0.6 }),
+      wrong: createAudio('wrong.mp3', { volume: 0.6 }),
+      levelup: createAudio('levelup.mp3', { volume: 0.6 }),
+      finish: createAudio('finish.mp3', { volume: 0.6 }),
+      timelow: createAudio('timelow.mp3', { volume: 0.6 }),
+      open: createAudio('open.mp3', { volume: 0.6 }),
+      close: createAudio('close.mp3', { volume: 0.6 }),
+      click: createAudio('click.mp3', { volume: 0.6 })
+    };
+    function playSfx(name){
+      const base=sfxMap[name];
+      if(!base) return;
+      const instance = audioSupported ? base.cloneNode(true) : base.cloneNode();
+      if(audioSupported){ instance.volume = base.volume; }
+      instance.play?.().catch(()=>{});
+    }
     function addClickSfx(btn){ if(!btn) return; btn.addEventListener('click', ()=>playSfx('click')); }
 
-  const backgroundMusic = new Audio('arkaplan.mp3');
-    backgroundMusic.loop = true; backgroundMusic.preload = 'auto'; backgroundMusic.volume = 0.35;
+    const backgroundMusic = createAudio('arkaplan.mp3', { volume: 0.35, loop: true });
     const LS_KEY = 'ambulansGame-bgm';
-    function setBgmEnabled(on){ try{ localStorage.setItem(LS_KEY, on? '1':'0'); }catch{}; if(on){ backgroundMusic.play().catch(()=>{}); bgMusicBtn.textContent='Müzik: Açık'; } else { backgroundMusic.pause(); bgMusicBtn.textContent='Müzik: Kapalı'; } }
-    function getBgmEnabled(){ try{ const v=localStorage.getItem(LS_KEY); return v===null? true : v==='1'; }catch{ return true; } }
-    bgMusicBtn.addEventListener('click', ()=> setBgmEnabled(backgroundMusic.paused));
-    addClickSfx(bgMusicBtn);
+    function setBgmEnabled(on){
+      if(!audioSupported) return;
+      try{ localStorage.setItem(LS_KEY, on? '1':'0'); }catch{}
+      if(on){
+        backgroundMusic.play().catch(()=>{});
+        bgMusicBtn.textContent='Müzik: Açık';
+      } else {
+        backgroundMusic.pause();
+        bgMusicBtn.textContent='Müzik: Kapalı';
+      }
+    }
+    function getBgmEnabled(){ if(!audioSupported) return false; try{ const v=localStorage.getItem(LS_KEY); return v===null? true : v==='1'; }catch{ return true; } }
+    if(bgMusicBtn){
+      if(!audioSupported){
+        bgMusicBtn.disabled = true;
+        bgMusicBtn.textContent = 'Müzik: Desteklenmiyor';
+      } else {
+        bgMusicBtn.addEventListener('click', ()=> setBgmEnabled(backgroundMusic.paused));
+      }
+      addClickSfx(bgMusicBtn);
+    }
 
     // Hareket SFX'leri (animasyon boyunca çalan)
-    const ambulanceMove = new Audio('ambulance.mp3');
-    ambulanceMove.loop = true; ambulanceMove.preload = 'auto'; ambulanceMove.volume = 0.35;
-    const droneMove = new Audio('drone.mp3');
-    droneMove.loop = true; droneMove.preload = 'auto'; droneMove.volume = 0.30;
+    const ambulanceMove = createAudio('ambulance.mp3', { volume: 0.35, loop: true });
+    const droneMove = createAudio('drone.mp3', { volume: 0.30, loop: true });
     function startMoveSfx(){
+      if(!audioSupported) return;
       try{ ambulanceMove.currentTime = 0; ambulanceMove.play().catch(()=>{}); }catch{}
       try{ droneMove.currentTime = 0; droneMove.play().catch(()=>{}); }catch{}
     }
-    function stopMoveSfx(){ [ambulanceMove, droneMove].forEach(a=>{ try{ a.pause(); a.currentTime = 0; }catch{} }); }
+    function stopMoveSfx(){
+      if(!audioSupported) return;
+      [ambulanceMove, droneMove].forEach(a=>{ try{ a.pause(); a.currentTime = 0; }catch{} });
+    }
+
+    const motionQuery = typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    let reduceMotion = motionQuery ? motionQuery.matches : false;
+    const onMotionPreferenceChange = evt => {
+      reduceMotion = evt.matches;
+      if(reduceMotion){
+        stopMoveSfx();
+        stopIntroAnimation();
+        if(animationFrameId) cancelAnimationFrame(animationFrameId);
+        isAnimating=false;
+        if(unit){
+          drawInitialState();
+        }
+      }
+    };
+    if(motionQuery){
+      if(typeof motionQuery.addEventListener === 'function'){
+        motionQuery.addEventListener('change', onMotionPreferenceChange);
+      } else if(typeof motionQuery.addListener === 'function'){
+        motionQuery.addListener(onMotionPreferenceChange);
+      }
+    }
 
     // -------- Rozetler --------
     const achievements = {
@@ -222,7 +302,15 @@
     function unlockBadge(key){ if(!achievements[key].unlocked){ achievements[key].unlocked=true; renderBadges(); }}
 
   // Canvas helpers
-  function setupCanvas(){ const cont=document.querySelector('.canvas-container'); const size=Math.min(cont.clientWidth, cont.clientHeight); canvas.width=size; canvas.height=size; unit=canvas.width/(gridRange*2); drawGrid(); }
+  function setupCanvas(){
+      const cont=document.querySelector('.canvas-container');
+      if(!cont) return;
+      const size=Math.min(cont.clientWidth, cont.clientHeight);
+      canvas.width=size;
+      canvas.height=size;
+      unit=canvas.width/(gridRange*2);
+      drawGrid();
+    }
     function toCanvasCoords(p){ return { x: canvas.width/2 + p.x*unit, y: canvas.height/2 - p.y*unit }; }
   function drawGrid(){
       ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -255,26 +343,42 @@
       }
       ctx.font=`bold ${Math.max(12,unit)}px Orbitron`;
       ctx.fillText('O', canvas.width/2-15, canvas.height/2+15);
+      ctx.font=`bold ${Math.max(14,unit*1.2)}px Orbitron`;
+      ctx.fillText('x', canvas.width-20, canvas.height/2-20);
+      ctx.fillText('y', canvas.width/2+20, 20);
       // Gölgeyi kapat
       ctx.shadowBlur=0; ctx.shadowColor='transparent';
     }
-  function drawPoint(p,label,color){ 
-    const {x,y}=toCanvasCoords(p); 
-    ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); 
-    ctx.fillStyle=color; ctx.fill(); 
-    ctx.fillStyle='#ffffff'; 
-    ctx.font=`bold ${Math.max(12,unit)}px Orbitron`; 
-    
-    // Etiketin konumunu basit şekilde ayarla
+  function drawPoint(p,label,color){
+    const {x,y}=toCanvasCoords(p);
+    ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2);
+    ctx.fillStyle=color; ctx.fill();
+    ctx.fillStyle='#ffffff';
+    const fontSize=Math.max(12,unit);
+    ctx.font=`bold ${fontSize}px Orbitron`;
     const labelText = `${label}(${p.x}, ${p.y})`;
-    let offsetX = 0, offsetY = -25;
-    
-    // Canvas kenarlarına yakın olup olmadığını kontrol et (basit)
-    if(x > canvas.width - 80) offsetX = -80;
-    if(x < 80) offsetX = 0;
-    if(y < 40) offsetY = 35;
-    
-    ctx.fillText(labelText, x + offsetX, y + offsetY); 
+    const metrics = ctx.measureText(labelText);
+    const textWidth = metrics.width;
+    const textHeight = fontSize;
+    const margin = 8;
+    let targetX = x;
+    let targetY = y - 18;
+    if(targetY - textHeight < margin){
+      targetY = y + textHeight + margin/2;
+    }
+    if(targetX - textWidth/2 < margin){
+      targetX = margin + textWidth/2;
+    }
+    if(targetX + textWidth/2 > canvas.width - margin){
+      targetX = canvas.width - margin - textWidth/2;
+    }
+    const prevAlign=ctx.textAlign;
+    const prevBaseline=ctx.textBaseline;
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(labelText, targetX, targetY);
+    ctx.textAlign=prevAlign;
+    ctx.textBaseline=prevBaseline;
   }
 
     function updateUI(){
@@ -305,9 +409,101 @@
       },1000);
     }
 
-    function generateProblem(){ let dx,dy; if(currentLevel===1){ const t=pythagoreanTriples[Math.floor(Math.random()*pythagoreanTriples.length)]; dx = Math.random()<0.5 ? t[0] : t[1]; dy = (dx===t[0]) ? t[1] : t[0]; } else { do { dx=Math.floor(Math.random()*10)+2; dy=Math.floor(Math.random()*10)+2; } while (Number.isInteger(Math.sqrt(dx*dx+dy*dy))); } const margin=5, safe=gridRange-margin; let x1,y1,x2,y2; do{ x1=Math.floor(Math.random()*(2*safe+1))-safe; y1=Math.floor(Math.random()*(2*safe+1))-safe; x2=x1 + (Math.random()<0.5?dx:-dx); y2=y1 + (Math.random()<0.5?dy:-dy);} while(Math.abs(x2)>safe || Math.abs(y2)>safe); pointA={x:x1,y:y1}; pointB={x:x2,y:y2}; answers={ deltaX:dx, deltaY:dy, distance: parseFloat(Math.sqrt(dx*dx+dy*dy).toFixed(2)) }; updateUI(); resetInputs(); drawInitialState(); }
+    function generateProblem(){
+      const safe=gridRange;
+      let dx,dy;
+      const safeMargin = Math.max(1, Math.round(gridRange*0.1));
+      const effectiveSafe = safe - safeMargin;
+      if(currentLevel===1){
+        const candidates=[];
+        pythagoreanTriples.forEach(([a,b])=>{
+          const maxMultiplier=Math.max(1, Math.floor(effectiveSafe/Math.max(a,b)));
+          for(let m=1;m<=maxMultiplier;m++){
+            const mx=a*m;
+            const my=b*m;
+            if(mx<=effectiveSafe && my<=effectiveSafe){
+              candidates.push([mx,my]);
+            }
+          }
+        });
+        const choice = candidates.length ? candidates[Math.floor(Math.random()*candidates.length)] : [3,4];
+        const swap=Math.random()<0.5;
+        dx = swap ? choice[0] : choice[1];
+        dy = swap ? choice[1] : choice[0];
+      } else {
+        do {
+          dx=Math.floor(Math.random()*10)+2;
+          dy=Math.floor(Math.random()*10)+2;
+        } while (Number.isInteger(Math.sqrt(dx*dx+dy*dy)) || Math.max(dx,dy)>safe);
+      }
+      const pickInt=(min,max)=>{
+        const low=Math.ceil(min);
+        const high=Math.floor(max);
+        if(low>high) return null;
+        return Math.floor(Math.random()*(high-low+1))+low;
+      };
+      let attempts=0; let x1,x2,y1,y2;
+      const signs=[Math.random()<0.5?1:-1, Math.random()<0.5?1:-1];
+      do {
+        const dxSign=signs[0];
+        const dySign=signs[1];
+        const xMin = dxSign===1 ? -effectiveSafe : -effectiveSafe+dx;
+        const xMax = dxSign===1 ? effectiveSafe-dx : effectiveSafe;
+        const yMin = dySign===1 ? -effectiveSafe : -effectiveSafe+dy;
+        const yMax = dySign===1 ? effectiveSafe-dy : effectiveSafe;
+        x1 = pickInt(xMin, xMax);
+        y1 = pickInt(yMin, yMax);
+        if(x1===null || y1===null){
+          attempts=501; break;
+        }
+        x2 = x1 + dxSign*dx;
+        y2 = y1 + dySign*dy;
+        attempts++;
+        if(attempts>500){
+          x1=0; y1=0; x2=dxSign*dx; y2=dySign*dy; break;
+        }
+      } while(Math.abs(x2)>safe || Math.abs(y2)>safe);
+      pointA={x:x1,y:y1};
+      pointB={x:x2,y:y2};
+      answers={ deltaX:Math.abs(dx), deltaY:Math.abs(dy), distance: parseFloat(Math.sqrt(dx*dx+dy*dy).toFixed(2)) };
+      updateUI();
+      resetInputs();
+      drawInitialState();
+    }
 
-    function parseDistanceInput(s){ const str=s.trim().replace(',', '.'); if(str.startsWith('√')){ const n=parseFloat(str.substring(1)); return isNaN(n)?NaN:Math.sqrt(n);} return parseFloat(str); }
+    function parseDistanceInput(raw){
+      if(!raw && raw!==0) return NaN;
+      const normalized = raw.toString()
+        .trim()
+        .replace(',', '.')
+        .replace(/\s+/g,'')
+        .replace(/karekök/gi,'√')
+        .replace(/sqrt/gi,'√');
+      if(!normalized) return NaN;
+      const numeric = Number(normalized);
+      if(!Number.isNaN(numeric)) return numeric;
+      const parseRadicand = segment => {
+        if(segment.startsWith('(') && segment.endsWith(')')){
+          segment = segment.slice(1,-1);
+        }
+        const val = Number(segment);
+        return Number.isNaN(val) ? NaN : val;
+      };
+      if(normalized.startsWith('√')){
+        const rad = parseRadicand(normalized.slice(1));
+        return Number.isNaN(rad) ? NaN : Math.sqrt(rad);
+      }
+      const rootIndex = normalized.indexOf('√');
+      if(rootIndex> -1){
+        const coeffPart = normalized.slice(0, rootIndex) || '1';
+        const radPart = normalized.slice(rootIndex+1);
+        const coeff = Number(coeffPart);
+        const rad = parseRadicand(radPart);
+        if(Number.isNaN(coeff) || Number.isNaN(rad)) return NaN;
+        return coeff*Math.sqrt(rad);
+      }
+      return Number(normalized);
+    }
 
     function checkAnswers(){
       const ux=parseFloat(deltaXInput.value), uy=parseFloat(deltaYInput.value), ud=parseDistanceInput(distanceInput.value);
@@ -354,15 +550,21 @@
     function setFeedback(html,type){ feedbackArea.innerHTML=html; feedbackArea.className='feedback-area'; if(type) feedbackArea.classList.add(type); }
 
   function playAnimation(done){
+      if(reduceMotion){
+        drawInitialState();
+        if(done) done();
+        return;
+      }
       if(animationFrameId) cancelAnimationFrame(animationFrameId);
+      isAnimating = true;
       const start=toCanvasCoords(pointA), end=toCanvasCoords(pointB), corner=toCanvasCoords({x:pointB.x, y:pointA.y});
       const droneAngle=Math.atan2(end.y-start.y, end.x-start.x);
-      const TAXI_TOTAL=2.6; // taksi daha geç ulaşsın
-      const DRONE_TOTAL=1.3; // drone daha erken bitsin
+  const TAXI_TOTAL=4.0; // taksi daha geç ulaşsın
+  const DRONE_TOTAL=2.0; // drone daha erken bitsin
       let t=0, prop=0;
       startMoveSfx();
       function anim(){
-        if(t>TAXI_TOTAL){ stopMoveSfx(); if(done) done(); return; }
+        if(t>TAXI_TOTAL){ stopMoveSfx(); isAnimating=false; if(done) done(); return; }
         drawGrid();
   // Yollar (daha canlı ve neon)
   ctx.save();
@@ -389,7 +591,7 @@
         prop++; const pr=(prop%10<5)?4:5; drawDrone(dx,dy,droneAngle,pr);
         // Noktalar
         drawPoint(pointA,'A','#ff00ff'); drawPoint(pointB,'B','#00ff00');
-        t += 0.015;
+  t += 0.005;
         animationFrameId=requestAnimationFrame(anim);
       }
       anim();
@@ -418,10 +620,25 @@
       $$\\mathrm{d} = \\sqrt{(${deltaX})^2 + (${deltaY})^2} = \\sqrt{${d2}}$$
       $$${final} \\text{ km}$$
       </div>`;
-      setFeedback(html,'success'); MathJax.typesetPromise([feedbackArea]);
+      setFeedback(html,'success');
+      if(window.MathJax && typeof MathJax.typesetPromise === 'function'){
+        MathJax.typesetPromise([feedbackArea]).catch(()=>{});
+      }
     }
 
-    function insertSqrtSymbol(){ const input=distanceInput; const pos=input.selectionStart; const val=input.value; input.value = val.substring(0,pos)+'√'+val.substring(pos); input.focus(); input.selectionStart = input.selectionEnd = pos+1; }
+    function insertSqrtSymbol(){
+      const input=distanceInput;
+      const currentVal=input.value;
+      const pos=typeof input.selectionStart === 'number' ? input.selectionStart : currentVal.length;
+      input.value = currentVal.substring(0,pos)+'√'+currentVal.substring(pos);
+      input.focus();
+      const caretPos=Math.min(input.value.length, pos+1);
+      if(typeof input.setSelectionRange === 'function'){
+        input.setSelectionRange(caretPos, caretPos);
+      } else {
+        input.selectionStart = input.selectionEnd = caretPos;
+      }
+    }
 
     function endGame(){
       // Bitiş özetini güncelle ve modalı göster
@@ -468,8 +685,16 @@
       playSfx('close');
     }
 
-  window.addEventListener('resize', ()=>{ if(animationFrameId) cancelAnimationFrame(animationFrameId); stopMoveSfx(); setupCanvas(); drawInitialState(); });
-  startBtn.addEventListener('click', ()=>{ startModal.style.display='none'; container.style.visibility='visible'; renderBadges(); setBgmEnabled(getBgmEnabled()); stopIntroAnimation(); playSfx('close'); startNewQuestion(); });
+  // Ekran boyutu değiştiğinde: devam eden animasyonu iptal ETME (mobilde klavye kapanınca oluşan resize animasyonu öldürmesin)
+  window.addEventListener('resize', ()=>{
+    setupCanvas();
+    if(!isAnimating){
+      if(animationFrameId) cancelAnimationFrame(animationFrameId);
+      stopMoveSfx();
+      drawInitialState();
+    }
+  });
+  startBtn.addEventListener('click', ()=>{ startModal.style.display='none'; container.style.visibility='visible'; renderBadges(); if(audioSupported){ setBgmEnabled(getBgmEnabled()); } stopIntroAnimation(); playSfx('close'); startNewQuestion(); });
     checkBtn.addEventListener('click', checkAnswers);
     sqrtBtn.addEventListener('click', insertSqrtSymbol);
   nextBtn.addEventListener('click', startNewQuestion);
@@ -485,8 +710,8 @@
     });
 
     // Intro animasyonunu başlat
-    function resizeIntro(){ introCanvas.width=window.innerWidth; introCanvas.height=window.innerHeight; }
-    let introRAF=null; let drones=[]; let reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function resizeIntro(){ introCanvas.width=window.innerWidth; introCanvas.height=window.innerHeight; }
+  let introRAF=null; let drones=[];
     function spawnDrones(n=6){ drones=Array.from({length:n},()=>({x:Math.random()*introCanvas.width,y:Math.random()*introCanvas.height*0.6+introCanvas.height*0.2,a:Math.random()*Math.PI*2,s:0.4+Math.random()*0.8})); }
     function drawIntro(){ introCtx.clearRect(0,0,introCanvas.width,introCanvas.height); introCtx.strokeStyle='rgba(255,255,255,0.15)'; introCtx.lineWidth=2; drones.forEach(d=>{ introCtx.save(); introCtx.translate(d.x,d.y); introCtx.rotate(d.a); const arm=12; introCtx.beginPath(); introCtx.moveTo(-arm,-arm); introCtx.lineTo(arm,arm); introCtx.moveTo(arm,-arm); introCtx.lineTo(-arm,arm); introCtx.stroke(); introCtx.restore(); d.x += d.s*1.2; d.y += Math.sin(d.x*0.01)*0.2; if(d.x>introCanvas.width+20) d.x=-20; }); introRAF=requestAnimationFrame(drawIntro); }
     function startIntroAnimation(){ if(reduceMotion) return; resizeIntro(); spawnDrones(); cancelAnimationFrame(introRAF); drawIntro(); }
@@ -496,7 +721,7 @@
     // Başlangıç durumları
     setupCanvas();
     renderBadges();
-    if(startModal.style.display!== 'none'){ playSfx('open'); setBgmEnabled(getBgmEnabled()); startIntroAnimation(); }
+  if(startModal.style.display!== 'none'){ playSfx('open'); if(audioSupported){ setBgmEnabled(getBgmEnabled()); } startIntroAnimation(); }
   });
   </script>
 </body>
