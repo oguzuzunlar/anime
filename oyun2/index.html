@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>İHA İkmal Operasyonu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet" />
+  <script>
+    MathJax = { tex: { inlineMath: [["$","$"],["\\(","\\)"]] }, svg: { fontCache: 'global', scale: 0.92 } };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root { --bg-color:#0d0221; --primary-neon:#00f6ff; --secondary-neon:#ff00c1; --tertiary-neon:#a1ff0a; --text-color:#f0f0f0; --border-color:rgba(0,246,255,0.4); --error-color:#ff3333; }
+    *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth}
+  body{font-family:'Roboto',sans-serif;background:var(--bg-color);color:var(--text-color);overflow:hidden;height:100vh;width:100vw}
+    .container{display:flex;width:100%;height:100%}
+    .canvas-container{width:70%;height:100%;padding:20px;display:flex;justify-content:center;align-items:center}
+  canvas{background:#1a1a2e;border:2px solid var(--primary-neon);box-shadow:0 0 15px var(--primary-neon);max-width:100%;max-height:100%;aspect-ratio:1/1}
+    .controls-container{width:30%;height:100%;background:#161b33;padding:30px;display:flex;flex-direction:column;overflow-y:auto;border-left:2px solid var(--border-color)}
+    header{text-align:center;margin-bottom:15px;font-family:'Orbitron',sans-serif}
+    header h1{color:var(--primary-neon);text-shadow:0 0 10px var(--primary-neon);margin-bottom:5px}
+    header h2{color:var(--secondary-neon);text-shadow:0 0 8px var(--secondary-neon);font-size:1.2rem}
+    .game-info{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;background:rgba(0,0,0,0.3);padding:10px 15px;border-radius:8px;margin-bottom:15px;border:1px solid var(--border-color);font-family:'Orbitron',sans-serif;font-size:1.1rem;row-gap:8px}
+    .game-info #timer-display{min-width:140px;text-align:right;flex:1 0 auto}
+    .timer{color:var(--tertiary-neon);font-weight:bold;transition:color .5s}
+    .timer.low-time{color:var(--error-color)}
+    .mission-status{background:rgba(0,0,0,0.2);padding:15px;border-radius:8px;margin-bottom:20px;border:1px solid var(--border-color)}
+    .points-display p{font-size:1.1rem;font-weight:bold;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+    .points-display span{color:var(--tertiary-neon);font-family:'Orbitron',sans-serif}
+    .score-display{font-size:1.2rem;font-weight:bold;color:var(--tertiary-neon);text-shadow:0 0 8px var(--tertiary-neon);text-align:right;margin-top:10px}
+    .task-group{background:rgba(0,0,0,0.2);padding:20px;border-radius:8px;margin-bottom:20px;border:1px solid var(--border-color)}
+    .task-group h3{font-family:'Orbitron',sans-serif;color:var(--secondary-neon);margin-bottom:15px;border-bottom:1px solid var(--secondary-neon);padding-bottom:10px}
+    .input-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .input-row label{flex-basis:50%;font-size:.95rem;padding-right:10px}
+    .input-wrapper{display:flex;flex-basis:50%;align-items:center}
+    input[type=number]{width:100%;background:#0d0221;border:1px solid var(--primary-neon);color:var(--tertiary-neon);padding:8px;border-radius:4px;font-size:1rem;text-align:center;transition:all .3s ease}
+    input:disabled{background:#333;cursor:not-allowed}
+    .feedback-area{padding:10px;text-align:left;font-size:1rem;min-height:150px;border-radius:5px;margin:10px 0;display:flex;justify-content:center;align-items:center;border:1px solid transparent;transition:all .3s ease}
+    .feedback-area.success{color:var(--tertiary-neon);border-color:var(--tertiary-neon);box-shadow:0 0 10px var(--tertiary-neon)}
+    .feedback-area.error{color:var(--error-color);border-color:var(--error-color);box-shadow:0 0 10px var(--error-color)}
+  .feedback-area p{text-align:center;width:100%}
+  /* Tüm sayfada italik kapalı (MathJax dahil) */
+  em{font-style: normal;}
+  mjx-container[jax="SVG"] svg{font-style: normal !important}
+  mjx-container[jax="SVG"] [style*="font-style:italic"]{font-style: normal !important}
+  mjx-container *{font-style: normal !important}
+  .button-group{display:grid;grid-template-columns:1fr;gap:10px;margin-top:auto}
+  button{padding:15px;border:2px solid;border-radius:5px;background:transparent;color:var(--text-color);font-family:'Orbitron',sans-serif;font-size:1rem;cursor:pointer;transition:all .3s ease;text-transform:uppercase; touch-action:manipulation}
+    #checkBtn{border-color:var(--tertiary-neon);color:var(--tertiary-neon)}
+    #checkBtn:hover:not(:disabled){background:var(--tertiary-neon);color:var(--bg-color);box-shadow:0 0 20px var(--tertiary-neon)}
+    button:disabled{border-color:#555;color:#555;cursor:not-allowed}
+  .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;z-index:2000}
+    .modal-content{background:#161b33;padding:40px;border-radius:15px;text-align:center;border:2px solid var(--primary-neon);box-shadow:0 0 25px var(--primary-neon);max-width:600px}
+    .modal-content h2{font-family:'Orbitron';color:var(--primary-neon);margin-bottom:20px}
+    .modal-content p{line-height:1.8;margin-bottom:25px;font-size:1.1rem}
+    .modal-content button{border-color:var(--tertiary-neon);color:var(--tertiary-neon);padding:15px 40px}
+  .modal-content button:hover{background:var(--tertiary-neon);color:var(--bg-color);box-shadow:0 0 20px var(--tertiary-neon)}
+  /* Başlangıç, Çözüm ve Hakkında modalları */
+  #start-modal .modal-content{max-width:680px;width:min(92vw, 680px);max-height:90vh;overflow:auto}
+  #solution-modal .modal-content{max-width:900px;width:min(92vw, 900px);max-height:90vh;overflow:auto}
+  #about-modal .modal-content{max-width:840px;width:min(92vw, 840px);max-height:90vh;overflow:auto}
+  /* Giriş modalı arkaplan kanvası */
+  #start-modal{position:fixed}
+  #start-bg-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.6;z-index:0;}
+  #start-modal .modal-content{z-index:1}
+    #solution-canvas{width:100%;height:auto;display:block;border:1px solid var(--border-color);margin-bottom:16px}
+    #solution-math{background:rgba(0,0,0,0.25);border:1px solid var(--border-color);border-radius:8px;padding:10px;text-align:left}
+  #solution-math{background:rgba(0,0,0,0.25);border:1px solid var(--border-color);border-radius:8px;padding:10px;text-align:left;overflow-x:auto;font-size:clamp(12px, 2.2vw, 16px);line-height:1.4}
+  #solution-math mjx-container{max-width:100% !important; overflow-x:auto; font-size:0.95em !important}
+  #solution-math mjx-container[display="true"]{font-size:0.9em !important}
+  #solution-math mjx-container[jax="SVG"] svg{max-width:100% !important; width:auto !important; height:auto !important}
+    /* Mobil uyumluluk ve daha iyi dokunma hedefleri */
+    .button-group button{min-height:48px}
+    input[type=number]{min-height:44px}
+    *{ -webkit-tap-highlight-color: transparent; }
+  .info-btn{padding:8px 12px;border:1px solid var(--primary-neon);color:var(--primary-neon);background:transparent;border-radius:6px;cursor:pointer;font-size:.85rem; touch-action:manipulation}
+  .info-btn:hover{background:rgba(0,246,255,0.15)}
+    @media (max-width:1200px){
+      body{height:auto;width:100%;overflow:auto}
+      .container{flex-direction:column;height:auto;overflow:visible}
+      .canvas-container{width:100%;height:60vh;padding:10px}
+      .controls-container{width:100%;height:auto;border-left:none;border-top:2px solid var(--border-color)}
+    }
+    @media (max-width:600px){
+      header h1{font-size:1.2rem}
+      header h2{font-size:1rem}
+      .game-info{font-size:1rem}
+      /* Taşmaları engelle: butonlar ve süre alanı alt satıra akabilsin */
+      .game-info{flex-wrap:wrap; align-items:flex-start}
+      /* Süreyi yeni satıra, sağa hizala */
+      .game-info #timer-display{order:3; flex:1 0 100%; text-align:right; margin-left:0; margin-top:6px; font-size:0.95rem}
+      /* Butonlar daha esnek, küçük ekranlarda yan yana sığsın */
+      .game-info .info-btn{flex:1 1 48%; min-width:140px}
+      .task-group h3{font-size:1rem}
+      .input-row label{font-size:.9rem}
+      .modal-content{padding:24px}
+      /* Start modal typography and actions */
+      #start-modal .modal-content h2{font-size:clamp(18px,5.2vw,24px)}
+      #start-modal .modal-content p{font-size:clamp(13px,3.4vw,15px);line-height:1.55}
+      #start-modal .modal-content button{width:100%}
+      #solution-math{font-size:clamp(12px, 3.2vw, 15px)}
+      #solution-math mjx-container{font-size:0.9em !important}
+      #solution-math mjx-container[display="true"]{font-size:0.82em !important}
+    }
+  </style>
+</head>
+<body>
+  <div class="modal-overlay" id="start-modal">
+    <canvas id="start-bg-canvas"></canvas>
+    <div class="modal-content">
+  <h2>İHA İkmal Operasyonu</h2>
+  <p>Şehirde orta şiddetli bir deprem oldu; elektrikler kesildi ve acil yardım çağrıları artıyor. Keşif İHA'mız, ana üs <strong>A</strong> noktasından afet bölgesi <strong>B</strong> noktasına giderken enerji tasarrufu için bir <strong>C</strong> ikmal noktasında durmak zorunda.</p>
+  <p>Sana $\dfrac{|AC|}{|CB|}=\dfrac{m}{n}$ oranı verilecek. Bu orana göre <strong>C</strong> noktasının koordinatlarını doğru hesaplayıp İHA'yı güvenle yönlendirmelisin. İlk seviyede C, <em>AB</em> üzerinde içten bölme yapar; ikinci seviyede ise <em>B</em> tarafında dıştan bölme söz konusudur.</p>
+      <p style="opacity:.9">Nasıl oynanır: A ve B koordinatlarını incele, orana göre C'yi bul ve x, y alanlarına yaz. Doğruysa kalan süre kadar puan alırsın. 150 puanda Seviye 2 açılır, 300 puanda görev tamamlanır.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+        <button id="start-btn">Başla</button>
+        <button id="open-about-from-start">Hakkında</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="visibility:hidden;">
+  <div class="canvas-container"><canvas id="gameCanvas" tabindex="-1"></canvas></div>
+    <div class="controls-container">
+      <header>
+  <h1>İHA İkmal Operasyonu</h1>
+  <h2>İHA Güzergah Planlama</h2>
+      </header>
+  <div class="game-info" style="gap:8px;align-items:center;">
+    <div id="stage-label">Seviye 1</div>
+    <button id="aboutBtn" class="info-btn" title="Oyun Hakkında">Hakkında</button>
+    <button id="bgMusicBtn" class="info-btn" title="Arka plan müziğini aç/kapat">Müzik: Kapalı</button>
+    <div class="timer" id="timer-display" style="margin-left:auto;">Süre: 60</div>
+  </div>
+      <div class="mission-status">
+        <div class="points-display" id="points-display"></div>
+        <div class="score-display">Puan: <span id="score">0</span></div>
+      </div>
+      <div class="task-group">
+        <h3>Görev: İkmal Noktasını Bul</h3>
+        <div class="input-row"><label for="targetX">İkmal Noktası C (x):</label><div class="input-wrapper"><input type="number" id="targetX" placeholder="x"></div></div>
+        <div class="input-row"><label for="targetY">İkmal Noktası C (y):</label><div class="input-wrapper"><input type="number" id="targetY" placeholder="y"></div></div>
+      </div>
+      <div class="feedback-area" id="feedback-area"><p>Oyuna başlamak için butona tıkla.</p></div>
+      <div class="button-group">
+        <button id="checkBtn">Cevapları Kontrol Et</button>
+        <button id="solutionBtn" disabled>Çözümü Göster</button>
+        <button id="nextBtn" disabled>Yeni Görev</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Çözüm Modali -->
+  <div class="modal-overlay" id="solution-modal" style="display:none;">
+    <div class="modal-content">
+      <h2>Çözüm:</h2>
+      <canvas id="solution-canvas"></canvas>
+      <div id="solution-math"></div>
+      <div style="margin-top:16px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button id="close-solution">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bitiş Modali -->
+  <div class="modal-overlay" id="finish-modal" style="display:none;">
+    <div class="modal-content" style="max-width:720px;text-align:left;">
+      <h2>Görev Tamamlandı!</h2>
+      <p>İHA ikmal planını başarıyla yönettin. Koordinatları doğru hesaplayarak tüm afet ikmal görevlerini bitirdin.</p>
+      <ul style="line-height:1.6;margin-left:1rem;">
+        <li><strong>Toplam Puan:</strong> <span id="final-score">0</span></li>
+        <li><strong>Seviye Durumu:</strong> İçten ve dıştan bölme senaryoları eksiksiz tamamlandı.</li>
+        <li><strong>İleri Görev:</strong> Farklı oranlarla yeni senaryolar için <em>Yeniden Başlat</em> butonuna bas.</li>
+      </ul>
+      <p style="margin-top:10px;">
+        Matematiksel stratejileri oyunla pekiştirmeye devam etmek için yeni görev başlatabilir veya çözümleri tekrar inceleyebilirsin.
+      </p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px;">
+        <button id="restart-btn">Yeniden Başlat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hakkında Modali -->
+  <div class="modal-overlay" id="about-modal" style="display:none;">
+    <div class="modal-content" style="max-width:840px;text-align:left;">
+      <h2>Oyun Hakkında</h2>
+  <p><strong>İHA İkmal Operasyonu</strong>, koordinat düzleminde oran-orantı ve içten/dıştan bölme kavramlarını eğlenceli bir görev kurgusuyla birleştirir. Amacın, verilen $\dfrac{|AC|}{|CB|}=\dfrac{m}{n}$ oranına göre ikmal noktası <strong>C</strong>'yi doğru hesaplayıp İHA'yı yönlendirmektir.</p>
+      <ul style="margin-left:1rem;line-height:1.6;">
+        <li><strong>Seviye 1</strong>: C, AB doğru parçasını içten böler.</li>
+        <li><strong>Seviye 2</strong>: C, B tarafında dıştan böler.</li>
+        <li><strong>Puanlama</strong>: Doğru cevapta kalan süre kadar puan. 150 puanda Seviye 2 açılır, 300 puanda oyun biter.</li>
+        <li><strong>İpucu</strong>: A→B yönünü referans al; x ve y bileşenlerini ayrı ayrı, 1k başına değişim yaklaşımıyla hesaplayabilirsin.</li>
+  <li><strong>Ses</strong>: Üstteki “Müzik” butonuyla arka plan müziğini aç/kapatabilirsin. Animasyon sırasında İHA motor sesi duyulur; yeni görevde durdurulur.</li>
+      </ul>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+        <button id="close-about">Kapat</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const container=document.querySelector('.container'); const startModal=document.getElementById('start-modal'); const startBtn=document.getElementById('start-btn');
+    const canvas=document.getElementById('gameCanvas'); const ctx=canvas.getContext('2d');
+  // Start modal background canvas (flying İHAs)
+  const startBgCanvas = document.getElementById('start-bg-canvas');
+  let sbgCtx = null, sbgAnimId = null, sbgDpr = 1, sbgDrones = [], sbgLast = 0;
+  let sbgParallax = {x:0, y:0};
+    const pointsDisplay=document.getElementById('points-display'); const scoreEl=document.getElementById('score');
+  const timerDisplay=document.getElementById('timer-display'); const checkBtn=document.getElementById('checkBtn'); const solutionBtn=document.getElementById('solutionBtn'); const nextBtn=document.getElementById('nextBtn'); const feedbackArea=document.getElementById('feedback-area');
+  const solutionModal=document.getElementById('solution-modal'); const solutionCanvas=document.getElementById('solution-canvas'); const closeSolutionBtn=document.getElementById('close-solution'); const solutionMath=document.getElementById('solution-math');
+  const stageLabel=document.getElementById('stage-label'); const finishModal=document.getElementById('finish-modal'); const restartBtn=document.getElementById('restart-btn');
+  const aboutModal=document.getElementById('about-modal'); const aboutBtn=document.getElementById('aboutBtn'); const closeAboutBtn=document.getElementById('close-about'); const openAboutFromStart=document.getElementById('open-about-from-start');
+  const bgMusicBtn=document.getElementById('bgMusicBtn');
+    const targetXInput=document.getElementById('targetX'); const targetYInput=document.getElementById('targetY');
+
+  // Basit RAF polyfill (mobilde raf throttle edilirse setTimeout'a düşer)
+  const RAF = {
+    request: typeof window.requestAnimationFrame === 'function' ? (cb)=>window.requestAnimationFrame(cb) : (cb)=>setTimeout(()=>cb(performance.now()), 16),
+    cancel: typeof window.cancelAnimationFrame === 'function' ? (id)=>window.cancelAnimationFrame(id) : (id)=>clearTimeout(id)
+  };
+
+  // Tüm butonlara tıklama sesi ekle (click.mp3)
+  function addClickSfx(el){ if(!el) return; el.addEventListener('click', ()=>{ playSfx(sfxClick); }, {capture:true}); }
+  addClickSfx(startBtn);
+  addClickSfx(aboutBtn);
+  addClickSfx(closeAboutBtn);
+  addClickSfx(openAboutFromStart);
+  addClickSfx(checkBtn);
+  addClickSfx(solutionBtn);
+  addClickSfx(nextBtn);
+  addClickSfx(document.getElementById('close-solution'));
+  addClickSfx(restartBtn);
+  addClickSfx(bgMusicBtn);
+
+  let pointA, pointB, answers, score=0, gridRange=15, unit; const LEVEL_TIME=60; let timerInterval=null, timeLeft=LEVEL_TIME; let animationFrameId=null;
+  // Animasyon hızı (birim/saniye). 0.6 idi (~1.7sn). 0.35 ile ~2.9sn'de tamamlanır.
+  const ANIM_SPEED = 0.35;
+  // Cihaz piksel oranı (retina) için ölçekleme
+  let dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+  const cw = () => canvas.width / dpr; // CSS pikseli cinsinden tuval genişliği
+  const ch = () => canvas.height / dpr; // CSS pikseli cinsinden tuval yüksekliği
+  // Oyun seviye ve eşikler
+    let level=1; const LEVEL2_THRESHOLD=150; const END_SCORE=300;
+  // Seviye bazlı oran havuzları
+  const ratiosL1=[{m:1,n:2},{m:1,n:3},{m:2,n:3},{m:1,n:4},{m:3,n:4}];
+  const ratiosL2=[{m:3,n:1},{m:4,n:1},{m:5,n:2},{m:5,n:1},{m:7,n:3}];
+
+  // İHA motor ses efekti
+  const droneAudio = new Audio('drone.mp3');
+  // Ağır cihazlarda başta decode/otoplay kilidi yaşanmaması için metadata yeterli
+  droneAudio.preload = 'metadata';
+  droneAudio.loop = true;
+  droneAudio.volume = 0.35;
+
+  // Arka plan müziği (kullanıcı dosyayı arkaplan.mp3 adıyla klasöre ekleyecek)
+  const backgroundMusic = new Audio('arkaplan.mp3');
+  // Mobil tarayıcılar ve düşük cihazlar için ilk anda yüklemeyi hafif tut
+  backgroundMusic.preload = 'metadata';
+  backgroundMusic.loop = true;
+  backgroundMusic.volume = 0.3;
+  let bgmEnabled = false;
+  function updateBgmUI(){ if(bgMusicBtn){ bgMusicBtn.textContent = bgmEnabled ? 'Müzik: Açık' : 'Müzik: Kapalı'; } }
+  function setBgmEnabled(v){
+    bgmEnabled = !!v;
+    updateBgmUI();
+    try{ localStorage.setItem('droneGame-bgm',''+(bgmEnabled?1:0)); }catch(_e){}
+    if(!bgmEnabled){
+      try{ backgroundMusic.pause(); }catch(_e){}
+    } else {
+      // Kullanıcı etkileşimi sonrası çağrılmalı; aksi halde tarayıcı engelleyebilir
+      try{ backgroundMusic.play().catch(()=>{}); }catch(_e){}
+    }
+  }
+  // yükte kaydı oku (ilk anda asla otomatik çalma denemesi yapma)
+  (function(){
+    try{
+      const v = localStorage.getItem('droneGame-bgm');
+      // Varsayılan: sessiz başla (mobilde takılmaları önler)
+      if(v==='1'){ bgmEnabled = true; }
+    }catch(_e){}
+    updateBgmUI();
+  })();
+
+  // İlk kullanıcı etkileşiminde tüm sesleri "unlock" et (mobilde donma/engellenme azaltılır)
+  let audioUnlocked = false;
+  async function unlockAudioOnce(){
+    if(audioUnlocked) return;
+    audioUnlocked = true;
+    const audios = [backgroundMusic, droneAudio, sfxCorrect, sfxWrong, sfxLevelUp, sfxFinish, sfxTimeLow, sfxModalOpen, sfxModalClose, sfxClick];
+    for(const a of audios){
+      try{
+        // Bazı tarayıcılar için kısa bir çalma + durdurma yeterlidir
+        await a.play().catch(()=>{});
+        a.pause();
+        a.currentTime = 0;
+      }catch(_e){}
+    }
+  }
+
+  // Kısa SFX'ler (dosyaları aynı klasöre ekleyeceksin)
+  const sfxCorrect = new Audio('correct.mp3'); sfxCorrect.preload='auto'; sfxCorrect.volume=0.6;
+  const sfxWrong = new Audio('wrong.mp3'); sfxWrong.preload='auto'; sfxWrong.volume=0.6;
+  const sfxLevelUp = new Audio('levelup.mp3'); sfxLevelUp.preload='auto'; sfxLevelUp.volume=0.65;
+  const sfxFinish = new Audio('finish.mp3'); sfxFinish.preload='auto'; sfxFinish.volume=0.7;
+  const sfxTimeLow = new Audio('timelow.mp3'); sfxTimeLow.preload='auto'; sfxTimeLow.volume=0.7;
+  const sfxModalOpen = new Audio('open.mp3'); sfxModalOpen.preload='auto'; sfxModalOpen.volume=0.5;
+  const sfxModalClose = new Audio('close.mp3'); sfxModalClose.preload='auto'; sfxModalClose.volume=0.5;
+  const sfxClick = new Audio('click.mp3'); sfxClick.preload='auto'; sfxClick.volume=0.5;
+
+  // Kısa SFX çalma helper (çakışma ve hatalara karşı güvenli)
+  function playSfx(audio){
+    try{
+      if(!audio) return;
+      const inst = audio.cloneNode(true);
+      inst.volume = audio.volume;
+      inst.play().catch(()=>{});
+    }catch(_e){}
+  }
+
+    // ===== Start modal background drones =====
+    function setupStartBg(){
+      if(!startBgCanvas || !startModal || startModal.style.display==='none') return;
+      sbgDpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+      const w = startModal.clientWidth || window.innerWidth;
+      const h = startModal.clientHeight || window.innerHeight;
+      startBgCanvas.style.width = w + 'px';
+      startBgCanvas.style.height = h + 'px';
+      startBgCanvas.width = Math.floor(w * sbgDpr);
+      startBgCanvas.height = Math.floor(h * sbgDpr);
+      sbgCtx = startBgCanvas.getContext('2d');
+      sbgCtx.setTransform(sbgDpr, 0, 0, sbgDpr, 0, 0);
+    }
+    function spawnStartDrones(n=6){
+      const w = startModal.clientWidth || window.innerWidth;
+      const h = startModal.clientHeight || window.innerHeight;
+      sbgDrones = Array.from({length:n}, ()=>{
+        const speed = 40 + Math.random()*40; // px/s
+        const ang = (Math.random()*Math.PI*2);
+        return {
+          x: Math.random()*w,
+          y: Math.random()*h,
+          vx: Math.cos(ang)*speed,
+          vy: Math.sin(ang)*speed,
+          scale: 0.6 + Math.random()*0.7,
+          phase: Math.random()*Math.PI*2
+        };
+      });
+    }
+    function drawStartDrone(ctx,x,y,angle,scale,phase){
+      ctx.save();
+      ctx.translate(x,y); ctx.rotate(angle);
+      const arm = 12*scale, off=8*scale;
+      ctx.strokeStyle='rgba(200,200,200,0.8)'; ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(-off,-off); ctx.lineTo(-arm,-arm);
+      ctx.moveTo( off,-off); ctx.lineTo( arm,-arm);
+      ctx.moveTo(-off, off); ctx.lineTo(-arm, arm);
+      ctx.moveTo( off, off); ctx.lineTo( arm, arm);
+      ctx.stroke();
+      ctx.fillStyle='rgba(240,240,240,0.95)'; ctx.beginPath(); ctx.arc(0,0,6*scale,0,Math.PI*2); ctx.fill();
+      // rotors
+      const r = 3*scale + (Math.sin(phase)*0.5);
+      ctx.fillStyle='rgba(0,246,255,0.85)';
+      ctx.beginPath(); ctx.arc(-arm,-arm,r,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc( arm,-arm,r,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(-arm, arm,r,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc( arm, arm,r,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    function startBgLoop(ts){
+      if(!sbgCtx) return; if(!sbgLast) sbgLast = ts; const dt = Math.min(0.05, (ts - sbgLast)/1000); sbgLast = ts;
+      const w = startModal.clientWidth || window.innerWidth; const h = startModal.clientHeight || window.innerHeight;
+      sbgCtx.clearRect(0,0,w,h);
+      sbgDrones.forEach(d=>{
+        d.x += d.vx*dt; d.y += d.vy*dt; d.phase += dt*8;
+        if(d.x<-40) d.x=w+40; if(d.x>w+40) d.x=-40;
+        if(d.y<-40) d.y=h+40; if(d.y>h+40) d.y=-40;
+        const ang = Math.atan2(d.vy,d.vx);
+        // Parallax: büyük ölçek daha fazla, küçük ölçek daha az kayar
+        const depth = (d.scale - 0.6) / 0.7; // 0..1
+        const pf = 0.4 + 0.6*Math.max(0, Math.min(1, depth));
+        const amp = Math.min(18, Math.max(8, Math.min(w,h)/60));
+        const px = d.x + sbgParallax.x * amp * pf;
+        const py = d.y + sbgParallax.y * amp * pf;
+        drawStartDrone(sbgCtx,px,py,ang,d.scale,d.phase);
+      });
+      sbgAnimId = requestAnimationFrame(startBgLoop);
+    }
+    function startStartBg(){
+      if(!startBgCanvas) return; setupStartBg(); spawnStartDrones(6); sbgLast = 0; cancelAnimationFrame(sbgAnimId); sbgAnimId = requestAnimationFrame(startBgLoop);
+      // Parallax controllers
+      const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      function onPointer(e){ if(prefersReduced) return; const rect = startModal.getBoundingClientRect(); const cx = rect.left + rect.width/2; const cy = rect.top + rect.height/2; const dx = (e.clientX - cx) / (rect.width/2); const dy = (e.clientY - cy) / (rect.height/2); sbgParallax.x = Math.max(-1, Math.min(1, dx)); sbgParallax.y = Math.max(-1, Math.min(1, dy)); }
+      function onDevice(e){ if(prefersReduced) return; const g = (typeof e.gamma==='number') ? e.gamma : 0; const b = (typeof e.beta==='number') ? e.beta : 0; sbgParallax.x = Math.max(-1, Math.min(1, g/30)); sbgParallax.y = Math.max(-1, Math.min(1, b/30)); }
+      // Store on object to remove later
+      startStartBg._onPointer = onPointer; startStartBg._onDevice = onDevice;
+      startModal.addEventListener('pointermove', onPointer, {passive:true});
+      window.addEventListener('deviceorientation', onDevice, {passive:true});
+    }
+    function stopStartBg(){ if(sbgAnimId) cancelAnimationFrame(sbgAnimId); sbgAnimId=null; if(startStartBg._onPointer){ startModal.removeEventListener('pointermove', startStartBg._onPointer); startStartBg._onPointer=null; } if(startStartBg._onDevice){ window.removeEventListener('deviceorientation', startStartBg._onDevice); startStartBg._onDevice=null; } sbgParallax.x=0; sbgParallax.y=0; if(sbgCtx){ const w = startModal.clientWidth||window.innerWidth, h=startModal.clientHeight||window.innerHeight; sbgCtx.clearRect(0,0,w,h);} }
+
+  function updateStage(){ if(stageLabel) stageLabel.textContent=`Seviye ${level}${level===2?' (Dıştan Bölme)':''}`; }
+
+    function setupCanvas(){
+      const cont=document.querySelector('.canvas-container');
+      const cssSize=Math.min(cont.clientWidth, cont.clientHeight)*0.95;
+      dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+      // Stil boyutu (CSS pikseli)
+      canvas.style.width = cssSize + 'px';
+      canvas.style.height = cssSize + 'px';
+      // Gerçek piksel boyutu (Cihaz pikseli)
+      canvas.width = Math.floor(cssSize * dpr);
+      canvas.height = Math.floor(cssSize * dpr);
+      // Çizim bağlamını ölçekle (koordinatlar CSS pikseli gibi çalışsın)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // Birim (ızgara hücresi) CSS pikselinden hesaplansın
+      unit = cssSize/(gridRange*2);
+      drawGrid();
+    }
+    // Yerel sayı formatı: virgül ile ondalık ve gereksiz sıfır yok
+    function formatNum(n){
+      // 6 haneye kadar yuvarla, TR biçiminde yaz (1,25 gibi)
+      const rounded = Math.round(n * 1000000) / 1000000;
+      return rounded.toLocaleString('tr-TR', { maximumFractionDigits: 6, useGrouping: false });
+    }
+    function toCanvasCoords(p){ return { x: cw()/2 + p.x*unit, y: ch()/2 - p.y*unit }; }
+  function drawGrid(){
+      const w = cw(), h = ch();
+      ctx.clearRect(0,0,w,h);
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.font=`${Math.max(10,unit/1.5)}px Roboto`;
+      for(let i=-gridRange;i<=gridRange;i++){
+        ctx.strokeStyle='rgba(0,246,255,0.2)';
+        const pos=w/2+i*unit;
+        ctx.beginPath(); ctx.moveTo(pos,0); ctx.lineTo(pos,h);
+        ctx.moveTo(0,pos); ctx.lineTo(w,pos); ctx.stroke();
+      }
+      const axis=getComputedStyle(document.documentElement).getPropertyValue('--primary-neon');
+      ctx.strokeStyle=axis; ctx.lineWidth=2; ctx.beginPath();
+      ctx.moveTo(0,h/2); ctx.lineTo(w,h/2);
+      ctx.moveTo(w/2,0); ctx.lineTo(w/2,h); ctx.stroke();
+      const arrow=10; ctx.fillStyle=axis; ctx.beginPath();
+      ctx.moveTo(w,h/2); ctx.lineTo(w-arrow,h/2-arrow/2); ctx.lineTo(w-arrow,h/2+arrow/2); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(arrow,h/2-arrow/2); ctx.lineTo(arrow,h/2+arrow/2); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(w/2,0); ctx.lineTo(w/2-arrow/2,arrow); ctx.lineTo(w/2+arrow/2,arrow); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(w/2,h); ctx.lineTo(w/2-arrow/2,h-arrow); ctx.lineTo(w/2+arrow/2,h-arrow); ctx.closePath(); ctx.fill();
+      // Eksene 'x' ve 'y' etiketleri ekle
+      ctx.fillStyle = axis;
+      ctx.font = `bold ${Math.max(12, unit)}px Orbitron`;
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillText('x', w - arrow - 6, h/2 - 18);
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText('y', w/2 + 18, arrow + 4);
+      // Sayı etiketleri için eski hizalama ve fontu geri getir
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.font=`${Math.max(10,unit/1.5)}px Roboto`;
+      ctx.lineWidth=1; const label=getComputedStyle(document.documentElement).getPropertyValue('--tertiary-neon'); ctx.fillStyle=label;
+      for(let i=-gridRange;i<=gridRange;i++){
+        if(i===0||i%5!==0) continue;
+        ctx.fillText(i, w/2+i*unit, h/2+15);
+        ctx.fillText(i, w/2-15, h/2-i*unit);
+      }
+      ctx.font=`bold ${Math.max(12,unit)}px Orbitron`;
+      ctx.fillText('O', w/2-15, h/2+15);
+    }
+    function drawPoint(p,label,color){
+      const {x,y}=toCanvasCoords(p);
+      // Nokta
+      ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2); ctx.fillStyle=color; ctx.fill();
+      // Etiket metni ve güvenli yerleşim
+      const text = `${label}(${p.x}, ${p.y})`;
+      const fontSize = Math.max(10, unit-2);
+      ctx.fillStyle='#f0f0f0';
+      ctx.font=`bold ${fontSize}px Orbitron`;
+      // Varsayılan konum: üstte, ortalı
+      let tx = x, ty = y - 20; let align='center';
+      const W = cw ? cw() : canvas.width; const H = ch ? ch() : canvas.height;
+      const pad = 4; // kanvas kenar tamponu
+      const shift = 8; // yatay kenarda kaydırma
+      const metrics = ctx.measureText(text); const tw = metrics.width || 0;
+      // Yatay sınırlar: sola çok yakınsa sola hizala; sağa yakınsa sağa hizala
+      if(tx - tw/2 < pad){ align='left'; tx = Math.max(pad, x + shift); }
+      else if(tx + tw/2 > W - pad){ align='right'; tx = Math.min(W - pad, x - shift); }
+      // Dikey sınırlar: üstte taşarsa etiketi alta al
+      const ascent = metrics.actualBoundingBoxAscent || fontSize*0.8;
+      if(ty - ascent < pad){ ty = y + 20; }
+      ctx.textAlign = align; ctx.textBaseline='middle';
+      ctx.fillText(text, tx, ty);
+    }
+
+    function updateUI(){
+      scoreEl.textContent=score;
+      const hasA = !!pointA; const hasB = !!pointB; const hasRatio = !!(answers && answers.ratio);
+      const mVal = hasRatio ? answers.ratio.m : null;
+      const nVal = hasRatio ? answers.ratio.n : null;
+      const ratioTex = (mVal!==null && nVal!==null)
+        ? `\\frac{\\left|\\mathrm{AC}\\right|}{\\left|\\mathrm{CB}\\right|} = \\frac{${mVal}}{${nVal}}`
+        : `\\frac{\\left|\\mathrm{AC}\\right|}{\\left|\\mathrm{CB}\\right|} = \\frac{\\mathrm{m}}{\\mathrm{n}}`;
+      const aStr = hasA ? `(${pointA.x}, ${pointA.y})` : `—`;
+      const bStr = hasB ? `(${pointB.x}, ${pointB.y})` : `—`;
+      const divisionInfo = level===1 ? 'C, AB doğrusunu içten bölüyor.' : 'C, AB doğru parçasını dıştan (B tarafında) bölüyor.';
+      pointsDisplay.innerHTML = `<p>Merkez A: <span>${aStr}</span></p>
+        <p>Afet Bölgesi B: <span>${bStr}</span></p>
+        <p>İstenen Oran: <span>$${ratioTex}$</span></p>
+        <p style="opacity:.9">${divisionInfo}</p>`;
+      if(window.MathJax && MathJax.typesetPromise){
+        MathJax.typesetPromise([pointsDisplay]).catch(()=>{});
+      }
+    }
+    function resetInputs(){ targetXInput.value=''; targetYInput.value=''; setFeedback('<p>Süre başladı! Koordinatı bul.</p>',''); }
+    function drawInitialState(){
+      // Başlangıçta sadece A ve B gösterilir; C doğru cevap sonrası animasyon/çözümde görünür.
+      drawGrid();
+      if(pointA && pointB){
+        drawPoint(pointA,'A','magenta');
+        drawPoint(pointB,'B','#a1ff0a');
+      }
+      // C noktası bilerek çizilmiyor
+    }
+
+  function startTimer(){
+    clearInterval(timerInterval);
+    timeLeft=LEVEL_TIME;
+    timerDisplay.textContent=`Süre: ${timeLeft}`;
+    timerDisplay.classList.remove('low-time');
+    let lowWarnPlayed=false;
+    timerInterval=setInterval(()=>{
+      timeLeft--;
+      timerDisplay.textContent=`Süre: ${timeLeft}`;
+      if(timeLeft<10){
+        timerDisplay.classList.add('low-time');
+        if(!lowWarnPlayed){ playSfx(sfxTimeLow); lowWarnPlayed=true; }
+      }
+      if(timeLeft<=0){
+        clearInterval(timerInterval);
+        setFeedback('<p>Süre bitti! Çözüm otomatik açıldı. Yeni göreve geçmek için butona tıkla.</p>','error');
+        [targetXInput,targetYInput].forEach(i=>i.disabled=true); checkBtn.disabled=true; solutionBtn.disabled=false; nextBtn.disabled=false;
+        playSfx(sfxWrong);
+        playSfx(sfxModalOpen);
+        openSolutionModal();
+      }
+    },1000);
+  }
+
+    function generateProblem(){
+      const pool = (level===1) ? ratiosL1 : ratiosL2;
+      let ratio=pool[Math.floor(Math.random()*pool.length)];
+      let {m,n}=ratio;
+      // Seviye 2'de B tarafında dıştan bölme: m>n olacak şekilde oranı düzenle
+      if(level===2 && m<=n){ const tmp=m; m=n; n=tmp; }
+        const k=m/n;
+        // İçten: d=m+n; Dıştan: d=|m-n| (tam sayı koordinat olasılığı artar)
+        const d = (level===1) ? (m+n) : Math.abs(m-n) || (m+n);
+      // Kenarlara çok yakın noktaları engellemek için güvenli boşluğu artır
+      const margin=3, safe=gridRange-margin;
+        const stretchFactor = (level===2) ? (m / Math.max(1, (m - n))) : 1;
+        const baseFactorLimit = Math.floor((2*safe)/(d * stretchFactor)) || 1;
+        // dx/dy yine d'nin katı kalsın fakat güvenli alanı aşmasın; seviye 2'de C, B'den ileri gittiği için sınırı daralt
+        const maxShiftFactor = Math.max(1, Math.min(4, baseFactorLimit));
+        const randomShift = ()=> d * (Math.floor(Math.random()*maxShiftFactor) + 1);
+        const dx = randomShift();
+        const dy = randomShift();
+        const pickAxisPair = (shift)=>{
+          const ranges=[];
+          const plusRange={sign:1,min:-safe,max:safe-shift};
+          if(plusRange.min<=plusRange.max){ ranges.push(plusRange); }
+          const minusRange={sign:-1,min:-safe+shift,max:safe};
+          if(minusRange.min<=minusRange.max){ ranges.push(minusRange); }
+          if(!ranges.length){ return {a:0,b:0}; }
+          const choice=ranges[Math.floor(Math.random()*ranges.length)];
+          const span=choice.max-choice.min+1;
+          const base=choice.min + Math.floor(Math.random()*span);
+          return { a: base, b: base + choice.sign*shift };
+        };
+        const spawnPoints = ()=>{
+          const xp = pickAxisPair(dx);
+          const yp = pickAxisPair(dy);
+          return { x1: xp.a, y1: yp.a, x2: xp.b, y2: yp.b };
+        };
+        let {x1,y1,x2,y2} = spawnPoints();
+      let tries=0; let cx,cy; let Cok=false;
+      do{
+        pointA={x:x1,y:y1}; pointB={x:x2,y:y2};
+        if(level===1){ // içten bölme
+          cx=(x1 + k*x2)/(1+k); cy=(y1 + k*y2)/(1+k);
+        } else { // dıştan bölme (B tarafında)
+          // Formül: (m*B - n*A)/(m-n)  -> A + t(B-A), t=m/(m-n) (>1)
+          cx=(m*x2 - n*x1)/(m - n); cy=(m*y2 - n*y1)/(m - n);
+        }
+        Cok = (Math.abs(cx) <= safe && Math.abs(cy) <= safe);
+        if(!Cok){
+          const next = spawnPoints();
+          x1=next.x1; y1=next.y1; x2=next.x2; y2=next.y2;
+        }
+        tries++;
+      } while(!Cok && tries<200);
+      answers={ C:{x:Math.round(cx), y:Math.round(cy)}, ratio:{m,n} };
+      updateUI(); resetInputs(); drawInitialState();
+    }
+
+  function checkAnswers(){
+    const ux=parseFloat(targetXInput.value), uy=parseFloat(targetYInput.value);
+    if(isNaN(ux)||isNaN(uy)){ setFeedback('<p>Lütfen geçerli X ve Y koordinatları girin!</p>','error'); return;}
+    const ok=(ux===answers.C.x && uy===answers.C.y);
+      if(ok){
+        const finalScoreEl=document.getElementById('final-score');
+        if(finalScoreEl){ finalScoreEl.textContent = String(score); }
+      // Doğru cevap SFX
+      playSfx(sfxCorrect);
+      clearInterval(timerInterval);
+      // Puan: kalan süre kadar
+      score += timeLeft; updateUI();
+      // Seviye ilerleme ve bitiş kontrolü
+      if(score >= END_SCORE){
+        setFeedback('<p>İHA ikmal planı tamamlandı. Animasyon bitince final raporu gösterilecek...</p>','success');
+        const after=()=>{
+          setTimeout(()=>{
+            const finalScoreEl=document.getElementById('final-score');
+            if(finalScoreEl){ finalScoreEl.textContent = String(score); }
+            playSfx(sfxFinish);
+            finishModal.style.display='flex';
+          }, 250);
+        };
+        playAnimation(after);
+        return;
+      } else if(level===1 && score >= LEVEL2_THRESHOLD){
+        level = 2; updateStage();
+        setFeedback('<p>Seviye 2: Dıştan bölme aktifleştirildi. Yeni göreve geç!</p>','success');
+        playSfx(sfxLevelUp);
+      } else {
+  setFeedback('<p>Koordinat doğrulandı! İHA ikmal noktasına yönlendiriliyor...</p>','success');
+      }
+      // Klavyeyi kapatmak için önce blur, sonra disable — iOS/Safari için güvenilir
+      try{
+        [targetXInput,targetYInput].forEach(i=>{ if(i){ i.readOnly = true; i.blur(); } });
+      }catch(_e){}
+      [targetXInput,targetYInput].forEach(i=>i.disabled=true); checkBtn.disabled=true;
+      // Mobilde olası RAF/ses gecikmelerine rağmen kullanıcının ilerleyebilmesi için hemen etkinleştir
+      solutionBtn.disabled=false; nextBtn.disabled=false;
+      // Klavyenin yeniden açılmaması ve sahnenin stabil kalması için kanvasa odak ver
+      try{ if(canvas && typeof canvas.focus === 'function') canvas.focus(); }catch(_e){}
+      // Animasyonu yine de oynat; başarısız olursa içindeki bekçi (watchdog) setInterval ile devralacak
+      playAnimation(()=>{});
+    } else {
+      setFeedback('<p>Yanlış koordinat. Oran-orantıyı tekrar kontrol et!</p>','error');
+      playSfx(sfxWrong);
+    }
+  }
+
+    function setFeedback(html,type){ feedbackArea.innerHTML=html; feedbackArea.className='feedback-area'; if(type) feedbackArea.classList.add(type); }
+
+    function playAnimation(done){
+      // Temizlik
+      if(animationFrameId) RAF.cancel(animationFrameId);
+      if(playAnimation._fallbackTimer){ clearTimeout(playAnimation._fallbackTimer); playAnimation._fallbackTimer = null; }
+      const pA = toCanvasCoords(pointA);
+      const pB = toCanvasCoords(pointB);
+      const pC = toCanvasCoords(answers.C);
+      const ang = Math.atan2(pB.y - pA.y, pB.x - pA.x);
+      let progress = 0, prop = 0, lastTs = 0, fallbackId = null;
+      // Sesi başlat (başarısız olursa önemli değil)
+      try{ droneAudio.currentTime = 0; droneAudio.play().catch(()=>{}); }catch(_e){}
+      const tick = (ts)=>{
+        // Fallback timeout çalıştıysa iptal et
+        if(fallbackId){ clearTimeout(fallbackId); fallbackId = null; }
+        if(!lastTs) lastTs = ts;
+        const dt = Math.min(0.05, (ts - lastTs)/1000);
+        lastTs = ts;
+        progress += ANIM_SPEED * dt;
+        if(progress >= 1){ progress = 1; }
+        // Çizim
+        drawGrid();
+        ctx.beginPath();
+        ctx.moveTo(pA.x, pA.y);
+        ctx.lineTo(pC.x, pC.y);
+        ctx.strokeStyle='rgba(161,255,10,0.6)';
+        ctx.lineWidth=3;
+        ctx.setLineDash([]);
+        ctx.stroke();
+        drawPoint(pointA,'A','magenta');
+        drawPoint(pointB,'B','#a1ff0a');
+        drawPoint(answers.C,'C','#00f6ff');
+        const x = pA.x + (pC.x - pA.x) * progress;
+        const y = pA.y + (pC.y - pA.y) * progress;
+        prop++; const pr=(prop%10<5)?4:5; drawDrone(x,y,ang,pr);
+        if(progress >= 1){ try{ droneAudio.pause(); }catch(_e){} if(done) done(); return; }
+        scheduleNext();
+      };
+      function scheduleNext(){
+        // Hem RAF hem de timeout yedeği kur: biri mutlaka çalışır
+        animationFrameId = RAF.request(tick);
+        // 80ms içinde RAF gelmezse timeout ile çiz
+        fallbackId = setTimeout(()=>tick(performance.now()), 80);
+      }
+      scheduleNext();
+    }
+    function drawDrone(x,y,angle,pr){ ctx.save(); ctx.translate(x,y); ctx.rotate(angle); const arm=15,off=10; ctx.strokeStyle='#ccc'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(-off,-off); ctx.lineTo(-arm,-arm); ctx.moveTo(off,-off); ctx.lineTo(arm,-arm); ctx.moveTo(-off,off); ctx.lineTo(-arm,arm); ctx.moveTo(off,off); ctx.lineTo(arm,arm); ctx.stroke(); ctx.fillStyle='#f0f0f0'; ctx.beginPath(); ctx.arc(0,0,8,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#333'; ctx.beginPath(); ctx.arc(0,0,4,0,Math.PI*2); ctx.fill(); ctx.fillStyle='rgba(0,246,255,0.8)'; ctx.beginPath(); ctx.arc(-arm,-arm,pr,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(arm,-arm,pr,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(-arm,arm,pr,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(arm,arm,pr,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+
+  function startNewQuestion(){
+    if(animationFrameId) cancelAnimationFrame(animationFrameId);
+    try{ droneAudio.pause(); }catch(_e){}
+    // Yeni görevde girişlerin klavye açabilmesi için readOnly'u da kaldır
+    [targetXInput,targetYInput].forEach(i=>{ if(i){ i.readOnly = false; i.disabled = false; } });
+    checkBtn.disabled=false; solutionBtn.disabled=true; nextBtn.disabled=true;
+    closeSolutionModal(); generateProblem(); startTimer();
+  }
+
+    function openSolutionModal(){
+      playSfx(sfxModalOpen);
+      // Modalı önce görünür yap, genişliği ölç
+      solutionModal.style.display = 'flex';
+      const parentW = solutionCanvas.parentElement ? solutionCanvas.parentElement.clientWidth : Math.floor(window.innerWidth * 0.92);
+      const targetCssW = Math.max(240, parentW);
+      const targetCssH = targetCssW; // kare
+      // Stil ve gerçek piksel boyutları
+      solutionCanvas.style.width = '100%';
+      solutionCanvas.style.height = targetCssH + 'px';
+      solutionCanvas.width = Math.floor(targetCssW * dpr);
+      solutionCanvas.height = Math.floor(targetCssH * dpr);
+      const sctx = solutionCanvas.getContext('2d');
+      sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // Arka plan
+      sctx.fillStyle = '#161b33';
+      sctx.fillRect(0,0,targetCssW,targetCssH);
+      // Çözüm kanvası için yerel dönüşüm
+      const localUnit = targetCssW/(gridRange*2);
+      const toSol = (p)=>({ x: targetCssW/2 + p.x*localUnit, y: targetCssH/2 - p.y*localUnit });
+      const pA = toSol(pointA), pB = toSol(pointB), pC = toSol(answers.C);
+      // AB doğrusu
+      sctx.lineWidth = 5; sctx.strokeStyle = 'rgba(0,246,255,0.35)';
+      sctx.beginPath(); sctx.moveTo(pA.x, pA.y); sctx.lineTo(pB.x, pB.y); sctx.stroke();
+  // AC parçası (m·k)
+      sctx.lineWidth = 6; sctx.strokeStyle = 'rgba(255,0,193,0.9)';
+      sctx.beginPath(); sctx.moveTo(pA.x, pA.y); sctx.lineTo(pC.x, pC.y); sctx.stroke();
+      // CB parçası (n·k)
+      sctx.strokeStyle = 'rgba(161,255,10,0.9)';
+      sctx.beginPath(); sctx.moveTo(pC.x, pC.y); sctx.lineTo(pB.x, pB.y); sctx.stroke();
+  // Parça etiketleri (m·k ve n·k) — orta noktaya, çizgiden dışarı normal vektörle ofsetli
+  sctx.fillStyle = '#fff';
+  const labelSize = Math.max(11, Math.min(14, targetCssW/32));
+  sctx.font = `bold ${labelSize}px Orbitron`;
+  sctx.textAlign='center'; sctx.textBaseline='middle';
+  // Tanjant ve normal vektör (A->B yönü için)
+  const tx = pB.x - pA.x, ty = pB.y - pA.y;
+  const tlen = Math.hypot(tx, ty) || 1;
+  const uxv = tx / tlen, uyv = ty / tlen;   // birim tanjant
+  const nxv = -uyv, nyv = uxv;              // sol normal (resimdeki tarafa uygun)
+  const segOffset = Math.max(12, Math.min(22, targetCssW/36));
+  // AC ve CB için orta noktalar
+  const mx = (pA.x + pC.x)/2, my = (pA.y + pC.y)/2;
+  const bx = (pC.x + pB.x)/2, by = (pC.y + pB.y)/2;
+  // Nokta etiketlerinin tahmini konumları (çakışmadan kaçınmak için)
+  const tBias = Math.max(8, Math.min(14, targetCssW/40));
+  const pointOffsetPreview = Math.max(18, Math.min(28, targetCssW/28));
+  const LA = { x: pA.x + nxv*pointOffsetPreview + uxv*(-tBias), y: pA.y + nyv*pointOffsetPreview + uyv*(-tBias) };
+  const LB = { x: pB.x + nxv*pointOffsetPreview + uxv*( tBias), y: pB.y + nyv*pointOffsetPreview + uyv*( tBias) };
+  const LC = { x: pC.x + nxv*pointOffsetPreview, y: pC.y + nyv*pointOffsetPreview };
+  const minLabelDist = Math.max(24, Math.min(44, targetCssW/18));
+  const dist=(p,q)=>Math.hypot(p.x-q.x,p.y-q.y);
+  const minDist=(p,pts)=>Math.min(...pts.map(t=>dist(p,t)));
+  function placeLabel(baseX, baseY, offset, avoidPts){
+    const c1 = {x: baseX + nxv*offset, y: baseY + nyv*offset};
+    const c2 = {x: baseX - nxv*offset, y: baseY - nyv*offset};
+    let d1=minDist(c1, avoidPts), d2=minDist(c2, avoidPts);
+    let chosen=c1, sign=1, d=d1;
+    if(d2>d1){ chosen=c2; sign=-1; d=d2; }
+    if(d < minLabelDist){ // biraz daha uzaklaştır
+      const scale=1.5; chosen = {x: baseX + nxv*offset*sign*scale, y: baseY + nyv*offset*sign*scale};
+    }
+    return chosen;
+  }
+  const mkPos = placeLabel(mx, my, segOffset, [LA, LC]);
+  const nkPos = placeLabel(bx, by, segOffset, [LC, LB]);
+  sctx.fillText(`${answers.ratio.m}·k`, mkPos.x, mkPos.y);
+  sctx.fillText(`${answers.ratio.n}·k`, nkPos.x, nkPos.y);
+      // Noktalar ve koordinat etiketleri
+      const drawDot=(pt,label,clr, alongBias=0)=>{
+        const dotSize = Math.max(5, Math.min(7, targetCssW/120));
+        const textSize = Math.max(12, Math.min(16, targetCssW/30));
+        // Nokta
+        sctx.fillStyle=clr;
+        sctx.beginPath(); sctx.arc(pt.x, pt.y, dotSize, 0, Math.PI*2); sctx.fill();
+        // Etiket — çizgiden dışarı normal yönünde; uçlar için küçük tanjant kaydırma
+        const pointOffset = Math.max(18, Math.min(28, targetCssW/28));
+        const lx = pt.x + nxv*pointOffset + uxv*alongBias;
+        const ly = pt.y + nyv*pointOffset + uyv*alongBias;
+        sctx.fillStyle='#fff'; sctx.font=`bold ${textSize}px Orbitron`;
+        sctx.textAlign='center'; sctx.textBaseline='middle';
+        sctx.fillText(label, lx, ly);
+      };
+  // Uçlar için hafif tanjant kaydırma: A (-), C (0), B (+)
+  // tBias yukarıda hesaplandı
+      drawDot(pA, `A(${pointA.x}, ${pointA.y})`, '#ff2ea3', -tBias);
+      drawDot(pB, `B(${pointB.x}, ${pointB.y})`, '#a1ff0a', tBias);
+      drawDot(pC, `C(${answers.C.x}, ${answers.C.y})`, '#00f6ff', 0);
+
+    // Matematiksel çözüm (Delta yerine mutlak değer; işaret için yön A→B alınır)
+    const {C,ratio}=answers; const mVal=ratio.m, nVal=ratio.n; const s = (level===1) ? (mVal+nVal) : Math.abs(mVal-nVal);
+    const x1=pointA.x, y1=pointA.y, x2=pointB.x, y2=pointB.y;
+  // Negatif sayıları parantezle göster (iki işaret yan yana gelmesin)
+  const fmtSigned = (v)=>{
+    const txt = formatNum(v);
+    return v<0 ? `(${txt})` : txt;
+  };
+  const ratioStatement = `\\dfrac{|AC|}{|CB|} = \\dfrac{${mVal}}{${nVal}}`;
+  let introText, formulaBlock, substitutionBlock;
+  if(level===1){
+    introText = `<p><strong>Çözüm:</strong> $${ratioStatement}$ oranı, C noktasının AB doğrusunu ${mVal}:${nVal} oranında <strong>içten</strong> böldüğünü gösterir.</p>`;
+    formulaBlock = `<p>Formül:</p>
+      $$x_C = \\frac{${nVal}x_1 + ${mVal}x_2}{${mVal}+${nVal}}, \\qquad y_C = \\frac{${nVal}y_1 + ${mVal}y_2}{${mVal}+${nVal}}$$`;
+    substitutionBlock = `<p>Verilen $A(${formatNum(x1)}, ${formatNum(y1)})$ ve $B(${formatNum(x2)}, ${formatNum(y2)})$ ile:</p>
+      $$x_C = \\frac{${nVal}\\cdot ${fmtSigned(x1)} + ${mVal}\\cdot ${fmtSigned(x2)}}{${mVal}+${nVal}} = ${formatNum(C.x)}$$
+      $$y_C = \\frac{${nVal}\\cdot ${fmtSigned(y1)} + ${mVal}\\cdot ${fmtSigned(y2)}}{${mVal}+${nVal}} = ${formatNum(C.y)}$$`;
+  } else {
+    introText = `<p><strong>Çözüm:</strong> $${ratioStatement}$ oranı, C noktasının AB doğrusunu ${mVal}:${nVal} oranında <strong>dıştan</strong> (B tarafında) böldüğünü gösterir.</p>`;
+    formulaBlock = `<p>Formül:</p>
+      $$x_C = \\frac{${mVal}x_2 - ${nVal}x_1}{${mVal}-${nVal}}, \\qquad y_C = \\frac{${mVal}y_2 - ${nVal}y_1}{${mVal}-${nVal}}$$`;
+    substitutionBlock = `<p>Verilen $A(${formatNum(x1)}, ${formatNum(y1)})$ ve $B(${formatNum(x2)}, ${formatNum(y2)})$ ile:</p>
+      $$x_C = \\frac{${mVal}\\cdot ${fmtSigned(x2)} - ${nVal}\\cdot ${fmtSigned(x1)}}{${mVal}-${nVal}} = ${formatNum(C.x)}$$
+      $$y_C = \\frac{${mVal}\\cdot ${fmtSigned(y2)} - ${nVal}\\cdot ${fmtSigned(y1)}}{${mVal}-${nVal}} = ${formatNum(C.y)}$$`;
+  }
+  const conclusion = `<p>Sonuç: <strong>C(${formatNum(C.x)}, ${formatNum(C.y)})</strong> bulunur.</p>`;
+  const html = `<div>${introText}${formulaBlock}${substitutionBlock}${conclusion}</div>`;
+  solutionMath.innerHTML = html; if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([solutionMath]).catch(()=>{}); }
+    }
+  function closeSolutionModal(){ playSfx(sfxModalClose); solutionModal.style.display='none'; }
+
+    window.addEventListener('resize', ()=>{ if(animationFrameId) cancelAnimationFrame(animationFrameId); setupCanvas(); drawInitialState(); });
+  // Başla: bir kez çalışsın ve mobilde güvenli ses açılışını yapsın
+  const startGame = async ()=>{
+    try{
+      stopStartBg();
+      playSfx(sfxModalClose);
+      // UI geçişini hızlı yap (ilk karede modal gizlensin)
+      startModal.style.display='none';
+      container.style.visibility='visible';
+      // Sesleri kilitten çıkar
+      await unlockAudioOnce();
+  // Kullanıcı tercihini uygula (kayıttan açık geldiyse çalar, aksi halde kapalı kalır)
+  setBgmEnabled(bgmEnabled);
+      level=1; score=0; updateStage(); startNewQuestion();
+    }catch(err){
+      // Bir sorun olsa bile oyunu başlatmaya çalış
+      try{ startModal.style.display='none'; container.style.visibility='visible'; }catch(_e){}
+      level=1; score=0; updateStage(); startNewQuestion();
+    }
+  };
+  startBtn.addEventListener('click', startGame, { once:true });
+  // Dokunmatik/pointer için ekstra güvenli tetikleyiciler (bazı cihazlarda click gecikebilir)
+  startBtn.addEventListener('pointerup', ()=>{ if(!audioUnlocked) unlockAudioOnce(); }, { passive:true });
+  startBtn.addEventListener('touchend', ()=>{ if(!audioUnlocked) unlockAudioOnce(); }, { passive:true });
+  // Klavye ile başlatma (erişilebilirlik)
+  startBtn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); startGame(); } });
+  if(aboutBtn){ aboutBtn.addEventListener('click', ()=>{ playSfx(sfxModalOpen); aboutModal.style.display='flex'; }); }
+  if(closeAboutBtn){ closeAboutBtn.addEventListener('click', ()=>{ playSfx(sfxModalClose); aboutModal.style.display='none'; }); }
+  if(openAboutFromStart){ openAboutFromStart.addEventListener('click', ()=>{ aboutModal.style.display='flex'; }); }
+    if(bgMusicBtn){ bgMusicBtn.addEventListener('click', ()=>{ setBgmEnabled(!bgmEnabled); }); }
+    checkBtn.addEventListener('click', checkAnswers);
+  solutionBtn.addEventListener('click', openSolutionModal);
+  nextBtn.addEventListener('click', startNewQuestion);
+  closeSolutionBtn.addEventListener('click', closeSolutionModal);
+  if(restartBtn){ restartBtn.addEventListener('click', ()=>{ playSfx(sfxModalClose); finishModal.style.display='none'; level=1; score=0; updateStage(); startNewQuestion(); }); }
+
+  setupCanvas();
+  updateStage();
+  // Start modal background animation on load
+  startStartBg();
+  window.addEventListener('resize', ()=>{ if(startModal && startModal.style.display!=='none'){ setupStartBg(); } });
+  });
+  </script>
+</body>
+</html>
