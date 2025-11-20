@@ -6,7 +6,17 @@
   <title>Kurtarma Operasyonu</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet" />
   <script>
-    MathJax = { tex: { inlineMath: [["$","$"],["\\(","\\)"]] }, svg: { fontCache: 'global' } };
+    // MathJax konfigürasyonu: Varsayılan olarak fontları normal (dik) yapmaya zorlayacak ayarlar
+    MathJax = { 
+      tex: { 
+        inlineMath: [["$","$"],["\\(","\\)"]],
+        macros: {
+          // Değişkenleri otomatik olarak dik (roman) fontta yazmak için kısayol tanımlayabiliriz
+          // ancak aşağıda showSolution içinde doğrudan \mathrm kullanıldı.
+        }
+      }, 
+      svg: { fontCache: 'global' } 
+    };
   </script>
   <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
   <style>
@@ -49,7 +59,8 @@
     .feedback-area mjx-container::-webkit-scrollbar-thumb{background:rgba(0,255,255,0.4);border-radius:3px}
     .feedback-area mjx-container:first-child{margin-top:0.2em}
     .feedback-area mjx-container:last-child{margin-bottom:0.2em}
-    .feedback-area mjx-mi{font-style:normal !important}
+    /* MathJax stilleri - italikliği gidermek için ek kurallar */
+    .feedback-area mjx-mi, .feedback-area mjx-i, .feedback-area mjx-texatom {font-style:normal !important; font-weight: normal !important;}
     em{font-style: normal;}
     mjx-container[jax="SVG"] svg{font-style: normal !important}
     mjx-container[jax="SVG"] [style*="font-style:italic"]{font-style: normal !important}
@@ -74,6 +85,27 @@
     .modal-content button{border-color:var(--tertiary-neon);color:var(--tertiary-neon);padding:16px 40px;box-shadow:0 0 15px rgba(0,255,0,0.3)}
     .modal-content button:hover{background:linear-gradient(135deg, rgba(0,255,0,0.3) 0%, rgba(0,200,0,0.2) 100%);color:var(--bg-color);box-shadow:0 0 30px var(--tertiary-neon), 0 0 50px rgba(0,255,0,0.4)}
     @media (max-width:1200px){
+            .input-row label {
+        flex-basis: 35%; /* %50'den %35'e düşürdük */
+        font-size: 0.85rem; /* Label fontunu biraz küçülttük */
+        line-height: 1.2; /* Satır aralığını düzelttik */
+        white-space: normal; /* Etiketin alt satıra geçmesine izin ver */
+      }
+            .input-wrapper {
+        flex-basis: 65%; /* %50'den %65'e çıkardık */
+      }
+            ::placeholder {
+        letter-spacing: -1px; 
+        font-size: 0.9em;
+      }
+            input[type=number],input[type=text]{
+        font-size: clamp(13px, 3.5vw, 16px); /* Fontu biraz küçülttük */
+        padding: 10px 5px; /* Sağ-sol iç boşluğu azalttık */
+        letter-spacing: -0.5px; /* Harfleri çok hafif birbirine yaklaştırdık */
+      }
+      .symbol-btn{height:44px; font-size:1.4rem; padding:0 10px}
+      button{min-height:48px; font-size:clamp(0.9rem, 3.6vw, 1rem)}
+      .canvas-container{width:98vw;height:58vh}
       body{height:auto;width:100%;overflow:auto; -webkit-overflow-scrolling:touch}
       .container{flex-direction:column;height:auto;overflow:visible}
   .canvas-container{width:100%;height:60vh;padding:10px}
@@ -96,16 +128,16 @@
     <div class="modal-content">
   <h2>Kurtarma Operasyonu</h2>
       <p>
-  Şehirde orta şiddetli bir deprem oldu; elektrikler kesildi ve acil yardım çağrıları artıyor. <strong>A</strong> noktasındaki Afet Koordinasyon Merkezinden çıkan
-        <strong>Ambulans</strong> caddeleri yanlızca yatay ve dikey olarak takip ederek ilerlerken,
+        Şehirde orta şiddetli bir deprem oldu; elektrikler kesildi ve acil yardım çağrıları artıyor. <strong>A</strong> noktasındaki Afet Koordinasyon Merkezinden çıkan
+        <strong>ambulans,</strong> caddeleri yalnızca yatay ve dikey olarak takip ederek ilerlerken,
         <strong>İHA</strong> ise gökyüzünden <strong>B</strong> noktasına en kısa doğrusal hat üzerinden uçuyor.
       </p>
       <p>
         Görevin, her turda A ve B arasında:
-        Ambulansın izleyeceği yolun yatay ve dikey uzunluklarını (|x₂-x₁|, |y₂-y₁|) ile İHA'nın kuş uçuşu mesafesini (Pisagor teoremi ile hipotenüs),
+        Ambulansın izleyeceği yolun yatay ve dikey uzunluklarını <span style="white-space: nowrap;">(|x₂-x₁|, |y₂-y₁|)</span> ile İHA'nın kuş uçuşu mesafesini (Pisagor teoremi ile hipotenüs),
         doğru hesaplamak. Doğru yanıt verdiğinde kalan süre kadar puan alırsın.
       </p>
-  <p style="margin-bottom:10px;">Arkaplan müziğini oyun ekranının üstündeki Müzik düğmesiyle açıp kapatabilirsin.</p>
+  <p style="margin-bottom:10px;">Arka plan müziğini oyun ekranının üstündeki Müzik düğmesiyle açıp kapatabilirsin.</p>
       <button id="start-btn">Operasyona Başla!</button>
     </div>
   </div>
@@ -345,12 +377,27 @@
       ctx.fillStyle=label; ctx.shadowColor=label; ctx.shadowBlur=5;
       for(let i=-gridRange;i<=gridRange;i++){
         if(i===0||i%5!==0) continue;
-        ctx.fillText(i, canvas.width/2+i*unit, canvas.height/2+15);
-        ctx.fillText(i, canvas.width/2-15, canvas.height/2-i*unit);
+        
+        // X ekseni sayıları
+        let textX = canvas.width/2+i*unit;
+        let textY_forX = canvas.height/2+15;
+        // Eğer yazı en sağa veya en sola çok yakınsa biraz içeri al
+        if (textX > canvas.width - 15) textX = canvas.width - 15;
+        if (textX < 15) textX = 15;
+        ctx.fillText(i, textX, textY_forX);
+
+        // Y ekseni sayıları
+        let textY = canvas.height/2-i*unit;
+        // Eğer yazı en üste veya en alta çok yakınsa biraz içeri al (özellikle -15 gibi değerler için)
+        if (textY > canvas.height - 10) textY = canvas.height - 10;
+        if (textY < 10) textY = 10;
+        
+        ctx.fillText(i, canvas.width/2-15, textY);
       }
       ctx.font=`bold ${Math.max(12,unit)}px Orbitron`;
       ctx.fillText('O', canvas.width/2-15, canvas.height/2+15);
       ctx.font=`bold ${Math.max(14,unit*1.2)}px Orbitron`;
+      // Eksen isimleri
       ctx.fillText('x', canvas.width-20, canvas.height/2-20);
       ctx.fillText('y', canvas.width/2+20, 20);
       // Gölgeyi kapat
@@ -622,8 +669,9 @@
       const final = Number.isInteger(sqrtv)
         ? `\\mathrm{d} = ${sqrtv}`
         : `\\mathrm{d} = \\sqrt{${d2}} \\approx ${distance}`;
+      // İtalik olmaması için \mathrm kullanımı eklendi
       const html = `<div style="width:100%;text-align:left;padding:0 10px;"><strong>Çözüm Adımları:</strong>
-      $$\\mathrm{d} = \\sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
+      $$\\mathrm{d} = \\sqrt{(\\mathrm{x}_2 - \\mathrm{x}_1)^2 + (\\mathrm{y}_2 - \\mathrm{y}_1)^2}$$
       $$\\mathrm{d} = \\sqrt{(${x2} - (${x1}))^2 + (${y2} - (${y1}))^2}$$
       $$\\mathrm{d} = \\sqrt{(${deltaX})^2 + (${deltaY})^2} = \\sqrt{${d2}}$$
       $$${final} \\text{ km}$$
