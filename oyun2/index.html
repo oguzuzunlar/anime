@@ -44,6 +44,9 @@
   mjx-container[jax="SVG"] svg{font-style: normal !important}
   mjx-container[jax="SVG"] [style*="font-style:italic"]{font-style: normal !important}
   mjx-container *{font-style: normal !important}
+  /* MathJax içindeki italik sınıflarını zorla normal yap */
+  .mjx-i { font-style: normal !important; }
+  
   .button-group{display:grid;grid-template-columns:1fr;gap:10px;margin-top:auto}
   button{padding:15px;border:2px solid;border-radius:5px;background:transparent;color:var(--text-color);font-family:'Orbitron',sans-serif;font-size:1rem;cursor:pointer;transition:all .3s ease;text-transform:uppercase; touch-action:manipulation}
     #checkBtn{border-color:var(--tertiary-neon);color:var(--tertiary-neon)}
@@ -819,20 +822,23 @@
   };
   const ratioStatement = `\\dfrac{|\\mathrm{AC}|}{|\\mathrm{CB}|} = \\dfrac{${mVal}}{${nVal}}`;
   let introText, formulaBlock, substitutionBlock;
+  
+  // --- ÇÖZÜM: TÜM DEĞİŞKENLERİ (x,y,A,B,C) \mathrm{} içine alarak italik olmasını engelle ---
+  
   if(level===1){
     introText = `<p><strong>Çözüm:</strong> $${ratioStatement}$ oranı, C noktasının AB doğrusunu ${mVal}:${nVal} oranında <strong>içten</strong> böldüğünü gösterir.</p>`;
     formulaBlock = `<p>Formül:</p>
-      $$\\mathrm{x}_C = \\frac{${nVal}\\mathrm{x}_1 + ${mVal}\\mathrm{x}_2}{${mVal}+${nVal}}, \\qquad \\mathrm{y}_C = \\frac{${nVal}\\mathrm{y}_1 + ${mVal}\\mathrm{y}_2}{${mVal}+${nVal}}$$`;
-    substitutionBlock = `<p>Verilen $A(${formatNum(x1)}, ${formatNum(y1)})$ ve $B(${formatNum(x2)}, ${formatNum(y2)})$ ile:</p>
-      $$\\mathrm{x}_C = \\frac{${nVal}\\cdot ${fmtSigned(x1)} + ${mVal}\\cdot ${fmtSigned(x2)}}{${mVal}+${nVal}} = ${formatNum(C.x)}$$
-      $$\\mathrm{y}_C = \\frac{${nVal}\\cdot ${fmtSigned(y1)} + ${mVal}\\cdot ${fmtSigned(y2)}}{${mVal}+${nVal}} = ${formatNum(C.y)}$$`;
+      $$\\mathrm{x}_{\\mathrm{C}} = \\frac{${nVal}\\mathrm{x}_1 + ${mVal}\\mathrm{x}_2}{${mVal}+${nVal}}, \\qquad \\mathrm{y}_{\\mathrm{C}} = \\frac{${nVal}\\mathrm{y}_1 + ${mVal}\\mathrm{y}_2}{${mVal}+${nVal}}$$`;
+    substitutionBlock = `<p>Verilen $\\mathrm{A}(${formatNum(x1)}, ${formatNum(y1)})$ ve $\\mathrm{B}(${formatNum(x2)}, ${formatNum(y2)})$ ile:</p>
+      $$\\mathrm{x}_{\\mathrm{C}} = \\frac{${nVal}\\cdot ${fmtSigned(x1)} + ${mVal}\\cdot ${fmtSigned(x2)}}{${mVal}+${nVal}} = ${formatNum(C.x)}$$
+      $$\\mathrm{y}_{\\mathrm{C}} = \\frac{${nVal}\\cdot ${fmtSigned(y1)} + ${mVal}\\cdot ${fmtSigned(y2)}}{${mVal}+${nVal}} = ${formatNum(C.y)}$$`;
   } else {
     introText = `<p><strong>Çözüm:</strong> $${ratioStatement}$ oranı, C noktasının AB doğrusunu ${mVal}:${nVal} oranında <strong>dıştan</strong> (B tarafında) böldüğünü gösterir.</p>`;
     formulaBlock = `<p>Formül:</p>
-      $$\\mathrm{x}_C = \\frac{${mVal}\\mathrm{x}_2 - ${nVal}\\mathrm{x}_1}{${mVal}-${nVal}}, \\qquad \\mathrm{y}_C = \\frac{${mVal}\\mathrm{y}_2 - ${nVal}\\mathrm{y}_1}{${mVal}-${nVal}}$$`;
-    substitutionBlock = `<p>Verilen $A(${formatNum(x1)}, ${formatNum(y1)})$ ve $B(${formatNum(x2)}, ${formatNum(y2)})$ ile:</p>
-      $$\\mathrm{x}_C = \\frac{${mVal}\\cdot ${fmtSigned(x2)} - ${nVal}\\cdot ${fmtSigned(x1)}}{${mVal}-${nVal}} = ${formatNum(C.x)}$$
-      $$\\mathrm{y}_C = \\frac{${mVal}\\cdot ${fmtSigned(y2)} - ${nVal}\\cdot ${fmtSigned(y1)}}{${mVal}-${nVal}} = ${formatNum(C.y)}$$`;
+      $$\\mathrm{x}_{\\mathrm{C}} = \\frac{${mVal}\\mathrm{x}_2 - ${nVal}\\mathrm{x}_1}{${mVal}-${nVal}}, \\qquad \\mathrm{y}_{\\mathrm{C}} = \\frac{${mVal}\\mathrm{y}_2 - ${nVal}\\mathrm{y}_1}{${mVal}-${nVal}}$$`;
+    substitutionBlock = `<p>Verilen $\\mathrm{A}(${formatNum(x1)}, ${formatNum(y1)})$ ve $\\mathrm{B}(${formatNum(x2)}, ${formatNum(y2)})$ ile:</p>
+      $$\\mathrm{x}_{\\mathrm{C}} = \\frac{${mVal}\\cdot ${fmtSigned(x2)} - ${nVal}\\cdot ${fmtSigned(x1)}}{${mVal}-${nVal}} = ${formatNum(C.x)}$$
+      $$\\mathrm{y}_{\\mathrm{C}} = \\frac{${mVal}\\cdot ${fmtSigned(y2)} - ${nVal}\\cdot ${fmtSigned(y1)}}{${mVal}-${nVal}} = ${formatNum(C.y)}$$`;
   }
   const conclusion = `<p>Sonuç: <strong>C(${formatNum(C.x)}, ${formatNum(C.y)})</strong> bulunur.</p>`;
   const html = `<div>${introText}${formulaBlock}${substitutionBlock}${conclusion}</div>`;
