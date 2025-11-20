@@ -72,6 +72,9 @@
   #solution-math mjx-container{max-width:100% !important; overflow-x:auto; font-size:0.95em !important}
   #solution-math mjx-container[display="true"]{font-size:0.9em !important}
   #solution-math mjx-container[jax="SVG"] svg{max-width:100% !important; width:auto !important; height:auto !important}
+  #solution-math .solution-block{display:flex;flex-direction:column;gap:12px;font-style:normal}
+  #solution-math .step-block{padding:4px 0}
+  #solution-math .step-title{font-weight:bold;margin-bottom:6px;font-family:'Orbitron',sans-serif;font-size:1rem}
     /* Mobil uyumluluk ve daha iyi dokunma hedefleri */
     .button-group button{min-height:48px}
     input[type=number]{min-height:44px}
@@ -813,36 +816,43 @@
       drawDot(pC, `C(${answers.C.x}, ${answers.C.y})`, '#00f6ff', 0);
 
     // Matematiksel çözüm (Delta yerine mutlak değer; işaret için yön A→B alınır)
-    const {C,ratio}=answers; const mVal=ratio.m, nVal=ratio.n; const s = (level===1) ? (mVal+nVal) : Math.abs(mVal-nVal);
+    const {C,ratio}=answers; const mVal=ratio.m, nVal=ratio.n;
     const x1=pointA.x, y1=pointA.y, x2=pointB.x, y2=pointB.y;
   // Negatif sayıları parantezle göster (iki işaret yan yana gelmesin)
   const fmtSigned = (v)=>{
     const txt = formatNum(v);
     return v<0 ? `(${txt})` : txt;
   };
-  const ratioStatement = `\\dfrac{|\\mathrm{AC}|}{|\\mathrm{CB}|} = \\dfrac{${mVal}}{${nVal}}`;
-  let introText, formulaBlock, substitutionBlock;
-  
-  // --- ÇÖZÜM: TÜM DEĞİŞKENLERİ (x,y,A,B,C) \mathrm{} içine alarak italik olmasını engelle ---
-  
-  if(level===1){
-    introText = `<p><strong>Çözüm:</strong> $${ratioStatement}$ oranı, C noktasının AB doğrusunu ${mVal}:${nVal} oranında <strong>içten</strong> böldüğünü gösterir.</p>`;
-    formulaBlock = `<p>Formül:</p>
-      $$\\mathrm{x}_{\\mathrm{C}} = \\frac{${nVal}\\mathrm{x}_1 + ${mVal}\\mathrm{x}_2}{${mVal}+${nVal}}, \\qquad \\mathrm{y}_{\\mathrm{C}} = \\frac{${nVal}\\mathrm{y}_1 + ${mVal}\\mathrm{y}_2}{${mVal}+${nVal}}$$`;
-    substitutionBlock = `<p>Verilen $\\mathrm{A}(${formatNum(x1)}, ${formatNum(y1)})$ ve $\\mathrm{B}(${formatNum(x2)}, ${formatNum(y2)})$ ile:</p>
-      $$\\mathrm{x}_{\\mathrm{C}} = \\frac{${nVal}\\cdot ${fmtSigned(x1)} + ${mVal}\\cdot ${fmtSigned(x2)}}{${mVal}+${nVal}} = ${formatNum(C.x)}$$
-      $$\\mathrm{y}_{\\mathrm{C}} = \\frac{${nVal}\\cdot ${fmtSigned(y1)} + ${mVal}\\cdot ${fmtSigned(y2)}}{${mVal}+${nVal}} = ${formatNum(C.y)}$$`;
-  } else {
-    introText = `<p><strong>Çözüm:</strong> $${ratioStatement}$ oranı, C noktasının AB doğrusunu ${mVal}:${nVal} oranında <strong>dıştan</strong> (B tarafında) böldüğünü gösterir.</p>`;
-    formulaBlock = `<p>Formül:</p>
-      $$\\mathrm{x}_{\\mathrm{C}} = \\frac{${mVal}\\mathrm{x}_2 - ${nVal}\\mathrm{x}_1}{${mVal}-${nVal}}, \\qquad \\mathrm{y}_{\\mathrm{C}} = \\frac{${mVal}\\mathrm{y}_2 - ${nVal}\\mathrm{y}_1}{${mVal}-${nVal}}$$`;
-    substitutionBlock = `<p>Verilen $\\mathrm{A}(${formatNum(x1)}, ${formatNum(y1)})$ ve $\\mathrm{B}(${formatNum(x2)}, ${formatNum(y2)})$ ile:</p>
-      $$\\mathrm{x}_{\\mathrm{C}} = \\frac{${mVal}\\cdot ${fmtSigned(x2)} - ${nVal}\\cdot ${fmtSigned(x1)}}{${mVal}-${nVal}} = ${formatNum(C.x)}$$
-      $$\\mathrm{y}_{\\mathrm{C}} = \\frac{${mVal}\\cdot ${fmtSigned(y2)} - ${nVal}\\cdot ${fmtSigned(y1)}}{${mVal}-${nVal}} = ${formatNum(C.y)}$$`;
-  }
-  const conclusion = `<p>Sonuç: <strong>C(${formatNum(C.x)}, ${formatNum(C.y)})</strong> bulunur.</p>`;
-  const html = `<div>${introText}${formulaBlock}${substitutionBlock}${conclusion}</div>`;
-  solutionMath.innerHTML = html; if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([solutionMath]).catch(()=>{}); }
+    const ratioStatement = `\\dfrac{|\\mathrm{AC}|}{|\\mathrm{CB}|} = \\dfrac{${mVal}}{${nVal}}`;
+    const divisionType = level===1 ? 'içten' : 'dıştan (B tarafında)';
+    let introText, formulaBlock, substitutionBlock;
+
+    if(level===1){
+      introText = `<p><strong>Çözüm:</strong> $${ratioStatement}$ oranı, C noktasının AB doğrusunu ${mVal}:${nVal} oranında <strong>${divisionType}</strong> böldüğünü gösterir.</p>`;
+      formulaBlock = `<div class="step-block"><p class="step-title">Formül:</p>
+        $$\\mathrm{x}_{\\mathrm{C}} = \\frac{${nVal}\\mathrm{x}_1 + ${mVal}\\mathrm{x}_2}{${mVal}+${nVal}}, \qquad \\mathrm{y}_{\\mathrm{C}} = \\frac{${nVal}\\mathrm{y}_1 + ${mVal}\\mathrm{y}_2}{${mVal}+${nVal}}$$
+      </div>`;
+      substitutionBlock = `<div class="step-block"><p class="step-title">Verilen değerlerle:</p>
+        <p>$\\mathrm{A}(${formatNum(x1)}, ${formatNum(y1)})$ ve $\\mathrm{B}(${formatNum(x2)}, ${formatNum(y2)})$ için:</p>
+        $$\\mathrm{x}_{\\mathrm{C}} = \\frac{${nVal}\\cdot ${fmtSigned(x1)} + ${mVal}\\cdot ${fmtSigned(x2)}}{${mVal}+${nVal}} = ${formatNum(C.x)}$$
+        $$\\mathrm{y}_{\\mathrm{C}} = \\frac{${nVal}\\cdot ${fmtSigned(y1)} + ${mVal}\\cdot ${fmtSigned(y2)}}{${mVal}+${nVal}} = ${formatNum(C.y)}$$
+      </div>`;
+    } else {
+      introText = `<p><strong>Çözüm:</strong> $${ratioStatement}$ oranı, C noktasının AB doğrusunu ${mVal}:${nVal} oranında <strong>${divisionType}</strong> böldüğünü gösterir.</p>`;
+      formulaBlock = `<div class="step-block"><p class="step-title">Formül:</p>
+        $$\\mathrm{x}_{\\mathrm{C}} = \\frac{${mVal}\\mathrm{x}_2 - ${nVal}\\mathrm{x}_1}{${mVal}-${nVal}}, \qquad \\mathrm{y}_{\\mathrm{C}} = \\frac{${mVal}\\mathrm{y}_2 - ${nVal}\\mathrm{y}_1}{${mVal}-${nVal}}$$
+      </div>`;
+      substitutionBlock = `<div class="step-block"><p class="step-title">Verilen değerlerle:</p>
+        <p>$\\mathrm{A}(${formatNum(x1)}, ${formatNum(y1)})$ ve $\\mathrm{B}(${formatNum(x2)}, ${formatNum(y2)})$ için:</p>
+        $$\\mathrm{x}_{\\mathrm{C}} = \\frac{${mVal}\\cdot ${fmtSigned(x2)} - ${nVal}\\cdot ${fmtSigned(x1)}}{${mVal}-${nVal}} = ${formatNum(C.x)}$$
+        $$\\mathrm{y}_{\\mathrm{C}} = \\frac{${mVal}\\cdot ${fmtSigned(y2)} - ${nVal}\\cdot ${fmtSigned(y1)}}{${mVal}-${nVal}} = ${formatNum(C.y)}$$
+      </div>`;
+    }
+
+    const conclusion = `<p>Sonuç: <strong>$\\mathrm{C}(${formatNum(C.x)}, ${formatNum(C.y)})$</strong> bulunur.</p>`;
+    const html = `<div class="solution-block">${introText}${formulaBlock}${substitutionBlock}${conclusion}</div>`;
+    solutionMath.innerHTML = html;
+    if(window.MathJax && MathJax.typesetPromise){ MathJax.typesetPromise([solutionMath]).catch(()=>{}); }
     }
   function closeSolutionModal(){ playSfx(sfxModalClose); solutionModal.style.display='none'; }
 
