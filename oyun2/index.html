@@ -109,8 +109,8 @@
     <canvas id="start-bg-canvas"></canvas>
     <div class="modal-content">
   <h2>İHA İkmal Operasyonu</h2>
-  <p>Şehirde orta şiddetli bir deprem oldu; elektrikler kesildi ve acil yardım çağrıları artıyor. Keşif İHA'mız, ana üs <strong>A</strong> noktasından afet bölgesi <strong>B</strong> noktasına giderken enerji tasarrufu için bir <strong>C</strong> ikmal noktasında durmak zorunda.</p>
-  <p>Sana $\dfrac{|AC|}{|CB|}=\dfrac{m}{n}$ oranı verilecek. Bu orana göre <strong>C</strong> noktasının koordinatlarını doğru hesaplayıp İHA'yı güvenle yönlendirmelisin. İlk seviyede C, <em>AB</em> üzerinde içten bölme yapar; ikinci seviyede ise <em>B</em> tarafında dıştan bölme söz konusudur.</p>
+  <p>Şehirde orta şiddetli bir deprem oldu; elektrikler kesildi ve acil yardım çağrıları artıyor. <strong>Keşif İHA'sı</strong>, ana üs <strong>A</strong> noktasından afet bölgesi <strong>B</strong> noktasına giderken <strong>batarya ikmali için</strong> bir <strong>C</strong> ikmal noktasında durmak zorunda.</p>
+  <p>Sana $\dfrac{|\mathrm{AC}|}{|\mathrm{CB}|}=\dfrac{\mathrm{m}}{\mathrm{n}}$ oranı verilecek. Bu orana göre <strong>C</strong> noktasının koordinatlarını doğru hesaplayıp İHA'yı güvenle yönlendirmelisin. İlk seviyede C, <em>AB</em> üzerinde içten bölme yapar; ikinci seviyede ise <em>B</em> tarafında dıştan bölme söz konusudur.</p>
       <p style="opacity:.9">Nasıl oynanır: A ve B koordinatlarını incele, orana göre C'yi bul ve x, y alanlarına yaz. Doğruysa kalan süre kadar puan alırsın. 150 puanda Seviye 2 açılır, 300 puanda görev tamamlanır.</p>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
         <button id="start-btn">Başla</button>
@@ -185,7 +185,7 @@
   <div class="modal-overlay" id="about-modal" style="display:none;">
     <div class="modal-content" style="max-width:840px;text-align:left;">
       <h2>Oyun Hakkında</h2>
-  <p><strong>İHA İkmal Operasyonu</strong>, koordinat düzleminde oran-orantı ve içten/dıştan bölme kavramlarını eğlenceli bir görev kurgusuyla birleştirir. Amacın, verilen $\dfrac{|AC|}{|CB|}=\dfrac{m}{n}$ oranına göre ikmal noktası <strong>C</strong>'yi doğru hesaplayıp İHA'yı yönlendirmektir.</p>
+  <p><strong>İHA İkmal Operasyonu</strong>, koordinat düzleminde oran-orantı ve içten/dıştan bölme kavramlarını eğlenceli bir görev kurgusuyla birleştirir. Amacın, verilen $\dfrac{|\mathrm{AC}|}{|\mathrm{CB}|}=\dfrac{\mathrm{m}}{\mathrm{n}}$ oranına göre ikmal noktası <strong>C</strong>'yi doğru hesaplayıp İHA'yı yönlendirmektir.</p>
       <ul style="margin-left:1rem;line-height:1.6;">
         <li><strong>Seviye 1</strong>: C, AB doğru parçasını içten böler.</li>
         <li><strong>Seviye 2</strong>: C, B tarafında dıştan böler.</li>
@@ -452,15 +452,28 @@
       ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
       ctx.fillText('x', w - arrow - 6, h/2 - 18);
       ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-      ctx.fillText('y', w/2 + 18, arrow + 4);
+      // Y ekseni etiketini taşmaması için biraz daha aşağı aldık veya kontrol ediyoruz
+      ctx.fillText('y', w/2 + 20, 20);
       // Sayı etiketleri için eski hizalama ve fontu geri getir
       ctx.textAlign='center'; ctx.textBaseline='middle';
       ctx.font=`${Math.max(10,unit/1.5)}px Roboto`;
       ctx.lineWidth=1; const label=getComputedStyle(document.documentElement).getPropertyValue('--tertiary-neon'); ctx.fillStyle=label;
       for(let i=-gridRange;i<=gridRange;i++){
         if(i===0||i%5!==0) continue;
-        ctx.fillText(i, w/2+i*unit, h/2+15);
-        ctx.fillText(i, w/2-15, h/2-i*unit);
+        
+        // Yatay eksen sayıları (x ekseni üzerinde)
+        let px = w/2+i*unit;
+        // Kenara çok yakınsa biraz içeri çek
+        if(px > w - 15) px = w - 15;
+        if(px < 15) px = 15;
+        ctx.fillText(i, px, h/2+15);
+
+        // Dikey eksen sayıları (y ekseni üzerinde)
+        let py = h/2-i*unit;
+        // Alt veya üst kenara çok yakınsa (özellikle -15 gibi) içeri çek
+        if(py > h - 12) py = h - 12;
+        if(py < 12) py = 12;
+        ctx.fillText(i, w/2-15, py);
       }
       ctx.font=`bold ${Math.max(12,unit)}px Orbitron`;
       ctx.fillText('O', w/2-15, h/2+15);
@@ -496,8 +509,8 @@
       const mVal = hasRatio ? answers.ratio.m : null;
       const nVal = hasRatio ? answers.ratio.n : null;
       const ratioTex = (mVal!==null && nVal!==null)
-        ? `\\frac{\\left|\\mathrm{AC}\\right|}{\\left|\\mathrm{CB}\\right|} = \\frac{${mVal}}{${nVal}}`
-        : `\\frac{\\left|\\mathrm{AC}\\right|}{\\left|\\mathrm{CB}\\right|} = \\frac{\\mathrm{m}}{\\mathrm{n}}`;
+        ? `\\frac{|\\mathrm{AC}|}{|\\mathrm{CB}|} = \\frac{${mVal}}{${nVal}}`
+        : `\\frac{|\\mathrm{AC}|}{|\\mathrm{CB}|} = \\frac{\\mathrm{m}}{\\mathrm{n}}`;
       const aStr = hasA ? `(${pointA.x}, ${pointA.y})` : `—`;
       const bStr = hasB ? `(${pointB.x}, ${pointB.y})` : `—`;
       const divisionInfo = level===1 ? 'C, AB doğrusunu içten bölüyor.' : 'C, AB doğru parçasını dıştan (B tarafında) bölüyor.';
@@ -804,22 +817,22 @@
     const txt = formatNum(v);
     return v<0 ? `(${txt})` : txt;
   };
-  const ratioStatement = `\\dfrac{|AC|}{|CB|} = \\dfrac{${mVal}}{${nVal}}`;
+  const ratioStatement = `\\dfrac{|\\mathrm{AC}|}{|\\mathrm{CB}|} = \\dfrac{${mVal}}{${nVal}}`;
   let introText, formulaBlock, substitutionBlock;
   if(level===1){
     introText = `<p><strong>Çözüm:</strong> $${ratioStatement}$ oranı, C noktasının AB doğrusunu ${mVal}:${nVal} oranında <strong>içten</strong> böldüğünü gösterir.</p>`;
     formulaBlock = `<p>Formül:</p>
-      $$x_C = \\frac{${nVal}x_1 + ${mVal}x_2}{${mVal}+${nVal}}, \\qquad y_C = \\frac{${nVal}y_1 + ${mVal}y_2}{${mVal}+${nVal}}$$`;
+      $$\\mathrm{x}_C = \\frac{${nVal}\\mathrm{x}_1 + ${mVal}\\mathrm{x}_2}{${mVal}+${nVal}}, \\qquad \\mathrm{y}_C = \\frac{${nVal}\\mathrm{y}_1 + ${mVal}\\mathrm{y}_2}{${mVal}+${nVal}}$$`;
     substitutionBlock = `<p>Verilen $A(${formatNum(x1)}, ${formatNum(y1)})$ ve $B(${formatNum(x2)}, ${formatNum(y2)})$ ile:</p>
-      $$x_C = \\frac{${nVal}\\cdot ${fmtSigned(x1)} + ${mVal}\\cdot ${fmtSigned(x2)}}{${mVal}+${nVal}} = ${formatNum(C.x)}$$
-      $$y_C = \\frac{${nVal}\\cdot ${fmtSigned(y1)} + ${mVal}\\cdot ${fmtSigned(y2)}}{${mVal}+${nVal}} = ${formatNum(C.y)}$$`;
+      $$\\mathrm{x}_C = \\frac{${nVal}\\cdot ${fmtSigned(x1)} + ${mVal}\\cdot ${fmtSigned(x2)}}{${mVal}+${nVal}} = ${formatNum(C.x)}$$
+      $$\\mathrm{y}_C = \\frac{${nVal}\\cdot ${fmtSigned(y1)} + ${mVal}\\cdot ${fmtSigned(y2)}}{${mVal}+${nVal}} = ${formatNum(C.y)}$$`;
   } else {
     introText = `<p><strong>Çözüm:</strong> $${ratioStatement}$ oranı, C noktasının AB doğrusunu ${mVal}:${nVal} oranında <strong>dıştan</strong> (B tarafında) böldüğünü gösterir.</p>`;
     formulaBlock = `<p>Formül:</p>
-      $$x_C = \\frac{${mVal}x_2 - ${nVal}x_1}{${mVal}-${nVal}}, \\qquad y_C = \\frac{${mVal}y_2 - ${nVal}y_1}{${mVal}-${nVal}}$$`;
+      $$\\mathrm{x}_C = \\frac{${mVal}\\mathrm{x}_2 - ${nVal}\\mathrm{x}_1}{${mVal}-${nVal}}, \\qquad \\mathrm{y}_C = \\frac{${mVal}\\mathrm{y}_2 - ${nVal}\\mathrm{y}_1}{${mVal}-${nVal}}$$`;
     substitutionBlock = `<p>Verilen $A(${formatNum(x1)}, ${formatNum(y1)})$ ve $B(${formatNum(x2)}, ${formatNum(y2)})$ ile:</p>
-      $$x_C = \\frac{${mVal}\\cdot ${fmtSigned(x2)} - ${nVal}\\cdot ${fmtSigned(x1)}}{${mVal}-${nVal}} = ${formatNum(C.x)}$$
-      $$y_C = \\frac{${mVal}\\cdot ${fmtSigned(y2)} - ${nVal}\\cdot ${fmtSigned(y1)}}{${mVal}-${nVal}} = ${formatNum(C.y)}$$`;
+      $$\\mathrm{x}_C = \\frac{${mVal}\\cdot ${fmtSigned(x2)} - ${nVal}\\cdot ${fmtSigned(x1)}}{${mVal}-${nVal}} = ${formatNum(C.x)}$$
+      $$\\mathrm{y}_C = \\frac{${mVal}\\cdot ${fmtSigned(y2)} - ${nVal}\\cdot ${fmtSigned(y1)}}{${mVal}-${nVal}} = ${formatNum(C.y)}$$`;
   }
   const conclusion = `<p>Sonuç: <strong>C(${formatNum(C.x)}, ${formatNum(C.y)})</strong> bulunur.</p>`;
   const html = `<div>${introText}${formulaBlock}${substitutionBlock}${conclusion}</div>`;
