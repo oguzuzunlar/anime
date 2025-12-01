@@ -204,11 +204,11 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         const themeToggle = document.getElementById('theme-toggle');
-        const isDarkMode = localStorage.getItem('theme') === 'dark';
-        if (isDarkMode) {
-            document.body.classList.add('dark-mode');
-            themeToggle.textContent = '🌙';
-        }
+        // Her zaman karanlık modda başla
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '🌙';
+        localStorage.setItem('theme', 'dark');
+        
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
             const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
