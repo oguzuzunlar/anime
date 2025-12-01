@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4. Basamak Değerlendirme - Sayma Yöntemleri</title>
+    <!-- Favicon: Kupa/Ödül ikonu -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%232563eb' d='M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.556.139.863.72.685 1.292-.139.445-.62.742-1.092.742h-7.5c-.472 0-.953-.297-1.092-.742-.178-.572.129-1.153.685-1.292l1.425-.356v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935zM3.504 1c.007.517.026 1.006.056 1.469.13 2.028.457 3.546.87 4.667C5.241 8.522 6.318 9.5 8 9.5c1.682 0 2.759-.978 3.57-2.364.413-1.121.74-2.64.87-4.667.03-.463.049-.952.056-1.469H3.504z'/%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- MathJax -->
+    <script>
+        MathJax = {
+            tex: {
+                packages: {'[+]': ['ams','noerrors']},
+                inlineMath: [['$','$'], ['\\(','\\)']],
+                displayMath: [['$$','$$'], ['\\[','\\]']],
+                macros: { rm: ['\\mathrm{#1}', 1] }
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script"></script>
+    <style>
+        :root {
+            --bg-color: #f0f9ff; --text-color: #0f172a; --card-bg: #ffffff; 
+            --card-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+            /* Akademik Mavi Tema */
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); 
+            --secondary-bg: #eff6ff; --secondary-text: #1e40af;
+            --header-color: #1d4ed8;
+            --border-color: #bfdbfe;
+            --evaluation-card-bg: rgba(255, 255, 255, 0.8);
+        }
+        .dark-mode {
+            --bg-color: #0f172a; --text-color: #e2e8f0; --card-bg: #1e293b; 
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --secondary-bg: #172554; --secondary-text: #93c5fd;
+            --header-color: #60a5fa;
+            --border-color: #3b82f6;
+            --evaluation-card-bg: rgba(30, 41, 59, 0.4);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-style: normal !important; }
+        body, input, textarea, button, select { font-family: 'Inter', 'Poppins', sans-serif; color: var(--text-color); }
+        mjx-container { max-width: 100%; overflow: hidden; }
+        img, svg { max-width: 100%; height: auto; display: block; }
+        
+        body { background: var(--bg-color); color: var(--text-color); min-height: 100vh; line-height: 1.6; transition: 0.3s; }
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+        
+        /* Kart Yapıları */
+        .header, .page { background: var(--card-bg); border-radius: 16px; box-shadow: var(--card-shadow); border: 1px solid rgba(255,255,255,0.1); }
+        .header { padding: 25px; text-align: center; margin-bottom: 25px; position: relative; overflow: hidden; }
+        .page { display: none; padding: 35px; animation: slideIn 0.5s ease; }
+        .page.active { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1, h2, h3 { color: var(--header-color); font-weight: 700; margin-bottom: 15px; }
+        h1 { font-size: 2.2rem; letter-spacing: -0.5px; }
+        
+        /* Tema Butonu */
+        #theme-toggle { position: absolute; top: 20px; right: 20px; background: var(--secondary-bg); border: 1px solid var(--border-color); color: var(--secondary-text); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.3s; }
+        
+        /* Butonlar */
+        .button { background: var(--primary-gradient); color: white; border: none; padding: 14px 28px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: transform 0.2s, box-shadow 0.2s; }
+        .button:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3); }
+        .button.secondary { background: var(--secondary-bg); color: var(--secondary-text); }
+        .button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Soru Alanı Düzeni */
+        .problem-container { display: grid; grid-template-columns: 1fr 1.3fr; gap: 40px; }
+        .context-card { background: var(--card-bg); border-radius: 12px; overflow: hidden; }
+        .context-image-wrapper { 
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); 
+            height: 180px; display: flex; align-items: center; justify-content: center;
+            border-radius: 12px; margin-bottom: 20px; position: relative;
+        }
+        .context-icon { font-size: 5rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        
+        .question-group { background: var(--secondary-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); }
+        .question-group label { display: block; margin-bottom: 10px; font-size: 1.05rem; }
+        .question-group input { width: 100%; padding: 12px; border-radius: 8px; border: 2px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-size: 1.1rem; font-family: monospace; }
+        .point-badge { float: right; background: var(--primary-gradient); color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; }
+
+        /* Değerlendirme Kartları */
+        .evaluation-card { background: var(--evaluation-card-bg); border-left: 5px solid #ccc; padding: 20px; margin-bottom: 15px; border-radius: 8px; }
+        #scoreCard { background: var(--primary-gradient); color: white; padding: 30px; border-radius: 16px; text-align: center; margin: 30px 0; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); padding: 20px; align-items: flex-start; justify-content: center; overflow-y: auto; }
+        .modal-content { background: var(--card-bg); margin: 5vh auto; padding: 30px; border-radius: 16px; max-width: 800px; width: 100%; position: relative; border-top: 6px solid var(--header-color); overflow: hidden; }
+        .close-button { position: absolute; right: 20px; top: 15px; font-size: 2rem; cursor: pointer; color: var(--text-color); opacity: 0.5; }
+        .answer-block { background: var(--secondary-bg); padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid var(--header-color); overflow: hidden; }
+
+        @media (max-width: 900px) { .problem-container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body class="dark-mode">
+
+<div class="container">
+    <div class="header">
+        <button id="theme-toggle">🌙</button>
+        <h1>4. Basamak Değerlendirme</h1>
+        <h3 style="opacity: 0.8; font-weight: 500;">Sayma Yöntemleri</h3>
+    </div>
+
+    <!-- GİRİŞ SAYFASI -->
+    <div class="page active" id="page-intro">
+        <div style="text-align: center;">
+            <div style="max-width: 700px; margin: 20px auto 0; background: var(--secondary-bg); border-radius: 18px; box-shadow: var(--card-shadow); padding: 32px 28px 28px 28px; color: var(--secondary-text);">
+                <h2 style="color: var(--header-color); font-size:2rem; margin-bottom:18px;">Bilgilendirme</h2>
+                <ul style="list-style-type: none; padding-left: 0; font-size:1.08em; text-align:left; margin-bottom:28px; color: var(--text-color);">
+                    <li style="margin-bottom:12px;">Bu değerlendirme sayma yöntemleri konusundaki becerilerinizi ölçmek amacıyla hazırlanmıştır.</li>
+                    <li style="margin-bottom:12px;"><strong>Problem:</strong> Size sunulan "Matematik Olimpiyatı" senaryosuna dayalı 3 soruyu cevaplayacaksınız.</li>
+                    <li style="margin-bottom:12px;"><strong>Puanlama (Toplam 25 Puan):</strong> Her sorunun puan değeri yanında belirtilmiştir. Cevaplarınız yapay zeka tarafından değerlendirilecektir.</li>
+                </ul>
+                <div style="background: var(--card-bg); border-left: 5px solid var(--header-color); padding: 15px 20px; border-radius: 8px; text-align: left; margin-bottom: 25px;">
+                    <h3 style="font-size: 1.1rem; display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">⚠️ YZ Destekli Değerlendirme Hakkında</h3>
+                    <p style="margin: 0; font-size: 0.95em; opacity: 0.9;">Bu etkinlikte verilen otomatik değerlendirmeler ve geri bildirimler yapay zeka tarafından sağlanmaktadır. Amaç, öğrenmenize destek olmak ve farklı çözüm yollarını göstermektir. YZ çıktıları bir uzman görüşünün yerine geçmez ve nadiren hatalar içerebilir.</p>
+                </div>
+                <button class="button" onclick="showPage('page-exam')" style="border-radius:24px; padding:12px 38px; font-size:1.15rem;">Sınava Başla</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SINAV SAYFASI -->
+    <div class="page" id="page-exam">
+        <div class="problem-container">
+            <!-- Sol Taraf: Senaryo -->
+             
+            <div class="problem-context">
+                 <h3>Senaryo: Matematik Olimpiyatı</h3>
+                <div class="context-image-wrapper">
+                    <div class="context-icon">🥇🥈🥉</div>
+                </div>
+               
+                <p>3 kız 4 erkek öğrencinin katıldığı bir matematik yarışmasının sonuçları açıklanacaktır. Yarışma sonucunda ilk 3 derece belirlenecektir.Her derecede en az bir öğrenci bulunmak zorundadır. Puan eşitliği durumunda bir dereceyi birden fazla öğrenci paylaşabilir.</p>
+            
+                
+                <p>Buna göre değerlendirme bölümündeki soruları cevaplayınız.</p>
+            </div>
+
+            <!-- Sağ Taraf: Sorular -->
+            <div class="problem-questions">
+                <h3>Değerlendirme Sınavı</h3>
+                <!-- Remaining questions: only 4,5,6 are shown per user request -->
+
+                <!-- Soru 4 -->
+                <div class="question-group">
+                    <label>
+                        <span class="point-badge">7 Puan</span>
+                        <strong>SORU 1)</strong><br>
+                        İlk 3 derece 3 öğrenci tarafından paylaşıldıysa, ilk 3 derece alan öğrencilerden en az bir tanesinin kız olduğu kaç farklı sonuç vardır?
+                    </label>
+                    <input type="number" id="q1_input" placeholder="Sonucu giriniz...">
+                </div>
+
+                <!-- Soru 5 -->
+                <div class="question-group">
+                    <label>
+                        <span class="point-badge">6 Puan</span>
+                        <strong>SORU 2)</strong><br>
+                        İlk 3 derece toplam 4 farklı öğrenci tarafından paylaşıldıysa, ilk 4 öğrenci arasından en az birinin kız olduğu kaç farklı sonuç vardır?
+                    </label>
+                    <input type="number" id="q2_input" placeholder="Sonucu giriniz...">
+                </div>
+
+                <!-- Soru 6 -->
+                <div class="question-group">
+                    <label>
+                        <span class="point-badge">12 Puan</span>
+                        <strong>SORU 3)</strong><br>
+                        İlk 3 derece toplam 5 farklı öğrenci tarafından paylaşıldıysa, ilk 5 öğrenci arasında en az bir kız olduğu kaç farklı sonuç vardır?
+                    </label>
+                    <input type="number" id="q3_input" placeholder="Sonucu giriniz...">
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="button" id="finish-exam-btn" onclick="checkAndFinish()">Sınavı Bitir ve Değerlendir</button>
+        </div>
+    </div>
+
+    <!-- DEĞERLENDİRME SAYFASI -->
+    <div class="page" id="page-evaluation">
+        <h2 style="text-align:center;">Değerlendirme Sonuçları</h2>
+        <div id="scoreCard">
+            <div style="font-size: 1.1rem; opacity: 0.9;">TOPLAM PUAN</div>
+            <div id="finalScore" style="font-size: 3.5rem; font-weight: 800;">-- / 25</div>
+            <div id="finalPercentage" style="font-size: 1.2rem; font-weight: 600;">--%</div>
+        </div>
+        
+        <div id="aiStatus" style="text-align:center; color: var(--secondary-text); margin-bottom: 20px; font-style:italic;">
+            Yanıtlarınız analiz ediliyor...
+        </div>
+
+        <div id="evaluationContent">
+            <!-- Dinamik içerik buraya gelecek -->
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; gap: 15px; display: flex; justify-content: center;">
+            <button class="button secondary" onclick="showPage('page-exam')">Tekrar Dene</button>
+            <button class="button" onclick="openSolutionsModal()">Detaylı Çözümleri Gör</button>
+        </div>
+    </div>
+</div>
+
+<!-- ÇÖZÜM MODALI -->
+<div id="solution-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeSolutionsModal()">&times;</span>
+        <h2 style="color: var(--header-color); border-bottom: 2px solid var(--border-color); padding-bottom: 10px; margin-bottom: 20px;">Çözüm Anahtarı</h2>
+        <div id="solutionContent">
+            <!-- JS ile doldurulacak -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- TEMEL FONKSİYONLAR ---
+    document.addEventListener('DOMContentLoaded', () => {
+        setupThemeToggle();
+    });
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function setupThemeToggle() {
+        const toggle = document.getElementById('theme-toggle');
+        // Varsayılan olarak her zaman dark mode
+        let isDark = true;
+        
+        const applyTheme = () => {
+            if(isDark) { document.body.classList.add('dark-mode'); toggle.textContent = '☀️'; }
+            else { document.body.classList.remove('dark-mode'); toggle.textContent = '🌙'; }
+        };
+        applyTheme();
+
+        toggle.addEventListener('click', () => {
+            isDark = !isDark;
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            applyTheme();
+        });
+    }
+
+    // --- LMS PUAN GÖNDERME ---
+    function sendScoreToLMS(ogrenciPuani) {
+        var result = { 
+            score: { max: 25, min: 0, raw: ogrenciPuani, scaled: ogrenciPuani / 25 }, 
+            completion: true, 
+            success: true 
+        };
+        try {
+            var lmsWindow = window.parent.document.getElementById("frmApp-0")?.contentWindow;
+            if (lmsWindow?.onCompleted) { 
+                lmsWindow.onCompleted(result); 
+                console.log("✅ LMS'ye puan gönderildi:", ogrenciPuani);
+            } else { 
+                console.warn("⚠️ LMS bağlantısı bulunamadı, puan yerel olarak kaydedildi."); 
+            }
+        } catch (e) { 
+            console.error('LMS ile iletişim sırasında hata:', e); 
+        }
+    }
+
+    // --- DEĞERLENDİRME MANTIĞI ---
+    
+    // Doğru Cevaplar (7 katılımcı için: Q1,Q2,Q3)
+    const correctAnswers = {
+        q1: 186,  // 1) En az 1 kız (beraberlik yok)
+        q2: 1224, // 2) k=4 (2-1-1)
+        q3: 3150  // 3) k=5 (3-1-1 veya 2-2-1)
+    };
+
+    // Alternatif çözümler ve kısmi puan mantığı
+    const alternativeAnswers = {
+        q1: [
+            { value: 210, points: 4, explanation: "Toplam durumu buldunuz ama tümleyen hesabı yapılmamış." },
+            { value: 24, points: 3, explanation: "Sadece tümü erkek durumunu hesapladınız." }
+        ],
+        q2: [
+            { value: 1260, points: 4, explanation: "Toplam durumu buldunuz ama tümleyen hesabı yapılmamış." },
+            { value: 36, points: 2, explanation: "Sadece tümü erkek durumunu hesapladınız." },
+            { value: 420, points: 2, explanation: "Tek konum için doğru hesapladınız ama 3 konumu çarpmadınız." }
+        ],
+        q3: [
+            { value: 1260, points: 5, explanation: "Sadece 3-1-1 örüntüsünü hesapladınız, 2-2-1 örüntüsü eksik." },
+            { value: 1890, points: 5, explanation: "Sadece 2-2-1 örüntüsünü hesapladınız, 3-1-1 örüntüsü eksik." },
+            { value: 420, points: 3, explanation: "Tek konum için 3-1-1 hesabı doğru ama eksik." },
+            { value: 630, points: 3, explanation: "Tek konum için 2-2-1 hesabı doğru ama eksik." }
+        ]
+    };
+
+    async function checkAndFinish() {
+        document.getElementById('finish-exam-btn').disabled = true;
+        showPage('page-evaluation');
+        
+        const userAnswers = {
+            q1: parseInt(document.getElementById('q1_input').value) || 0,
+            q2: parseInt(document.getElementById('q2_input').value) || 0,
+            q3: parseInt(document.getElementById('q3_input').value) || 0
+        };
+
+        let totalScore = 0;
+
+        try {
+            // Yapay Zeka Değerlendirmesi
+            if (!navigator.onLine) { throw new Error("İnternet bağlantısı yok."); }
+            
+            document.getElementById('aiStatus').innerHTML = '<span style="color: var(--header-color);">🤖 Yapay zeka yanıtlarınızı analiz ediyor...</span>';
+            
+            const prompt = buildAIScoringPrompt(userAnswers);
+            const result = await callGemini(prompt);
+            const evaluation = formatAIScoringResponse(result, userAnswers);
+            
+            document.getElementById('evaluationContent').innerHTML = evaluation.html;
+            document.getElementById('aiStatus').innerHTML = '<span style="color: #10b981;">✅ Yapay zeka değerlendirmesi tamamlandı.</span>';
+            totalScore = evaluation.score || 0;
+            
+        } catch (err) {
+            console.warn("YZ Değerlendirmesi Başarısız:", err);
+            totalScore = runFallbackEvaluation(userAnswers, err);
+        }
+
+        // Skor kartını güncelle
+        updateScoreDisplay(totalScore);
+        
+        // LMS'ye puan gönder
+        try { sendScoreToLMS(totalScore); } catch (sendErr) { console.error('LMS gönderimi başarısız:', sendErr); }
+        
+        // Çözüm modalını hazırla
+        populateSolutionModal();
+        
+        document.getElementById('finish-exam-btn').disabled = false;
+    }
+
+    // --- YAPAY ZEKA DEĞERLENDİRME ---
+    async function callGemini(prompt) {
+        const apiKey = "AIzaSyCEhU3erLOAJB9cADTqaGanVidc2DRbhr8";
+        if (!apiKey || apiKey === "YOUR_API_KEY") throw new Error("Geçerli bir API anahtarı girilmedi.");
+
+        const models = ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.5-pro'];
+        const timeoutMs = 8000;
+
+        for (const model of models) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+                const body = { contents: [{ parts: [{ text: prompt }] }] };
+                const response = await fetch(url, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(body), 
+                    signal: controller.signal 
+                });
+                clearTimeout(timeoutId);
+
+                if (!response.ok) continue;
+
+                const json = await response.json();
+                const text = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!text) continue;
+
+                console.log('YZ değerlendirmesinde başarılı model:', model);
+                return text;
+            } catch (err) {
+                clearTimeout(timeoutId);
+                continue;
+            }
+        }
+        throw new Error('Tüm YZ modelleri başarısız oldu.');
+    }
+
+    function buildAIScoringPrompt(data) {
+        return `UZMAN MATEMATİK DEĞERLENDİRME İSTEĞİ
+
+GÖREV: Aşağıdaki 3 soruluk matematik sınavını rubrik esaslı değerlendir. SADECE JSON çıktısı üret.
+
+PROBLEM BAĞLAMI:
+3 kız, 4 erkek toplam 7 öğrencinin katıldığı bir yarışmada ilk 3 derece belirleniyor.
+Her derecede en az 1 öğrenci olmalı, beraberlik durumunda bir dereceyi birden fazla öğrenci paylaşabilir.
+
+DOĞRU CEVAPLAR:
+- q1: 186 (Beraberlik yoksa en az 1 kız: P(7,3) - P(4,3) = 210 - 24 = 186)
+- q2: 1224 (4 öğrenci dereceye girdiyse, 2-1-1 örüntüsü: 1260 - 36 = 1224)
+- q3: 3150 (5 öğrenci dereceye girdiyse, 3-1-1 ve 2-2-1 örüntüleri: 1260 + 1890 = 3150, tümü zaten en az 1 kız içerir)
+
+ALTERNATİF CEVAPLAR VE KISMI PUANLAR:
+- q1 (maks 7): 186=7p, 210=4p (toplam durum), 24=3p (tümleyen)
+- q2 (maks 6): 1224=6p, 1260=4p (toplam), 36=2p (tümleyen), 420=2p (tek konum)
+- q3 (maks 12): 3150=12p, 1260=5p (sadece 3-1-1), 1890=5p (sadece 2-2-1), 420=3p, 630=3p
+
+ÖĞRENCİ YANITLARI: ${JSON.stringify(data)}
+
+JSON FORMATI:
+{
+    "q1": {"puan": <0-7>, "aciklama": "...", "ogrenci_cevabi": <değer>},
+    "q2": {"puan": <0-6>, "aciklama": "...", "ogrenci_cevabi": <değer>},
+    "q3": {"puan": <0-12>, "aciklama": "...", "ogrenci_cevabi": <değer>},
+    "toplam_puan": <0-25>,
+    "genel_geri_bildirim": "..."
+}`;
+    }
+
+    function formatAIScoringResponse(raw, userAnswers) {
+        let parsed;
+        try { 
+            parsed = JSON.parse(raw.trim().replace(/^```json\s*|```\s*$/g, '')); 
+        } catch (e) { 
+            throw new Error("YZ yanıtı JSON formatında değil."); 
+        }
+
+        const questions = [
+            { id: 'q1', title: 'Soru 1: Beraberlik Yoksa En Az Bir Kız', max: 7 },
+            { id: 'q2', title: 'Soru 2: 4 Öğrenci Dereceye Girdiyse (2-1-1)', max: 6 },
+            { id: 'q3', title: 'Soru 3: 5 Öğrenci Dereceye Girdiyse', max: 12 }
+        ];
+
+        let html = '';
+        let totalScore = 0;
+
+        questions.forEach((q) => {
+            const data = parsed[q.id];
+            if (data) {
+                const puan = Math.min(Number(data.puan) || 0, q.max);
+                totalScore += puan;
+                const aciklama = data.aciklama || data.açıklama || '';
+                const ogrCevap = data.ogrenci_cevabi ?? userAnswers[q.id];
+                
+                html += createEvalCardAI(q.title, puan, q.max, ogrCevap, correctAnswers[q.id], aciklama);
+            }
+        });
+
+        // Genel geri bildirim
+        if (parsed.genel_geri_bildirim) {
+            html += `<div style="background: var(--secondary-bg); padding: 15px; border-radius: 10px; margin-top: 20px; border-left: 4px solid var(--header-color);">
+                <strong>📝 Genel Değerlendirme:</strong><br>${escapeHtml(parsed.genel_geri_bildirim)}
+            </div>`;
+        }
+
+        return { html, score: totalScore };
+    }
+
+    function createEvalCardAI(title, score, max, userAns, correctAns, aciklama) {
+        const perc = max > 0 ? (score/max)*100 : 0;
+        const color = perc >= 99 ? '#10b981' : (perc >= 50 ? '#f59e0b' : '#ef4444');
+        
+        return `
+        <div class="evaluation-card" style="border-left-color: ${color}">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h4 style="margin:0;">${title}</h4>
+                <div style="font-weight:bold; color:${color}">${score} / ${max} Puan</div>
+            </div>
+            <div>
+                <div><strong>Sizin Cevabınız:</strong> ${escapeHtml(String(userAns))}</div>
+                <div><strong>Doğru Cevap:</strong> ${correctAns}</div>
+                ${aciklama ? `<div style="margin-top:8px; padding:10px; background:rgba(0,0,0,0.05); border-radius:6px;"><strong>Açıklama:</strong> ${escapeHtml(aciklama)}</div>` : ''}
+            </div>
+        </div>`;
+    }
+
+    // --- STANDART DEĞERLENDİRME (Alternatif Çözümlerle) ---
+    function runFallbackEvaluation(userAnswers, error) {
+        document.getElementById('aiStatus').innerHTML = '<span style="color: #f59e0b;">⚠️ Yapay zeka kullanılamadı, standart değerlendirme yapıldı.</span>';
+        
+        const scores = calculateScoresWithAlternatives(userAnswers);
+        const totalScore = scores.q1.points + scores.q2.points + scores.q3.points;
+        
+        let html = '';
+        html += createEvalCardFallback('Soru 1: Beraberlik Yoksa En Az Bir Kız', scores.q1, 7, userAnswers.q1, correctAnswers.q1);
+        html += createEvalCardFallback('Soru 2: 4 Öğrenci Dereceye Girdiyse (2-1-1)', scores.q2, 6, userAnswers.q2, correctAnswers.q2);
+        html += createEvalCardFallback('Soru 3: 5 Öğrenci Dereceye Girdiyse', scores.q3, 12, userAnswers.q3, correctAnswers.q3);
+        
+        document.getElementById('evaluationContent').innerHTML = html;
+        return totalScore;
+    }
+
+    function calculateScoresWithAlternatives(inputs) {
+        let results = {};
+        
+        // Soru 1
+        if (inputs.q1 === correctAnswers.q1) {
+            results.q1 = { points: 7, explanation: "Mükemmel! Doğru cevap." };
+        } else {
+            const alt = alternativeAnswers.q1.find(a => a.value === inputs.q1);
+            if (alt) {
+                results.q1 = { points: alt.points, explanation: alt.explanation };
+            } else {
+                results.q1 = { points: 0, explanation: "Cevap doğru değil. Tümleyen yöntemi kullanın: Toplam - Tümü erkek." };
+            }
+        }
+        
+        // Soru 2
+        if (inputs.q2 === correctAnswers.q2) {
+            results.q2 = { points: 6, explanation: "Mükemmel! Doğru cevap." };
+        } else {
+            const alt = alternativeAnswers.q2.find(a => a.value === inputs.q2);
+            if (alt) {
+                results.q2 = { points: alt.points, explanation: alt.explanation };
+            } else {
+                results.q2 = { points: 0, explanation: "Cevap doğru değil. 2-1-1 örüntüsü için 3 farklı konumu hesaplayın." };
+            }
+        }
+        
+        // Soru 3
+        if (inputs.q3 === correctAnswers.q3) {
+            results.q3 = { points: 12, explanation: "Mükemmel! Doğru cevap." };
+        } else {
+            const alt = alternativeAnswers.q3.find(a => a.value === inputs.q3);
+            if (alt) {
+                results.q3 = { points: alt.points, explanation: alt.explanation };
+            } else {
+                results.q3 = { points: 0, explanation: "Cevap doğru değil. 3-1-1 ve 2-2-1 örüntülerini ayrı ayrı hesaplayıp toplayın." };
+            }
+        }
+        
+        return results;
+    }
+
+    function createEvalCardFallback(title, scoreData, max, userAns, correctAns) {
+        const perc = max > 0 ? (scoreData.points/max)*100 : 0;
+        const color = perc >= 99 ? '#10b981' : (perc >= 50 ? '#f59e0b' : '#ef4444');
+        
+        return `
+        <div class="evaluation-card" style="border-left-color: ${color}">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h4 style="margin:0;">${title}</h4>
+                <div style="font-weight:bold; color:${color}">${scoreData.points} / ${max} Puan</div>
+            </div>
+            <div>
+                <div><strong>Sizin Cevabınız:</strong> ${userAns}</div>
+                <div><strong>Doğru Cevap:</strong> ${correctAns}</div>
+                <div style="margin-top:8px; padding:10px; background:rgba(0,0,0,0.05); border-radius:6px;">
+                    <strong>Geri Bildirim:</strong> ${scoreData.explanation}
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function updateScoreDisplay(totalScore) {
+        document.getElementById('finalScore').textContent = `${totalScore} / 25`;
+        const percent = Math.round((totalScore/25)*100);
+        document.getElementById('finalPercentage').textContent = `%${percent}`;
+        
+        const card = document.getElementById('scoreCard');
+        if(percent >= 80) card.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        else if(percent >= 50) card.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+        else card.style.background = 'linear-gradient(135deg, #ef4444, #b91c1c)';
+    }
+
+    function escapeHtml(str) { 
+        return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); 
+    }
+
+    // --- ÇÖZÜM MODALI ---
+    const modal = document.getElementById('solution-modal');
+
+    function openSolutionsModal() {
+        modal.style.display = 'flex';
+        if (window.MathJax) {
+            const node = document.getElementById('solutionContent');
+            try { if (MathJax.typesetClear) MathJax.typesetClear(); } catch(e) {}
+            if (MathJax.startup && MathJax.startup.promise) {
+                MathJax.startup.promise.then(() => {
+                    MathJax.typesetPromise([node]).catch((err) => console.error('MathJax typeset failed:', err));
+                }).catch((err) => console.error('MathJax startup failed:', err));
+            } else {
+                MathJax.typesetPromise([node]).catch((err) => console.error('MathJax typeset failed:', err));
+            }
+        }
+    }
+    
+    function closeSolutionsModal() {
+        modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) closeSolutionsModal();
+    }
+
+    function populateSolutionModal() {
+        const content = document.getElementById('solutionContent');
+        content.innerHTML = `
+            <div class="answer-block">
+                <h4>SORU 1 — Beraberlik Yoksa En Az Bir Kız</h4>
+                <p><strong>Çözüm:</strong> Tümleyen yöntemi kullanıyoruz.</p>
+                <p>Toplam: $$\\mathrm{P}(7,3) = 210$$</p>
+                <p>Tümü erkek: $$\\mathrm{P}(4,3) = 24$$</p>
+                <p><strong>Sonuç:</strong> $$210 - 24 = \\mathbf{186}$$</p>
+            </div>
+
+            <div class="answer-block">
+                <h4>SORU 2 — 4 Öğrenci Dereceye Girdiyse (2-1-1)</h4>
+                <p><strong>Çözüm:</strong> 2-1-1 örüntüsü için konum sayısı (tekrarlı permütasyon):</p>
+                <p>$$\\frac{3!}{1! \\cdot 1! \\cdot 1!} = 6 \\div 2 = 3$$ konum (aynı eleman sayıları: iki tane 1)</p>
+                <p>Toplam: $$\\mathrm{C}(7,2) \\times \\mathrm{P}(5,2) \\times 3 = 21 \\times 20 \\times 3 = 1260$$</p>
+                <p>Tümü erkek: $$\\mathrm{C}(4,2) \\times \\mathrm{P}(2,2) \\times 3 = 6 \\times 2 \\times 3 = 36$$</p>
+                <p><strong>Sonuç:</strong> $$1260 - 36 = \\mathbf{1224}$$</p>
+            </div>
+
+            <div class="answer-block">
+                <h4>SORU 3 — 5 Öğrenci Dereceye Girdiyse</h4>
+                <p><strong>Çözüm:</strong> İki örüntü var: (3-1-1) ve (2-2-1)</p>
+                <p><strong>Örüntü A (3-1-1):</strong> Konum sayısı: $$\\frac{3!}{1! \\cdot 2!} = 3$$ (iki tane 1 tekrar ediyor)</p>
+                <p>$$\\mathrm{C}(7,3) \\times \\mathrm{P}(4,2) \\times 3 = 35 \\times 12 \\times 3 = 1260$$</p>
+                <p><strong>Örüntü B (2-2-1):</strong> Konum sayısı: $$\\frac{3!}{2! \\cdot 1!} = 3$$ (iki tane 2 tekrar ediyor)</p>
+                <p>$$\\mathrm{C}(7,2) \\times \\mathrm{C}(5,2) \\times 3 \\times 3 = 21 \\times 10 \\times 3 \\times 3 = 1890$$</p>
+                <p>Toplam: $$1260 + 1890 = 3150$$</p>
+                <p>5 kişi seçildiğinde en az 1 kız olmak zorunda (sadece 4 erkek var).</p>
+                <p><strong>Sonuç:</strong> $$\\mathbf{3150}$$</p>
+            </div>
+        `;
+        // MathJax'i tetikle
+        if (window.MathJax) {
+            const node = document.getElementById('solutionContent');
+            try { if (MathJax.typesetClear) MathJax.typesetClear(); } catch(e) {}
+            if (MathJax.startup && MathJax.startup.promise) {
+                MathJax.startup.promise.then(() => {
+                    MathJax.typesetPromise([node]).catch((err) => console.error('MathJax typeset failed:', err));
+                }).catch((err) => console.error('MathJax startup failed:', err));
+            } else {
+                MathJax.typesetPromise([node]).catch((err) => console.error('MathJax typeset failed:', err));
+            }
+        }
+    }
+</script>
+</body>
+</html>
