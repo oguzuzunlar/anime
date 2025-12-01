@@ -177,6 +177,7 @@
 
         <div style="text-align: center; margin-top: 30px;">
             <button class="button" id="finish-exam-btn" onclick="checkAndFinish()">Sınavı Bitir ve Değerlendir</button>
+            <button class="button" id="view-results-btn" onclick="showPage('page-evaluation')" style="display:none;">Sonuçları Gör</button>
         </div>
     </div>
 
@@ -198,7 +199,7 @@
         </div>
 
         <div style="text-align: center; margin-top: 30px; gap: 15px; display: flex; justify-content: center;">
-            <button class="button secondary" onclick="showPage('page-exam')">Tekrar Dene</button>
+            <button class="button secondary" onclick="showPage('page-exam')">Sınava Dön</button>
             <button class="button" onclick="openSolutionsModal()">Detaylı Çözümleri Gör</button>
         </div>
     </div>
@@ -267,6 +268,8 @@
 
     // --- DEĞERLENDİRME MANTIĞI ---
     
+    let examFinished = false;
+    
     // Doğru Cevaplar (7 katılımcı için: Q1,Q2,Q3)
     const correctAnswers = {
         q1: 186,  // 1) En az 1 kız (beraberlik yok)
@@ -333,7 +336,13 @@
         // Çözüm modalını hazırla
         populateSolutionModal();
         
-        document.getElementById('finish-exam-btn').disabled = false;
+        // Sınavı kilitle - tekrar çözülemesin
+        examFinished = true;
+        document.getElementById('q1_input').disabled = true;
+        document.getElementById('q2_input').disabled = true;
+        document.getElementById('q3_input').disabled = true;
+        document.getElementById('finish-exam-btn').style.display = 'none';
+        document.getElementById('view-results-btn').style.display = 'inline-block';
     }
 
     // --- YAPAY ZEKA DEĞERLENDİRME ---
