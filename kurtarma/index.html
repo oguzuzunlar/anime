@@ -134,8 +134,8 @@
       </p>
       <p>
         Görevin, her turda A ve B arasında:
-        Ambulansın izleyeceği yolun yatay ve dikey uzunluklarını <span style="white-space: nowrap;">(|x₂-x₁|, |y₂-y₁|)</span> ile İHA'nın kuş uçuşu mesafesini (Pisagor teoremi ile hipotenüs),
-        doğru hesaplamak. Doğru yanıt verdiğinde kalan süre kadar puan alırsın.
+        Ambulansın izleyeceği yolun yatay ve dikey uzunluklarını, yani |x₂−x₁| ve |y₂−y₁| değerlerini, ayrıca İHA'nın kuş uçuşu mesafesini Pisagor teoremi ile hesaplamak.
+        Doğru yanıt verdiğinde kalan süre kadar puan alırsın.
       </p>
   <p style="margin-bottom:10px;">Arka plan müziğini oyun ekranının üstündeki Müzik düğmesiyle açıp kapatabilirsin.</p>
       <button id="start-btn">Operasyona Başla!</button>
@@ -468,6 +468,7 @@
       let dx,dy;
       const safeMargin = Math.max(1, Math.round(gridRange*0.1));
       const effectiveSafe = safe - safeMargin;
+      const MIN_DISTANCE = 10;
       if(currentLevel===1){
         const candidates=[];
         pythagoreanTriples.forEach(([a,b])=>{
@@ -475,20 +476,27 @@
           for(let m=1;m<=maxMultiplier;m++){
             const mx=a*m;
             const my=b*m;
-            if(mx<=effectiveSafe && my<=effectiveSafe){
+            const dist=Math.sqrt(mx*mx+my*my);
+            if(mx<=effectiveSafe && my<=effectiveSafe && dist>=MIN_DISTANCE){
               candidates.push([mx,my]);
             }
           }
         });
-        const choice = candidates.length ? candidates[Math.floor(Math.random()*candidates.length)] : [3,4];
+        const choice = candidates.length ? candidates[Math.floor(Math.random()*candidates.length)] : [6,8];
         const swap=Math.random()<0.5;
         dx = swap ? choice[0] : choice[1];
         dy = swap ? choice[1] : choice[0];
       } else {
+        let level2Attempts = 0;
         do {
-          dx=Math.floor(Math.random()*10)+2;
-          dy=Math.floor(Math.random()*10)+2;
-        } while (Number.isInteger(Math.sqrt(dx*dx+dy*dy)) || Math.max(dx,dy)>safe);
+          dx=Math.floor(Math.random()*12)+3;
+          dy=Math.floor(Math.random()*12)+3;
+          level2Attempts++;
+          if(level2Attempts > 200){
+            dx = 7; dy = 9;
+            break;
+          }
+        } while (Number.isInteger(Math.sqrt(dx*dx+dy*dy)) || Math.max(dx,dy)>effectiveSafe || Math.sqrt(dx*dx+dy*dy)<MIN_DISTANCE);
       }
       const pickInt=(min,max)=>{
         const low=Math.ceil(min);
@@ -614,8 +622,8 @@
       isAnimating = true;
       const start=toCanvasCoords(pointA), end=toCanvasCoords(pointB), corner=toCanvasCoords({x:pointB.x, y:pointA.y});
       const droneAngle=Math.atan2(end.y-start.y, end.x-start.x);
-  const TAXI_TOTAL=4.0; // taksi daha geç ulaşsın
-  const DRONE_TOTAL=2.0; // drone daha erken bitsin
+  const TAXI_TOTAL=3.0; // taksi daha geç ulaşsın
+  const DRONE_TOTAL=1.5; // drone daha erken bitsin
       let t=0, prop=0;
       startMoveSfx();
       function anim(){
@@ -655,6 +663,7 @@
     function drawDrone(x,y,angle,pr){ ctx.save(); ctx.translate(x,y); ctx.rotate(angle); const arm=15,off=10; ctx.strokeStyle='#ccc'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(-off,-off); ctx.lineTo(-arm,-arm); ctx.moveTo(off,-off); ctx.lineTo(arm,-arm); ctx.moveTo(-off,off); ctx.lineTo(-arm,arm); ctx.moveTo(off,off); ctx.lineTo(arm,arm); ctx.stroke(); ctx.fillStyle='#f0f0f0'; ctx.beginPath(); ctx.arc(0,0,8,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#333'; ctx.beginPath(); ctx.arc(0,0,4,0,Math.PI*2); ctx.fill(); ctx.fillStyle='rgba(0,255,255,1)'; ctx.beginPath(); ctx.arc(-arm,-arm,pr,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(arm,-arm,pr,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(-arm,arm,pr,0,Math.PI*2); ctx.fill(); ctx.beginPath(); ctx.arc(arm,arm,pr,0,Math.PI*2); ctx.fill(); ctx.restore(); }
 
     function startNewQuestion(){
+      clearInterval(timerInterval);
       if(animationFrameId) cancelAnimationFrame(animationFrameId);
       stopMoveSfx();
       document.querySelectorAll('input').forEach(i=>i.disabled=false);
@@ -777,7 +786,7 @@
     // Başlangıç durumları
     setupCanvas();
     renderBadges();
-  if(startModal.style.display!== 'none'){ playSfx('open'); if(audioSupported){ setBgmEnabled(getBgmEnabled()); } startIntroAnimation(); }
+  if(startModal.style.display!== 'none'){ if(audioSupported){ setBgmEnabled(getBgmEnabled()); } startIntroAnimation(); }
   });
   </script>
 </body>
