@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5. Basamak Değerlendirme</title>
+    <!-- Inline SVG favicon -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%237c3aed'/%3E%3Ctext x='8' y='11' font-size='9' font-family='Poppins, Arial' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f5f3ff; --text-color: #3b0764; --card-bg: #ffffff; --card-shadow: 0 4px 16px rgba(124, 58, 237, 0.15);
+            --primary-gradient: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+            --secondary-bg: #ede9fe; --secondary-text: #6d28d9;
+            --header-color: #7c3aed; --border-color: #c4b5fd;
+            --evaluation-card-bg: rgba(255, 255, 255, 0.7);
+        }
+        .dark-mode {
+            --bg-color: #1f1633; --text-color: #ddd6fe; --card-bg: #2a1f4d; --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --secondary-bg: #3b2965; --secondary-text: #c4b5fd;
+            --header-color: #a78bfa; --border-color: #d8b4fe;
+            --evaluation-card-bg: rgba(0, 0, 0, 0.25);
+        }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, input, textarea, button { font-family: 'Poppins', sans-serif; }
+    body { background: var(--bg-color); color: var(--text-color); min-height: 100vh; transition: background-color 0.3s, color 0.3s; line-height: 1.6; }
+    .container { max-width: 1400px; margin: 20px auto; padding: 0 15px; }
+    .header { background: var(--card-bg); border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; box-shadow: var(--card-shadow); position: relative; border: 3px solid var(--border-color); }
+    #theme-toggle { position: absolute; top: 15px; right: 15px; background: var(--secondary-bg); color: var(--secondary-text); border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+    .page { display: none; background: var(--card-bg); border-radius: 15px; padding: 30px; box-shadow: var(--card-shadow); animation: slideIn 0.5s ease; }
+    .page.active { display: block; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    h1, h2, h3, h4 { margin-bottom: 15px; color: var(--header-color); font-weight: 600; }
+    h1 { font-size: 2rem; } h2 { font-size: 1.7rem; }
+    .button { background: var(--primary-gradient); color: #fff; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s ease; margin: 5px; }
+    .button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .problem-container { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; }
+    .problem-context .context-image { width: 100%; border-radius: 10px; box-shadow: var(--card-shadow); border: 2px solid var(--border-color); margin-bottom: 20px; }
+    .question-group { margin-bottom: 20px; background-color: var(--secondary-bg); padding: 20px; border-radius: 12px; }
+    .point-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--card-bg); color: var(--secondary-text); border: 1px solid var(--border-color); font-size: 0.85rem; font-weight: 700; }
+    .question-group > label { font-weight: 400; display: block; margin-bottom: 8px; }
+    .question-group input, .question-group textarea { width: 100%; padding: 10px; border: 2px solid var(--border-color); border-radius: 6px; background: var(--bg-color); color: var(--text-color); font-size: 1rem; resize: vertical; }
+    .multi-input-container { display: grid; grid-template-columns: auto 1fr; gap: 10px 15px; align-items: center; }
+    .multi-input-container label { font-weight: 600; text-align: right; }
+    .blank-fill-list { list-style: none; padding: 0; }
+    /* Soru 4 satır düzeni: metin solda, kutu sağda hizalı */
+    .blank-fill-list li { display: grid; grid-template-columns: 1fr minmax(200px, 360px); align-items: center; gap: 12px; margin-bottom: 12px; }
+    .blank-fill-list li .fill { width: 100%; }
+    .blank-fill-list li .fill.small { max-width: 120px; }
+    .blank-fill-list li .fill-inline { display: flex; align-items: center; gap: 8px; }
+    .blank-fill-list li .fill-inline .paren { font-weight: 700; opacity: .9; }
+    .blank-fill-list li.full-row { grid-template-columns: 1fr; }
+    .inline-input { width: 120px; max-width: 160px; display: inline-block; vertical-align: baseline; }
+    /* Matematiksel ifadeler satır bölünmeden kalsın */
+    .math-inline { white-space: nowrap; display: inline-block; }
+    code { font-family: inherit; font-size: 1em; font-weight: 600; background: rgba(0,0,0,0.08); padding: 0 6px; border-radius: 6px; white-space: nowrap; display: inline-block; line-height: 1.2; }
+    @media (max-width: 700px) { .blank-fill-list li { grid-template-columns: 1fr; } }
+    /* Değerlendirme ve modal stilleri */
+    .evaluation-card { background: var(--evaluation-card-bg); border-left: 5px solid; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+    .answer-block { background: var(--secondary-bg); padding: 20px; border-radius: 8px; margin-bottom: 15px; text-align: left; }
+    .answer-block h4 { color: var(--secondary-text); border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 12px; }
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
+    .modal-content { background-color: var(--card-bg); margin: 5% auto; padding: 25px; border-radius: 15px; max-width: 700px; width: 90%; position: relative; box-shadow: var(--card-shadow); }
+    .close-button { color: #aaa; position: absolute; top: 10px; right: 20px; font-size: 28px; font-weight: bold; cursor: pointer; }
+    #scoreCard { border-radius: 12px; text-align: center; margin: 20px 0; color: white; padding: 20px; }
+    .spinner { width: 3rem; height: 3rem; color: var(--header-color); border: .25em solid currentColor; border-right-color: transparent; border-radius: 50%; display: inline-block; animation: spinner-border .75s linear infinite; }
+    @keyframes spinner-border { to { transform: rotate(360deg); } }
+    
+    @media (max-width: 1100px) { .problem-container { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .page { padding: 20px; } h1 { font-size: 1.8rem; } h2 { font-size: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button id="theme-toggle" title="Temayı Değiştir">☀️</button>
+            <h1 style="margin-bottom:0.3em;">5. Basamak Değerlendirme</h1>
+            <h2 style="margin-top:0; font-size:1.5rem;">Algoritmik Yapı Oluşturma</h2>
+        </div>
+        <div class="page active" id="page-intro">
+            <div style="max-width: 900px; margin: 0 auto;">
+                <div style="background: var(--secondary-bg); border-radius: 18px; padding: 32px 28px; border: 3px solid var(--border-color);">
+                    <h2 style="color: var(--header-color); font-size:2rem; margin-bottom:18px; text-align:center;">Değerlendirme Hakkında</h2>
+                    <div style="font-size:1.06em; color: var(--text-color); line-height:1.75; max-width: 720px; margin: 0 auto;">
+                        <p style="margin-bottom:12px; text-align: left;">Bu değerlendirme, algoritmik yapı oluşturma konusundaki becerilerinizi ölçmeyi amaçlar.</p>
+                        <p style="margin-bottom:12px; text-align: left;"><strong>Puanlama (Toplam 30 Puan):</strong> Sınav 5 sorudan oluşmaktadır. Soruların puan değerleri yanlarında belirtilmiştir. Cevaplarınız yapay zeka tarafından değerlendirilecektir.</p>
+                        
+
+                        <div style="border: 3px solid var(--border-color); border-radius:16px; padding:16px 18px; background: var(--card-bg);">
+                            <div style="display:flex; align-items:center; gap:10px; font-weight:700; color: var(--secondary-text); margin-bottom:6px;">
+                                <span style="font-size:1.2rem;">⚠️</span>
+                                <span>YZ Destekli Değerlendirme Hakkında</span>
+                            </div>
+                            <p style="margin:0; color: var(--text-color); text-align:left;">Bu etkinlikte verilen otomatik değerlendirmeler ve geri bildirimler yapay zeka tarafından sağlanmaktadır. Amaç, öğrenmenize destek olmak ve farklı çözüm yollarını göstermektir. YZ çıktıları bir uzman görüşünün yerine geçmez ve nadiren hatalar içerebilir.</p>
+                        </div>
+
+                        <div style="text-align:center; margin-top:28px;">
+                            <button class="button" onclick="showPage('page-stage1')" style="border-radius:24px; padding:12px 38px; font-size:1.15rem;">Sınava Başla</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-stage1">
+           
+            <div class="problem-container">
+                <div class="problem-context">
+                    <h4>Problem Senaryosu ve Akış Şemaları</h4>
+                    <p>Bir öğrenci <span class="math-inline">f : N → N</span>, <span class="math-inline">f(n) = n² + n + 41</span> fonksiyonunu kullanarak asal sayılar elde etmek istiyor. Aşağıda, bu ifadeyi <span class="math-inline">n = 0'dan 50'ye</span> kadar test eden ve sadece asal sonuçları ekrana yazdıran aynı amaca hizmet eden fakat farklı yöntemler kullanan iki algoritma gösterimi bulunmaktadır.<br>Buna göre algoritmaları inceleyerek değerlendirme sınavı bölümündeki soruları cevaplayınız.</p>
+                    <h4>Algoritma 1</h4>
+                    <img src="resim1.png" alt="Algoritma 1 - Koşul kontrollü (while) akış şeması" class="context-image">
+                    <h4>Algoritma 2</h4>
+                    <img src="resim2.png" alt="Algoritma 2 - Numaralandırılmış döngü akış şeması" class="context-image">
+                </div>
+                <div class="problem-questions">
+                    <h3>Değerlendirme Sınavı</h3>
+                    <div class="question-group">
+                        <label><span class="point-badge">8 Puan</span> <strong>Soru 1:</strong> Algoritma 2'deki numaralandırılmış boş kutulara algoritmanın doğru çalışması için hangi ifadeler gelmelidir?</label>
+                        <div class="multi-input-container" style="margin-top:15px;">
+                            <label for="q1_box1">Kutu 1:</label> <input type="text" id="q1_box1" placeholder="Altıgen">
+                            <label for="q1_box2">Kutu 2:</label> <input type="text" id="q1_box2" placeholder="Eşkenar Dörtgen">
+                            <label for="q1_box3">Kutu 3:</label> <input type="text" id="q1_box3" placeholder="Dalgalı Dikdörtgen">
+                        </div>
+                    </div>
+                            <div class="question-group">
+                                <label for="q2_output"><span class="point-badge">6 Puan</span> <strong>Soru 2:</strong> Algoritma 1'in n değişkeninin ilk 5 değeri (0, 1, 2, 3, 4 ) için üreteceği ve ekrana yazdıracağı sonuçları sırasıyla, aralarına virgül koyarak yazınız.</label>
+                        <textarea id="q2_output" rows="2" placeholder="Örn: 10, 11, 12, 13, 14"></textarea>
+                    </div>
+                    <div class="question-group">
+                        <label for="q3_and_logic"><span class="point-badge">6 Puan</span> <strong>Soru 3:</strong> Algoritma 1'de bir sonucun ekrana yazdırılabilmesi için akışın önce <span class="math-inline">n < 51 mi?</span> ve sonra <span class="math-inline">sonuç asal mı?</span> karar bloklarından geçmesi gerekir. Bu durumun gerçekleşmesi için sağlanması gereken iki koşulu "ve" bağlacını kullanarak tek bir mantık cümlesiyle ifade ediniz.</label>
+                         <textarea id="q3_and_logic" rows="3" placeholder="(Koşul 1) ve (Koşul 2) şeklinde yazınız."></textarea>
+                    </div>
+                    <div class="question-group">
+                        <label><span class="point-badge">6 Puan</span> <strong>Soru 4:</strong> Aşağıda, <span class="math-inline">f : N → N</span> ve <span class="math-inline">f(n) = n² + n + 41</span> fonksiyonunu kullanarak 0'dan 50'ye kadar üretilen asal sayıların adedini sayan bir algoritma, doğal dilde eksik adımlarla verilmiştir. Boşlukları doldurunuz.</label>
+                        <ul class="blank-fill-list" style="margin-top:15px;">
+                            <li class="full-row"><div><strong>Adım 1:</strong> Başla.</div></li>
+                            <li class="full-row">
+                                <div><strong>Adım 2:</strong> Bir <code>asal_sayac</code> değişkeni oluştur ve başlangıç değerini <input type="text" id="q4_step2" class="inline-input" aria-label="asal_sayac başlangıç değeri"> yap.</div>
+                            </li>
+                            <li class="full-row"><div><strong>Adım 3:</strong> <code>n=0</code>'dan <code>50</code>'ye kadar bir döngü başlat.</div></li>
+                            <li class="full-row"><div><strong>Adım 4:</strong> <code>sonuç = n² + n + 41</code> işlemini yap.</div></li>
+                            <li>
+                                <div><strong>Adım 5:</strong> Eğer <code>sonuç</code> asal ise,</div>
+                                <div><input type="text" id="q4_step5" class="fill" placeholder="yapılacak işlemi yazınız."></div>
+                            </li>
+                            <li>
+                                <div><strong>Adım 6:</strong> Döngü bittiğinde,</div>
+                                <div><input type="text" id="q4_step6" class="fill" placeholder="yapılacak işlemi yazınız."></div>
+                            </li>
+                            <li class="full-row"><div><strong>Adım 7:</strong> Bitir.</div></li>
+                        </ul>
+                    </div>
+                    <div class="question-group">
+                        <label for="q5_if_then"><span class="point-badge">4 Puan</span> <strong>Soru 5:</strong> Algoritma 1'de "ise" bağlacının işlevini tek bir cümle ile ifade ediniz.
+                        <textarea id="q5_if_then" rows="3" placeholder="Eğer sonuç asal ise, ..."></textarea>
+                    </div>
+                </div>
+            </div>
+             <div style="text-align: center; margin-top: 30px;">
+                <button class="button" id="finish-exam-btn" onclick="checkAndFinish()">Sınavı Bitir ve Değerlendir</button>
+             </div>
+        </div>
+        
+        <!-- DEĞERLENDİRME SAYFASI -->
+        <div class="page" id="page-evaluation">
+            <h2 style="text-align:center;">Değerlendirme Sonuçları</h2>
+            <p id="evaluation-subtitle" style="text-align:center; margin-top:-10px; margin-bottom:6px; color:var(--secondary-text);">Yanıtlarınız yapay zeka tarafından analiz ediliyor.</p>
+            <div id="scoreCard">
+                <div style="font-size: 1rem; opacity: 0.8;">TOPLAM PUAN</div>
+                <div id="finalScore" style="font-size: 3rem; font-weight: 700;">-- / 30</div>
+                <div id="finalPercentage" style="font-size: 1.2rem; font-weight: 600;">--%</div>
+            </div>
+            <div id="evaluationContent">
+                <div style="text-align: center; padding: 40px 0;">
+                    <div class="spinner" role="status"></div>
+                    <h4 style="margin-top: 20px;">Değerlendirme Sürüyor...</h4>
+                    <div id="aiStatus" style="margin-top:8px; color: var(--secondary-text);"></div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <button class="button" onclick="showPage('page-stage1')">← Sınava Dön</button>
+                <button id="viewSolutionsBtn" class="button" onclick="openSolutionsModal()" style="display:none;">Çözümleri Gör</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ÇÖZÜM MODALI -->
+    <div id="solution-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeSolutionsModal()">&times;</span>
+            <h2 style="text-align:center;">Detaylı Çözümler</h2>
+            <div id="solutionContent"></div>
+        </div>
+    </div>
+
+<script>
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        const page = document.getElementById(pageId);
+        if (page) { page.classList.add('active'); } 
+        else { console.error("Sayfa bulunamadı:", pageId); }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const themeToggle = document.getElementById('theme-toggle');
+        const isDarkMode = localStorage.getItem('theme') === 'dark';
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '🌙';
+        }
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+            themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
+            localStorage.setItem('theme', theme);
+        });
+        showPage('page-intro');
+    });
+
+    // LMS'e puan gönderme
+    function sendScoreToLMS(ogrenciPuani) {
+        const result = {
+            score: { max: 30, min: 0, raw: ogrenciPuani, scaled: ogrenciPuani / 30 },
+            completion: true,
+            success: true,
+            duration: 'PT4.95S'
+        };
+        try {
+            const lmsWindow = window.parent.document.getElementById('frmApp-0')?.contentWindow;
+            if (lmsWindow?.onCompleted) {
+                console.log('📡 LMS\'e veri gönderiliyor...');
+                lmsWindow.onCompleted(result);
+            } else {
+                console.error('❌ LMS\'ye sinyal gönderilemedi!');
+            }
+        } catch (e) {
+            console.error('LMS ile iletişim sırasında hata:', e);
+        }
+    }
+
+    async function checkAndFinish() {
+        const finishBtn = document.getElementById('finish-exam-btn');
+        if (finishBtn) finishBtn.disabled = true;
+
+        showPage('page-evaluation');
+        let totalScore = 0;
+
+        try {
+            if (!navigator.onLine) {
+                throw new Error('İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin.');
+            }
+            const userPayload = collectUserResponses();
+            const prompt = buildAIScoringPrompt(userPayload);
+            const result = await callGemini(prompt);
+            const evaluation = formatAIScoringResponse(result);
+            const evalContent = document.getElementById('evaluationContent');
+            if (evalContent) { evalContent.innerHTML = evaluation.html; }
+            const sub = document.getElementById('evaluation-subtitle');
+            if (sub) { sub.textContent = 'Yanıtlarınız yapay zeka tarafından analiz edildi.'; }
+            totalScore = evaluation.score || 0;
+        } catch (err) {
+            console.warn('AI Değerlendirmesi Başarısız:', err);
+            totalScore = runFallbackEvaluation();
+        }
+
+        updateAllScoreDisplays(totalScore);
+
+        try { sendScoreToLMS(totalScore); } catch (e) { console.error('LMS gönderimi başarısız:', e); }
+
+        populateSolutionModal();
+        const solutionsBtn = document.getElementById('viewSolutionsBtn');
+        if (solutionsBtn) solutionsBtn.style.display = 'inline-block';
+        if (finishBtn) finishBtn.disabled = false;
+    }
+
+    async function callGemini(prompt) {
+        const apiKey = 'YOUR_API_KEY'; // Google AI Gemini API anahtarınızı buraya girin.
+        if (!apiKey || apiKey === 'YOUR_API_KEY') throw new Error('Geçerli bir API anahtarı girilmedi.');
+
+        const models = ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.5-pro'];
+        const timeoutMs = 5000;
+        const errors = [];
+
+        try { document.getElementById('aiStatus').textContent = `Değerlendiriliyor... Denenecek model sırası: ${models.join(' → ')}`; } catch (e) {}
+
+        for (const model of models) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+                const body = { contents: [{ parts: [{ text: prompt }] }] };
+                const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal });
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const errorText = await response.text().catch(() => '');
+                    errors.push(`${model} -> HTTP ${response.status} ${errorText}`);
+                    continue;
+                }
+
+                const json = await response.json();
+                const text = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!text) { errors.push(`${model} -> boş yanıt`); continue; }
+                try { document.getElementById('aiStatus').textContent = ''; } catch (e) {}
+                return text;
+            } catch (err) {
+                clearTimeout(timeoutId);
+                errors.push(`${model} -> ${err.message || err}`);
+                continue;
+            }
+        }
+
+        try { document.getElementById('aiStatus').textContent = 'YZ değerlendirmesi şu anda kullanılamıyor; standart değerlendirme uygulanıyor.'; } catch (e) {}
+        throw new Error('Tüm YZ modelleri başarısız oldu: ' + errors.join(' | '));
+    }
+
+    function formatAIScoringResponse(raw) {
+        let parsed;
+        try { parsed = JSON.parse(raw.trim().replace(/^```json\s*|```\s*$/g, '')); }
+        catch (e) { throw new Error('YZ yanıtı JSON formatında değil.'); }
+
+        const questions = [
+            { id: 'q1', title: 'Soru 1: Numaralı Kutuları Doldurma', max: 8 },
+            { id: 'q2', title: 'Soru 2: İlk 5 Çıktı', max: 6 },
+            { id: 'q3', title: 'Soru 3: "ve" Bağlacı ile Koşul', max: 6 },
+            { id: 'q4', title: 'Soru 4: Sayaç Algoritmasını Tamamlama', max: 6 },
+            { id: 'q5', title: 'Soru 5: "ise" Bağlacının İşlevi', max: 4 }
+        ];
+
+        let html = '';
+        questions.forEach((q) => {
+            const data = parsed[q.id];
+            if (data) {
+                const puan = Number(data.puan) || 0;
+                const aciklama = data.açıklama || data.aciklama || 'Açıklama mevcut değil.';
+                html += createEvalCard(q.title, puan, q.max, aciklama);
+            }
+        });
+
+        return { html, score: parsed.toplam_puan || 0 };
+    }
+
+    function collectUserResponses() {
+        const safeGet = id => (document.getElementById(id) ? document.getElementById(id).value : '');
+        return {
+            q1: { box1: safeGet('q1_box1'), box2: safeGet('q1_box2'), box3: safeGet('q1_box3') },
+            q2: { output: safeGet('q2_output') },
+            q3: { and_logic: safeGet('q3_and_logic') },
+            q4: { step2: safeGet('q4_step2'), step5: safeGet('q4_step5'), step6: safeGet('q4_step6') },
+            q5: { if_then: safeGet('q5_if_then') }
+        };
+    }
+
+    function buildAIScoringPrompt(data) {
+        return `UZMAN DEĞERLENDİRME İSTEĞİ (RUBRİK TABANLI)\n\nGÖREV: Aşağıdaki 5 soruluk sınavı, uzman bir bilgisayar bilimi/matematik öğretmeni titizliğinde, rubrik esaslı ve tutarlı şekilde değerlendir. SADECE JSON çıktısı üret.\n\nDOĞRU CEVAPLAR (Kısa Referans):\n- S1: Kutu1: n = 0, 50, 1 (veya 0'dan 50'ye 1'er artan döngü). Kutu2: sonuç (n^2+n+41) asal mı? Kutu3: sonucu yazdır (print).\n- S2: 41, 43, 47, 53, 61\n- S3: (n < 51) ve (sonuç asal)\n- S4: step2=0; step5: asal_sayac 1 artır; step6: asal_sayac'ı yazdır.\n- S5: "Eğer sonuç asal ise, sonucu yazdır." (yalnızca Algoritma 1)\n\nRUBRİK VE PUANLAMA KURALLARI:\n- ÇIKTI SADECE JSON olsun. q1..q5, her biri {puan: <soru_max>, açıklama: "kısa gerekçe"}. Ek olarak toplam_puan: 0-30.\n\nSORU PUAN DAĞILIMI:\n- Soru 1 – 8 puan: Kutu1 (döngü aralığı + artış) 4 puan; Kutu2 (asal kontrol) 2 puan; Kutu3 (çıktı) 2 puan.\n- Soru 2 – 6 puan: Her doğru sayı 1 puan (5 puan); sıra ve biçim (virgülle ayrık) doğruysa +1 puan.\n- Soru 3 – 6 puan: 've' bağlacını doğru kullanırsa 2 puan; 'n < 51' veya eşdeğeri 2 puan; 'sonuç asal' 2 puan.\n- Soru 4 – 6 puan: step2=0 (2p), step5 sayaç artır (2p), step6 sayaç yazdır (2p).\n- Soru 5 – 4 puan: 'Eğer ... ise' yapısı (1p) + 'sonuç' ve 'asal'ı belirtme (1p) + eylem: 'yazdır' (2p).\n\nÖğrencinin yanıtları: ${JSON.stringify(data)}\n\nYALNIZCA ŞU ŞEKİLDE JSON DÖN:\n{\n    "q1": {"puan": 0, "açıklama": ""},\n    "q2": {"puan": 0, "açıklama": ""},\n    "q3": {"puan": 0, "açıklama": ""},\n    "q4": {"puan": 0, "açıklama": ""},\n    "q5": {"puan": 0, "açıklama": ""},\n    "toplam_puan": 0\n}`;
+    }
+
+    function runFallbackEvaluation() {
+        const sub = document.getElementById('evaluation-subtitle');
+        if (sub) sub.textContent = 'Yapay zeka değerlendirmesi başarısız oldu. Standart değerlendirme yapıldı.';
+
+        const user = collectUserResponses();
+        let score = 0;
+        let feedbackHTML = '';
+
+        function escapeHtml(str) { return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+        function createCard(title, pts, max, body) { return createEvalCard(title, pts, max, body); }
+
+        const KEY = {
+            print: [
+                'yazdır','yazdir','yaz','ekrana yaz','ekrana bas','ekrana çıktı ver','ekrana cikti ver',
+                'çıktı ver','cikti ver','göster','goster','konsola yaz','console.log','print','output'
+            ],
+            prime: [
+                'asal','asal sayı','asal sayi','asal mı','asal mi','prime','primal','primality','asal kontrol','asal kontrolü','asal kontrolu'
+            ],
+            loopWords: [
+                'döngü','dongu','for','while','do while','tekrarla','tekrar et','iterate','gez',
+                'n =','n=','0\'dan 50\'ye','0 den 50 ye','1\'den 50\'ye','1 den 50 ye','0-50','1-50','0..50','1..50','artan','1 er art','1er art','++','+= 1'
+            ],
+            and: [' ve ','&&','and','∧']
+        };
+        const REGEX = {
+            loopN: [
+                /n\s*=\s*0\s*[,–\-]?\s*50\s*[,;]?\s*1/i,              // n = 0, 50, 1
+                /n\s*=\s*1\s*[,–\-]?\s*50\s*[,;]?\s*1/i,               // n = 1, 50, 1 (eski varyasyonları da yakala)
+                /for\s*\(?\s*n\s*=\s*0.*50\s*\)?/i,                    // for n = 0 ... 50
+                /for\s*\(?\s*n\s*=\s*1.*50\s*\)?/i,                    // for n = 1 ... 50
+                /0\s*'?dan\s*50\s*'?ye.*(art|\+\+|1'er|1\s*er)/i,       // 0'dan 50'ye ... art
+                /1\s*'?den\s*50\s*'?ye.*(art|\+\+|1'er|1\s*er)/i,       // 1'den 50'ye ... art (eski varyasyon)
+                /n\s*[<≤]\s*51/i,                                          // n < 51
+                /n\s*<=\s*50/i,                                            // n <= 50
+                /n\s*in\s*\(?0\s*\.\.\s*50\)?/i,                      // n in 0..50
+                /n\s*in\s*\(?1\s*\.\.\s*50\)?/i,                      // n in 1..50
+                /0\s*[–\-]\s*50\s*aras[ıi]/i,                            // 0-50 arası
+                /1\s*[–\-]\s*50\s*aras[ıi]/i                             // 1-50 arası
+            ]
+        };
+    function containsAny(text, arr) { const t = (text || '').toLowerCase(); return arr.some(k => t.includes(k)); }
+    function containsAnd(text) { const t = (text || '').toLowerCase(); return /(^|\W)ve(\W|$)|&&|\band\b|∧/i.test(t); }
+        function matchesAnyRegex(text, regs) { const t = String(text || ''); return regs.some(r => r.test(t)); }
+
+        // S1 – 8 puan
+        let q1_score = 0;
+        const b1 = user.q1.box1 || '';
+        const b2 = user.q1.box2 || '';
+        const b3 = user.q1.box3 || '';
+        // Box1: loop definition
+        if (matchesAnyRegex(b1, REGEX.loopN) || (containsAny(b1, KEY.loopWords) && b1.includes('n'))) q1_score += 4;
+        // Box2: prime decision on result
+        if (containsAny(b2, KEY.prime)) q1_score += 2;
+        // Box3: output printing
+        if (containsAny(b3, KEY.print)) q1_score += 2;
+        score += q1_score;
+        feedbackHTML += createCard('Soru 1: Numaralı Kutuları Doldurma', q1_score, 8, 'Beklenen: Kutu1 → n = 0, 50, 1; Kutu2 → sonuç asal mı?; Kutu3 → sonucu yazdır.');
+
+        // S2 – 6 puan
+        let q2_score = 0;
+        const expected = ['41','43','47','53','61'];
+        const userList = (user.q2.output || '')
+            .split(/[;,\s]+/)
+            .map(s => s.replace(/[^0-9-]/g,'').trim())
+            .filter(Boolean);
+        expected.forEach((c, idx) => { if (userList.includes(c)) q2_score += 1; });
+        // order bonus
+        if (userList.length >= 5 && expected.every((v,i)=> userList[i] === v)) q2_score += 1;
+        if (q2_score > 6) q2_score = 6;
+        score += q2_score;
+        feedbackHTML += createCard('Soru 2: İlk 5 Çıktı', q2_score, 6, `Doğru: 41, 43, 47, 53, 61. Cevabınız: ${escapeHtml(user.q2.output)}`);
+
+        // S3 – 6 puan
+        let q3_score = 0;
+        const q3 = (user.q3.and_logic || '').toLowerCase();
+    if (containsAnd(q3) || containsAny(q3, KEY.and)) q3_score += 2;
+    if (/n\s*[<≤]\s*51|n\s*<=\s*50/.test(q3)) q3_score += 2;
+        if (containsAny(q3, KEY.prime)) q3_score += 2;
+        score += q3_score;
+        feedbackHTML += createCard('Soru 3: "ve" Bağlacı ile Koşul', q3_score, 6, 'Doğru: (n < 51) ve (sonuç asal).');
+
+    // S4 – 6 puan
+        let q4_score = 0;
+        const s2 = (user.q4.step2 || '').trim();
+        const s5 = (user.q4.step5 || '').toLowerCase();
+        const s6 = (user.q4.step6 || '').toLowerCase();
+    if (s2 === '0' || /sıfır|0/.test(s2)) q4_score += 2;
+    if ((s5.includes('sayac') || s5.includes('sayaç')) && (/(art(t)?ır|artir|arttir)/.test(s5) || s5.includes('++') || /\+=\s*1/.test(s5) || /(1\s*(ekle|arttır|artır|artir|arttir|increase))/.test(s5))) q4_score += 2;
+    if ((s6.includes('sayac') || s6.includes('sayaç')) && containsAny(s6, KEY.print)) q4_score += 2;
+        score += q4_score;
+    feedbackHTML += createCard('Soru 4: Sayaç Algoritmasını Tamamlama', q4_score, 6, 'Beklenen: Başlangıç 0; asal ise sayaç 1 art; döngü bitince sayaç yazdır.');
+
+    // S5 – 4 puan (yalnızca Algoritma 1)
+    let q5_score = 0;
+    const q5 = (user.q5?.if_then || '').toLowerCase();
+    if ((q5.includes('eğer') && q5.includes('ise')) || (/\bif\b.*\bthen\b/.test(q5)) || /(olursa|halinde|durumunda|koşul sağlanırsa|kosul saglanirsa)/.test(q5)) q5_score += 1; // if-then benzeri yapı
+    if (q5.includes('sonuç') && q5.includes('asal')) q5_score += 1; // koşul
+    const actionPrint = containsAny(q5, KEY.print); // yalnız yazdır kabul
+    if (actionPrint) q5_score += 2;
+    if (q5_score > 4) q5_score = 4;
+    score += q5_score;
+    feedbackHTML += createCard('Soru 5: "ise" Bağlacının İşlevi', q5_score, 4, 'Örnek doğru cümle: "Eğer sonuç asal ise, sonucu yazdır." (Algoritma 1).');
+
+        const evalContent = document.getElementById('evaluationContent');
+        if (evalContent) evalContent.innerHTML = feedbackHTML;
+        return score;
+    }
+
+    function populateSolutionModal() {
+        const el = document.getElementById('solutionContent');
+        if (!el) return;
+        el.innerHTML = `
+            <div class="answer-block"><h4>Soru 1: Numaralı Kutuları Doldurma</h4>
+                <ul>
+                    <li><strong>Kutu 1 (Döngü):</strong> <code>n = 0, 50, 1</code></li>
+                    <li><strong>Kutu 2 (Karar):</strong> <code>sonuç asal mı?</code></li>
+                    <li><strong>Kutu 3 (Çıktı):</strong> <code>sonucu yazdır</code>.</li>
+                </ul>
+            </div>
+            <div class="answer-block"><h4>Soru 2: İlk 5 Çıktı</h4>
+                <p><strong>Doğru çıktı:</strong> <code>41, 43, 47, 53, 61</code>.</p>
+            </div>
+            <div class="answer-block"><h4>Soru 3: "ve" Bağlacı ile Koşul</h4>
+                <p><strong>Örnek ifade:</strong> <span class="math-inline">(n < 51) ve (sonuç asal)</span>.</p>
+            </div>
+            <div class="answer-block"><h4>Soru 4: Sayaç Algoritmasını Tamamlama</h4>
+                <ul>
+                    <li><strong>Adım 2:</strong> <code>asal_sayac = 0</code></li>
+                    <li><strong>Adım 5:</strong> <code>asal_sayac = asal_sayac + 1</code></li>
+                    <li><strong>Adım 6:</strong> <code>asal_sayac'ı yazdır</code></li>
+                </ul>
+            </div>
+            <div class="answer-block"><h4>Soru 5: "ise" Bağlacının İşlevi</h4>
+                <p><strong>Örnek doğru ifade:</strong> <span class="math-inline">Eğer sonuç asal ise, sonucu yazdır.</span> (Algoritma 1)</p>
+            </div>`;
+    }
+
+    // Yardımcılar
+    function createEvalCard(title, score, max, body) {
+        const perc = max > 0 ? (score/max)*100 : 0;
+        const color = perc >= 99 ? '#22c55e' : (perc >= 50 ? '#f59e0b' : '#ef4444');
+        return `<div class="evaluation-card" style="border-left-color: ${color};">
+               <div style="display:flex; justify-content:space-between; align-items:center;"><h4>${title}</h4><div style="font-weight:bold;">${Math.round(score)} / ${max} Puan</div></div>
+               ${body ? `<div class="evaluation-body" style="margin-top:10px;">${body}</div>` : ''}</div>`;
+    }
+    function updateAllScoreDisplays(finalScore) {
+        const roundedScore = Math.round(finalScore);
+        const scorePercentage = (roundedScore / 30) * 100;
+        const fs = document.getElementById('finalScore');
+        if (fs) fs.textContent = `${roundedScore} / 30`;
+        const fp = document.getElementById('finalPercentage');
+        if (fp) fp.textContent = `${scorePercentage.toFixed(0)}%`;
+        const scoreCard = document.getElementById('scoreCard');
+        if (scoreCard) {
+            if (scorePercentage >= 80) scoreCard.style.background = 'linear-gradient(135deg, #16a34a, #22c55e)';
+            else if (scorePercentage >= 50) scoreCard.style.background = 'linear-gradient(135deg, #f59e0b, #facc15)';
+            else scoreCard.style.background = 'linear-gradient(135deg, #dc2626, #ef4444)';
+        }
+    }
+    const solutionModal = document.getElementById('solution-modal');
+    function openSolutionsModal() { if(solutionModal) solutionModal.style.display = 'block'; }
+    function closeSolutionsModal() { if(solutionModal) solutionModal.style.display = 'none'; }
+    window.onclick = function(event) { if (event.target == solutionModal) solutionModal.style.display = 'none'; }
+</script>
+</body>
+</html>
