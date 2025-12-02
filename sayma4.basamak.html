@@ -281,20 +281,51 @@
     const alternativeAnswers = {
         q1: [
             { value: 210, points: 4, explanation: "Toplam durumu buldunuz ama tümleyen hesabı yapılmamış." },
-            { value: 24, points: 3, explanation: "Sadece tümü erkek durumunu hesapladınız." }
+            { value: 24, points: 3, explanation: "Sadece tümü erkek durumunu hesapladınız." },
+            { value: 35, points: 2, explanation: "C(7,3) kombinasyon kullandınız, permütasyon gerekiyordu." },
+            { value: 4, points: 1, explanation: "C(4,3) sadece erkek kombinasyonu hesapladınız." },
+            { value: 175, points: 2, explanation: "Yaklaşık doğru değer, küçük hesaplama hatası var." },
+            { value: 200, points: 2, explanation: "Yaklaşık doğru değer, küçük hesaplama hatası var." }
         ],
         q2: [
             { value: 1260, points: 4, explanation: "Toplam durumu buldunuz ama tümleyen hesabı yapılmamış." },
             { value: 36, points: 2, explanation: "Sadece tümü erkek durumunu hesapladınız." },
-            { value: 420, points: 2, explanation: "Tek konum için doğru hesapladınız ama 3 konumu çarpmadınız." }
+            { value: 420, points: 2, explanation: "Tek konum için doğru hesapladınız ama 3 konumu çarpmadınız." },
+            { value: 840, points: 3, explanation: "2 konum hesabı yaptınız, 3. konumu eksik bıraktınız." },
+            { value: 21, points: 1, explanation: "Sadece C(7,2) hesapladınız, örüntü hesabı eksik." },
+            { value: 1200, points: 5, explanation: "Çok yakın değer, küçük hesaplama hatası var." },
+            { value: 1250, points: 5, explanation: "Çok yakın değer, küçük hesaplama hatası var." }
         ],
         q3: [
             { value: 1260, points: 5, explanation: "Sadece 3-1-1 örüntüsünü hesapladınız, 2-2-1 örüntüsü eksik." },
             { value: 1890, points: 5, explanation: "Sadece 2-2-1 örüntüsünü hesapladınız, 3-1-1 örüntüsü eksik." },
             { value: 420, points: 3, explanation: "Tek konum için 3-1-1 hesabı doğru ama eksik." },
-            { value: 630, points: 3, explanation: "Tek konum için 2-2-1 hesabı doğru ama eksik." }
+            { value: 630, points: 3, explanation: "Tek konum için 2-2-1 hesabı doğru ama eksik." },
+            { value: 35, points: 2, explanation: "C(7,5) kombinasyon hesabı yaptınız, örüntü hesabı eksik." },
+            { value: 21, points: 1, explanation: "C(7,2) hesabı yaptınız, tam çözüm eksik." },
+            { value: 3000, points: 10, explanation: "Çok yakın değer, küçük hesaplama hatası var." },
+            { value: 3100, points: 10, explanation: "Çok yakın değer, küçük hesaplama hatası var." },
+            { value: 3200, points: 10, explanation: "Çok yakın değer, küçük hesaplama hatası var." }
         ]
     };
+
+    // Yakın değer toleransı fonksiyonu
+    function checkProximity(userAnswer, correctAnswer, maxPoints) {
+        const tolerance = 0.05; // %5 tolerans
+        const diff = Math.abs(userAnswer - correctAnswer) / correctAnswer;
+        if (diff <= tolerance) {
+            return { 
+                points: Math.round(maxPoints * 0.85), // Tam puanın %85'i
+                explanation: `Doğru cevaba çok yakın (${correctAnswer}). Küçük bir hesaplama hatası olabilir.`
+            };
+        } else if (diff <= 0.10) { // %10 tolerans
+            return { 
+                points: Math.round(maxPoints * 0.7), // Tam puanın %70'i
+                explanation: `Doğru cevaba yakın (${correctAnswer}). Hesaplama hatası mevcut.`
+            };
+        }
+        return null;
+    }
 
     async function checkAndFinish() {
         document.getElementById('finish-exam-btn').disabled = true;
@@ -491,7 +522,13 @@ JSON FORMATI:
             if (alt) {
                 results.q1 = { points: alt.points, explanation: alt.explanation };
             } else {
-                results.q1 = { points: 0, explanation: "Cevap doğru değil. Tümleyen yöntemi kullanın: Toplam - Tümü erkek." };
+                // Yakın değer toleransı kontrolü
+                const proximity = checkProximity(inputs.q1, correctAnswers.q1, 7);
+                if (proximity) {
+                    results.q1 = proximity;
+                } else {
+                    results.q1 = { points: 0, explanation: "Cevap doğru değil. Tümleyen yöntemi kullanın: Toplam - Tümü erkek." };
+                }
             }
         }
         
@@ -503,7 +540,13 @@ JSON FORMATI:
             if (alt) {
                 results.q2 = { points: alt.points, explanation: alt.explanation };
             } else {
-                results.q2 = { points: 0, explanation: "Cevap doğru değil. 2-1-1 örüntüsü için 3 farklı konumu hesaplayın." };
+                // Yakın değer toleransı kontrolü
+                const proximity = checkProximity(inputs.q2, correctAnswers.q2, 6);
+                if (proximity) {
+                    results.q2 = proximity;
+                } else {
+                    results.q2 = { points: 0, explanation: "Cevap doğru değil. 2-1-1 örüntüsü için 3 farklı konumu hesaplayın." };
+                }
             }
         }
         
@@ -515,7 +558,13 @@ JSON FORMATI:
             if (alt) {
                 results.q3 = { points: alt.points, explanation: alt.explanation };
             } else {
-                results.q3 = { points: 0, explanation: "Cevap doğru değil. 3-1-1 ve 2-2-1 örüntülerini ayrı ayrı hesaplayıp toplayın." };
+                // Yakın değer toleransı kontrolü
+                const proximity = checkProximity(inputs.q3, correctAnswers.q3, 12);
+                if (proximity) {
+                    results.q3 = proximity;
+                } else {
+                    results.q3 = { points: 0, explanation: "Cevap doğru değil. 3-1-1 ve 2-2-1 örüntülerini ayrı ayrı hesaplayıp toplayın." };
+                }
             }
         }
         
