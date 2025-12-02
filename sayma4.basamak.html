@@ -443,13 +443,6 @@ JSON FORMATI:
             }
         });
 
-        // Genel geri bildirim
-        if (parsed.genel_geri_bildirim) {
-            html += `<div style="background: var(--secondary-bg); padding: 15px; border-radius: 10px; margin-top: 20px; border-left: 4px solid var(--header-color);">
-                <strong>📝 Genel Değerlendirme:</strong><br>${escapeHtml(parsed.genel_geri_bildirim)}
-            </div>`;
-        }
-
         return { html, score: totalScore };
     }
 
