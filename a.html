@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoGebra Tablo Dönüşümleri</title>
+<style>
+    /* SAYFA DÜZENİ */
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: Arial, sans-serif; /* Okunaklı font */
+        background-color: #ffffff;
+    }
+
+    /* ANA KAPSAYICI */
+    .main-container {
+        display: flex;
+        flex-direction: column; /* Başlık ve İframe'i alt alta dizer */
+        justify-content: center; /* Dikey ortalama */
+        align-items: center;     /* Yatay ortalama */
+        width: 100%;
+        min-height: 100vh;       /* Tam ekran yüksekliği */
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    /* BAŞLIK STİLİ */
+    .table-title {
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 15px; /* İframe ile arasındaki boşluk */
+        font-size: 1.2rem;
+        color: #333;
+        max-width: 90%; /* Mobilde kenarlara yapışmasın */
+    }
+
+    /* IFRAME KAPSAYICI */
+    .ggb-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* IFRAME TEMEL AYARLARI */
+    iframe {
+        border: none;
+        display: block;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Hafif gölge estetik durur */
+    }
+
+    /* GİZLEME / GÖSTERME SINIFLARI */
+    .show-portrait, .show-landscape, .show-desktop {
+        display: none;
+    }
+
+    /* --- RESPONSIVE KURALLAR --- */
+
+    /* 1. MASAÜSTÜ (PC/Laptop - 1025px ve üzeri) */
+    @media only screen and (min-width: 1025px) {
+        .show-desktop { display: block; }
+    }
+
+    /* 2. MOBİL/TABLET - DİKEY (Portrait) */
+    @media only screen and (max-width: 1024px) and (orientation: portrait) {
+        .show-portrait { display: block; }
+        
+        .show-portrait iframe {
+            /* Genişliği ekrana sığdır, oranı koru */
+            width: 95vw; 
+            height: auto;
+            aspect-ratio: 600/750;
+        }
+        /* Başlığı mobilde biraz küçültelim */
+        .table-title { font-size: 1rem; }
+    }
+
+    /* 3. MOBİL/TABLET - YATAY (Landscape) */
+    @media only screen and (max-width: 1024px) and (orientation: landscape) {
+        .show-landscape { display: block; }
+        
+        .show-landscape iframe {
+            /* Yüksekliğe göre sınırla ki ekranı taşmasın */
+            height: 80vh; 
+            width: auto;
+            aspect-ratio: 1000/550;
+        }
+        .main-container {
+            justify-content: flex-start; /* Yatay modda üstten başlasın */
+            padding-top: 10px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="main-container">
+    
+    <!-- İSTENİLEN BAŞLIK BURADA -->
+    <div class="table-title">
+        Tablo 1: r = 0, k = 0 İken a Sürgüsündeki Değişime Göre Dönüşümler
+    </div>
+
+    <div class="ggb-wrapper">
+        <!-- 1. DİKEY EKRAN -->
+        <div class="show-portrait">
+            <iframe scrolling="no" title="germe sıkıştırma dikey" src="https://www.geogebra.org/material/iframe/id/dtscwbrs/width/600/height/750/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/true/rc/false/ld/false/sdz/true/ctl/false" width="600" height="750"> </iframe>
+        </div>
+
+        <!-- 2. YATAY EKRAN -->
+        <div class="show-landscape">
+            <iframe scrolling="no" title="sıkıştırma/germe yatay" src="https://www.geogebra.org/material/iframe/id/jsmp6qr8/width/1000/height/550/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/true/rc/false/ld/false/sdz/true/ctl/false" width="1000" height="550"> </iframe>
+        </div>
+
+        <!-- 3. MASAÜSTÜ -->
+        <div class="show-desktop">
+            <iframe scrolling="no" title="germe sıkıştırma masa üstü " src="https://www.geogebra.org/material/iframe/id/txvmhtc3/width/1200/height/800/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/true/rc/false/ld/false/sdz/true/ctl/false" width="1200" height="800"> </iframe>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
