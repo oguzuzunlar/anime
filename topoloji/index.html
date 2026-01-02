@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TopoLogic: Mobile Pro</title>
+    <style>
+        :root { --neon: #0ff; --danger: #f00; }
+        body { margin: 0; background: #000; color: #0f0; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; }
+        
+        /* Ana Menü - Mobil Uyumlu Grid */
+        #main-menu { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: env(safe-area-inset-top) 20px; text-align: center; box-sizing: border-box; overflow-y: auto; }
+        #main-menu h1 { font-size: clamp(2rem, 8vw, 3.5rem); text-shadow: 0 0 20px var(--neon); color: var(--neon); margin-bottom: 20px; letter-spacing: 4px; }
+        
+        .level-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; width: 100%; max-width: 800px; padding-bottom: 40px; }
+        .level-card { background: rgba(30, 30, 30, 0.9); border: 2px solid #444; border-radius: 12px; padding: 15px; cursor: pointer; transition: 0.2s; position: relative; -webkit-tap-highlight-color: transparent; }
+        .level-card.locked { opacity: 0.3; filter: grayscale(1); }
+        .level-card:not(.locked):active { transform: scale(0.95); border-color: var(--neon); }
+        .level-card .title { font-weight: bold; font-size: 0.9rem; color: #fff; }
+
+        /* HUD - Esnek Tasarım */
+        #ui { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 95%; max-width: 500px; pointer-events: none; z-index: 100; display: none; }
+        .panel { background: rgba(5,5,5,0.9); border: 1.5px solid var(--neon); padding: 10px; border-radius: 15px; box-shadow: 0 0 20px rgba(0,255,255,0.2); }
+        .bar-bg { background: #111; height: 12px; border-radius: 6px; margin: 8px 0; border: 1px solid #333; overflow: hidden; }
+        #bar-fill { background: linear-gradient(90deg, #008888, var(--neon)); height: 100%; width: 0%; transition: width 0.3s; }
+        
+        #top-left-ui { position: absolute; top: 15px; left: 15px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; pointer-events: auto; }
+        .info-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--neon); color: #000; border: none; font-weight: bold; font-size: 22px; cursor: pointer; box-shadow: 0 0 15px var(--neon); }
+        .total-score-box { background: rgba(0,255,255,0.15); border: 1px solid var(--neon); padding: 6px 12px; border-radius: 20px; color: var(--neon); font-family: monospace; font-size: 12px; backdrop-filter: blur(5px); }
+
+        /* Mobil Yardım Modülü */
+        #help-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 6000; display: none; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        .modal-content { background: #111; border: 2px solid var(--neon); padding: 25px; border-radius: 20px; max-width: 450px; width: 100%; color: #fff; position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 10px; right: 15px; color: var(--danger); font-size: 32px; padding: 10px; }
+
+        /* Çarpışma ve Sonuç Ekranları */
+        #collision-lock, #win-screen, #fail-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 5000; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; backdrop-filter: blur(8px); padding: 20px; box-sizing: border-box; }
+        #collision-lock { background: rgba(100, 0, 0, 0.4); }
+        .lock-box { background: #000; border: 3px solid var(--danger); padding: 30px; border-radius: 20px; box-shadow: 0 0 50px var(--danger); width: 100%; max-width: 320px; }
+        
+        button { background: var(--neon); color: #000; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 10px; font-size: 1.1rem; min-height: 48px; -webkit-tap-highlight-color: transparent; }
+        
+        /* Puan Etiketleri */
+        .score-float { position: absolute; color: #0f0; font-weight: 900; font-size: 28px; pointer-events: none; z-index: 10000; text-shadow: 0 0 10px #000; animation: floatUpAnim 0.8s ease-out forwards; }
+        @keyframes floatUpAnim { 0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; } 50% { opacity: 1; } 100% { transform: translate(-50%, -80px) scale(1); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div id="top-left-ui">
+        <button class="info-btn" onclick="toggleHelp(true)">?</button>
+        <div class="total-score-box">SKOR: <span id="total-score-val">0</span></div>
+    </div>
+
+    <div id="help-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="toggleHelp(false)">×</span>
+            <h2 style="color: var(--neon);">MOBİL REHBER</h2>
+            <p><b>Parmakla Sürükle:</b> Kırmızı noktaları parlak pembe yola taşı.</p>
+            <p><b>Kamera:</b> Boş alanda parmağını kaydırarak dünyayı döndür. İki parmakla yakınlaş.</p>
+            <p><b>Çakışma:</b> Kablolar birbirine değerse oyun kilitlenir. <b>GERİ AL</b> butonunu kullan.</p>
+            <hr border="0.5px solid #333">
+            <p style="font-size: 0.9rem; color: #888;">Hızlı bitirerek daha yüksek puan topla!</p>
+        </div>
+    </div>
+
+    <div id="main-menu">
+        <h1>TOPOLOGIC</h1>
+        <div id="level-grid" class="level-grid"></div>
+    </div>
+
+    <div id="collision-lock">
+        <div class="lock-box">
+            <h2 style="color: var(--danger); margin-top: 0;">🛑 ÇAKIŞMA!</h2>
+            <p style="color: #fff; margin-bottom: 20px;">Kablolar temas etti.</p>
+            <button id="undo-btn" style="width: 100%;">GÜVENLİ KONUMA DÖN</button>
+        </div>
+    </div>
+
+    <div id="ui" class="panel">
+        <div id="timer-display" style="font-size: 1.8rem; color: var(--danger); font-family: monospace; font-weight: bold;">00:00</div>
+        <div id="level-info" style="color: var(--neon); font-size: 0.9rem; font-weight: bold; letter-spacing: 2px;">STAGE...</div>
+        <div class="bar-bg"><div id="bar-fill"></div></div>
+        <div style="display: flex; justify-content: space-around; font-size: 14px; color: var(--neon); font-family: monospace; font-weight: bold;">
+            <div>BÖLÜM: <span id="score-val">0</span></div>
+            <div>UYUM: %<span id="percent-val">0</span></div>
+        </div>
+    </div>
+
+    <div id="win-screen" style="background: rgba(0,0,0,0.96);">
+        <h1 style="color:var(--neon); font-size: 3rem;">KUSURSUZ!</h1>
+        <div id="win-score-info" style="color:var(--neon); font-size: 1.5rem; margin-bottom: 30px;"></div>
+        <button id="win-next-btn">SIRADAKİ FORM</button>
+    </div>
+
+    <div id="fail-screen" style="background: rgba(0,0,0,0.96);">
+        <h1 style="color:var(--danger); font-size: 2.5rem;">ZAMAN TÜKENDİ!</h1>
+        <p id="extra-rights-text" style="color: #fff; margin-bottom: 20px;"></p>
+        <button id="btn-extra" style="background:#ff0; width: 200px;">EK SÜRE AL</button>
+        <button onclick="location.reload()" style="background:#555; color:#fff; width: 200px;">ANA MENÜ</button>
+    </div>
+
+    <script type="importmap">
+        { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { DragControls } from 'three/addons/controls/DragControls.js';
+
+        // Sesler
+        const sfx = {
+            snap: new Audio('snap.mp3'), collision: new Audio('collision.mp3'),
+            undo: new Audio('undo.mp3'), win: new Audio('win.mp3'),
+            fail: new Audio('fail.mp3'), bgm: new Audio('bgm.mp3')
+        };
+        sfx.bgm.loop = true; sfx.bgm.volume = 0.2;
+
+        let scene, camera, renderer, controls, dragControls;
+        let knotMesh, ghostMesh, knotCurve, handles = [];
+        let targetPathPoints = [], currentLevelIndex = 0;
+        let unlockedLevel = parseInt(localStorage.getItem('topoMaxLevel')) || 0;
+        let totalAccumulatedScore = parseInt(localStorage.getItem('topoTotalScore')) || 0;
+        
+        let lastSafePositions = [], isLocked = false, collisionCooldown = false;
+        let levelTimerActive = false, startTime, levelTimeLimit, gameScore = 0;
+        let bonusAwarded = false, extraTimeAttempts = 0;
+
+        const pointValues = [100, 50, 25, 12];
+        const levels = [
+            { id: "1", name: "Daire (Loop)", type: 'circle', nodes: 8, radius: 8, time: 50 },
+            { id: "2", name: "Kalp (Heart)", type: 'heart', nodes: 12, radius: 0.6, time: 70 },
+            { id: "3", name: "Yıldız (Star)", type: 'star', nodes: 14, radius: 8, time: 90 },
+            { id: "4", name: "Yonca (Trefoil)", type: 'torus', nodes: 18, p: 2, q: 3, radius: 7, time: 120 },
+            { id: "5", name: "Beşyaprak", type: 'torus', nodes: 22, p: 2, q: 5, radius: 7, time: 150 },
+            { id: "6", name: "Sekizli (Figure-8)", type: 'figure8', nodes: 26, radius: 8, time: 180 },
+            { id: "7", name: "Düğümlü Torus", type: 'torus', nodes: 28, p: 3, q: 7, radius: 8, time: 210 },
+            { id: "8", name: "Septifolium", type: 'sept', nodes: 32, radius: 8, time: 240 }
+        ];
+
+        window.toggleHelp = (show) => document.getElementById('help-modal').style.display = show ? 'flex' : 'none';
+
+        function showScoreEffect(pos, val, isNeg) {
+            const vector = pos.clone().project(camera);
+            const div = document.createElement('div');
+            div.className = 'score-float' + (isNeg ? ' neg' : '');
+            div.style.left = (vector.x * 0.5 + 0.5) * window.innerWidth + 'px';
+            div.style.top = (vector.y * -0.5 + 0.5) * window.innerHeight + 'px';
+            div.innerText = (isNeg ? '' : '+') + val;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 800);
+        }
+
+        function checkCollision() {
+            if (collisionCooldown || !knotCurve) return false;
+            const pts = knotCurve.getPoints(200); 
+            const minSafeDistance = 0.78; 
+            for(let i=0; i < pts.length; i++) {
+                for(let j=i + 45; j < pts.length; j++) {
+                    if (i < 15 && j > pts.length - 15) continue;
+                    if (pts[i].distanceTo(pts[j]) < minSafeDistance) return true;
+                }
+            }
+            return false;
+        }
+
+        function setupDragControls() {
+            if (dragControls) dragControls.dispose();
+            dragControls = new DragControls(handles, camera, renderer.domElement);
+            
+            dragControls.addEventListener('dragstart', () => { 
+                controls.enabled = false; // Mobilde kamera dönmesini engelle
+                if(!isLocked) lastSafePositions = handles.map(h => h.position.clone());
+            });
+            
+            dragControls.addEventListener('drag', (e) => {
+                if(isLocked) return;
+                knotCurve.points = handles.map(h => h.position);
+                
+                if (checkCollision()) {
+                    isLocked = true;
+                    sfx.collision.play().catch(()=>{});
+                    document.getElementById('collision-lock').style.display = 'flex';
+                    dragControls.enabled = false;
+                    return;
+                }
+
+                const node = e.object;
+                const closest = getClosestPointOnPath(node.position);
+                const wasOnRail = node.userData.onRail;
+
+                if (!wasOnRail && closest.dist < 1.4) {
+                    node.userData.onRail = true;
+                    sfx.snap.play().catch(()=>{});
+                    const gain = pointValues[Math.min(extraTimeAttempts, 3)];
+                    gameScore += gain;
+                    showScoreEffect(node.position, gain, false);
+                    node.position.copy(closest.pos);
+                } else if (wasOnRail && closest.dist > 2.2) {
+                    node.userData.onRail = false;
+                    gameScore = Math.max(0, gameScore - 100);
+                    showScoreEffect(node.position, -100, true);
+                }
+
+                if (node.userData.onRail) node.position.copy(closest.pos);
+                updateVisuals();
+                document.getElementById('score-val').innerText = gameScore;
+            });
+
+            dragControls.addEventListener('dragend', () => { 
+                controls.enabled = true; 
+                checkVictory();
+            });
+        }
+
+        function loadLevel(idx) {
+            sfx.bgm.play().catch(() => {});
+            currentLevelIndex = idx;
+            const level = levels[idx];
+            
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('win-screen').style.display = 'none';
+            document.getElementById('fail-screen').style.display = 'none';
+            document.getElementById('collision-lock').style.display = 'none';
+            document.getElementById('ui').style.display = 'block';
+            document.getElementById('level-info').innerText = level.name;
+            
+            isLocked = false; bonusAwarded = false; extraTimeAttempts = 0; gameScore = 0; 
+            levelTimeLimit = level.time; startTime = Date.now(); levelTimerActive = true;
+            
+            handles.forEach(h => scene.remove(h));
+            handles = [];
+            if (knotMesh) scene.remove(knotMesh);
+            if (ghostMesh) scene.remove(ghostMesh);
+
+            targetPathPoints = [];
+            for(let i=0; i<800; i++) targetPathPoints.push(getShapePoint((i/800)*Math.PI*2, level));
+
+            ghostMesh = new THREE.Mesh(
+                new THREE.TubeGeometry(new THREE.CatmullRomCurve3(targetPathPoints, true), 100, 0.12, 6, true), 
+                new THREE.MeshStandardMaterial({ color: 0xff00ff, emissive: 0xff00ff, emissiveIntensity: 2, transparent: true, opacity: 0.3 })
+            );
+            scene.add(ghostMesh);
+
+            for (let i = 0; i < level.nodes; i++) {
+                // Mobilde Hitbox (Görünmez Küre) daha büyük: 1.8 birim
+                const handle = new THREE.Mesh(new THREE.SphereGeometry(1.8, 8, 8), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 }));
+                const visual = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.5, 12, 12), 
+                    new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 3 })
+                );
+                handle.add(visual);
+                handle.userData = { onRail: false };
+                
+                const phi = Math.acos(-1 + (2 * i) / level.nodes);
+                const theta = Math.sqrt(level.nodes * Math.PI) * phi;
+                handle.position.set(30 * Math.sin(phi) * Math.cos(theta), 30 * Math.sin(phi) * Math.sin(theta), 30 * Math.cos(phi));
+                
+                scene.add(handle);
+                handles.push(handle);
+            }
+
+            knotCurve = new THREE.CatmullRomCurve3(handles.map(h => h.position), true);
+            lastSafePositions = handles.map(h => h.position.clone());
+            setupDragControls();
+            updateVisuals();
+            document.getElementById('total-score-val').innerText = totalAccumulatedScore;
+        }
+
+        function restoreSafeState() {
+            sfx.undo.play().catch(()=>{});
+            collisionCooldown = true;
+            handles.forEach((h, i) => h.position.copy(lastSafePositions[i]));
+            isLocked = false;
+            document.getElementById('collision-lock').style.display = 'none';
+            dragControls.enabled = true;
+            updateVisuals();
+            setTimeout(() => { collisionCooldown = false; }, 1000);
+        }
+
+        function updateVisuals() {
+            if (knotMesh) scene.remove(knotMesh);
+            knotCurve.points = handles.map(h => h.position);
+            knotMesh = new THREE.Mesh(new THREE.TubeGeometry(knotCurve, 100, 0.4, 8, true), 
+                new THREE.MeshStandardMaterial({ color: isLocked ? 0xff0000 : 0x00ccff, metalness: 0.8, roughness: 0.2 }));
+            scene.add(knotMesh);
+
+            let totalDev = 0;
+            handles.forEach(h => {
+                const dist = getClosestPointOnPath(h.position).dist;
+                totalDev += dist;
+                const active = h.userData.onRail;
+                h.children[0].material.color.set(active ? 0x00ff00 : (dist < 4 ? 0xff8800 : 0xff0000));
+                h.children[0].material.emissive.set(active ? 0x00ff00 : 0xff0000);
+            });
+
+            let percent = Math.max(0, 100 - (totalDev * 0.8));
+            if (percent >= 98 && !bonusAwarded) {
+                gameScore += 500; bonusAwarded = true;
+                showScoreEffect(new THREE.Vector3(0, 12, 0), 500, false);
+            }
+            document.getElementById('bar-fill').style.width = percent + '%';
+            document.getElementById('percent-val').innerText = Math.floor(percent);
+        }
+
+        function getShapePoint(t, level) {
+            const r = level.radius;
+            if (level.type === 'circle') return new THREE.Vector3(Math.cos(t) * r, 0, Math.sin(t) * r);
+            if (level.type === 'heart') return new THREE.Vector3(16*Math.pow(Math.sin(t),3)*r, 0, (13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))*r);
+            if (level.type === 'star') { const rs = r + 3 * Math.sin(5 * t); return new THREE.Vector3(rs * Math.cos(t), 0, rs * Math.sin(t)); }
+            if (level.type === 'torus') { const rt = r * (0.5 * (2 + Math.sin(level.q * t))); return new THREE.Vector3(rt * Math.cos(level.p * t), rt * Math.sin(level.p * t), r * 0.4 * Math.cos(level.q * t)); }
+            if (level.type === 'figure8') return new THREE.Vector3((2 + Math.cos(2*t))*Math.cos(3*t)*(r/3), (2 + Math.cos(2*t))*Math.sin(3*t)*(r/3), Math.sin(4*t)*(r/2));
+            if (level.type === 'sept') { const rs = r + 2.5 * Math.sin(7 * t); return new THREE.Vector3(rs * Math.cos(t), 0.5 * Math.cos(7*t), rs * Math.sin(t)); }
+            return new THREE.Vector3(0,0,0);
+        }
+
+        function getClosestPointOnPath(pos) {
+            let minDist = Infinity; let closestPos = new THREE.Vector3();
+            targetPathPoints.forEach(p => { const d = pos.distanceTo(p); if (d < minDist) { minDist = d; closestPos = p; } });
+            return { dist: minDist, pos: closestPos };
+        }
+
+        function checkVictory() {
+            let totalDev = 0; handles.forEach(h => totalDev += getClosestPointOnPath(h.position).dist);
+            let percent = 100 - (totalDev * 0.8);
+            if (percent >= 98 && !checkCollision() && handles.every(h => h.userData.onRail)) {
+                levelTimerActive = false; sfx.win.play().catch(()=>{});
+                totalAccumulatedScore += gameScore;
+                localStorage.setItem('topoTotalScore', totalAccumulatedScore);
+                if (currentLevelIndex === unlockedLevel) { unlockedLevel++; localStorage.setItem('topoMaxLevel', unlockedLevel); }
+                document.getElementById('win-screen').style.display = 'flex';
+                document.getElementById('win-score-info').innerText = `SKOR: ${gameScore}`;
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (controls) controls.update();
+            if (levelTimerActive && !isLocked) {
+                const rem = levelTimeLimit - (Date.now() - startTime) / 1000;
+                if (rem <= 0) {
+                    levelTimerActive = false;
+                    sfx.fail.play().catch(()=>{});
+                    document.getElementById('fail-screen').style.display = 'flex';
+                    document.getElementById('extra-rights-text').innerText = `Kalan Hak: ${3 - extraTimeAttempts}`;
+                    document.getElementById('btn-extra').style.display = (extraTimeAttempts < 3) ? 'block' : 'none';
+                }
+                document.getElementById('timer-display').innerText = Math.max(0, rem).toFixed(1);
+            }
+            renderer.render(scene, camera);
+        }
+
+        const start = () => {
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Performans için
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 40, 60);
+            scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+            const s = new THREE.PointLight(0x00ffff, 8000, 200); s.position.set(20, 50, 20); scene.add(s);
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            
+            const grid = document.getElementById('level-grid');
+            levels.forEach((l, i) => {
+                const card = document.createElement('div');
+                card.className = `level-card ${i > unlockedLevel ? 'locked' : ''}`;
+                card.innerHTML = `<div class="title">${i + 1}. ${l.name}</div>`;
+                if (i <= unlockedLevel) card.onclick = () => loadLevel(i);
+                grid.appendChild(card);
+            });
+            
+            document.getElementById('undo-btn').onclick = restoreSafeState;
+            document.getElementById('win-next-btn').onclick = () => loadLevel(currentLevelIndex + 1);
+            document.getElementById('btn-extra').onclick = () => {
+                if(extraTimeAttempts < 3) {
+                    extraTimeAttempts++; startTime = Date.now();
+                    levelTimerActive = true; document.getElementById('fail-screen').style.display = 'none';
+                }
+            };
+            
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+            
+            animate();
+        };
+
+        start();
+    </script>
+</body>
+</html>
