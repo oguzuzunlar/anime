@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TopoLogic: Pro Mobile Fixed</title>
+    <title>TopoLogic: Emerald Evolution</title>
     <style>
-        :root { --neon: #0ff; --danger: #f00; --gold: #ff0; }
+        :root { --neon: #0f0; --target: #0f0; --danger: #f00; --gold: #ff0; --bg: #001a00; }
         body { margin: 0; background: #000; color: #0f0; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; touch-action: none; user-select: none; }
         
-        /* ÜST BAR - Çakışmayı Önleyen Yeni Düzen */
+        /* ÜST BAR */
         #top-bar { 
             position: absolute; top: 10px; left: 0; width: 100%; 
             display: flex; justify-content: space-between; align-items: center; 
@@ -17,13 +17,13 @@
         .top-group { display: flex; gap: 8px; pointer-events: auto; }
         
         .round-btn { 
-            width: 44px; height: 44px; border-radius: 50%; background: var(--neon); color: #000; 
-            border: none; font-weight: bold; font-size: 20px; cursor: pointer; 
-            box-shadow: 0 0 15px var(--neon); display: flex; align-items: center; justify-content: center; 
+            width: 44px; height: 44px; border-radius: 50%; background: #000; color: var(--neon); 
+            border: 2px solid var(--neon); font-weight: bold; font-size: 20px; cursor: pointer; 
+            box-shadow: 0 0 15px rgba(0,255,0,0.4); display: flex; align-items: center; justify-content: center; 
             -webkit-tap-highlight-color: transparent;
         }
         .total-score-box { 
-            background: rgba(0,255,255,0.2); border: 1.5px solid var(--neon); 
+            background: rgba(0,40,0,0.8); border: 1.5px solid var(--neon); 
             padding: 8px 15px; border-radius: 20px; color: var(--neon); 
             font-family: monospace; font-size: 13px; font-weight: bold; 
             backdrop-filter: blur(5px); pointer-events: auto;
@@ -35,17 +35,17 @@
             width: 92%; max-width: 500px; pointer-events: none; z-index: 100; display: none; 
         }
         .panel { 
-            background: rgba(5,5,5,0.95); border: 1.5px solid var(--neon); 
-            padding: 10px; border-radius: 15px; box-shadow: 0 0 25px rgba(0,255,255,0.3); 
+            background: rgba(0,20,0,0.95); border: 2px solid var(--neon); 
+            padding: 10px; border-radius: 15px; box-shadow: 0 0 25px rgba(0,255,0,0.3); 
             text-align: center; 
         }
-        .bar-bg { background: #111; height: 12px; border-radius: 6px; margin: 8px 0; border: 1px solid #333; overflow: hidden; }
-        #bar-fill { background: linear-gradient(90deg, #008888, var(--neon)); height: 100%; width: 0%; transition: width 0.3s; }
+        .bar-bg { background: #001100; height: 12px; border-radius: 6px; margin: 8px 0; border: 1px solid #004400; overflow: hidden; }
+        #bar-fill { background: var(--neon); height: 100%; width: 0%; transition: width 0.3s; }
         
         /* Puan Efektleri */
         .score-float { 
             position: absolute; color: #0f0; font-weight: 900; font-size: 32px; 
-            pointer-events: none; z-index: 10000; text-shadow: 0 0 10px #000, 0 0 5px currentColor; 
+            pointer-events: none; z-index: 10000; text-shadow: 0 0 10px #000; 
             animation: floatUpAnim 1s ease-out forwards;
         }
         .score-float.neg { color: var(--danger); }
@@ -62,9 +62,9 @@
             justify-content: center; align-items: center; text-align: center; 
             box-sizing: border-box; padding: 20px;
         }
-        #main-menu { background: radial-gradient(circle, #1a1a1a 0%, #000 100%); z-index: 3000; }
-        #help-modal { background: rgba(0,0,0,0.98); z-index: 6000; display: none; }
-        .modal-content { background: #0a0a0a; border: 2px solid var(--neon); padding: 25px; border-radius: 20px; max-width: 500px; color: #fff; position: relative; }
+        #main-menu { background: radial-gradient(circle, #001a00 0%, #000 100%); z-index: 3000; }
+        #help-modal { background: rgba(0,10,0,0.98); z-index: 6000; display: none; }
+        .modal-content { background: #000; border: 2px solid var(--neon); padding: 25px; border-radius: 20px; max-width: 500px; color: #fff; position: relative; }
         
         button { background: var(--neon); color: #000; border: none; padding: 15px 30px; font-weight: 900; border-radius: 12px; cursor: pointer; font-size: 1rem; }
         .close-modal { position: absolute; top: 10px; right: 15px; color: var(--danger); font-size: 30px; cursor: pointer; }
@@ -77,7 +77,7 @@
             <button class="round-btn" id="help-btn">?</button>
             <button class="round-btn" id="mute-btn">🔊</button>
         </div>
-        <div class="total-score-box">TOPLAM: <span id="total-score-val">0</span></div>
+        <div class="total-score-box">TOPLAM SKOR: <span id="total-score-val">0</span></div>
     </div>
 
     <div id="help-modal">
@@ -98,7 +98,7 @@
 
     <div id="ui" class="panel">
         <div id="timer-display" style="font-size: 2.2rem; color: var(--danger); font-family: monospace; font-weight: 900;">00.0</div>
-        <div id="level-info" style="color: var(--neon); font-weight: 900; letter-spacing: 2px; font-size: 1.1rem;">STAGE...</div>
+        <div id="level-info" style="color: #fff; font-weight: 900; letter-spacing: 2px; font-size: 1.1rem;">STAGE...</div>
         <div class="bar-bg"><div id="bar-fill"></div></div>
         <div style="display: flex; justify-content: space-around; font-size: 14px; color: var(--neon); font-family: monospace; font-weight: 900;">
             <div>SKOR: <span id="score-val">0</span></div>
@@ -107,9 +107,9 @@
     </div>
 
     <div id="win-screen" style="display: none; background: #000;">
-        <h1 style="color:var(--neon); font-size: 3.5rem;">KUSURSUZ!</h1>
-        <div id="win-score-info" style="color:var(--gold); font-size: 1.5rem; margin-bottom: 30px;"></div>
-        <button id="win-next-btn">SIRADAKİ FORM</button>
+        <h1 style="color:var(--neon); font-size: 3.5rem;">MÜKEMMEL!</h1>
+        <div id="win-score-info" style="color:var(--neon); font-size: 1.5rem; margin-bottom: 30px;"></div>
+        <button id="win-next-btn">SIRADAKİ HEDEF</button>
     </div>
 
     <div id="fail-screen" style="display: none; background: #000;">
@@ -138,21 +138,11 @@
 
         function toggleMute() {
             isMuted = !isMuted;
-            const btn = document.getElementById('mute-btn');
-            btn.innerText = isMuted ? '🔇' : '🔊';
-            btn.style.boxShadow = isMuted ? 'none' : '0 0 15px var(--neon)';
+            document.getElementById('mute-btn').innerText = isMuted ? '🔇' : '🔊';
             Object.keys(sfx).forEach(key => { sfx[key].muted = isMuted; });
-            if (!isMuted) sfx.bgm.play().catch(()=>{});
+            if (!isMuted && levelTimerActive) sfx.bgm.play().catch(()=>{});
+            else if (isMuted) sfx.bgm.pause();
         }
-
-        // Sekme Değişikliği Duyarlılığı
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                sfx.bgm.pause();
-            } else if (!isMuted && levelTimerActive) {
-                sfx.bgm.play().catch(()=>{});
-            }
-        });
 
         // --- DEĞİŞKENLER ---
         let scene, camera, renderer, controls, dragControls;
@@ -178,16 +168,15 @@
             { id: "8", name: "Septifolium", type: 'sept', nodes: 32, radius: 8, time: 240 }
         ];
 
-        // --- YARDIM MENÜSÜ ---
         function openHelp() {
             const body = document.getElementById('help-body');
             body.innerHTML = `<span class="close-modal" id="close-h">×</span>
-                <h2 style="color:var(--neon)">${isMobile ? 'MOBİL REHBER' : 'MASTER REHBER'}</h2>
-                <p>👉 <b>Düğümleri Tut:</b> Kırmızı parlayan noktaları yörüngeye taşı.</p>
+                <h2 style="color:var(--neon)">EMERALD REHBER</h2>
+                <p>👉 <b>Düğümleri Tut:</b> Kırmızı noktaları tel kafes yörüngeye taşı.</p>
                 <p>🔄 <b>Kamera:</b> Boş alanda parmağını kaydırarak dünyayı döndür.</p>
-                <p>🛑 <b>Çakışma:</b> Kablolar değerse fizik kilitlenir; Geri Al'a bas.</p>
-                <hr border="0.5">
-                <p><b>Snap:</b> +100/50/25/12 | <b>Hata:</b> -100 | <b>Bonus:</b> +500</p>`;
+                <p>🛑 <b>Çakışma:</b> Kablolar değerse fizik kilitlenir.</p>
+                <hr border="0.5" style="border-color:#004400">
+                <p><b>Düğüm Renkleri:</b><br>Kırmızı: Uzak | Sarı: Yakın | Yeşil: Oturdu</p>`;
             document.getElementById('help-modal').style.display = 'flex';
             document.getElementById('close-h').onclick = () => document.getElementById('help-modal').style.display='none';
         }
@@ -203,25 +192,11 @@
             setTimeout(() => div.remove(), 1000);
         }
 
-        function checkCollision() {
-            if (collisionCooldown || !knotCurve) return false;
-            const pts = knotCurve.getPoints(200); 
-            const minSafeDistance = 0.9; 
-            for(let i=0; i < pts.length; i++) {
-                for(let j=i + 45; j < pts.length; j++) {
-                    if (i < 20 && j > pts.length - 20) continue;
-                    if (pts[i].distanceTo(pts[j]) < minSafeDistance) return true;
-                }
-            }
-            return false;
-        }
-
         function setupDragControls() {
             if (dragControls) dragControls.dispose();
             dragControls = new DragControls(handles, camera, renderer.domElement);
             dragControls.addEventListener('dragstart', (e) => { 
                 controls.enabled = false;
-                e.object.userData.light.intensity = 50;
                 if(!isLocked) lastSafePositions = handles.map(h => h.position.clone());
             });
             dragControls.addEventListener('drag', (e) => {
@@ -245,11 +220,9 @@
                 }
                 if (node.userData.onRail) node.position.copy(closest.pos);
                 updateVisuals();
-                document.getElementById('score-val').innerText = gameScore;
             });
-            dragControls.addEventListener('dragend', (e) => { 
-                controls.enabled = true; e.object.userData.light.intensity = 15;
-                checkVictory();
+            dragControls.addEventListener('dragend', () => { 
+                controls.enabled = true; checkVictory();
             });
         }
 
@@ -266,7 +239,7 @@
             isLocked = false; bonusAwarded = false; extraTimeAttempts = 0; gameScore = 0; 
             levelTimeLimit = level.time; startTime = Date.now(); levelTimerActive = true;
             
-            handles.forEach(h => { scene.remove(h.userData.light); scene.remove(h); });
+            handles.forEach(h => scene.remove(h));
             handles = [];
             if (knotMesh) scene.remove(knotMesh);
             if (ghostMesh) scene.remove(ghostMesh);
@@ -274,23 +247,21 @@
             targetPathPoints = [];
             for(let i=0; i<800; i++) targetPathPoints.push(getShapePoint((i/800)*Math.PI*2, level));
 
+            // TEL KAFES (WIREFRAME) HEDEF ŞEKİL
             ghostMesh = new THREE.Mesh(
-                new THREE.TubeGeometry(new THREE.CatmullRomCurve3(targetPathPoints, true), 120, 0.15, 8, true), 
-                new THREE.MeshStandardMaterial({ color: 0xff00ff, emissive: 0xff00ff, emissiveIntensity: 3, transparent: true, opacity: 0.35 })
+                new THREE.TubeGeometry(new THREE.CatmullRomCurve3(targetPathPoints, true), 120, 0.35, 6, true), 
+                new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true, transparent: true, opacity: 0.2 })
             );
             scene.add(ghostMesh);
 
             const handleSize = isMobile ? 2.8 : 1.6;
             for (let i = 0; i < level.nodes; i++) {
                 const handle = new THREE.Mesh(new THREE.SphereGeometry(handleSize, 8, 8), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 }));
-                const visual = new THREE.Mesh(new THREE.SphereGeometry(0.7, 16, 16), new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 6 }));
-                const pLight = new THREE.PointLight(0xff0000, 15, 8);
-                handle.add(visual); handle.userData = { onRail: false, light: pLight };
-                scene.add(pLight);
+                const visual = new THREE.Mesh(new THREE.SphereGeometry(0.7, 16, 16), new THREE.MeshStandardMaterial({ color: 0xff0000 }));
+                handle.add(visual); handle.userData = { onRail: false };
                 const phi = Math.acos(-1 + (2 * i) / level.nodes);
                 const theta = Math.sqrt(level.nodes * Math.PI) * phi;
                 handle.position.set(32 * Math.sin(phi) * Math.cos(theta), 32 * Math.sin(phi) * Math.sin(theta), 32 * Math.cos(phi));
-                pLight.position.copy(handle.position);
                 scene.add(handle); handles.push(handle);
             }
             knotCurve = new THREE.CatmullRomCurve3(handles.map(h => h.position), true);
@@ -300,7 +271,7 @@
 
         function restoreSafeState() {
             sfx.undo.play().catch(()=>{}); collisionCooldown = true;
-            handles.forEach((h, i) => { h.position.copy(lastSafePositions[i]); h.userData.light.position.copy(lastSafePositions[i]); });
+            handles.forEach((h, i) => { h.position.copy(lastSafePositions[i]); });
             isLocked = false; document.getElementById('collision-lock').style.display = 'none';
             dragControls.enabled = true; updateVisuals();
             setTimeout(() => { collisionCooldown = false; }, 1000);
@@ -309,24 +280,25 @@
         function updateVisuals() {
             if (knotMesh) scene.remove(knotMesh);
             knotCurve.points = handles.map(h => h.position);
+            // ZÜMRÜT YEŞİLİ KABLO (0x00ffcc)
             knotMesh = new THREE.Mesh(new THREE.TubeGeometry(knotCurve, 100, 0.6, 12, true), 
-                new THREE.MeshStandardMaterial({ color: isLocked ? 0xff0000 : 0x00ccff, metalness: 0.8, roughness: 0.1 }));
+                new THREE.MeshStandardMaterial({ color: isLocked ? 0xff0000 : 0x00ffcc, metalness: 0.8, roughness: 0.1 }));
             scene.add(knotMesh);
             let totalDev = 0;
             handles.forEach(h => {
                 const dist = getClosestPointOnPath(h.position).dist; totalDev += dist;
                 const active = h.userData.onRail;
-                h.children[0].material.color.set(active ? 0x00ff00 : (dist < 4 ? 0xff8800 : 0xff0000));
-                h.children[0].material.emissive.set(active ? 0x00ff00 : 0xff0000);
-                h.userData.light.color.set(active ? 0x00ff00 : 0xff0000);
-                h.userData.light.position.copy(h.position);
+                // topoloji2'deki dinamik renk sistemi
+                h.children[0].material.color.set(active ? 0x00ff00 : (dist < 4 ? 0xffff00 : 0xff0000));
             });
             let percent = Math.max(0, 100 - (totalDev * 0.8));
             if (percent >= 98 && !bonusAwarded) { gameScore += 500; bonusAwarded = true; showScoreEffect(new THREE.Vector3(0, 15, 0), 500, false); }
             document.getElementById('bar-fill').style.width = percent + '%';
             document.getElementById('percent-val').innerText = Math.floor(percent);
+            updateUI();
         }
 
+        // --- YARDIMCI MATEMATİK ---
         function getShapePoint(t, level) {
             const r = level.radius;
             if (level.type === 'circle') return new THREE.Vector3(Math.cos(t) * r, 0, Math.sin(t) * r);
@@ -346,13 +318,25 @@
 
         function checkVictory() {
             let totalDev = 0; handles.forEach(h => totalDev += getClosestPointOnPath(h.position).dist);
-            if (100 - (totalDev * 0.8) >= 98 && !checkCollision() && handles.every(h => h.userData.onRail)) {
+            if (100 - (totalDev * 0.8) >= 98 && handles.every(h => h.userData.onRail)) {
                 levelTimerActive = false; sfx.win.play().catch(()=>{});
                 totalAccumulatedScore += gameScore; localStorage.setItem('topoTotalScore', totalAccumulatedScore);
                 if (currentLevelIndex === unlockedLevel) { unlockedLevel++; localStorage.setItem('topoMaxLevel', unlockedLevel); }
                 document.getElementById('win-screen').style.display = 'flex';
                 document.getElementById('win-score-info').innerText = `BÖLÜM SKORU: ${gameScore}`; updateUI();
             }
+        }
+
+        function checkCollision() {
+            if (collisionCooldown || !knotCurve) return false;
+            const pts = knotCurve.getPoints(200); 
+            for(let i=0; i < pts.length; i++) {
+                for(let j=i + 45; j < pts.length; j++) {
+                    if (i < 20 && j > pts.length - 20) continue;
+                    if (pts[i].distanceTo(pts[j]) < 0.9) return true;
+                }
+            }
+            return false;
         }
 
         function updateUI() {
@@ -362,12 +346,17 @@
 
         function animate() {
             requestAnimationFrame(animate); if (controls) controls.update();
+            
+            // HEDEF ŞEKİL NABIZ EFEKTİ
+            if (ghostMesh) {
+                ghostMesh.material.opacity = 0.2 + Math.sin(Date.now() * 0.003) * 0.1;
+            }
+
             if (levelTimerActive && !isLocked) {
                 const rem = levelTimeLimit - (Date.now() - startTime) / 1000;
                 if (rem <= 0) {
                     levelTimerActive = false; sfx.fail.play().catch(()=>{});
                     document.getElementById('fail-screen').style.display = 'flex';
-                    document.getElementById('extra-rights-text').innerText = `Kalan Hak: ${3 - extraTimeAttempts}`;
                     document.getElementById('btn-extra').style.display = (extraTimeAttempts < 3) ? 'block' : 'none';
                 }
                 document.getElementById('timer-display').innerText = Math.max(0, rem).toFixed(1);
@@ -383,16 +372,18 @@
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 40, 75);
-            scene.add(new THREE.AmbientLight(0xffffff, 1.4));
-            const sun = new THREE.DirectionalLight(0x00ffff, 1); sun.position.set(10, 20, 10); scene.add(sun);
+            
+            // topoloji2'deki Grid ve Işıklar
+            scene.add(new THREE.GridHelper(60, 40, 0x004400, 0x001100));
+            scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+            const sun = new THREE.PointLight(0x00ffcc, 8000); sun.position.set(20, 50, 20); scene.add(sun);
+            
             controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
             
             const grid = document.getElementById('level-grid');
             levels.forEach((l, i) => {
                 const card = document.createElement('div');
                 card.className = `level-card ${i > unlockedLevel ? 'locked' : ''}`;
-                card.style.background = 'rgba(40,40,40,0.9)'; card.style.border = '2px solid #555';
-                card.style.borderRadius = '15px'; card.style.padding = '15px';
                 card.innerHTML = `<div style="font-size:0.7rem; color:var(--neon)">LEVEL ${i+1}</div><div style="font-weight:bold; color:#fff">${l.name}</div>`;
                 if (i <= unlockedLevel) card.onclick = () => loadLevel(i);
                 grid.appendChild(card);
@@ -406,7 +397,6 @@
                 if(extraTimeAttempts < 3) {
                     extraTimeAttempts++; startTime = Date.now();
                     levelTimerActive = true; document.getElementById('fail-screen').style.display = 'none';
-                    if (!isMuted) sfx.bgm.play().catch(()=>{});
                 }
             };
             window.addEventListener('resize', () => {
