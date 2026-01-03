@@ -8,122 +8,91 @@
         :root { --neon: #0f0; --target: #0f0; --danger: #f00; --gold: #ff0; --bg: #001a00; }
         body { margin: 0; background: #000; color: #0f0; font-family: 'Segoe UI', system-ui, sans-serif; overflow: hidden; touch-action: none; user-select: none; }
         
+        /* Üst Kontrol Paneli */
         #top-bar { 
             position: absolute; top: 10px; left: 0; width: 100%; 
             display: flex; justify-content: space-between; align-items: flex-start; 
             padding: 0 15px; box-sizing: border-box; z-index: 2500; pointer-events: none; gap: 10px; flex-wrap: wrap;
         }
-        .top-group { display: flex; gap: 12px; flex-wrap: wrap; row-gap: 8px; pointer-events: auto; align-items: center; max-width: 70%; }
+        .top-group { display: flex; gap: 8px; flex-wrap: wrap; pointer-events: auto; align-items: center; }
         
         .round-btn { 
-            min-width: 64px; height: 42px; padding: 0 10px; border-radius: 21px; background: #000; color: var(--neon); 
-            border: 2px solid var(--neon); font-weight: 800; font-size: 14px; cursor: pointer; 
-            box-shadow: 0 0 15px rgba(0,255,0,0.4); display: inline-flex; align-items: center; justify-content: center; 
-            white-space: nowrap;
+            min-width: 50px; height: 42px; padding: 0 12px; border-radius: 21px; background: #000; color: var(--neon); 
+            border: 2px solid var(--neon); font-weight: 800; font-size: 13px; cursor: pointer; 
+            box-shadow: 0 0 15px rgba(0,255,0,0.3); display: inline-flex; align-items: center; justify-content: center; 
         }
+
         .total-score-box { 
             background: rgba(0,40,0,0.8); border: 1.5px solid var(--neon); 
             padding: 8px 15px; border-radius: 20px; color: var(--neon); 
-            font-family: monospace; font-size: 13px; font-weight: bold; 
-            backdrop-filter: blur(5px); pointer-events: auto;
+            font-family: monospace; font-size: 13px; font-weight: bold; backdrop-filter: blur(5px); pointer-events: auto;
         }
 
         .reward-badge {
             background: rgba(0,40,0,0.9); border: 1.5px solid var(--gold); color: var(--gold);
             padding: 8px 12px; border-radius: 16px; font-weight: 900; font-size: 13px;
-            font-family: monospace; box-shadow: 0 0 15px rgba(255,255,0,0.25);
-            pointer-events: auto; white-space: nowrap;
+            font-family: monospace; box-shadow: 0 0 15px rgba(255,255,0,0.25); pointer-events: auto;
         }
 
-        .hud-chip { 
-            position: absolute; top: 12px; right: 14px; z-index: 2600; pointer-events: none; 
-        }
-
+        /* Oyun Paneli */
         #ui { 
-            position: absolute; top: 75px; left: 12px; transform: none; 
-            width: 380px; max-width: 95%; pointer-events: none; z-index: 100; display: none; 
+            position: absolute; top: 75px; left: 12px; width: 350px; max-width: 95%; pointer-events: none; z-index: 100; display: none; 
         }
         .panel { 
             background: rgba(0,20,0,0.7); border: 1.5px solid var(--neon); 
-            padding: 12px 15px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,255,0,0.25); 
-            text-align: center; overflow: visible;
+            padding: 12px 15px; border-radius: 12px; box-shadow: 0 0 20px rgba(0,255,0,0.25); text-align: center; transition: opacity 0.3s;
         }
-        .hud-hidden { opacity: 0.25; pointer-events: none; }
+        .hud-hidden { opacity: 0.1 !important; }
         .bar-bg { background: #001100; height: 12px; border-radius: 6px; margin: 8px 0; border: 1px solid #004400; overflow: hidden; }
         #bar-fill { background: var(--neon); height: 100%; width: 0%; transition: width 0.3s; }
         
-        .reward-info { font-size: 0.8rem; color: var(--gold); margin-bottom: 5px; font-weight: bold; }
-
+        /* Yüzen Skor Efekti */
         .score-float { 
-            position: absolute; color: #0f0; font-weight: 900; font-size: 32px; 
-            pointer-events: none; z-index: 10000; text-shadow: 0 0 10px #000; 
+            position: absolute; color: #0f0; font-weight: 900; font-size: 28px; 
+            pointer-events: none; z-index: 10000; text-shadow: 0 0 8px #000; 
             animation: floatUpAnim 1s ease-out forwards;
         }
         .score-float.neg { color: var(--danger); }
         @keyframes floatUpAnim { 
             0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; } 
-            20% { opacity: 1; transform: translate(-50%, -20px) scale(1.2); }
-            100% { transform: translate(-50%, -100px) scale(1); opacity: 0; } 
+            20% { opacity: 1; transform: translate(-50%, -20px) scale(1.1); }
+            100% { transform: translate(-50%, -80px) scale(1); opacity: 0; } 
         }
 
+        /* Menü Ekranları */
         #main-menu, #collision-lock, #win-screen, #help-modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            z-index: 5000; display: flex; flex-direction: column; 
-            justify-content: flex-start; align-items: center; text-align: center; 
+            z-index: 5000; display: flex; flex-direction: column; align-items: center; text-align: center; 
             box-sizing: border-box; padding: 20px; overflow-y: auto;
         }
         #main-menu { background: radial-gradient(circle, #001a00 0%, #000 100%); z-index: 3000; padding-top: 40px; }
-        #help-modal { background: rgba(0,10,0,0.98); z-index: 6000; display: none; }
+        #help-modal { background: rgba(0,10,0,0.98); z-index: 6000; display: none; justify-content: center; }
         .modal-content { background: #000; border: 2px solid var(--neon); padding: 25px; border-radius: 20px; max-width: 500px; color: #fff; position: relative; }
         
-        button { background: var(--neon); color: #000; border: none; padding: 15px 30px; font-weight: 900; border-radius: 12px; cursor: pointer; font-size: 1rem; }
+        button { background: var(--neon); color: #000; border: none; padding: 15px 30px; font-weight: 900; border-radius: 12px; cursor: pointer; font-size: 1rem; transition: transform 0.1s; }
+        button:active { transform: scale(0.95); }
         .close-modal { position: absolute; top: 10px; right: 15px; color: var(--danger); font-size: 30px; cursor: pointer; }
         
         .topology-desc {
-            color: #aaffaa;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            max-width: 600px;
-            margin: 0 auto 25px auto;
-            padding: 15px;
-            background: rgba(0, 255, 0, 0.05);
-            border-radius: 10px;
-            border-left: 3px solid var(--neon);
-            text-align: left;
+            color: #aaffaa; font-size: 0.95rem; line-height: 1.5; max-width: 600px;
+            margin: 0 auto 20px auto; padding: 15px; background: rgba(0, 255, 0, 0.05);
+            border-radius: 10px; border-left: 3px solid var(--neon); text-align: left;
         }
-        
+
+        #level-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 400px; }
+        .level-card { 
+            background: rgba(0,40,0,0.5); border: 1.5px solid #004400; padding: 15px; 
+            border-radius: 12px; cursor: pointer; transition: 0.3s; position: relative;
+        }
+        .level-card.unlocked { border-color: var(--neon); }
+        .level-card.unlocked:hover { background: var(--neon); color: #000; }
+        .level-card.locked { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
+        .level-card.locked::after { content: '🔒'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.2rem; }
+
         @media (max-width: 768px) {
-            #top-bar { 
-                flex-direction: column; align-items: center; padding: 8px 10px; row-gap: 8px;
-            }
-            .top-group { max-width: 100%; width: 100%; justify-content: center; }
-            .reward-badge, .total-score-box { font-size: 11px; padding: 6px 10px; }
-            #ui { 
-                top: 120px; 
-                left: 50%; 
-                transform: translateX(-50%); 
-                width: calc(100% - 20px); 
-                max-width: calc(100% - 20px);
-            }
-            .panel { padding: 10px 8px; }
-            #timer-display { font-size: 1.5rem !important; }
-            .round-btn { min-width: 56px; height: 38px; font-size: 13px; }
-            
-            #main-menu { padding: 20px 10px 60px 10px !important; }
-            #main-menu h1 { font-size: 1.8rem !important; margin-bottom: 15px !important; padding: 0 10px; }
-            .topology-desc { 
-                font-size: 0.85rem; 
-                padding: 12px; 
-                margin: 0 10px 20px 10px; 
-                max-width: 95%;
-                line-height: 1.4;
-            }
-            #level-grid { 
-                width: 95% !important; 
-                max-width: 95% !important; 
-                gap: 8px !important;
-                margin-bottom: 30px !important;
-            }
+            #top-bar { flex-direction: column; align-items: center; }
+            #ui { top: 125px; left: 50%; transform: translateX(-50%); }
+            #main-menu h1 { font-size: 1.8rem !important; }
         }
     </style>
 </head>
@@ -132,54 +101,62 @@
     <div id="top-bar">
         <div class="top-group">
             <button class="round-btn" id="help-btn">?</button>
-            <button class="round-btn" id="hud-toggle">Panel Kapa</button>
+            <button class="round-btn" id="hud-toggle">Panel</button>
             <button class="round-btn" id="mute-btn">🔊</button>
+            <button class="round-btn" id="menu-btn">🏠</button>
         </div>
         <div style="display:flex; align-items:center; gap:10px; pointer-events:auto;">
-            <div class="reward-badge">PERİYOT ÖDÜLÜ: <span id="current-reward-val-top">100</span></div>
-            <div class="total-score-box">TOPLAM SKOR: <span id="total-score-val">0</span></div>
+            <div class="reward-badge">ÖDÜL: <span id="current-reward-val-top">100</span></div>
+            <div class="total-score-box">TOPLAM: <span id="total-score-val">0</span></div>
         </div>
     </div>
 
     <div id="help-modal">
-        <div class="modal-content" id="help-body"></div>
+        <div class="modal-content">
+            <span class="close-modal" id="close-help">×</span>
+            <h2 style="color:var(--neon)">NASIL OYNANIR?</h2>
+            <p>👉 <b>Amacınız:</b> Kırmızı noktaları yeşil hedef yörüngeye taşıyın.</p>
+            <p>🛑 <b>Çakışma:</b> Kablolar birbirine çok yaklaşırsa sistem kilitlenir. "Geri Al" butonu ile hatadan önceki güvenli ana dönebilirsiniz.</p>
+            <p>⏳ <b>Zaman:</b> Periyot dolduğunda ödül yarıya düşer. Hızlı olan daha çok puan kazanır!</p>
+            <p>💰 <b>Puanlandırma:</b> Seviye 4'ten itibaren taban ödüller her seviyede 2 katına çıkar.</p>
+            <p>🎵 <b>Müzik:</b> 8 farklı arka plan müziği rastgele sırayla çalar.</p>
+        </div>
     </div>
 
     <div id="main-menu">
-        <h1 style="color: var(--neon); font-size: 2.5rem; margin-bottom: 10px; text-shadow: 0 0 20px var(--neon); text-transform: uppercase;">
-            Topolojik Düğüm Deformasyonu
-        </h1>
-        
+        <h1 style="color: var(--neon); font-size: 2.3rem; margin-bottom: 5px; text-shadow: 0 0 20px var(--neon);">TOPOLOJİK DEFORMASYON OYUNU</h1>
         <div class="topology-desc">
-            <strong>Topoloji Nedir?</strong> Topoloji, geometrik cisimlerin büyüklüğünden bağımsız olarak; koparılmadan, yapıştırılmadan veya delinmeden, sadece esnetilerek ve bükülerek dönüştürülebilen özelliklerini inceleyen matematik dalıdır. 
-            <br><br>
-            <strong>Amacınız:</strong> Bu simülasyonda esnek bir "düğümü" (knot), topolojik yapısını bozmadan (kendisiyle çakıştırmadan) hedef yörüngeye deforme etmeniz gerekiyor. Uzamsal zekanızı kullanarak, karmaşık eğrileri birbirine dolandırmadan en yüksek uyumu yakalamaya çalışın.
+            Topoloji, nesnelerin yırtılmadan sadece esnetilerek dönüştürülmesini inceler. Bu oyundaS düğümün yapısını bozmadan hedef forma ulaşmaya çalışın.
         </div>
-
-        <div id="level-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; max-width: 400px;"></div>
+        <button id="continue-btn" style="margin-bottom: 20px; width: 280px;">OYUNA BAŞLA</button>
+        <div id="level-grid"></div>
+        <button id="reset-game-btn" style="background: transparent; color: var(--danger); border: 1px solid var(--danger); margin-top: 30px; font-size: 0.75rem; padding: 6px 12px; opacity: 0.6;">
+            VERİLERİ SIFIRLA
+        </button>
     </div>
 
-    <div id="collision-lock" style="display: none; background: rgba(100,0,0,0.4); backdrop-filter: blur(10px);">
+    <div id="collision-lock" style="display: none; background: rgba(80,0,0,0.85); backdrop-filter: blur(10px);">
         <div style="background:#000; border:3px solid var(--danger); padding:30px; border-radius:20px;">
-            <h2 style="color:var(--danger);">🛑 ÇAKIŞMA!</h2>
-            <button id="undo-btn">GERİ AL</button>
+            <h2 style="color:var(--danger); margin:0 0 15px 0;">🛑 ÇAKIŞMA!</h2>
+            <p style="color:#fff">Kablo kendi üzerine bindi. Lütfen geri alarak rotayı düzeltin.</p>
+            <button id="undo-btn" style="background:var(--danger); color:#fff; font-size:1.2rem; padding:15px 40px;">GERİ AL</button>
         </div>
     </div>
 
     <div id="ui" class="panel">
-        <div id="timer-display" style="font-size: 1.8rem; color: var(--neon); font-family: monospace; font-weight: 900; letter-spacing: 0.1em; word-spacing: 0.2em;">00.0</div>
-        <div id="level-info" style="color: #fff; font-weight: 900; letter-spacing: 2px; font-size: 1.1rem;">STAGE...</div>
+        <div id="timer-display" style="font-size: 1.8rem; color: var(--neon); font-family: monospace; font-weight: 900;">00.0</div>
+        <div id="level-info" style="color: #fff; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; font-size: 0.9rem;">STAGE...</div>
         <div class="bar-bg"><div id="bar-fill"></div></div>
-        <div style="display: flex; justify-content: space-around; font-size: 14px; color: var(--neon); font-family: monospace; font-weight: 900;">
-            <div>SKOR: <span id="score-val">0</span></div>
+        <div style="display: flex; justify-content: space-around; font-size: 13px; font-family: monospace;">
+            <div>BÖLÜM: <span id="score-val">0</span></div>
             <div>UYUM: %<span id="percent-val">0</span></div>
         </div>
     </div>
 
-    <div id="win-screen" style="display: none; background: #000;">
+    <div id="win-screen" style="display: none; background: #000; z-index: 6000;">
         <h1 style="color:var(--neon); font-size: 3.5rem;">MÜKEMMEL!</h1>
-        <div id="win-score-info" style="color:var(--neon); font-size: 1.5rem; margin-bottom: 30px;"></div>
-        <button id="win-next-btn">SIRADAKİ HEDEF</button>
+        <div id="win-score-info" style="color:var(--neon); font-size: 1.6rem; margin-bottom: 30px;"></div>
+        <button id="win-next-btn" style="padding: 20px 50px; font-size: 1.2rem;">SIRADAKİ HEDEF</button>
     </div>
 
     <script type="importmap">
@@ -191,21 +168,43 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { DragControls } from 'three/addons/controls/DragControls.js';
 
-        // --- SES YÖNETİMİ ---
-        const sfx = {
-            snap: new Audio('snap.mp3'), collision: new Audio('collision.mp3'),
-            undo: new Audio('undo.mp3'), win: new Audio('win.mp3'),
-            fail: new Audio('fail.mp3'), bgm: new Audio('bgm.mp3') // 'fail' periyot geçişinde çalabilir
+        // --- SES VE MÜZİK YÖNETİMİ ---
+        const sfx = { 
+            snap: new Audio('snap.mp3'), 
+            collision: new Audio('collision.mp3'), 
+            undo: new Audio('undo.mp3'), 
+            win: new Audio('win.mp3'), 
+            fail: new Audio('fail.mp3') 
         };
-        sfx.bgm.loop = true; sfx.bgm.volume = 0.25;
+
+        const bgmTracks = [
+            'bgm.mp3', 'bgm2.mp3', 'bgm3.mp3', 'bgm4.mp3', 
+            'bgm5.mp3', 'bgm6.mp3', 'bgm7.mp3', 'bgm8.mp3'
+        ];
+        
+        const bgmPlayer = new Audio();
+        bgmPlayer.volume = 0.25;
         let isMuted = false;
+
+        function playRandomBgm() {
+            if (isMuted) return;
+            const randomIndex = Math.floor(Math.random() * bgmTracks.length);
+            bgmPlayer.src = bgmTracks[randomIndex];
+            bgmPlayer.play().catch(e => console.log("Müzik etkileşim bekliyor."));
+        }
+
+        bgmPlayer.onended = () => { playRandomBgm(); };
 
         function toggleMute() {
             isMuted = !isMuted;
             document.getElementById('mute-btn').innerText = isMuted ? '🔇' : '🔊';
-            Object.keys(sfx).forEach(key => { sfx[key].muted = isMuted; });
-            if (!isMuted && levelTimerActive) sfx.bgm.play().catch(()=>{});
-            else if (isMuted) sfx.bgm.pause();
+            Object.keys(sfx).forEach(key => sfx[key].muted = isMuted);
+            if (isMuted) {
+                bgmPlayer.pause();
+            } else {
+                if (bgmPlayer.src) bgmPlayer.play().catch(()=>{});
+                else playRandomBgm();
+            }
         }
 
         // --- DEĞİŞKENLER ---
@@ -217,35 +216,27 @@
         
         let lastSafePositions = [], isLocked = false, collisionCooldown = false;
         let levelTimerActive = false, startTime, levelTimeLimit, gameScore = 0;
-        let bonusAwarded = false;
-        let lastPeriodIndex = -1;
-        let hudHidden = false;
+        let bonusAwarded = false, hudHidden = false, lastPeriodIndex = -1;
         const targetScale = 2;
 
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const levels = [
-            { id: "1", name: "Daire (Loop)", type: 'circle', nodes: 8, radius: 8, time: 40 },
-            { id: "2", name: "Kalp (Heart)", type: 'heart', nodes: 12, radius: 0.6, time: 50 },
-            { id: "3", name: "Yıldız (Star)", type: 'star', nodes: 14, radius: 8, time: 60 },
-            { id: "4", name: "Yonca (Trefoil)", type: 'torus', nodes: 18, p: 2, q: 3, radius: 7, time: 80 },
-            { id: "5", name: "Beşyaprak", type: 'torus', nodes: 22, p: 2, q: 5, radius: 7, time: 100 },
-            { id: "6", name: "Sekizli (Figure8)", type: 'figure8', nodes: 26, radius: 8, time: 120 },
-            { id: "7", name: "Düğümlü Torus", type: 'torus', nodes: 28, p: 3, q: 7, radius: 8, time: 150 },
-            { id: "8", name: "Septifolium", type: 'sept', nodes: 32, radius: 8, time: 180 }
+            { name: "Daire (Loop)", type: 'circle', nodes: 8, radius: 8, time: 40 },
+            { name: "Kalp (Heart)", type: 'heart', nodes: 12, radius: 0.6, time: 50 },
+            { name: "Yıldız (Star)", type: 'star', nodes: 14, radius: 8, time: 60 },
+            { name: "Yonca (Trefoil)", type: 'torus', nodes: 18, p: 2, q: 3, radius: 7, time: 80 },
+            { name: "Beşyaprak", type: 'torus', nodes: 22, p: 2, q: 5, radius: 7, time: 100 },
+            { name: "Sekizli (Figure8)", type: 'figure8', nodes: 26, radius: 8, time: 120 },
+            { name: "Septifolium", type: 'sept', nodes: 30, radius: 8, time: 150 },
+            { name: "Düğümlü Torus", type: 'torus', nodes: 32, p: 3, q: 7, radius: 8, time: 180 }
         ];
 
-        function openHelp() {
-            const body = document.getElementById('help-body');
-            body.innerHTML = `<span class="close-modal" id="close-h">×</span>
-                <h2 style="color:var(--neon)">YÜZEY DENGE OYUNU</h2>
-                <p>Oyun asla bitmez! Ancak zaman geçtikçe düğümlerden aldığınız puan azalır.</p>
-                <p>👉 <b>Düğümleri Tut:</b> Kırmızı noktaları tel kafes yörüngeye taşı.</p>
-                <p>⏳ <b>Zaman Periyodu:</b> Sayaç sıfırlandığında ödül yarıya düşer.</p>
-                <p>🛑 <b>Çakışma:</b> Kablolar değerse fizik kilitlenir.</p>
-                <hr border="0.5" style="border-color:#004400">
-                <p><b>Ödül Skalası:</b> 100 → 50 → 25 → 12 → 6 → 3 → 1</p>`;
-            document.getElementById('help-modal').style.display = 'flex';
-            document.getElementById('close-h').onclick = () => document.getElementById('help-modal').style.display='none';
+        // --- PUANLAMA ---
+        function getCurrentReward() {
+            const elapsed = (Date.now() - startTime) / 1000;
+            const periodIndex = Math.floor(elapsed / levelTimeLimit);
+            let baseReward = 100;
+            if (currentLevelIndex >= 3) baseReward = 100 * Math.pow(2, currentLevelIndex - 2);
+            return Math.max(1, Math.floor(baseReward / Math.pow(2, periodIndex)));
         }
 
         function showScoreEffect(pos, val, isNeg) {
@@ -259,19 +250,29 @@
             setTimeout(() => div.remove(), 1000);
         }
 
-        function getCurrentReward() {
-            const elapsed = (Date.now() - startTime) / 1000;
-            const periodIndex = Math.floor(elapsed / levelTimeLimit);
-            // Puan yarıya inme formülü: 100 / (2^period)
-            return Math.max(1, Math.floor(100 / Math.pow(2, periodIndex)));
+        // --- FİZİK VE ÇAKIŞMA ---
+        function checkCollision() {
+            if (collisionCooldown || !knotCurve) return false;
+            const pts = knotCurve.getPoints(300); 
+            const threshold = 0.38; 
+            const ignoreRange = Math.floor(pts.length * 0.2); 
+            for(let i=0; i < pts.length; i++) {
+                for(let j=i + 1; j < pts.length; j++) {
+                    const circularDist = Math.min(j - i, pts.length - (j - i));
+                    if (circularDist < ignoreRange) continue; 
+                    if (pts[i].distanceTo(pts[j]) < threshold) return true;
+                }
+            }
+            return false;
         }
 
         function setupDragControls() {
             if (dragControls) dragControls.dispose();
             dragControls = new DragControls(handles, camera, renderer.domElement);
-            dragControls.addEventListener('dragstart', (e) => { 
+            dragControls.addEventListener('dragstart', () => {
                 controls.enabled = false;
-                if(!isLocked) lastSafePositions = handles.map(h => h.position.clone());
+                if(!checkCollision()) lastSafePositions = handles.map(h => h.position.clone());
+                if (!isMuted && !bgmPlayer.src) playRandomBgm();
             });
             dragControls.addEventListener('drag', (e) => {
                 if(isLocked) return;
@@ -279,16 +280,16 @@
                 if (checkCollision()) {
                     isLocked = true; sfx.collision.play().catch(()=>{});
                     document.getElementById('collision-lock').style.display = 'flex';
-                    dragControls.enabled = false; return;
+                    dragControls.enabled = false;
+                    return;
                 }
                 const node = e.object;
                 const closest = getClosestPointOnPath(node.position);
-                if (!node.userData.onRail && closest.dist < 1.4) {
+                if (!node.userData.onRail && closest.dist < 1.2) {
                     node.userData.onRail = true; sfx.snap.play().catch(()=>{});
                     const gain = getCurrentReward();
                     gameScore += gain; showScoreEffect(node.position, gain, false);
-                    node.position.copy(closest.pos);
-                } else if (node.userData.onRail && closest.dist > 2.2) {
+                } else if (node.userData.onRail && closest.dist > 2.0) {
                     node.userData.onRail = false; 
                     const loss = getCurrentReward();
                     gameScore = Math.max(0, gameScore - loss);
@@ -297,89 +298,63 @@
                 if (node.userData.onRail) node.position.copy(closest.pos);
                 updateVisuals();
             });
-            dragControls.addEventListener('dragend', () => { 
-                controls.enabled = true; checkVictory();
-            });
+            dragControls.addEventListener('dragend', () => { controls.enabled = true; checkVictory(); });
         }
 
+        function restoreSafeState() {
+            sfx.undo.play().catch(()=>{});
+            collisionCooldown = true;
+            handles.forEach((h, i) => h.position.copy(lastSafePositions[i]));
+            isLocked = false;
+            document.getElementById('collision-lock').style.display = 'none';
+            dragControls.enabled = true;
+            updateVisuals();
+            setTimeout(() => { collisionCooldown = false; }, 1200); 
+        }
+
+        // --- OYUN ---
         function loadLevel(idx) {
-            if (!isMuted) sfx.bgm.play().catch(() => {});
+            if (idx >= levels.length) return;
             currentLevelIndex = idx; const level = levels[idx];
             document.getElementById('main-menu').style.display = 'none';
             document.getElementById('win-screen').style.display = 'none';
-            document.getElementById('collision-lock').style.display = 'none';
             document.getElementById('ui').style.display = 'block';
             document.getElementById('level-info').innerText = level.name;
-            
             isLocked = false; bonusAwarded = false; gameScore = 0; lastPeriodIndex = -1;
             levelTimeLimit = level.time; startTime = Date.now(); levelTimerActive = true;
-            
-            handles.forEach(h => scene.remove(h));
-            handles = [];
+            if (!isMuted && !bgmPlayer.src) playRandomBgm();
+
+            handles.forEach(h => scene.remove(h)); handles = [];
             if (knotMesh) scene.remove(knotMesh);
             if (ghostMesh) scene.remove(ghostMesh);
 
             targetPathPoints = [];
             for(let i=0; i<800; i++) targetPathPoints.push(getShapePoint((i/800)*Math.PI*2, level));
-
-            ghostMesh = new THREE.Mesh(
-                new THREE.TubeGeometry(new THREE.CatmullRomCurve3(targetPathPoints, true), 120, 0.35, 6, true), 
-                new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true, transparent: true, opacity: 0.2 })
-            );
+            ghostMesh = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(targetPathPoints, true), 120, 0.35, 6, true), new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true, transparent: true, opacity: 0.15 }));
             scene.add(ghostMesh);
 
-            const handleSize = isMobile ? 2.8 : 1.6;
             for (let i = 0; i < level.nodes; i++) {
-                const handle = new THREE.Mesh(new THREE.SphereGeometry(handleSize, 8, 8), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 }));
+                const handle = new THREE.Mesh(new THREE.SphereGeometry(1.7, 8, 8), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 }));
                 const visual = new THREE.Mesh(new THREE.SphereGeometry(0.7, 16, 16), new THREE.MeshStandardMaterial({ color: 0xff0000 }));
                 handle.add(visual); handle.userData = { onRail: false };
                 const phi = Math.acos(-1 + (2 * i) / level.nodes);
                 const theta = Math.sqrt(level.nodes * Math.PI) * phi;
-                handle.position.set(32 * Math.sin(phi) * Math.cos(theta), 32 * Math.sin(phi) * Math.sin(theta), 32 * Math.cos(phi));
+                handle.position.set(15*Math.sin(phi)*Math.cos(theta), 15*Math.sin(phi)*Math.sin(theta), 15*Math.cos(phi));
                 scene.add(handle); handles.push(handle);
             }
             knotCurve = new THREE.CatmullRomCurve3(handles.map(h => h.position), true);
             lastSafePositions = handles.map(h => h.position.clone());
-            setupDragControls(); updateVisuals(); updateUI();
-        }
-
-        function restoreSafeState() {
-            sfx.undo.play().catch(()=>{}); collisionCooldown = true;
-            handles.forEach((h, i) => { h.position.copy(lastSafePositions[i]); });
-            isLocked = false; document.getElementById('collision-lock').style.display = 'none';
-            dragControls.enabled = true; updateVisuals();
-            setTimeout(() => { collisionCooldown = false; }, 1000);
-        }
-
-        function updateVisuals() {
-            if (knotMesh) scene.remove(knotMesh);
-            knotCurve.points = handles.map(h => h.position);
-            knotMesh = new THREE.Mesh(new THREE.TubeGeometry(knotCurve, 100, 0.6, 12, true), 
-                new THREE.MeshStandardMaterial({ color: isLocked ? 0xff0000 : 0x00ffcc, metalness: 0.8, roughness: 0.1 }));
-            scene.add(knotMesh);
-            let totalDev = 0;
-            handles.forEach(h => {
-                const dist = getClosestPointOnPath(h.position).dist; totalDev += dist;
-                const active = h.userData.onRail;
-                h.children[0].material.color.set(active ? 0x00ff00 : (dist < 4 ? 0xffff00 : 0xff0000));
-            });
-            let percent = Math.max(0, 100 - (totalDev * 0.8));
-            if (percent >= 98 && !bonusAwarded) { gameScore += 500; bonusAwarded = true; showScoreEffect(new THREE.Vector3(0, 15, 0), 500, false); }
-            document.getElementById('bar-fill').style.width = percent + '%';
-            document.getElementById('percent-val').innerText = Math.floor(percent);
-            updateUI();
+            setupDragControls(); updateVisuals();
         }
 
         function getShapePoint(t, level) {
-            const r = level.radius;
-            let v;
+            const r = level.radius; let v;
             if (level.type === 'circle') v = new THREE.Vector3(Math.cos(t) * r, 0, Math.sin(t) * r);
             else if (level.type === 'heart') v = new THREE.Vector3(16*Math.pow(Math.sin(t),3)*r, 0, (13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))*r);
             else if (level.type === 'star') { const rs = r + 3 * Math.sin(5 * t); v = new THREE.Vector3(rs * Math.cos(t), 0, rs * Math.sin(t)); }
             else if (level.type === 'torus') { const rt = r * (0.5 * (2 + Math.sin(level.q * t))); v = new THREE.Vector3(rt * Math.cos(level.p * t), rt * Math.sin(level.p * t), r * 0.4 * Math.cos(level.q * t)); }
             else if (level.type === 'figure8') v = new THREE.Vector3((2 + Math.cos(2*t))*Math.cos(3*t)*(r/3), (2 + Math.cos(2*t))*Math.sin(3*t)*(r/3), Math.sin(4*t)*(r/2));
             else if (level.type === 'sept') { const rs = r + 2.5 * Math.sin(7 * t); v = new THREE.Vector3(rs * Math.cos(t), 0.5 * Math.cos(7*t), rs * Math.sin(t)); }
-            else v = new THREE.Vector3(0,0,0);
             return v.multiplyScalar(targetScale);
         }
 
@@ -389,105 +364,102 @@
             return { dist: minDist, pos: closestPos };
         }
 
+        function updateVisuals() {
+            if (knotMesh) scene.remove(knotMesh);
+            knotCurve.points = handles.map(h => h.position);
+            knotMesh = new THREE.Mesh(new THREE.TubeGeometry(knotCurve, 100, 0.35, 12, true), 
+                new THREE.MeshStandardMaterial({ color: isLocked ? 0xff0000 : 0x00ffcc, metalness: 0.8, roughness: 0.2 }));
+            scene.add(knotMesh);
+            let totalDev = 0;
+            handles.forEach(h => {
+                const dist = getClosestPointOnPath(h.position).dist; totalDev += dist;
+                h.children[0].material.color.set(h.userData.onRail ? 0x00ff00 : (dist < 3.2 ? 0xffff00 : 0xff0000));
+            });
+            let percent = Math.max(0, 100 - (totalDev * 0.8));
+            document.getElementById('bar-fill').style.width = percent + '%';
+            document.getElementById('percent-val').innerText = Math.floor(percent);
+            if (percent >= 98 && !bonusAwarded) { 
+                let bonus = currentLevelIndex >= 3 ? 500 * Math.pow(2, currentLevelIndex - 2) : 500;
+                gameScore += bonus; bonusAwarded = true; showScoreEffect(new THREE.Vector3(0, 15, 0), bonus, false); 
+            }
+            updateUI();
+        }
+
         function checkVictory() {
             let totalDev = 0; handles.forEach(h => totalDev += getClosestPointOnPath(h.position).dist);
             if (100 - (totalDev * 0.8) >= 98 && handles.every(h => h.userData.onRail)) {
                 levelTimerActive = false; sfx.win.play().catch(()=>{});
-                totalAccumulatedScore += gameScore; localStorage.setItem('topoTotalScore', totalAccumulatedScore);
+                totalAccumulatedScore += gameScore;
+                localStorage.setItem('topoTotalScore', totalAccumulatedScore);
                 if (currentLevelIndex === unlockedLevel) { unlockedLevel++; localStorage.setItem('topoMaxLevel', unlockedLevel); }
                 document.getElementById('win-screen').style.display = 'flex';
-                document.getElementById('win-score-info').innerText = `BÖLÜM SKORU: ${gameScore}`; updateUI();
+                document.getElementById('win-score-info').innerText = `BÖLÜM SKORU: ${gameScore}`;
             }
-        }
-
-        function checkCollision() {
-            if (collisionCooldown || !knotCurve) return false;
-            const pts = knotCurve.getPoints(200); 
-            for(let i=0; i < pts.length; i++) {
-                for(let j=i + 45; j < pts.length; j++) {
-                    if (i < 20 && j > pts.length - 20) continue;
-                    if (pts[i].distanceTo(pts[j]) < 0.9) return true;
-                }
-            }
-            return false;
         }
 
         function updateUI() {
-            const reward = getCurrentReward();
             document.getElementById('total-score-val').innerText = totalAccumulatedScore;
             document.getElementById('score-val').innerText = gameScore;
-            const topRewardEl = document.getElementById('current-reward-val-top');
-            if (topRewardEl) topRewardEl.innerText = reward;
+            document.getElementById('current-reward-val-top').innerText = getCurrentReward();
         }
 
-        function toggleHud() {
-            hudHidden = !hudHidden;
-            const ui = document.getElementById('ui');
-            hudHidden ? ui.classList.add('hud-hidden') : ui.classList.remove('hud-hidden');
-            document.getElementById('hud-toggle').innerText = hudHidden ? 'Panel Aç' : 'Panel Kapa';
+        function updateMenu() {
+            const grid = document.getElementById('level-grid'); grid.innerHTML = '';
+            levels.forEach((l, i) => {
+                const card = document.createElement('div');
+                const isUnlocked = i <= unlockedLevel;
+                card.className = `level-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+                card.innerHTML = `<strong>LEVEL ${i+1}</strong><br><small>${l.name}</small>`;
+                if (isUnlocked) card.onclick = () => loadLevel(i);
+                grid.appendChild(card);
+            });
+            const btn = document.getElementById('continue-btn');
+            btn.innerText = unlockedLevel >= levels.length ? "HEPSİ TAMAM!" : (unlockedLevel === 0 ? "BAŞLA" : `BÖLÜM ${unlockedLevel+1}'E DEVAM ET`);
+            btn.onclick = () => loadLevel(Math.min(unlockedLevel, levels.length-1));
         }
 
         function animate() {
-            requestAnimationFrame(animate); if (controls) controls.update();
-            
-            if (ghostMesh) {
-                ghostMesh.material.opacity = 0.2 + Math.sin(Date.now() * 0.003) * 0.1;
-            }
-
+            requestAnimationFrame(animate); 
+            if(controls) controls.update();
+            if (ghostMesh) ghostMesh.material.opacity = 0.2 + Math.sin(Date.now() * 0.003) * 0.1;
             if (levelTimerActive && !isLocked) {
                 const elapsed = (Date.now() - startTime) / 1000;
                 const periodIndex = Math.floor(elapsed / levelTimeLimit);
-                const rem = levelTimeLimit - (elapsed % levelTimeLimit);
-                
-                // Periyot Değişimi uyarısı
                 if (periodIndex > lastPeriodIndex) {
-                    if (lastPeriodIndex !== -1) sfx.fail.play().catch(()=>{}); // Puan düşüş uyarısı
+                    if (lastPeriodIndex !== -1) sfx.fail.play().catch(()=>{});
                     lastPeriodIndex = periodIndex;
                 }
-
+                const rem = levelTimeLimit - (elapsed % levelTimeLimit);
                 document.getElementById('timer-display').innerText = Math.max(0, rem).toFixed(1);
                 updateUI();
             }
             renderer.render(scene, camera);
         }
 
-        const start = () => {
+        const init = () => {
             renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
             camera.position.set(0, 40, 75);
-            
-            scene.add(new THREE.GridHelper(60, 40, 0x004400, 0x001100));
-            scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+            scene.add(new THREE.GridHelper(60, 40, 0x004400, 0x001100), new THREE.AmbientLight(0xffffff, 1.2));
             const sun = new THREE.PointLight(0x00ffcc, 8000); sun.position.set(20, 50, 20); scene.add(sun);
-            
             controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
             
-            const grid = document.getElementById('level-grid');
-            levels.forEach((l, i) => {
-                const card = document.createElement('div');
-                card.className = `level-card ${i > unlockedLevel ? 'locked' : ''}`;
-                card.innerHTML = `<div style="font-size:0.7rem; color:var(--neon)">LEVEL ${i+1}</div><div style="font-weight:bold; color:#fff">${l.name}</div>`;
-                if (i <= unlockedLevel) card.onclick = () => loadLevel(i);
-                grid.appendChild(card);
-            });
-            
-            document.getElementById('help-btn').onclick = openHelp;
-            document.getElementById('mute-btn').onclick = toggleMute;
-            document.getElementById('hud-toggle').onclick = toggleHud;
             document.getElementById('undo-btn').onclick = restoreSafeState;
+            document.getElementById('help-btn').onclick = () => document.getElementById('help-modal').style.display = 'flex';
+            document.getElementById('close-help').onclick = () => document.getElementById('help-modal').style.display = 'none';
+            document.getElementById('hud-toggle').onclick = () => { hudHidden = !hudHidden; document.getElementById('ui').classList.toggle('hud-hidden', hudHidden); };
+            document.getElementById('menu-btn').onclick = () => { levelTimerActive = false; document.getElementById('main-menu').style.display = 'flex'; document.getElementById('ui').style.display = 'none'; updateMenu(); };
             document.getElementById('win-next-btn').onclick = () => loadLevel(currentLevelIndex + 1);
-            
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-            updateUI(); animate();
+            document.getElementById('mute-btn').onclick = toggleMute;
+            document.getElementById('reset-game-btn').onclick = () => { if(confirm("Tüm ilerlemeniz silinecek. Onaylıyor musunuz?")) { localStorage.clear(); unlockedLevel = 0; totalAccumulatedScore = 0; updateMenu(); updateUI(); } };
+
+            updateMenu(); animate();
         };
-        start();
+        init();
     </script>
 </body>
 </html>
