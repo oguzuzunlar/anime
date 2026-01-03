@@ -98,8 +98,14 @@
             }
             .top-group { max-width: 100%; width: 100%; justify-content: center; }
             .reward-badge, .total-score-box { font-size: 11px; padding: 6px 10px; }
-            #ui { top: 120px; left: 8px; width: calc(100% - 16px); max-width: 96%; }
-            .panel { padding: 10px; }
+            #ui { 
+                top: 120px; 
+                left: 50%; 
+                transform: translateX(-50%); 
+                width: calc(100% - 20px); 
+                max-width: calc(100% - 20px);
+            }
+            .panel { padding: 10px 8px; }
             #timer-display { font-size: 1.5rem !important; }
             .round-btn { min-width: 56px; height: 38px; font-size: 13px; }
             
@@ -283,8 +289,10 @@
                     gameScore += gain; showScoreEffect(node.position, gain, false);
                     node.position.copy(closest.pos);
                 } else if (node.userData.onRail && closest.dist > 2.2) {
-                    node.userData.onRail = false; gameScore = Math.max(0, gameScore - 100);
-                    showScoreEffect(node.position, -100, true);
+                    node.userData.onRail = false; 
+                    const loss = getCurrentReward();
+                    gameScore = Math.max(0, gameScore - loss);
+                    showScoreEffect(node.position, -loss, true);
                 }
                 if (node.userData.onRail) node.position.copy(closest.pos);
                 updateVisuals();
