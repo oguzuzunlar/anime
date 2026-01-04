@@ -124,7 +124,7 @@
             <span class="close-modal" id="close-help">×</span>
             <h2>📖 NASIL OYNANIR?</h2>
             
-            <p>🧩 <b>Amacınız:</b> Kırmızı noktaları sürükleyerek yeşil tel kafes yörüngeye oturtun. Bölümü geçmek için tüm noktaları yerleştirmeli ve en az <b>%90 uyum</b> yakalamalısınız.</p>
+            <p>🧩 <b>Amacınız:</b> Kırmızı noktaları sürükleyerek yeşil tel kafes yörüngeye oturtun. Bölümü geçmek için tüm noktaları yerleştirmeli ve en az <b>%85 uyum</b> yakalamalısınız.</p>
             
             <p>🛑 <b>Çakışma Kuralı:</b> Kablolar birbirine değerse sistem kilitlenir. Bu durumda <b>"Geri Al"</b> butonuna basarak çakışmadan önceki güvenli pozisyona dönebilirsiniz.</p>
             
@@ -136,7 +136,7 @@
             
             <p>⏳ <b>Zaman Periyodu:</b> Ekranın üstündeki sayaç her sıfırlandığında, o bölümden alacağınız ödül miktarı <b>yarıya düşer</b>. Hızlı olmak en yüksek skoru getirir!</p>
             
-            <p>🎯 <b>Hassasiyet Bonusu:</b> Eğer uyum oranınız %90 sınırını geçerse, aradaki her fark için ekstra "Hassasiyet Bonusu" kazanırsınız.</p>
+            <p>🎯 <b>Hassasiyet Bonusu:</b> Eğer uyum oranınız %85 sınırını geçerse, aradaki her fark için ekstra "Hassasiyet Bonusu" kazanırsınız.</p>
             
             <p style="text-align:center; color:var(--neon); font-weight:bold; margin-top:15px;">Başarılar, Topolog!</p>
         </div>
@@ -145,7 +145,7 @@
     <div id="main-menu">
         <h1 style="color: var(--neon); font-size: 2.3rem; margin-bottom: 5px; text-shadow: 0 0 20px var(--neon);">TOPOLOJİK DEFORMASYON</h1>
         <div class="topology-desc">
-            Topoloji, nesnelerin yırtılmadan sadece esnetilerek dönüştürülmesini inceler. Bu oyunda düğümün yapısını bozmadan hedef forma ulaşmaya çalışın.
+            Topoloji, nesnelerin yırtılmadan sadece esnetilerek dönüştürülmesini inceler. Bu oyunda uzamsal zekanızı kullanarak düğümün yapısını bozmadan hedef forma ulaşmaya çalışın.
         </div>
         <button id="continue-btn" style="margin-bottom: 20px; width: 280px;">OYUNA BAŞLA</button>
         <div id="level-grid"></div>
@@ -365,8 +365,8 @@
                 h.children[0].material.color.set(h.userData.onRail ? 0x00ff00 : (dist < 3.2 ? 0xffff00 : 0xff0000));
             });
 
-            if (percent > 90 && !bonusAwarded) { 
-                let precisionBonus = Math.floor((percent - 90) * 100);
+            if (percent > 85 && !bonusAwarded) { 
+                let precisionBonus = Math.floor((percent - 85) * 100);
                 gameScore += precisionBonus; bonusAwarded = true; 
                 showScoreEffect(new THREE.Vector3(0, 15, 0), "Hassasiyet Bonusu: " + precisionBonus, ''); 
             }
@@ -377,12 +377,12 @@
             let percent = parseInt(document.getElementById('percent-val').innerText);
             let allPointsReady = handles.every(h => h.userData.onRail);
 
-            if (allPointsReady && percent < 90) {
-                showScoreEffect(new THREE.Vector3(0, 10, 0), "Dengeli Dağıtın! Uyum en az %90 olmalı.", 'warn');
+            if (allPointsReady && percent < 85) {
+                showScoreEffect(new THREE.Vector3(0, 10, 0), "Dengeli Dağıtın! Uyum en az %85 olmalı.", 'warn');
                 return;
             }
 
-            if (allPointsReady && percent >= 90) {
+            if (allPointsReady && percent >= 85) {
                 levelTimerActive = false; sfx.win.play().catch(()=>{});
                 totalAccumulatedScore += gameScore;
                 localStorage.setItem('topoTotalScore', totalAccumulatedScore);
