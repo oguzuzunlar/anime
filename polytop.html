@@ -3,54 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Polytop Restorasyonu - Canlı Yüzeyler</title>
+    <title>Polytop Restorasyonu - Topolojik Düğüm</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-        body { margin: 0; overflow: hidden; background: #000; font-family: 'Orbitron', sans-serif; touch-action: none; }
+        :root { --neon: #38bdf8; --target: #4ade80; --danger: #ef4444; --gold: #facc15; }
         
-        #main-menu { position: fixed; inset: 0; background: radial-gradient(circle, #0f172a 0%, #000 100%); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .menu-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 20px; }
-        .menu-item { width: 60px; height: 60px; background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; color: #38bdf8; display: flex; align-items: center; justify-content: center; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .menu-item:hover { background: #38bdf8; color: #000; box-shadow: 0 0 20px #38bdf8; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Orbitron', sans-serif; touch-action: none; color: #e2e8f0; }
+        
+        #top-bar { 
+            position: fixed; top: 10px; left: 0; width: 100%; 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 20px; box-sizing: border-box; z-index: 2000; pointer-events: none;
+        }
+        .ui-box { 
+            background: rgba(15, 23, 42, 0.8); border: 1px solid var(--neon); 
+            padding: 8px 15px; border-radius: 12px; color: var(--neon); 
+            font-size: 0.8rem; pointer-events: auto; backdrop-filter: blur(5px);
+        }
+        .reward-badge { border-color: var(--gold); color: var(--gold); }
 
-        #ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; padding: 20px; box-sizing: border-box; display: none; flex-direction: column; justify-content: space-between; z-index: 100; }
-        .panel { background: rgba(10, 20, 40, 0.9); border: 2px solid #38bdf8; padding: 12px; border-radius: 15px; color: #38bdf8; pointer-events: auto; }
-        .btn { background: #38bdf8; border: none; color: #000; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; pointer-events: auto; text-transform: uppercase; transition: 0.3s; }
+        #main-menu { position: fixed; inset: 0; background: radial-gradient(circle, #0f172a 0%, #000 100%); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+        .menu-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 20px; }
+        .menu-item { 
+            width: 60px; height: 60px; background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; 
+            color: #38bdf8; display: flex; align-items: center; justify-content: center; 
+            border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; 
+        }
+        .menu-item.locked { opacity: 0.3; cursor: not-allowed; border-color: #444; color: #444; }
+        .menu-item:not(.locked):hover { background: #38bdf8; color: #000; box-shadow: 0 0 20px #38bdf8; }
+
+        #ui { position: absolute; top: 80px; left: 20px; width: 220px; pointer-events: none; z-index: 100; display: none; }
+        .panel { background: rgba(10, 20, 40, 0.9); border: 2px solid var(--neon); padding: 12px; border-radius: 15px; color: var(--neon); pointer-events: auto; }
+        .bar-bg { background: #000; height: 8px; border-radius: 4px; margin: 10px 0; border: 1px solid #1e293b; overflow: hidden; }
+        #bar-fill { background: var(--target); height: 100%; width: 0%; transition: width 0.3s; }
         
-        #collision-lock { position: fixed; inset: 0; background: rgba(150, 0, 0, 0.7); backdrop-filter: blur(10px); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 5000; pointer-events: auto; }
-        #win-screen { position: absolute; inset: 0; display: none; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 60px; z-index: 200; pointer-events: none; }
-        .win-content { background: rgba(0,0,0,0.9); padding: 25px; border-radius: 20px; border: 2px solid #4ade80; pointer-events: auto; text-align: center; }
+        .btn { background: var(--neon); border: none; color: #000; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: bold; pointer-events: auto; text-transform: uppercase; transition: 0.3s; margin-top: 10px; }
+        .secondary-btn { background: rgba(56, 189, 248, 0.15); color: var(--neon); border: 1px solid rgba(56, 189, 248, 0.5); }
+        .secondary-btn:hover { background: rgba(56, 189, 248, 0.35); color: #000; }
+
+        #help-fab { position: fixed; top: 12px; right: 20px; z-index: 2100; pointer-events: auto; font-size: 0.65rem; padding: 8px 14px; }
+
+        #collision-lock { position: fixed; inset: 0; background: rgba(150, 0, 0, 0.7); backdrop-filter: blur(10px); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 5000; }
+        
+        #win-screen { 
+            position: fixed; inset: 0; background: radial-gradient(circle, transparent 0%, rgba(0,0,0,0.8) 100%); 
+            display: none; flex-direction: column; justify-content: flex-end; align-items: center; 
+            z-index: 6000; padding-bottom: 50px; pointer-events: none;
+        }
+        .win-content { background: rgba(0,0,0,0.9); border: 2px solid var(--target); padding: 30px; border-radius: 20px; pointer-events: auto; text-align: center; }
+
+        #help-overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.92); z-index: 7000; display: none; align-items: center; justify-content: center; padding: 30px; box-sizing: border-box; }
+        .help-card { max-width: 520px; width: 100%; background: rgba(15, 23, 42, 0.95); border: 2px solid var(--neon); border-radius: 18px; padding: 20px 24px; box-shadow: 0 20px 60px rgba(56, 189, 248, 0.25); }
+        .help-card h2 { margin: 0 0 12px 0; font-size: 1.5rem; color: var(--neon); text-align: center; }
+        .help-card h3 { margin: 18px 0 8px 0; font-size: 1rem; color: var(--gold); }
+        .help-card p, .help-card li { font-size: 0.85rem; line-height: 1.5; color: #cbd5f5; }
+        .help-card ul { margin: 0; padding-left: 20px; }
+        .help-actions { display: flex; justify-content: center; margin-top: 20px; }
+
+        .score-float { 
+            position: absolute; color: var(--target); font-weight: 900; font-size: 24px; 
+            pointer-events: none; z-index: 10000; text-shadow: 0 0 8px #000; 
+            animation: floatUp 1s ease-out forwards;
+        }
+        @keyframes floatUp { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
+
+        .info-card { margin-top: 30px; max-width: 540px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 16px; padding: 18px 22px; font-size: 0.8rem; color: #cbd5f5; line-height: 1.6; }
+        .info-card h3 { margin: 0 0 10px 0; font-size: 1rem; color: var(--neon); text-align: center; }
+
+        @media (max-width: 900px) {
+            .menu-grid { grid-template-columns: repeat(3, 1fr); }
+            .menu-item { width: 56px; height: 56px; font-size: 0.9rem; }
+            #top-bar { flex-direction: column; gap: 10px; align-items: flex-start; }
+            #ui { top: 70px; left: 10px; width: 180px; }
+            .panel { padding: 10px; }
+            .btn { font-size: 0.65rem; padding: 8px 16px; }
+            #help-fab { top: 12px; right: 16px; }
+        }
+
+        @media (max-width: 600px) {
+            body { font-size: 14px; }
+            #main-menu h1 { font-size: 1.4rem; }
+            .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .menu-item { width: 52px; height: 52px; }
+            #top-bar { padding: 0 12px; }
+            .ui-box { font-size: 0.7rem; padding: 6px 12px; }
+            #ui { width: calc(100% - 20px); left: 10px; right: 10px; top: 70px; }
+            .panel { border-radius: 12px; }
+            #collision-lock > div { width: calc(100% - 40px); }
+            .help-card { padding: 18px; }
+            .help-card h2 { font-size: 1.25rem; }
+            .help-card p, .help-card li { font-size: 0.8rem; }
+            #help-fab { right: 12px; top: 12px; }
+        }
     </style>
 </head>
 <body>
 
+    <div id="top-bar">
+        <div class="ui-box">TOPLAM: <span id="total-score">0</span></div>
+        <div class="ui-box reward-badge">ÖDÜL: <span id="current-reward">100</span></div>
+    </div>
+
+    <button id="help-fab" class="btn secondary-btn" onclick="game.openHelp()">YARDIM ❔</button>
+
     <div id="main-menu">
-        <h1 style="color:#38bdf8; text-shadow: 0 0 15px #38bdf8; text-align: center; font-size: 1.8rem;">POLYTOP RESTORASYONU</h1>
+        <h1 style="color:#38bdf8; text-shadow: 0 0 15px #38bdf8; text-align: center; font-size: 1.8rem; margin: 0;">POLYTOP RESTORASYONU</h1>
+        <p style="color: #64748b; font-size: 0.8rem; margin-bottom: 20px;">Topolojik düğümü çözün ve formu restore edin.</p>
         <div class="menu-grid" id="menu-grid"></div>
+        <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap; justify-content:center;">
+            <button class="btn secondary-btn" style="font-size:0.65rem;" onclick="game.openHelp()">NASIL OYNANIR?</button>
+            <button class="btn" style="background: transparent; color: #444; border: 1px solid #444; font-size: 0.6rem;" onclick="game.resetData()">VERİLERİ SIFIRLA</button>
+        </div>
+        <div class="info-card" id="menu-info">
+            <h3>Nasıl Oynanır?</h3>
+            <p>Her seviyede dağılmış düğümleri sürükleyip hayalet hedef şeklin köşelerine yerleştirin. Bir düğüm yalnızca kendisine atanmış hedef noktaya oturur. Tüm düğümler doğru konuma geldiğinde şekil restore edilir.</p>
+            <h3>Puanlama</h3>
+            <p>Her yerleştirmede güncel ödül puanı kazanırsınız. Ödül, seviyedeki süre parçalarına göre azalır. Çakışma uyarısı alırsanız GERİ AL diyerek son güvenli duruma dönün.</p>
+            <h3>Kontroller</h3>
+            <ul>
+                <li>Dokun veya tıkla: Düğümü seçer ve sürüklersin.</li>
+                <li>İki parmak sürükle / fare sağ tuşu: Kamerayı döndür.</li>
+                <li>İki parmak kıstır / fare tekerleği: Yakınlaştır / uzaklaştır.</li>
+            </ul>
+        </div>
     </div>
 
     <div id="ui">
-        <div class="panel" style="width: fit-content;">
-            <h2 id="target-name" style="margin:0; font-size:0.85rem;">-</h2>
-            <div style="font-size: 0.65rem; color: #94a3b8; margin-top:5px;">🔵 Boşta | 🟡 Yerleşti | 🟢 Neon Silüet</div>
+        <div class="panel">
+            <div id="timer-display" style="font-size: 1.5rem; font-weight: bold; text-align: center;">00.0</div>
+            <h2 id="target-name" style="margin:5px 0; font-size:0.75rem; text-align: center;">-</h2>
+            <div class="bar-bg"><div id="bar-fill"></div></div>
+            <div style="font-size: 0.6rem; text-align: center; color: #94a3b8;">UYUM: %<span id="percent-val">0</span></div>
+            <button class="btn secondary-btn" style="width: 100%; font-size: 0.7rem;" onclick="game.openHelp()">YARDIM ❔</button>
+            <button class="btn" style="width: 100%; font-size: 0.7rem;" onclick="game.showMenu()">ANA MENÜ 🏠</button>
         </div>
-        <button class="btn" onclick="game.showMenu()">ANA MENÜ 🏠</button>
     </div>
 
     <div id="collision-lock">
         <div style="background:#000; padding:30px; border-radius:20px; border:3px solid #f00; text-align:center;">
             <h2 style="color:#f00; margin:0 0 10px 0;">🛑 ÇAKIŞMA!</h2>
+            <p style="color:#fff; font-size:0.75rem; margin-bottom: 15px;">Düğümler arası geçiş engellendi.</p>
             <button class="btn" style="background:#f00; color:#fff;" onclick="game.restoreSafeState()">GERİ AL</button>
         </div>
     </div>
 
     <div id="win-screen">
         <div class="win-content">
-            <h2 style="color:#4ade80; margin:0;">TAMAMLANDI!</h2>
-            <div id="win-timer" style="color:#fff; margin: 8px 0; font-size: 0.8rem;">Analiz ediliyor...</div>
-            <button id="next-btn" class="btn" style="display:none; background:#4ade80;" onclick="game.nextLevel()">SIRADAKİ ▶</button>
+            <h1 style="color:var(--target); font-size: 2rem; margin: 0;">BAŞARILI!</h1>
+            <div id="win-stats" style="color:#fff; margin: 15px 0; font-size: 1rem;"></div>
+            <button class="btn" style="background:var(--target); padding: 12px 30px;" onclick="game.nextLevel()">SIRADAKİ ▶</button>
+        </div>
+    </div>
+
+    <div id="help-overlay">
+        <div class="help-card">
+            <h2>Nasıl Oynanır?</h2>
+            <p>Dağılmış düğümleri sürükleyerek yeşil hayalet şeklin köşelerine yerleştir. Her düğüm yalnızca kendine atanmış noktaya oturur; bu yüzden doğru yanaştırmayı bulman gerekir.</p>
+            <h3>Puanlama</h3>
+            <ul>
+                <li>Her başarılı yerleşimde o anki ödül puanını kazanırsın.</li>
+                <li>Ödül, seviyedeki süre segmentleri ilerledikçe azalır. Ne kadar hızlı olursan o kadar fazla puan.</li>
+                <li>Çakışma uyarısı alınca GERİ AL ile son güvenli konuma dönebilirsin.</li>
+            </ul>
+            <h3>Kontroller</h3>
+            <ul>
+                <li>Dokun & sürükle / fare sol tuşu: Düğümü hareket ettir.</li>
+                <li>İki parmak sürükle / fare sağ tuşu: Kamerayı döndür.</li>
+                <li>İki parmak kıstır / fare tekerleği: Zoom in/out.</li>
+            </ul>
+            <div class="help-actions">
+                <button class="btn" style="width: 160px;" onclick="game.closeHelp()">KAPAT</button>
+            </div>
         </div>
     </div>
 
@@ -59,41 +184,47 @@
         const COLORS = { normal: 0x38bdf8, snapped: 0xfacc15, target: 0x00ff88, danger: 0xff0000, safe: 0x4ade80, surface: 0x00ff88 };
 
         const POLYTOPES = [
-            { name: "1. Dörtyüzlü (Tetrahedron)", nodes: [[1,1,1], [1,-1,-1], [-1,1,-1], [-1,-1,1]], edges: [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]], faces: [[0,1,2],[0,2,3],[0,3,1],[1,3,2]], scale: 28 },
-            { name: "2. Küp (Hexahedron)", nodes: [[1,1,1], [1,1,-1], [1,-1,1], [1,-1,-1], [-1,1,1], [-1,1,-1], [-1,-1,1], [-1,-1,-1]], edges: [[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]], faces: [[0,2,3],[0,3,1],[4,5,7],[4,7,6],[0,1,5],[0,5,4],[2,6,7],[2,7,3],[0,4,6],[0,6,2],[1,3,7],[1,7,5]], scale: 22 },
-            { name: "3. Sekizyüzlü (Octahedron)", nodes: [[1,0,0], [-1,0,0], [0,1,0], [0,-1,0], [0,0,1], [0,0,-1]], edges: [[0,2],[0,3],[0,4],[0,5],[1,2],[1,3],[1,4],[1,5],[2,4],[2,5],[3,4],[3,5]], faces: [[0,2,4],[0,4,3],[0,3,5],[0,5,2],[1,2,5],[1,5,3],[1,3,4],[1,4,2]], scale: 30 },
-            { name: "4. Kare Piramit", nodes: [[0,0,1.4], [1,1,0], [1,-1,0], [-1,1,0], [-1,-1,0]], edges: [[0,1],[0,2],[0,3],[0,4],[1,2],[2,4],[4,3],[3,1]], faces: [[0,1,2],[0,2,4],[0,4,3],[0,3,1],[1,2,3,4]], scale: 30 },
-            { name: "5. Üçgen Prizma", nodes: [[1,0,1], [-0.5,0.86,1], [-0.5,-0.86,1], [1,0,-1], [-0.5,0.86,-1], [-0.5,-0.86,-1]], edges: [[0,1],[1,2],[2,0],[3,4],[4,5],[5,3],[0,3],[1,4],[2,5]], faces: [[0,1,2],[3,5,4],[0,3,4,1],[1,4,5,2],[2,5,3,0]], scale: 28 },
-            { name: "6. Beşgen Piramit", nodes: (()=>{let v=[[0,0,1.5]]; for(let i=0; i<5; i++){let a=(i/5)*Math.PI*2; v.push([Math.cos(a),Math.sin(a),0])} return v})(), edges: [[0,1],[0,2],[0,3],[0,4],[0,5],[1,2],[2,3],[3,4],[4,5],[5,1]], faces: [[0,1,2],[0,2,3],[0,3,4],[0,4,5],[0,5,1],[1,2,3,4,5]], scale: 32 },
-            { name: "7. Altıgen Prizma", nodes: (()=>{let v=[]; for(let i=0; i<6; i++){let a=(i/6)*Math.PI*2; v.push([Math.cos(a),Math.sin(a),1],[Math.cos(a),Math.sin(a),-1])} return v})(), autoEdge: 1.2, scale: 28 },
-            { name: "8. Küpoktayüz", nodes: (()=>{let v=[]; for(let i of [-1,1])for(let j of [-1,1]) v.push([i,j,0],[i,0,j],[0,i,j]); return v})(), autoEdge: 1.5, scale: 28 },
-            { name: "9. Onikiyüzlü", nodes: (()=>{let v=[]; for(let x of [-1,1])for(let y of [-1,1])for(let z of [-1,1]) v.push([x,y,z]); for(let i of [-1,1]){v.push([0,i*PHI,i/PHI],[0,i*PHI,-i/PHI],[i/PHI,0,i*PHI],[-i/PHI,0,i*PHI],[i/PHI,i/PHI,0],[i*PHI,-i/PHI,0])} return v})(), autoEdge: 1.25, scale: 20 },
-            { name: "10. Yirmiyüzlü", nodes: (()=>{let v=[]; for(let i of [-1,1]){v.push([0,i,i*PHI],[0,i,-i*PHI],[i,i*PHI,0],[i,-i*PHI,0],[i*PHI,0,i],[i*PHI,0,-i])} return v})(), autoEdge: 1.25, scale: 22 }
+            { name: "Tetrahedron", nodes: [[1,1,1], [1,-1,-1], [-1,1,-1], [-1,-1,1]], edges: [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]], faces: [[0,1,2],[0,2,3],[0,3,1],[1,3,2]], scale: 28, time: 30 },
+            { name: "Küp", nodes: [[1,1,1], [1,1,-1], [1,-1,1], [1,-1,-1], [-1,1,1], [-1,1,-1], [-1,-1,1], [-1,-1,-1]], edges: [[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]], faces: [[0,2,3],[0,3,1],[4,5,7],[4,7,6],[0,1,5],[0,5,4],[2,6,7],[2,7,3],[0,4,6],[0,6,2],[1,3,7],[1,7,5]], scale: 22, time: 45 },
+            { name: "Octahedron", nodes: [[1,0,0], [-1,0,0], [0,1,0], [0,-1,0], [0,0,1], [0,0,-1]], edges: [[0,2],[0,3],[0,4],[0,5],[1,2],[1,3],[1,4],[1,5],[2,4],[2,5],[3,4],[3,5]], faces: [[0,2,4],[0,4,3],[0,3,5],[0,5,2],[1,2,5],[1,5,3],[1,3,4],[1,4,2]], scale: 30, time: 40 },
+            { name: "Kare Piramit", nodes: [[0,0,1.4], [1,1,0], [1,-1,0], [-1,1,0], [-1,-1,0]], edges: [[0,1],[0,2],[0,3],[0,4],[1,2],[2,4],[4,3],[3,1]], faces: [[0,1,2],[0,2,4],[0,4,3],[0,3,1],[1,2,3,4]], scale: 30, time: 40 },
+            { name: "Üçgen Prizma", nodes: [[1,0,1], [-0.5,0.86,1], [-0.5,-0.86,1], [1,0,-1], [-0.5,0.86,-1], [-0.5,-0.86,-1]], edges: [[0,1],[1,2],[2,0],[3,4],[4,5],[5,3],[0,3],[1,4],[2,5]], faces: [[0,1,2],[3,5,4],[0,3,4,1],[1,4,5,2],[2,5,3,0]], scale: 28, time: 50 },
+            { name: "Beşgen Piramit", nodes: (()=>{let v=[[0,0,1.5]]; for(let i=0; i<5; i++){let a=(i/5)*Math.PI*2; v.push([Math.cos(a),Math.sin(a),0])} return v})(), edges: [[0,1],[0,2],[0,3],[0,4],[0,5],[1,2],[2,3],[3,4],[4,5],[5,1]], faces: [[0,1,2],[0,2,3],[0,3,4],[0,4,5],[0,5,1],[1,2,3,4,5]], scale: 32, time: 60 }
         ];
 
         class Game {
             constructor() {
-                this.currentLevel = 0; this.nodes = []; this.edges = []; this.targetPoints = []; this.isSolved = false;
+                this.currentLevel = 0; 
+                this.unlockedLevel = parseInt(localStorage.getItem('polyMax')) || 0;
+                if (Number.isNaN(this.unlockedLevel)) this.unlockedLevel = 0;
+                this.unlockedLevel = Math.min(Math.max(this.unlockedLevel, 0), POLYTOPES.length - 1);
+                this.totalScore = parseInt(localStorage.getItem('polyScore')) || 0;
+                this.levelScore = 0;
+                this.isCelebrating = false;
+                
+                this.nodes = []; this.edges = []; this.targetPoints = []; this.isSolved = false;
                 this.scene = new THREE.Scene();
+
                 this.camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 1, 1000);
-                this.camera.position.set(0, 50, 110);
+                this.camera.position.set(0, 80, 140);
                 this.renderer = new THREE.WebGLRenderer({ antialias: true });
                 this.renderer.setSize(window.innerWidth, window.innerHeight);
                 this.renderer.setPixelRatio(window.devicePixelRatio);
                 document.body.appendChild(this.renderer.domElement);
 
-                this.scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-                const sun = new THREE.DirectionalLight(0xffffff, 0.8); sun.position.set(50, 80, 50); this.scene.add(sun);
+                this.scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+                const sun = new THREE.PointLight(0x38bdf8, 2, 400); sun.position.set(50, 100, 50); this.scene.add(sun);
 
                 this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
                 this.controls.enableDamping = true;
-                this.controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE }; // Sol tık normalde döndürür
 
                 this.raycaster = new THREE.Raycaster();
                 this.mouse = new THREE.Vector2();
                 this.dragPlane = new THREE.Plane();
                 this.pIntersect = new THREE.Vector3();
                 this.draggedNode = null;
+                this.hasMoved = false;
+                this.helpOpen = false;
 
                 window.addEventListener('pointerdown', e => this.onPointerDown(e));
                 window.addEventListener('pointermove', e => this.onPointerMove(e));
@@ -102,52 +233,73 @@
 
                 this.initMenu();
                 this.animate();
+                this.updateGlobalUI();
             }
 
-            onResize() {
-                this.camera.aspect = window.innerWidth / window.innerHeight;
-                this.camera.updateProjectionMatrix();
-                this.renderer.setSize(window.innerWidth, window.innerHeight);
+            getCurrentReward() {
+                const data = POLYTOPES[this.currentLevel];
+                const elapsed = (Date.now() - this.startTime) / 1000;
+                const period = Math.floor(elapsed / data.time);
+                let base = (this.currentLevel >= 3) ? 100 * Math.pow(2, this.currentLevel - 2) : 100;
+                return Math.max(5, Math.floor(base / Math.pow(2, period)));
             }
+
+            updateGlobalUI() { document.getElementById('total-score').innerText = this.totalScore; }
 
             initMenu() {
                 const grid = document.getElementById('menu-grid'); grid.innerHTML = '';
                 POLYTOPES.forEach((p, i) => {
                     const item = document.createElement('div');
-                    item.className = 'menu-item'; item.innerText = i + 1;
-                    item.onclick = () => { this.currentLevel = i; this.startLevel(); };
+                    const isLocked = i > this.unlockedLevel;
+                    item.className = `menu-item ${isLocked ? 'locked' : ''}`;
+                    item.innerText = isLocked ? '🔒' : i + 1;
+                    if(!isLocked) item.onclick = () => { this.currentLevel = i; this.startLevel(); };
                     grid.appendChild(item);
                 });
             }
 
-            showMenu() { document.getElementById('main-menu').style.display = 'flex'; document.getElementById('ui').style.display = 'none'; }
+            showMenu() { 
+                this.isSolved = true; this.isCelebrating = false; this.controls.autoRotate = false;
+                document.getElementById('main-menu').style.display = 'flex'; 
+                document.getElementById('ui').style.display = 'none'; 
+                this.closeHelp();
+                this.initMenu();
+            }
 
             startLevel() {
                 document.getElementById('main-menu').style.display = 'none';
-                document.getElementById('ui').style.display = 'flex';
+                document.getElementById('ui').style.display = 'block';
                 document.getElementById('win-screen').style.display = 'none';
-                document.getElementById('next-btn').style.display = 'none';
+                this.closeHelp();
                 
                 while(this.scene.children.length > 2) this.scene.remove(this.scene.children[this.scene.children.length-1]);
-                this.nodes = []; this.edges = []; this.targetPoints = []; this.isSolved = false;
+                this.nodes = []; this.edges = []; this.targetPoints = []; this.isSolved = false; this.isCelebrating = false;
+                this.controls.autoRotate = false;
+                this.hasMoved = false; 
+                this.levelScore = 0;
+                this.startTime = Date.now();
 
-                const data = POLYTOPES[this.currentLevel % POLYTOPES.length];
+                const data = POLYTOPES[this.currentLevel];
                 document.getElementById('target-name').innerText = data.name;
 
-                // 1. Hedefler ve Canlı Silüet
+                // Hedef Noktalar (Ghost form)
                 data.nodes.forEach((p, i) => {
                     const pos = new THREE.Vector3(p[0], p[1], p[2]).multiplyScalar(data.scale);
                     this.targetPoints.push({ pos });
-                    
-                    const mTarget = new THREE.Mesh(new THREE.SphereGeometry(3, 12, 12), new THREE.MeshBasicMaterial({ color: COLORS.target, transparent: true, opacity: 0.2 }));
+                    const mTarget = new THREE.Mesh(new THREE.SphereGeometry(5, 16, 16), new THREE.MeshBasicMaterial({ color: COLORS.target, transparent: true, opacity: 0.25 }));
                     mTarget.position.copy(pos); this.scene.add(mTarget);
-
-                    const mNode = new THREE.Mesh(new THREE.SphereGeometry(5.5, 32, 32), new THREE.MeshStandardMaterial({ color: COLORS.normal, metalness: 0.8, roughness: 0.2 }));
-                    mNode.position.copy(pos).add(new THREE.Vector3((Math.random()-0.5)*25, (Math.random()-0.5)*25, (Math.random()-0.5)*25));
-                    this.scene.add(mNode); this.nodes.push(mNode);
                 });
 
-                // 2. Halatlar
+                // Oyuncu Düğümleri (Çözülebilir dağılım)
+                data.nodes.forEach((p, i) => {
+                    const mNode = new THREE.Mesh(new THREE.SphereGeometry(5, 32, 32), new THREE.MeshStandardMaterial({ color: COLORS.normal, metalness: 0.9, roughness: 0.1, emissive: COLORS.normal, emissiveIntensity: 0.2 }));
+                    mNode.userData = { onRail: false, targetIndex: i, currentTarget: null };
+                    this.scene.add(mNode); this.nodes.push(mNode);
+                });
+                
+                this.generateSolvableStart(data);
+
+                // Halatlar / Kenarlar
                 let pairs = data.edges || [];
                 if (data.autoEdge) {
                     pairs = [];
@@ -157,37 +309,26 @@
                         }
                     }
                 }
-
                 pairs.forEach(p => {
-                    const geo = new THREE.CylinderGeometry(1.5, 1.5, 1, 10);
+                    const geo = new THREE.CylinderGeometry(0.9, 0.9, 1, 12);
                     geo.rotateX(Math.PI/2); geo.translate(0, 0, 0.5);
-                    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: COLORS.safe }));
+                    const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: COLORS.normal, transparent: true, opacity: 0.7, emissive: COLORS.normal, emissiveIntensity: 0.5 }));
                     this.scene.add(mesh);
                     this.edges.push({ mesh, n1: this.nodes[p[0]], n2: this.nodes[p[1]] });
                 });
 
-                // 3. Hayalet Yüzeyler (Canlı Neon)
+                // Hedef Hayalet Şekil (DÜZELTME: depthWrite: false)
                 if (data.faces) {
                     const geo = new THREE.BufferGeometry();
-                    const indices = [];
-                    data.faces.forEach(f => { for(let i=1; i<f.length-1; i++) indices.push(f[0], f[i], f[i+1]); });
-                    geo.setFromPoints(this.targetPoints.map(t => t.pos)); geo.setIndex(indices); geo.computeVertexNormals();
-                    this.surfaceMesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: COLORS.surface, transparent: true, opacity: 0.15, side: THREE.DoubleSide, emissive: COLORS.surface, emissiveIntensity: 0.2 }));
+                    const indicesFaces = [];
+                    data.faces.forEach(f => { for(let i=1; i<f.length-1; i++) indicesFaces.push(f[0], f[i], f[i+1]); });
+                    geo.setFromPoints(this.targetPoints.map(t => t.pos)); geo.setIndex(indicesFaces); geo.computeVertexNormals();
+                    // depthWrite: false sayesinde arkadaki halatların görünmesini engellemez
+                    this.surfaceMesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: COLORS.surface, transparent: true, opacity: 0.12, side: THREE.DoubleSide, emissive: COLORS.surface, emissiveIntensity: 0.15, depthWrite: false }));
                     this.scene.add(this.surfaceMesh);
                 }
 
-                this.safeShuffle(200, 4.8);
                 this.updateLines();
-            }
-
-            safeShuffle(steps, minDist) {
-                for(let i=0; i<steps; i++) {
-                    const node = this.nodes[Math.floor(Math.random() * this.nodes.length)];
-                    const old = node.position.clone();
-                    node.position.add(new THREE.Vector3((Math.random()-0.5)*30, (Math.random()-0.5)*30, (Math.random()-0.5)*30));
-                    if(this.detectCollision(minDist)) node.position.copy(old);
-                }
-                this.nodes.forEach(n => { n.userData.snapped = false; n.material.color.setHex(COLORS.normal); });
             }
 
             onPointerDown(e) {
@@ -195,13 +336,12 @@
                 this.updateMouse(e);
                 this.raycaster.setFromCamera(this.mouse, this.camera);
                 const hits = this.raycaster.intersectObjects(this.nodes);
-                
                 if(hits.length > 0) {
                     this.draggedNode = hits[0].object;
+                    this.dragStartPos = this.draggedNode.position.clone(); // Başlangıç pozisyonunu kaydet
+                    this.hasMoved = false; // Yeni sürüklemede hareket bilgisi sıfırlansın
                     this.lastSafePos = this.nodes.map(n => n.position.clone());
-                    this.controls.enabled = false; // Sürüklerken kamerayı kilitle
-
-                    // Sürükleme düzlemini kameraya paralel kur
+                    this.controls.enabled = false;
                     const normal = new THREE.Vector3();
                     this.camera.getWorldDirection(normal);
                     this.dragPlane.setFromNormalAndCoplanarPoint(normal.negate(), this.draggedNode.position);
@@ -212,40 +352,111 @@
                 if(!this.draggedNode || this.isSolved) return;
                 this.updateMouse(e);
                 this.raycaster.setFromCamera(this.mouse, this.camera);
-
                 if(this.raycaster.ray.intersectPlane(this.dragPlane, this.pIntersect)) {
                     this.draggedNode.position.copy(this.pIntersect);
                     
-                    // Serbest Snap (Herhangi bir köşeye)
-                    let snapped = false;
-                    for(let tp of this.targetPoints) {
-                        if(this.draggedNode.position.distanceTo(tp.pos) < 9) {
-                            this.draggedNode.position.copy(tp.pos);
-                            snapped = true; break;
+                    // Sadece düğüm başlangıçtan 5 birimden fazla hareket ettiyse hasMoved true olsun
+                    if (!this.hasMoved && this.dragStartPos.distanceTo(this.draggedNode.position) > 5) {
+                        this.hasMoved = true;
+                    }
+                    
+                    let foundSnap = false;
+                    const assignedIndex = this.draggedNode.userData.targetIndex;
+                    const assignedTarget = this.targetPoints[assignedIndex];
+                    if(assignedTarget) {
+                        const distance = this.draggedNode.position.distanceTo(assignedTarget.pos);
+                        if(distance < 9 && !this.isTargetOccupied(assignedIndex, this.draggedNode)) {
+                            this.draggedNode.position.copy(assignedTarget.pos);
+                            if (!this.draggedNode.userData.onRail) {
+                                this.triggerScore(this.draggedNode.position);
+                            }
+                            this.draggedNode.userData.onRail = true;
+                            this.draggedNode.userData.currentTarget = assignedIndex;
+                            foundSnap = true;
                         }
                     }
-                    this.draggedNode.userData.snapped = snapped;
-                    this.draggedNode.material.color.setHex(snapped ? COLORS.snapped : COLORS.normal);
-                    
+                    if(!foundSnap) {
+                        this.draggedNode.userData.onRail = false;
+                        this.draggedNode.userData.currentTarget = null;
+                    }
+                    this.draggedNode.material.color.setHex(foundSnap ? COLORS.snapped : COLORS.normal);
+                    this.draggedNode.material.emissive.setHex(foundSnap ? COLORS.snapped : COLORS.normal);
                     this.updateLines();
-                    if(this.detectCollision(2.6)) this.triggerCollisionLock();
+                    this.updateProgress();
                 }
             }
 
+            triggerScore(pos) {
+                const gain = this.getCurrentReward();
+                this.levelScore += gain;
+                this.showScoreEffect(pos, gain);
+            }
+
+            showScoreEffect(pos, val) {
+                const vector = pos.clone().project(this.camera);
+                const div = document.createElement('div');
+                div.className = 'score-float';
+                div.style.left = (vector.x * 0.5 + 0.5) * window.innerWidth + 'px';
+                div.style.top = (vector.y * -0.5 + 0.5) * window.innerHeight + 'px';
+                div.innerText = "+" + val;
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 1000);
+            }
+
             onPointerUp() {
+                if(!this.draggedNode) return;
+                if(this.detectCollision(3.0)) {
+                    this.triggerCollisionLock();
+                    this.hasMoved = false;
+                    return;
+                }
                 this.draggedNode = null;
+                this.hasMoved = false; // Bir sonraki sürükleme için sıfırla
                 this.controls.enabled = true;
-                
-                let allFilled = this.targetPoints.every(tp => this.nodes.some(n => n.position.distanceTo(tp.pos) < 1));
-                if(!this.isSolved && allFilled) this.complete();
+                let snappedCount = this.nodes.filter(n => n.userData.onRail).length;
+                if(!this.isSolved && snappedCount === this.nodes.length) this.complete();
             }
 
-            updateMouse(e) {
-                this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-                this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            updateMouse(e) { this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1; this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1; }
+
+            isTargetOccupied(targetIndex, ignoreNode) {
+                return this.nodes.some(n => n !== ignoreNode && n.userData && n.userData.currentTarget === targetIndex);
             }
 
-            updateLines() { this.edges.forEach(e => { const d = e.n1.position.distanceTo(e.n2.position); e.mesh.position.copy(e.n1.position); e.mesh.scale.set(1, 1, d); e.mesh.lookAt(e.n2.position); }); }
+            openHelp() {
+                const overlay = document.getElementById('help-overlay');
+                if(!overlay) return;
+                overlay.style.display = 'flex';
+                this.helpOpen = true;
+                this.draggedNode = null;
+                this.hasMoved = false;
+                if(this.controls) this.controls.enabled = false;
+            }
+
+            closeHelp() {
+                const overlay = document.getElementById('help-overlay');
+                if(!overlay) return;
+                overlay.style.display = 'none';
+                this.helpOpen = false;
+                const uiVisible = document.getElementById('ui').style.display !== 'none';
+                if(uiVisible && !this.isSolved && this.controls) this.controls.enabled = true;
+            }
+
+            updateLines() { 
+                this.edges.forEach(e => { 
+                    const d = e.n1.position.distanceTo(e.n2.position); 
+                    e.mesh.position.copy(e.n1.position); 
+                    e.mesh.scale.set(1, 1, d); 
+                    e.mesh.lookAt(e.n2.position); 
+                }); 
+            }
+
+            updateProgress() {
+                let snappedCount = this.nodes.filter(n => n.userData.onRail).length;
+                let perc = Math.floor((snappedCount / this.nodes.length) * 100);
+                document.getElementById('bar-fill').style.width = perc + '%';
+                document.getElementById('percent-val').innerText = perc;
+            }
 
             detectCollision(limit) {
                 for(let i=0; i<this.edges.length; i++) {
@@ -257,10 +468,22 @@
                 } return false;
             }
 
-            triggerCollisionLock() { this.draggedNode = null; this.controls.enabled = false; document.getElementById('collision-lock').style.display = 'flex'; }
+            triggerCollisionLock() { this.draggedNode = null; this.hasMoved = false; this.controls.enabled = false; document.getElementById('collision-lock').style.display = 'flex'; }
+            
             restoreSafeState() {
-                this.nodes.forEach((n, i) => { n.position.copy(this.lastSafePos[i]); n.material.color.setHex(COLORS.normal); n.userData.snapped = false; });
-                this.controls.enabled = true; document.getElementById('collision-lock').style.display = 'none'; this.updateLines();
+                this.nodes.forEach((n, i) => { 
+                    n.position.copy(this.lastSafePos[i]); 
+                    const assigned = this.targetPoints[n.userData.targetIndex];
+                    const isSnapped = assigned && n.position.distanceTo(assigned.pos) < 1;
+                    n.userData.onRail = isSnapped;
+                    n.userData.currentTarget = isSnapped ? n.userData.targetIndex : null;
+                    n.material.color.setHex(isSnapped ? COLORS.snapped : COLORS.normal);
+                    n.material.emissive.setHex(isSnapped ? COLORS.snapped : COLORS.normal);
+                });
+                this.controls.enabled = true; 
+                document.getElementById('collision-lock').style.display = 'none'; 
+                this.updateLines(); 
+                this.updateProgress();
             }
 
             getLineDist(p1, p2, p3, p4) {
@@ -271,19 +494,136 @@
                 return p1.clone().add(u.multiplyScalar(Math.max(0,Math.min(1,sc)))).distanceTo(p3.clone().add(v.multiplyScalar(Math.max(0,Math.min(1,tc)))));
             }
 
-            complete() {
-                this.isSolved = true; document.getElementById('win-screen').style.display = 'flex';
-                this.edges.forEach(e => e.mesh.material.color.setHex(0xffd700));
-                if(this.surfaceMesh) {
-                    let op = 0.15;
-                    const fade = setInterval(() => { op += 0.05; this.surfaceMesh.material.opacity = op; if(op >= 0.85) clearInterval(fade); }, 50);
+            generateSolvableStart(data) {
+                // Çözülebilir düğüm yapısı oluştur: Düğümleri permütasyon ile karıştır
+                // Çakışma olmayan bir konfigürasyon bulana kadar dene
+                
+                const nodeCount = this.nodes.length;
+                const shuffleLevel = Math.min(5 + this.currentLevel * 2, nodeCount); // Karmaşıklık
+                const maxAttempts = 100;
+                let attempt = 0;
+                let validConfig = false;
+                
+                while (!validConfig && attempt < maxAttempts) {
+                    attempt++;
+                    
+                    // Her düğüme hedef indeksini ata
+                    let targetIndices = Array.from({length: nodeCount}, (_, i) => i);
+                    
+                    // Kontrollü karıştırma: Sadece komşu olmayan noktaları takas et
+                    for (let shuffle = 0; shuffle < shuffleLevel; shuffle++) {
+                        let idx1 = Math.floor(Math.random() * nodeCount);
+                        let idx2 = Math.floor(Math.random() * nodeCount);
+                        
+                        if (idx1 !== idx2 && !this.areTargetNeighbors(idx1, idx2, data)) {
+                            [targetIndices[idx1], targetIndices[idx2]] = [targetIndices[idx2], targetIndices[idx1]];
+                        }
+                    }
+                    
+                    // Düğümleri karışık pozisyonlara yerleştir - güvenli mesafede
+                    const baseOffset = 40 + (this.currentLevel * 4); // Daha uzak başlangıç
+                    
+                    this.nodes.forEach((node, i) => {
+                        const targetIndex = targetIndices[i];
+                        const targetPos = this.targetPoints[targetIndex].pos;
+                        node.userData.targetIndex = targetIndex;
+                        node.userData.onRail = false;
+                        node.userData.currentTarget = null;
+                        
+                        // Rastgele ama tutarlı bir yön oluştur (seed bazlı)
+                        const seed1 = i * 7.13 + targetIndex * 3.71;
+                        const seed2 = i * 5.37 + targetIndex * 2.89;
+                        
+                        const theta = (Math.sin(seed1) * Math.PI * 2);
+                        const phi = (Math.cos(seed2) * Math.PI);
+                        
+                        const direction = new THREE.Vector3(
+                            Math.sin(phi) * Math.cos(theta),
+                            Math.sin(phi) * Math.sin(theta),
+                            Math.cos(phi)
+                        );
+                        
+                        // Her düğüme farklı varyasyon
+                        const variation = Math.sin(i * 11.3 + targetIndex * 7.7) * 10;
+                        node.position.copy(targetPos).add(direction.multiplyScalar(baseOffset + variation));
+                    });
+
+                    this.updateLines();
+                    
+                    // Başlangıçta çakışma var mı kontrol et (çok gevşek tolerans)
+                    if (!this.detectCollision(8.0)) {
+                        validConfig = true;
+                    }
                 }
-                let timeLeft = 10;
-                const timer = setInterval(() => { timeLeft--; document.getElementById('win-timer').innerText = `Analiz ediliyor... (${timeLeft}s)`; if(timeLeft <= 0) { clearInterval(timer); document.getElementById('next-btn').style.display = 'block'; } }, 1000);
+                
+                // Eğer uygun konfigürasyon bulunamadıysa, basit dağılım kullan
+                if (!validConfig) {
+                    this.nodes.forEach((node, i) => {
+                        node.userData.targetIndex = i;
+                        node.userData.onRail = false;
+                        node.userData.currentTarget = null;
+                        const targetPos = this.targetPoints[i].pos;
+                        let direction = targetPos.clone().normalize();
+                        if (direction.length() < 0.1) {
+                            direction = new THREE.Vector3(
+                                Math.cos(i * 2.3), Math.sin(i * 2.3), Math.cos(i * 1.7)
+                            ).normalize();
+                        }
+                        node.position.copy(targetPos).add(direction.multiplyScalar(50 + i * 8));
+                    });
+                    this.updateLines();
+                }
+                
+                this.lastSafePos = this.nodes.map(n => n.position.clone());
             }
 
-            nextLevel() { this.currentLevel++; this.startLevel(); }
-            animate() { requestAnimationFrame(() => this.animate()); this.controls.update(); this.renderer.render(this.scene, this.camera); }
+            areTargetNeighbors(idx1, idx2, data) {
+                // İki düğümün hedef konumlarında komşu olup olmadığını kontrol et
+                if (!data.edges) return false;
+                return data.edges.some(e => 
+                    (e[0] === idx1 && e[1] === idx2) || (e[0] === idx2 && e[1] === idx1)
+                );
+            }
+
+            complete() {
+                this.isSolved = true; this.isCelebrating = true; this.controls.autoRotate = true;
+                const bonus = (this.currentLevel >= 3) ? 500 * Math.pow(2, this.currentLevel - 2) : 500;
+                this.levelScore += bonus; this.totalScore += this.levelScore;
+                if(this.currentLevel === this.unlockedLevel) this.unlockedLevel++;
+                localStorage.setItem('polyMax', this.unlockedLevel);
+                localStorage.setItem('polyScore', this.totalScore);
+                this.updateGlobalUI();
+                this.nodes.forEach(n => { n.material.color.setHex(0xffd700); n.material.emissiveIntensity = 1; });
+                this.edges.forEach(e => { e.mesh.material.color.setHex(0xffd700); e.mesh.material.emissiveIntensity = 1; });
+                if(this.surfaceMesh) { 
+                    this.surfaceMesh.material.opacity = 0.5; 
+                    this.surfaceMesh.material.color.setHex(0x4ade80); 
+                    this.surfaceMesh.material.depthWrite = true; // Kazanınca yüzeyi netleştir
+                }
+                setTimeout(() => {
+                    document.getElementById('win-screen').style.display = 'flex';
+                    document.getElementById('win-stats').innerHTML = `SKOR: ${this.levelScore} <br> <span style="font-size:0.8rem; color:var(--gold)">+${bonus} BONUS PUAN</span>`;
+                }, 2000);
+            }
+
+            resetData() { if(confirm("Tüm ilerleme sıfırlanacak?")) { localStorage.clear(); location.reload(); } }
+            nextLevel() { this.currentLevel = Math.min(this.currentLevel + 1, POLYTOPES.length - 1); this.startLevel(); }
+            onResize() { this.camera.aspect = window.innerWidth / window.innerHeight; this.camera.updateProjectionMatrix(); this.renderer.setSize(window.innerWidth, window.innerHeight); }
+
+            animate() { 
+                requestAnimationFrame(() => this.animate()); 
+                this.controls.update(); 
+                if(!this.isSolved) {
+                    const elapsed = (Date.now() - this.startTime) / 1000;
+                    const data = POLYTOPES[this.currentLevel];
+                    const rem = Math.max(0, data.time - (elapsed % data.time));
+                    document.getElementById('timer-display').innerText = rem.toFixed(1);
+                    document.getElementById('current-reward').innerText = this.getCurrentReward();
+                    const glow = 0.3 + Math.sin(Date.now() * 0.005) * 0.2;
+                    this.edges.forEach(e => e.mesh.material.emissiveIntensity = glow);
+                }
+                this.renderer.render(this.scene, this.camera); 
+            }
         }
         const game = new Game();
     </script>
