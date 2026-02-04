@@ -236,6 +236,17 @@
         </div>
     </div>
 
+    <div id="reset-modal" style="position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95); z-index: 8000; display: none; align-items: center; justify-content: center; padding: 20px;">
+        <div class="help-card" style="max-width: 400px; text-align: center; border-color: var(--danger);">
+            <h2 style="color: var(--danger);">⚠️ DİKKAT</h2>
+            <p>Tüm ilerlemeniz ve toplam puanınız kalıcı olarak silinecektir. Devam etmek istediğinize emin misiniz?</p>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 25px;">
+                <button class="btn" style="background: var(--danger); color: white; margin: 0; min-width: 100px;" onclick="game.confirmReset()">EVET, SIFIRLA</button>
+                <button class="btn secondary-btn" style="margin: 0; min-width: 100px;" onclick="game.closeResetModal()">İPTAL</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const PHI = (1 + Math.sqrt(5)) / 2;
         const COLORS = { normal: 0x38bdf8, snapped: 0xfacc15, target: 0x00ff88, danger: 0xff0000, safe: 0x4ade80, surface: 0x00ff88 };
@@ -967,7 +978,15 @@
 
             resetData() { 
                 this.playSound('click');
-                if(confirm("Tüm ilerleme sıfırlanacak?")) { localStorage.clear(); location.reload(); } 
+                document.getElementById('reset-modal').style.display = 'flex';
+            }
+            confirmReset() {
+                localStorage.clear(); 
+                location.reload();
+            }
+            closeResetModal() {
+                this.playSound('click');
+                document.getElementById('reset-modal').style.display = 'none';
             }
             nextLevel() { 
                 this.playSound('click');
