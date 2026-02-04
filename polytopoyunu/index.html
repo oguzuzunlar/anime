@@ -140,7 +140,7 @@
         </div>
         <div class="info-card" id="menu-info">
             <h3>Nasıl Oynanır?</h3>
-            <p>Her seviyede dağılmış düğümleri sürükleyin ve hayalet hedef şeklin köşelerine yerleştirin. Sadece köşeleri doldurmak yetmez; bağlantıların da (kenarların) hedef şekle birebir uyması gerekir. Çok zorlanırsanız 'KARIŞTIR' butonuyla düğümleri yeniden dağıtabilirsiniz (maliyeti her kullanımda artar). Tüm düğümler doğru konuma ve doğru bağlantı yapısına ulaştığında şekil restore olur.</p>
+            <p>Her seviyede dağılmış düğümleri sürükleyin ve hayalet hedef şeklin köşelerine yerleştirin. Sadece köşeleri doldurmak yetmez; bağlantıların da (kenarların) hedef şekle birebir uyması gerekir. Tüm düğümler doğru konuma ve doğru bağlantı yapısına ulaştığında şekil restore olur.</p>
             <h3>Puanlama</h3>
             <p>Her yerleştirmede güncel ödül puanı kazanırsınız. Seviye süresi arttıkça puan azalır. Çakışma uyarısı alırsanız 'GERİ AL' diyerek son güvenli duruma dönün.</p>
             <h3>Kontroller</h3>
@@ -164,8 +164,8 @@
                 <h2 id="target-name" class="panel-target">-</h2>
                 <div class="bar-bg"><div id="bar-fill"></div></div>
                 <div class="panel-progress">UYUM: %<span id="percent-val">0</span></div>
-                <button id="shuffle-btn" class="btn" style="width: 100%; font-size: 0.7rem; background: #6366f1; color: white; display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="game.shuffleLevel()">
-                    <span style="font-size: 1.1rem;">🔄</span> KARIŞTIR (-100 PT)
+                <button id="joker-btn" class="btn" style="width: 100%; font-size: 0.7rem; background: #f59e0b; color: #000; font-weight: 800; display: none;" onclick="game.useJoker()">
+                    ✨ İLK ADIM JOKERİ
                 </button>
                 <button class="btn secondary-btn" style="width: 100%; font-size: 0.7rem;" onclick="game.openHelp()">YARDIM ❔</button>
                 <button class="btn" style="width: 100%; font-size: 0.7rem;" onclick="game.showMenu()">ANA MENÜ 🏠</button>
@@ -195,7 +195,7 @@
     <div id="help-overlay">
         <div class="help-card">
             <h2>Nasıl Oynanır?</h2>
-            <p>Dağılmış düğümleri sürükleyin ve yeşil hayalet şeklin köşelerine yerleştirin. Sadece köşeleri doldurmak yetmez; bağlantıların da (kenarların) hedef şekle birebir uyması gerekir. Çok zorlanırsanız 'KARIŞTIR' butonuyla düğümleri yeniden dağıtabilirsiniz (maliyeti her kullanımda artar).</p>
+            <p>Dağılmış düğümleri sürükleyin ve yeşil hayalet şeklin köşelerine yerleştirin. Sadece köşeleri doldurmak yetmez; bağlantıların da (kenarların) hedef şekle birebir uyması gerekir.</p>
             <h3>Puanlama</h3>
             <ul>
                 <li>Her başarılı yerleşimde o anki ödül puanını kazanırsınız.</li>
@@ -210,19 +210,6 @@
             </ul>
             <div class="help-actions">
                 <button class="btn" style="width: 160px;" onclick="game.closeHelp()">KAPAT</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Karıştırma Onay Modülü -->
-    <div id="confirm-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:7000; align-items:center; justify-content:center; backdrop-filter:blur(5px); animation: fadeIn 0.3s ease;">
-        <div style="background:var(--panel); border:2px solid var(--gold); border-radius:15px; padding:25px; max-width:320px; width:90%; text-align:center; box-shadow:0 0 30px rgba(255,191,0,0.2);">
-            <div style="font-size: 2.5rem; margin-bottom: 10px;">🔄</div>
-            <h3 style="color:var(--gold); margin-bottom:15px; font-family:'Segoe UI', Calibri, sans-serif;">Düğümler Karıştırılsın mı?</h3>
-            <p id="confirm-text" style="color:white; font-size:0.9rem; margin-bottom:20px; line-height:1.4;">[Maliyet] Puan karşılığında düğümleri yeniden karıştırmak istiyor musunuz?</p>
-            <div style="display:flex; gap:10px;">
-                <button class="btn secondary-btn" style="flex:1;" onclick="game.closeConfirm()">İPTAL</button>
-                <button class="btn" style="flex:1; background:var(--gold); color:black;" onclick="game.executeShuffle()">EVET</button>
             </div>
         </div>
     </div>
@@ -396,8 +383,8 @@
                 this.controls.autoRotate = false;
                 this.hasMoved = false; 
                 this.levelScore = 0;
-                this.shuffleCount = 0;
-                this.updateShuffleButton();
+                this.jokerUsed = false;
+                document.getElementById('joker-btn').style.display = 'block';
                 this.startTime = Date.now();
 
                 const data = POLYTOPES[this.currentLevel];
@@ -512,8 +499,13 @@
                         const snapPos = this.targetPoints[targetIndex].pos;
                         this.draggedNode.position.copy(snapPos);
                         if (this.draggedNode.userData.currentTarget !== targetIndex) {
+                            if (this.draggedNode.userData.onRail) {
+                                const penalty = this.draggedNode.userData.lastSnapValue || 0;
+                                this.levelScore -= penalty;
+                                this.showScoreEffect(this.draggedNode.position, -penalty);
+                            }
                             this.playSound('snap');
-                            this.triggerScore(this.draggedNode.position);
+                            this.triggerScore(this.draggedNode);
                         }
                         this.draggedNode.userData.onRail = true;
                         this.draggedNode.userData.currentTarget = targetIndex;
@@ -521,6 +513,12 @@
                     }
 
                     if(!foundSnap) {
+                        if (this.draggedNode.userData.onRail) {
+                            const penalty = this.draggedNode.userData.lastSnapValue || 0;
+                            this.levelScore -= penalty;
+                            this.showScoreEffect(this.draggedNode.position, -penalty);
+                            this.draggedNode.userData.lastSnapValue = 0;
+                        }
                         this.draggedNode.userData.onRail = false;
                         this.draggedNode.userData.currentTarget = null;
                     }
@@ -531,19 +529,21 @@
                 }
             }
 
-            triggerScore(pos) {
+            triggerScore(node) {
                 const gain = this.getCurrentReward();
                 this.levelScore += gain;
-                this.showScoreEffect(pos, gain);
+                node.userData.lastSnapValue = gain;
+                this.showScoreEffect(node.position, gain);
             }
 
             showScoreEffect(pos, val) {
                 const vector = pos.clone().project(this.camera);
                 const div = document.createElement('div');
                 div.className = 'score-float';
+                if (val < 0) div.style.color = '#ef4444'; 
                 div.style.left = (vector.x * 0.5 + 0.5) * window.innerWidth + 'px';
                 div.style.top = (vector.y * -0.5 + 0.5) * window.innerHeight + 'px';
-                div.innerText = "+" + val;
+                div.innerText = (val > 0 ? "+" : "") + val;
                 document.body.appendChild(div);
                 setTimeout(() => div.remove(), 1000);
             }
@@ -899,53 +899,31 @@
                 this.startLevel(); 
             }
 
-            updateShuffleButton() {
-                const cost = (this.shuffleCount + 1) * 100;
-                const btn = document.getElementById('shuffle-btn');
-                if (btn) {
-                    btn.innerHTML = `<span style="font-size: 1.1rem;">🔄</span> KARIŞTIR (-${cost} PT)`;
-                }
-            }
+            useJoker() {
+                if(this.isSolved || this.jokerUsed) return;
+                this.playSound('snap');
+                this.jokerUsed = true;
+                document.getElementById('joker-btn').style.display = 'none';
 
-            // KARIŞTIRMA MEKANİĞİ: Oyuncu sıkıştığında puan harcayarak düğümleri yeniden dağıtabilir
-            shuffleLevel() {
-                const cost = (this.shuffleCount + 1) * 100;
-                if (this.totalScore < cost) {
-                    alert(`Yeterli toplam puanınız yok! (En az ${cost} Puan gerekli)`);
-                    return;
+                // Henüz yerleşmemiş bir düğüm bul
+                const node = this.nodes.find(n => !n.userData.onRail);
+                if (node) {
+                    const tidx = node.userData.targetIndex;
+                    const targetPos = this.targetPoints[tidx].pos;
+                    
+                    node.position.copy(targetPos);
+                    node.userData.onRail = true;
+                    node.userData.currentTarget = tidx;
+                    node.userData.lastSnapValue = 0; 
+                    node.material.color.setHex(COLORS.snapped);
+                    node.material.emissive.setHex(COLORS.snapped);
+                    
+                    this.updateLines();
+                    this.updateProgress();
+                    this.lastSafePos = this.nodes.map(n => n.position.clone());
+                    
+                    this.showScoreEffect(node.position, "JOKER");
                 }
-                
-                // Özel modülü göster
-                const modal = document.getElementById('confirm-modal');
-                const text = document.getElementById('confirm-text');
-                if(modal && text) {
-                    text.innerText = `${cost} Puan karşılığında düğümleri yeniden karıştırmak istiyor musunuz?`;
-                    modal.style.display = 'flex';
-                }
-            }
-
-            closeConfirm() {
-                this.playSound('click');
-                document.getElementById('confirm-modal').style.display = 'none';
-            }
-
-            executeShuffle() {
-                const cost = (this.shuffleCount + 1) * 100;
-                this.playSound('undo');
-                this.totalScore -= cost;
-                this.shuffleCount++;
-                localStorage.setItem('polyScore', this.totalScore);
-                this.updateGlobalUI();
-                this.updateShuffleButton();
-                
-                const data = POLYTOPES[this.currentLevel];
-                this.generateSolvableStart(data);
-                this.updateLines();
-                this.updateProgress();
-                
-                // Görsel geri bildirim
-                this.showScoreEffect(new THREE.Vector3(0,0,0), -cost);
-                this.closeConfirm();
             }
 
             onResize() {
