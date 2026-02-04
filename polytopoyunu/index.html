@@ -140,9 +140,9 @@
         </div>
         <div class="info-card" id="menu-info">
             <h3>Nasıl Oynanır?</h3>
-            <p>Her seviyede dağılmış düğümleri sürükleyin ve hayalet hedef şeklin köşelerine yerleştirin. Çoğu seviyede her düğüm boşta kalan herhangi bir köşeye oturur. Üçgen Prizma seviyesinde her düğüm yalnızca kendi eşleştiği noktaya yerleşir. Tüm düğümler doğru konuma ulaştığında şekil restore olur.</p>
+            <p>Her seviyede dağılmış düğümleri sürükleyin ve hayalet hedef şeklin köşelerine yerleştirin. Sadece köşeleri doldurmak yetmez; bağlantıların da (kenarların) hedef şekle birebir uyması gerekir. Çok zorlanırsanız 'KARIŞTIR' butonuyla düğümleri yeniden dağıtabilirsiniz (maliyeti her kullanımda artar). Tüm düğümler doğru konuma ve doğru bağlantı yapısına ulaştığında şekil restore olur.</p>
             <h3>Puanlama</h3>
-            <p>Her yerleştirmede güncel ödül puanı kazanırsınız. Ödül, seviyedeki süre parçalarına göre azalır. Çakışma uyarısı alırsanız GERİ AL diyerek son güvenli duruma dönün.</p>
+            <p>Her yerleştirmede güncel ödül puanı kazanırsınız. Seviye süresi arttıkça puan azalır. Çakışma uyarısı alırsanız 'GERİ AL' diyerek son güvenli duruma dönün.</p>
             <h3>Kontroller</h3>
             <ul>
                 <li>Dokunun veya tıklayın: Düğümü seçin ve sürükleyin.</li>
@@ -164,6 +164,9 @@
                 <h2 id="target-name" class="panel-target">-</h2>
                 <div class="bar-bg"><div id="bar-fill"></div></div>
                 <div class="panel-progress">UYUM: %<span id="percent-val">0</span></div>
+                <button id="shuffle-btn" class="btn" style="width: 100%; font-size: 0.7rem; background: #6366f1; color: white; display: flex; align-items: center; justify-content: center; gap: 5px;" onclick="game.shuffleLevel()">
+                    <span style="font-size: 1.1rem;">🔄</span> KARIŞTIR (-100 PT)
+                </button>
                 <button class="btn secondary-btn" style="width: 100%; font-size: 0.7rem;" onclick="game.openHelp()">YARDIM ❔</button>
                 <button class="btn" style="width: 100%; font-size: 0.7rem;" onclick="game.showMenu()">ANA MENÜ 🏠</button>
             </div>
@@ -192,12 +195,12 @@
     <div id="help-overlay">
         <div class="help-card">
             <h2>Nasıl Oynanır?</h2>
-            <p>Dağılmış düğümleri sürükleyin ve yeşil hayalet şeklin köşelerine yerleştirin. Çoğu seviyede her düğüm boş bir köşeye yerleşir. Üçgen Prizma seviyesinde her düğüm yalnızca kendi eşleştiği noktaya oturur.</p>
+            <p>Dağılmış düğümleri sürükleyin ve yeşil hayalet şeklin köşelerine yerleştirin. Sadece köşeleri doldurmak yetmez; bağlantıların da (kenarların) hedef şekle birebir uyması gerekir. Çok zorlanırsanız 'KARIŞTIR' butonuyla düğümleri yeniden dağıtabilirsiniz (maliyeti her kullanımda artar).</p>
             <h3>Puanlama</h3>
             <ul>
                 <li>Her başarılı yerleşimde o anki ödül puanını kazanırsınız.</li>
-                <li>Ödül, seviyedeki süre segmentleri ilerledikçe azalır. Ne kadar hızlı olursanız o kadar fazla puan toplarsınız.</li>
-                <li>Çakışma uyarısı aldığınızda GERİ AL seçeneğiyle son güvenli konuma dönersiniz.</li>
+                <li>Ödül, seviye süresi arttıkça azalır. Ne kadar hızlı olursanız o kadar fazla puan toplarsınız.</li>
+                <li>Çakışma uyarısı aldığınızda 'GERİ AL' seçeneğiyle son güvenli konuma dönersiniz.</li>
             </ul>
             <h3>Kontroller</h3>
             <ul>
@@ -207,6 +210,19 @@
             </ul>
             <div class="help-actions">
                 <button class="btn" style="width: 160px;" onclick="game.closeHelp()">KAPAT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Karıştırma Onay Modülü -->
+    <div id="confirm-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:7000; align-items:center; justify-content:center; backdrop-filter:blur(5px); animation: fadeIn 0.3s ease;">
+        <div style="background:var(--panel); border:2px solid var(--gold); border-radius:15px; padding:25px; max-width:320px; width:90%; text-align:center; box-shadow:0 0 30px rgba(255,191,0,0.2);">
+            <div style="font-size: 2.5rem; margin-bottom: 10px;">🔄</div>
+            <h3 style="color:var(--gold); margin-bottom:15px; font-family:'Segoe UI', Calibri, sans-serif;">Düğümler Karıştırılsın mı?</h3>
+            <p id="confirm-text" style="color:white; font-size:0.9rem; margin-bottom:20px; line-height:1.4;">[Maliyet] Puan karşılığında düğümleri yeniden karıştırmak istiyor musunuz?</p>
+            <div style="display:flex; gap:10px;">
+                <button class="btn secondary-btn" style="flex:1;" onclick="game.closeConfirm()">İPTAL</button>
+                <button class="btn" style="flex:1; background:var(--gold); color:black;" onclick="game.executeShuffle()">EVET</button>
             </div>
         </div>
     </div>
@@ -380,6 +396,8 @@
                 this.controls.autoRotate = false;
                 this.hasMoved = false; 
                 this.levelScore = 0;
+                this.shuffleCount = 0;
+                this.updateShuffleButton();
                 this.startTime = Date.now();
 
                 const data = POLYTOPES[this.currentLevel];
@@ -880,6 +898,56 @@
                 this.currentLevel = Math.min(this.currentLevel + 1, POLYTOPES.length - 1); 
                 this.startLevel(); 
             }
+
+            updateShuffleButton() {
+                const cost = (this.shuffleCount + 1) * 100;
+                const btn = document.getElementById('shuffle-btn');
+                if (btn) {
+                    btn.innerHTML = `<span style="font-size: 1.1rem;">🔄</span> KARIŞTIR (-${cost} PT)`;
+                }
+            }
+
+            // KARIŞTIRMA MEKANİĞİ: Oyuncu sıkıştığında puan harcayarak düğümleri yeniden dağıtabilir
+            shuffleLevel() {
+                const cost = (this.shuffleCount + 1) * 100;
+                if (this.totalScore < cost) {
+                    alert(`Yeterli toplam puanınız yok! (En az ${cost} Puan gerekli)`);
+                    return;
+                }
+                
+                // Özel modülü göster
+                const modal = document.getElementById('confirm-modal');
+                const text = document.getElementById('confirm-text');
+                if(modal && text) {
+                    text.innerText = `${cost} Puan karşılığında düğümleri yeniden karıştırmak istiyor musunuz?`;
+                    modal.style.display = 'flex';
+                }
+            }
+
+            closeConfirm() {
+                this.playSound('click');
+                document.getElementById('confirm-modal').style.display = 'none';
+            }
+
+            executeShuffle() {
+                const cost = (this.shuffleCount + 1) * 100;
+                this.playSound('undo');
+                this.totalScore -= cost;
+                this.shuffleCount++;
+                localStorage.setItem('polyScore', this.totalScore);
+                this.updateGlobalUI();
+                this.updateShuffleButton();
+                
+                const data = POLYTOPES[this.currentLevel];
+                this.generateSolvableStart(data);
+                this.updateLines();
+                this.updateProgress();
+                
+                // Görsel geri bildirim
+                this.showScoreEffect(new THREE.Vector3(0,0,0), -cost);
+                this.closeConfirm();
+            }
+
             onResize() {
                 this.camera.aspect = window.innerWidth / window.innerHeight;
                 this.camera.updateProjectionMatrix();
