@@ -321,7 +321,10 @@
                 const unlockAudio = () => {
                     this.startAudioContext();
                 };
-                window.addEventListener('pointerdown', unlockAudio);
+                window.addEventListener('pointerdown', e => {
+                    this.onPointerDown(e);
+                    unlockAudio();
+                });
                 window.addEventListener('click', unlockAudio);
                 window.addEventListener('touchstart', unlockAudio);
 
