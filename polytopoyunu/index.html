@@ -317,10 +317,14 @@
                 this.sounds.bgm.volume = 0.4;
                 this.audioStarted = false;
 
-                window.addEventListener('pointerdown', e => {
-                    this.onPointerDown(e);
+                // Mobil için ses kilidini açan olaylar
+                const unlockAudio = () => {
                     this.startAudioContext();
-                });
+                };
+                window.addEventListener('pointerdown', unlockAudio);
+                window.addEventListener('click', unlockAudio);
+                window.addEventListener('touchstart', unlockAudio);
+
                 window.addEventListener('pointermove', e => this.onPointerMove(e));
                 window.addEventListener('pointerup', () => this.onPointerUp());
                 window.addEventListener('resize', () => this.onResize());
@@ -410,8 +414,16 @@
             // SES KONTROLLERİ
             startAudioContext() {
                 if (this.audioStarted) return;
-                this.sounds.bgm.play().catch(() => {});
-                this.audioStarted = true;
+                
+                // Mobil tarayıcılarda (iOS/Android) sesi oynatmak için bir kez play() çağrılmalı
+                this.sounds.bgm.play()
+                    .then(() => {
+                        this.audioStarted = true;
+                        // Kilidi açtıktan sonra dinleyicileri kaldırabiliriz (isteğe bağlı)
+                    })
+                    .catch(err => {
+                        console.log("Ses henüz çalınamıyor (Kullanıcı etkileşimi bekleniyor):", err);
+                    });
             }
 
             playSound(name) {
