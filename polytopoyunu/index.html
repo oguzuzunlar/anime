@@ -159,7 +159,7 @@
             <h3>Puanlama</h3>
             <p>Her yerleştirmede güncel ödül puanı kazanırsınız. Seviye süresi arttıkça puan azalır. Çakışma uyarısı alırsanız 'GERİ AL' diyerek son güvenli duruma dönün.</p>
             <h3>Joker Kullanımı</h3>
-            <p>Her seviyede bir kez 'İLK ADIM JOKERİ' kullanabilirsiniz. Bu joker, yerleşmemiş düğümlerden birini otomatik olarak doğru hedefine yerleştirir. İlk seviye hariç, joker kullanmak o anki seviye puanınızı yarıya düşürür.</p>
+            <p>Her seviyede bir kez 'İLK ADIM JOKERİ' kullanabilirsiniz. Bu joker, yerleşmemiş düğümlerden birini otomatik olarak doğru hedefine yerleştirir. Joker kullanmak o anki seviye puanınızı yarıya düşürür.</p>
             <h3>Kontroller</h3>
             <ul>
                 <li>Dokunun veya tıklayın: Düğümü seçin ve sürükleyin.</li>
@@ -223,7 +223,7 @@
             <ul>
                 <li>Seviye başına bir adet 'İLK ADIM JOKERİ' hakkınız vardır.</li>
                 <li>Joker kullanıldığında, henüz yerleşmemiş rastgele bir düğüm doğru konumuna otomatik olarak taşınır.</li>
-                <li>İlk seviye hariç, joker kullanımında o anki seviye puanınız %50 oranında azalır.</li>
+                <li>Joker kullanımında o anki seviye puanınız %50 oranında azalır.</li>
             </ul>
             <h3>Kontroller</h3>
             <ul>
@@ -1001,11 +1001,11 @@
                 this.jokerUsed = true;
                 document.getElementById('joker-btn').style.display = 'none';
 
-                // Puan eksiltme: İlk seviye (0) hariç, o anki puanın yarısı silinir
-                if (this.currentLevel > 0 && this.levelScore > 0) {
+                // Puan eksiltme: Joker kullanıldığında o anki puanın yarısı silinir
+                if (this.levelScore > 0) {
                     const penalty = Math.floor(this.levelScore / 2);
                     this.levelScore -= penalty;
-                    this.showScoreEffect(this.camera.position, -penalty); // Ekranda puan düşüşünü göster
+                    this.showScoreEffect(this.camera.position, -penalty); 
                 }
 
                 // Henüz yerleşmemiş bir düğüm bul
