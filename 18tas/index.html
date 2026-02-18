@@ -16,6 +16,9 @@
             --stone-size: 36px;
             --game-area-grad-1: #3d2b1f;
             --game-area-grad-2: #1a120b;
+            --btn-bg: #5d4037;
+            --btn-outline-color: var(--board-bg);
+            --btn-outline-border: var(--board-bg);
         }
 
         body[data-theme='light'] {
@@ -26,6 +29,9 @@
             --line-color: #4a3728;
             --game-area-grad-1: #e9dbc8;
             --game-area-grad-2: #d9c5ab;
+            --btn-bg: #6d4c41;
+            --btn-outline-color: #7b3e19;
+            --btn-outline-border: #7b3e19;
         }
 
         body[data-theme='dark'] {
@@ -36,6 +42,9 @@
             --line-color: #3d2b1f;
             --game-area-grad-1: #3d2b1f;
             --game-area-grad-2: #1a120b;
+            --btn-bg: #5d4037;
+            --btn-outline-color: var(--board-bg);
+            --btn-outline-border: var(--board-bg);
         }
 
         body {
@@ -63,9 +72,9 @@
             padding: 10px; background: #f5e6d3; color: #3d2b1f; border-radius: 6px;
         }
 
-        select, button { padding: 10px; border-radius: 6px; border: none; background: #5d4037; color: white; cursor: pointer; font-weight: bold; font-family: inherit; }
+        select, button { padding: 10px; border-radius: 6px; border: none; background: var(--btn-bg); color: white; cursor: pointer; font-weight: bold; font-family: inherit; }
         button.primary { background: #e53935; color: white; }
-        button.outline { background: transparent; border: 2px solid var(--board-bg); color: var(--board-bg); }
+        button.outline { background: transparent; border: 2px solid var(--btn-outline-border); color: var(--btn-outline-color); }
 
         #game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 20px; background: radial-gradient(circle, var(--game-area-grad-1), var(--game-area-grad-2)); }
         
@@ -192,6 +201,61 @@
             justify-content: center;
         }
 
+        /* ---- Yatay mod kilidi ---- */
+        #landscape-lock {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #1a0e05;
+            color: #f5e6d3;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            text-align: center;
+            padding: 30px;
+        }
+        #landscape-lock.show { display: flex; }
+        .lock-icon {
+            font-size: 3.5rem;
+            animation: rotatePhone 1.5s ease-in-out infinite alternate;
+        }
+        @keyframes rotatePhone {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(-90deg); }
+        }
+        .lock-text { font-size: 1.15rem; font-weight: bold; line-height: 1.6; }
+
+        /* ---- Nasıl oynanır modal ---- */
+        #howto-modal-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.72);
+            padding: 18px;
+            box-sizing: border-box;
+            animation: fadeInBg 0.25s ease;
+        }
+        #howto-modal-bg.show { display: flex; }
+        @keyframes fadeInBg { from { opacity: 0; } to { opacity: 1; } }
+        .howto-modal-card {
+            width: min(680px, 100%);
+            max-height: 90dvh;
+            overflow-y: auto;
+            border-radius: 14px;
+            padding: 22px;
+            background: linear-gradient(145deg, #3e316d, #2c2554);
+            border: 1px solid rgba(255,255,255,0.18);
+            color: #fff;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+            animation: slideUp 0.28s cubic-bezier(0.22,1,0.36,1);
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
         @media (max-width: 900px) {
             :root { --stone-size: 28px; }
             body { flex-direction: column; overflow-y: auto; height: auto; }
@@ -226,6 +290,13 @@
 </head>
 <body>
 
+    <!-- Yatay mod uyarı ekranı -->
+    <div id="landscape-lock">
+        <div class="lock-icon">📱</div>
+        <div class="lock-text">Lütfen cihazınızı<br><strong>dikey konuma</strong> döndürün.<br>Oyun yatay modda çalışmaz.</div>
+    </div>
+
+    <!-- Açılış howto ekranı -->
     <div id="howto-screen" role="dialog" aria-modal="true" aria-labelledby="howto-title">
         <div class="howto-card">
             <h2 id="howto-title" class="howto-title">18 Taşlı Dama</h2>
@@ -239,6 +310,24 @@
             </ul>
             <div class="howto-actions">
                 <button class="primary" onclick="closeHowToScreen()">OYUNA BAŞLA</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nasıl oynanır modal (panel butonu) -->
+    <div id="howto-modal-bg" role="dialog" aria-modal="true" onclick="closeHowtoModal(event)">
+        <div class="howto-modal-card" onclick="event.stopPropagation()">
+            <h2 class="howto-title" style="margin:0 0 12px; text-align:center; font-size:1.45rem;">18 Taşlı Dama</h2>
+            <p class="howto-sub">Nasıl Oynanır?</p>
+            <ul class="howto-list">
+                <li>Oyuncular sırayla hamle yapar. Kendi taşına dokunup gitmek istediğin komşu boş noktayı seçersin.</li>
+                <li>Taşlar sadece çizgiler üzerinde hareket eder, çizgi dışına çıkamaz.</li>
+                <li>Rakip taşı almak için bitişik rakibin üzerinden aynı çizgi doğrultusunda boş noktaya atlarsın.</li>
+                <li>Taş alma zorunlu değildir. Aynı turda yeni alma imkânı varsa kombo devam eder.</li>
+                <li>Rakibin tüm taşlarını alan oyuncu oyunu kazanır.</li>
+            </ul>
+            <div class="howto-actions">
+                <button class="primary" onclick="closeHowtoModal()">TAMAM</button>
             </div>
         </div>
     </div>
@@ -272,7 +361,7 @@
                 <button class="primary" onclick="initGame()">YENİ OYUN</button>
                 <button class="outline" onclick="toggleTheme()" id="themeBtn">☀️ GÜNDÜZ</button>
                 <button class="outline" onclick="toggleMusic()" id="musicBtn">🎵 MÜZİK AÇ</button>
-                <button class="outline" onclick="nextTrack()" id="nextTrackBtn">⏭ SONRAKİ PARÇA</button>
+                <button class="outline" onclick="openHowtoModal()">❓ NASIL OYNANIR</button>
             </div>
         </div>
 
@@ -300,7 +389,6 @@
     const winnerTitle = document.getElementById('winner-title');
     const howToScreen = document.getElementById('howto-screen');
     const musicBtn = document.getElementById('musicBtn');
-    const nextTrackBtn = document.getElementById('nextTrackBtn');
     const gameModeSelect = document.getElementById('gameMode');
     const difficultyWrap = document.getElementById('difficulty-wrap');
     const difficultyLevel = document.getElementById('difficultyLevel');
@@ -399,14 +487,12 @@
     }
 
     function updateMusicUI(overrideLabel = '') {
-        if (!musicBtn || !nextTrackBtn) return;
+        if (!musicBtn) return;
         if (overrideLabel) {
             musicBtn.innerText = `🎵 ${overrideLabel}`;
             return;
         }
         musicBtn.innerText = audioState.enabled ? '🔇 MÜZİK KAPAT' : '🎵 MÜZİK AÇ';
-        nextTrackBtn.disabled = !audioState.enabled;
-        nextTrackBtn.style.opacity = audioState.enabled ? '1' : '0.6';
     }
 
     function addNode(id, x, y) {
@@ -718,6 +804,31 @@
     function closeHowToScreen() {
         if (howToScreen) howToScreen.style.display = 'none';
     }
+
+    function openHowtoModal() {
+        document.getElementById('howto-modal-bg').classList.add('show');
+    }
+
+    function closeHowtoModal(e) {
+        if (!e || e.target === document.getElementById('howto-modal-bg')) {
+            document.getElementById('howto-modal-bg').classList.remove('show');
+        }
+    }
+
+    // Yatay mod kilidi
+    function checkOrientation() {
+        const isMobile = window.matchMedia('(max-width: 900px)').matches;
+        const isLandscape = window.innerWidth > window.innerHeight;
+        const lock = document.getElementById('landscape-lock');
+        if (isMobile && isLandscape) {
+            lock.classList.add('show');
+        } else {
+            lock.classList.remove('show');
+        }
+    }
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+    checkOrientation();
 
     window.addEventListener('resize', () => {
         drawBoardLines();
