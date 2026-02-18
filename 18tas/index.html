@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>18 Taşlı Dama</title>
+    <style>
+        :root {
+            --bg-color: #2c2117; 
+            --sidebar-bg: #3d2b1f; 
+            --text-color: #f5e6d3;
+            --board-bg: #c59830; 
+            --line-color: #3d2b1f;
+            --stone-red: radial-gradient(circle at 30% 30%, #ff8a80, #e53935 60%, #8e0000);
+            --stone-green: radial-gradient(circle at 30% 30%, #a5d6a7, #4caf50 60%, #1b5e20);
+            --stone-size: 36px;
+            --game-area-grad-1: #3d2b1f;
+            --game-area-grad-2: #1a120b;
+        }
+
+        body[data-theme='light'] {
+            --bg-color: #f4eee6;
+            --sidebar-bg: #ece0d3;
+            --text-color: #2f241b;
+            --board-bg: #d6aa48;
+            --line-color: #4a3728;
+            --game-area-grad-1: #e9dbc8;
+            --game-area-grad-2: #d9c5ab;
+        }
+
+        body[data-theme='dark'] {
+            --bg-color: #2c2117;
+            --sidebar-bg: #3d2b1f;
+            --text-color: #f5e6d3;
+            --board-bg: #c59830;
+            --line-color: #3d2b1f;
+            --game-area-grad-1: #3d2b1f;
+            --game-area-grad-2: #1a120b;
+        }
+
+        body {
+            margin: 0; padding: 0; display: flex; height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-color); color: var(--text-color);
+            transition: background 0.3s; overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #main-wrapper { display: flex; width: 100%; height: 100%; }
+
+        #sidebar {
+            width: 300px; background-color: var(--sidebar-bg); padding: 25px;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; gap: 12px; z-index: 10;
+        }
+
+        h1 { margin: 0; color: var(--board-bg); font-size: 20px; text-transform: uppercase; letter-spacing: 2px; text-align: center; border-bottom: 2px solid #5d4037; padding-bottom: 10px; }
+
+        .panel { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+
+        .status-bar {
+            font-size: 1rem; font-weight: bold; text-align: center;
+            padding: 10px; background: #f5e6d3; color: #3d2b1f; border-radius: 6px;
+        }
+
+        select, button { padding: 10px; border-radius: 6px; border: none; background: #5d4037; color: white; cursor: pointer; font-weight: bold; font-family: inherit; }
+        button.primary { background: #e53935; color: white; }
+        button.outline { background: transparent; border: 2px solid var(--board-bg); color: var(--board-bg); }
+
+        #game-area { flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 20px; background: radial-gradient(circle, var(--game-area-grad-1), var(--game-area-grad-2)); }
+        
+        #game-board-container { 
+            position: relative; width: min(94vw, 850px); aspect-ratio: 1.8 / 1; 
+            padding: 10px; background: #8d6e63; border-radius: 15px; box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+        }
+
+        #game-board {
+            position: absolute; width: calc(100% - 20px); height: calc(100% - 20px);
+            left: 10px; top: 10px; background-color: var(--board-bg); 
+            border-radius: 10px; overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        svg { position: absolute; width: 100%; height: 100%; pointer-events: none; }
+        
+        .node-point { position: absolute; width: 6px; height: 6px; background: var(--line-color); border-radius: 50%; transform: translate(-50%, -50%); opacity: 0.6; }
+
+        .node-hitbox { position: absolute; width: 50px; height: 50px; transform: translate(-50%, -50%); cursor: pointer; z-index: 30; }
+
+        .hint {
+            position: absolute; width: 22px; height: 22px;
+            background: rgba(255, 255, 255, 0.4); border-radius: 50%;
+            transform: translate(-50%, -50%); z-index: 15;
+            animation: pulse 0.6s infinite alternate; border: 2px solid white;
+        }
+        @keyframes pulse { from { opacity: 0.2; scale: 0.8; } to { opacity: 0.9; scale: 1.2; } }
+
+        .stone {
+            position: absolute; width: var(--stone-size); height: var(--stone-size);
+            border-radius: 50%; transform: translate(-50%, -50%);
+            z-index: 20; pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.5);
+        }
+        .stone.red { background: var(--stone-red); }
+        .stone.green { background: var(--stone-green); }
+        .stone.selected { box-shadow: 0 0 20px 8px white; z-index: 25; scale: 1.1; }
+
+        #combo-msg { color: #ffeb3b; font-size: 0.8rem; text-align: center; display: none; margin-top: 5px; font-weight: bold; }
+
+        #winner-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #winner-modal.show { display: flex; }
+
+        .winner-dialog {
+            width: min(420px, 100%);
+            background: var(--sidebar-bg);
+            border: 2px solid var(--board-bg);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+
+        #winner-title {
+            margin: 0 0 14px;
+            color: var(--board-bg);
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+        }
+
+        #howto-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            box-sizing: border-box;
+            background: radial-gradient(circle at top, #4e3d85, #3e316d 50%, #2c2554);
+            color: #fff;
+        }
+
+        .howto-card {
+            width: min(720px, 100%);
+            max-height: 92dvh;
+            overflow: auto;
+            border-radius: 14px;
+            padding: 18px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .howto-title {
+            margin: 0 0 12px;
+            text-align: center;
+            font-size: 1.6rem;
+            letter-spacing: 1px;
+        }
+
+        .howto-sub {
+            margin: 0 0 14px;
+            text-align: center;
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .howto-list {
+            margin: 0;
+            padding-left: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            line-height: 1.45;
+            font-size: 1rem;
+        }
+
+        .howto-actions {
+            margin-top: 18px;
+            display: flex;
+            justify-content: center;
+        }
+
+        @media (max-width: 900px) {
+            :root { --stone-size: 28px; }
+            body { flex-direction: column; overflow-y: auto; height: auto; }
+            #main-wrapper { flex-direction: column; min-height: 100dvh; }
+            #sidebar { width: 100%; order: 2; padding: 14px; box-sizing: border-box; }
+            #game-area { order: 1; flex: 0 0 auto; min-height: 66vh; padding: 8px 6px 0; align-items: center; justify-content: center; }
+            #game-board-container {
+                width: min(92vw, 430px);
+                aspect-ratio: 1 / 1.8;
+                max-height: 78dvh;
+                padding: 10px;
+                border-radius: 14px;
+                box-shadow: 0 14px 34px rgba(0,0,0,0.58);
+            }
+            #game-board {
+                position: absolute;
+                width: calc(100% - 20px);
+                height: calc(100% - 20px);
+                left: 10px;
+                top: 10px;
+                transform: none;
+            }
+            select, button { width: 100%; min-height: 44px; }
+            .node-hitbox { width: 54px; height: 54px; }
+            .status-bar { font-size: 0.95rem; }
+            #winner-title { font-size: 1.1rem; }
+            .howto-card { padding: 14px; }
+            .howto-title { font-size: 1.25rem; }
+            .howto-list { font-size: 0.96rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="howto-screen" role="dialog" aria-modal="true" aria-labelledby="howto-title">
+        <div class="howto-card">
+            <h2 id="howto-title" class="howto-title">18 Taşlı Dama</h2>
+            <p class="howto-sub">Nasıl Oynanır?</p>
+            <ul class="howto-list">
+                <li>Oyuncular sırayla hamle yapar. Kendi taşına dokunup gitmek istediğin komşu boş noktayı seçersin.</li>
+                <li>Taşlar sadece çizgiler üzerinde hareket eder, çizgi dışına çıkamaz.</li>
+                <li>Rakip taşı almak için bitişik rakibin üzerinden aynı çizgi doğrultusunda boş noktaya atlarsın.</li>
+                <li>Taş alma zorunlu değildir. Aynı turda yeni alma imkânı varsa kombo devam eder.</li>
+                <li>Rakibin tüm taşlarını alan oyuncu oyunu kazanır.</li>
+            </ul>
+            <div class="howto-actions">
+                <button class="primary" onclick="closeHowToScreen()">OYUNA BAŞLA</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-wrapper">
+        <div id="sidebar">
+            <h1>18 TAŞLI DAMA</h1>
+            <div id="status" class="status-bar">Sıra: <span id="turn-txt">Kırmızı</span></div>
+            <div id="combo-msg">⚡ KOMBO DEVAM EDİYOR!</div>
+
+            <div class="panel">
+                <div id="score" style="text-align: center; font-weight: bold; color: #fff;">
+                    Kırmızı: 18 | Yeşil: 18
+                </div>
+            </div>
+
+            <div class="panel" style="display:flex; flex-direction:column; gap:8px;">
+                <label style="font-size: 0.7rem;">OYUN MODU</label>
+                <select id="gameMode">
+                    <option value="pvp">Yerel (2 Kişi)</option>
+                    <option value="pve">Bilgisayara Karşı</option>
+                </select>
+                <div id="difficulty-wrap" style="display:none; flex-direction:column; gap:6px;">
+                    <label style="font-size: 0.7rem;">ZORLUK</label>
+                    <select id="difficultyLevel">
+                        <option value="easy">Kolay</option>
+                        <option value="medium" selected>Orta</option>
+                        <option value="hard">Zor</option>
+                    </select>
+                </div>
+                <button class="primary" onclick="initGame()">YENİ OYUN</button>
+                <button class="outline" onclick="toggleTheme()" id="themeBtn">☀️ GÜNDÜZ</button>
+                <button class="outline" onclick="toggleMusic()" id="musicBtn">🎵 MÜZİK AÇ</button>
+                <button class="outline" onclick="nextTrack()" id="nextTrackBtn">⏭ SONRAKİ PARÇA</button>
+            </div>
+        </div>
+
+        <div id="game-area">
+            <div id="game-board-container">
+                <div id="game-board">
+                    <svg id="svg-layer"></svg>
+                    <div id="elements-layer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="winner-modal" role="dialog" aria-modal="true" aria-labelledby="winner-title">
+        <div class="winner-dialog">
+            <h2 id="winner-title">KAZANDIN!</h2>
+            <button class="primary" onclick="initGame()">YENİDEN OYNA</button>
+        </div>
+    </div>
+
+<script>
+    const svgLayer = document.getElementById('svg-layer');
+    const nodesLayer = document.getElementById('elements-layer');
+    const winnerModal = document.getElementById('winner-modal');
+    const winnerTitle = document.getElementById('winner-title');
+    const howToScreen = document.getElementById('howto-screen');
+    const musicBtn = document.getElementById('musicBtn');
+    const nextTrackBtn = document.getElementById('nextTrackBtn');
+    const gameModeSelect = document.getElementById('gameMode');
+    const difficultyWrap = document.getElementById('difficulty-wrap');
+    const difficultyLevel = document.getElementById('difficultyLevel');
+    let nodes = [];
+    let adj = {};
+    let state = { board: {}, turn: 'red', selected: null, isCombo: false, score: { red: 18, green: 18 }, mode: 'pvp', aiLevel: 'medium', gameOver: false };
+
+    const musicPlaylist = [
+        'bg1.mp3',
+        'music/bgm-2.mp3',
+        'music/bgm-3.mp3'
+    ];
+
+    const audioState = {
+        enabled: false,
+        hasInteracted: false,
+        trackIndex: 0,
+        bgm: new Audio(),
+        sfx: {
+            move: new Audio('move.mp3'),
+            capture: new Audio('capture.mp3'),
+            win: new Audio('win.mp3')
+        }
+    };
+
+    // OKLA GÖSTERDİĞİNİZ VE SİSTEMDEN ÇIKARILAN NOKTALAR
+    const disabledNodes = [1, 7, 9, 17, 27, 35, 37, 43];
+
+    const W = 850, H = 472, stepX = 90, stepY = 85, startX = 65, startY = 55;
+    const drawnMainLinks = [
+        [0, 36], [0, 20], [2, 38], [2, 42], [2, 6], [3, 39], [4, 24], [4, 20], [4, 40], [5, 41],
+        [6, 42], [6, 38], [8, 44], [8, 24], [10, 28], [11, 15], [16, 34], [20, 36], [20, 40],
+        [20, 24], [24, 44], [24, 40], [29, 33], [38, 42], [18, 20], [24, 26]
+    ];
+
+    function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+
+    function setupAudio() {
+        audioState.bgm.volume = 0.35;
+        audioState.bgm.loop = false;
+        audioState.bgm.preload = 'none';
+        audioState.bgm.addEventListener('ended', () => nextTrack(true));
+
+        Object.values(audioState.sfx).forEach(s => {
+            s.volume = 0.55;
+            s.preload = 'none';
+        });
+
+        const unlock = () => {
+            audioState.hasInteracted = true;
+            if (audioState.enabled) playBgm();
+        };
+
+        ['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+            window.addEventListener(evt, unlock, { once: true });
+        });
+
+        loadTrack(audioState.trackIndex);
+        updateMusicUI();
+    }
+
+    function loadTrack(index) {
+        audioState.trackIndex = (index + musicPlaylist.length) % musicPlaylist.length;
+        audioState.bgm.src = musicPlaylist[audioState.trackIndex];
+    }
+
+    function playBgm() {
+        if (!audioState.enabled || !audioState.hasInteracted) return;
+        audioState.bgm.play().catch(() => {
+            updateMusicUI('MÜZİK AÇ');
+        });
+    }
+
+    function toggleMusic() {
+        audioState.enabled = !audioState.enabled;
+        if (audioState.enabled) {
+            playBgm();
+        } else {
+            audioState.bgm.pause();
+        }
+        updateMusicUI();
+    }
+
+    function nextTrack(autoPlay = false) {
+        const shouldPlay = autoPlay || (audioState.enabled && !audioState.bgm.paused);
+        loadTrack(audioState.trackIndex + 1);
+        if (shouldPlay) playBgm();
+        updateMusicUI();
+    }
+
+    function playSfx(type) {
+        const sound = audioState.sfx[type];
+        if (!sound) return;
+        sound.currentTime = 0;
+        sound.play().catch(() => {});
+    }
+
+    function updateMusicUI(overrideLabel = '') {
+        if (!musicBtn || !nextTrackBtn) return;
+        if (overrideLabel) {
+            musicBtn.innerText = `🎵 ${overrideLabel}`;
+            return;
+        }
+        musicBtn.innerText = audioState.enabled ? '🔇 MÜZİK KAPAT' : '🎵 MÜZİK AÇ';
+        nextTrackBtn.disabled = !audioState.enabled;
+        nextTrackBtn.style.opacity = audioState.enabled ? '1' : '0.6';
+    }
+
+    function addNode(id, x, y) {
+        if (disabledNodes.includes(id)) return;
+        nodes[id] = { id, x, y };
+        adj[id] = [];
+    }
+
+    // Çizgi parçalama mantığı: Devre dışı bırakılan noktaları atlayarak bağlar
+    function addPath(u, v) {
+        const r1 = Math.floor(u / 9), c1 = u % 9;
+        const r2 = Math.floor(v / 9), c2 = v % 9;
+        const dr = r2 - r1, dc = c2 - c1;
+        const steps = gcd(Math.abs(dr), Math.abs(dc));
+        const sr = dr / steps, sc = dc / steps;
+
+        let lastValid = u;
+        for (let i = 1; i <= steps; i++) {
+            const nextId = (r1 + i * sr) * 9 + (c1 + i * sc);
+            if (!disabledNodes.includes(nextId)) {
+                link(lastValid, nextId);
+                lastValid = nextId;
+            }
+        }
+    }
+
+    function link(u, v) {
+        if (disabledNodes.includes(u) || disabledNodes.includes(v)) return;
+        if (!adj[u]) adj[u] = []; if (!adj[v]) adj[v] = [];
+        if (!adj[u].includes(v)) adj[u].push(v);
+        if (!adj[v].includes(u)) adj[v].push(u);
+    }
+
+    function isMobilePortraitBoard() {
+        return window.matchMedia('(max-width: 900px)').matches;
+    }
+
+    function mapCoords(x, y) {
+        if (!isMobilePortraitBoard()) {
+            return { px: (x / W) * 100, py: (y / H) * 100 };
+        }
+        return { px: (y / H) * 100, py: ((W - x) / W) * 100 };
+    }
+
+    function getRawCoordById(id) {
+        return { x: startX + (id % 9) * stepX, y: startY + Math.floor(id / 9) * stepY };
+    }
+
+    function drawBoardLines() {
+        svgLayer.innerHTML = '';
+        drawnMainLinks.forEach(l => {
+            const start = getRawCoordById(l[0]);
+            const end = getRawCoordById(l[1]);
+            const s = mapCoords(start.x, start.y);
+            const e = mapCoords(end.x, end.y);
+
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', s.px + '%');
+            line.setAttribute('y1', s.py + '%');
+            line.setAttribute('x2', e.px + '%');
+            line.setAttribute('y2', e.py + '%');
+            line.setAttribute('stroke', 'var(--line-color)');
+            line.setAttribute('stroke-width', isMobilePortraitBoard() ? '2.6' : '3');
+            line.setAttribute('stroke-linecap', 'round');
+            svgLayer.appendChild(line);
+        });
+    }
+
+    function buildGraph() {
+        nodes = []; adj = {};
+        for (let r = 0; r < 5; r++) {
+            for (let c = 0; c < 9; c++) addNode(r * 9 + c, startX + c * stepX, startY + r * stepY);
+        }
+
+        drawnMainLinks.forEach(l => addPath(l[0], l[1]));
+        drawBoardLines();
+    }
+
+    function updateModeUI() {
+        if (!gameModeSelect || !difficultyWrap) return;
+        difficultyWrap.style.display = gameModeSelect.value === 'pve' ? 'flex' : 'none';
+    }
+
+    function initGame() {
+        state.board = {}; state.gameOver = false; state.turn = 'red'; state.selected = null; state.isCombo = false;
+        state.score = { red: 18, green: 18 };
+        state.mode = gameModeSelect.value;
+        state.aiLevel = difficultyLevel ? difficultyLevel.value : 'medium';
+        hideWinnerModal();
+
+        // VERDİĞİNİZ 18 + 18 TAŞ DİZİLİMİ
+        const yellowNodes = [8, 26, 44, 16, 25, 34, 24, 6, 15, 33, 42, 5, 14, 23, 32, 41, 4, 13];
+        const whiteNodes = [0, 18, 36, 10, 19, 28, 20, 2, 11, 29, 38, 3, 12, 21, 30, 39, 31, 40];
+
+        yellowNodes.forEach(id => state.board[id] = 'green');
+        whiteNodes.forEach(id => state.board[id] = 'red');
+
+        // Dinamik skor hesaplama
+        state.score.red = Object.values(state.board).filter(v => v === 'red').length;
+        state.score.green = Object.values(state.board).filter(v => v === 'green').length;
+
+        render(); updateUI();
+    }
+
+    function getMoves(id, onlyCaps = false) {
+        const list = [];
+        const color = state.board[id];
+        const enemy = color === 'red' ? 'green' : 'red';
+        if(adj[id]) adj[id].forEach(to => {
+            if(!state.board[to] && !onlyCaps) list.push({ to, cap: null });
+            else if(state.board[to] === enemy) {
+                const n1 = nodes[id], n2 = nodes[to];
+                const tx = n2.x + (n2.x - n1.x), ty = n2.y + (n2.y - n1.y);
+                const land = Object.values(nodes).find(x => Math.abs(x.x - tx) < 5 && Math.abs(x.y - ty) < 5);
+                if(land && !state.board[land.id] && adj[to].includes(land.id)) list.push({ to: land.id, cap: to });
+            }
+        });
+        return list;
+    }
+
+    function handleNodeClick(id) {
+        if(state.gameOver || (state.mode === 'pve' && state.turn === 'green')) return;
+        if(state.isCombo) {
+            if(id === state.selected) { finishTurn(); return; }
+            const move = getMoves(state.selected, true).find(m => m.to === id);
+            if(move) performMove(state.selected, id, move.cap);
+            return;
+        }
+        if(state.board[id] === state.turn) state.selected = id;
+        else if(state.selected !== null && !state.board[id]) {
+            const move = getMoves(state.selected).find(m => m.to === id);
+            if(move) performMove(state.selected, id, move.cap);
+        }
+        render();
+    }
+
+    function performMove(from, to, capId) {
+        state.board[to] = state.board[from]; state.board[from] = null;
+        if(capId) {
+            state.board[capId] = null;
+            state.turn === 'red' ? state.score.green-- : state.score.red-- ;
+            playSfx('capture');
+            const nextCaps = getMoves(to, true);
+            if(nextCaps.length > 0) {
+                state.isCombo = true; state.selected = to;
+                render(); updateUI();
+                if(state.mode === 'pve' && state.turn === 'green') setTimeout(aiPlay, 800);
+                return;
+            }
+        } else {
+            playSfx('move');
+        }
+        finishTurn();
+    }
+
+    function finishTurn() {
+        checkWinner(); if(state.gameOver) return;
+        state.isCombo = false; state.selected = null;
+        state.turn = (state.turn === 'red') ? 'green' : 'red';
+        render(); updateUI();
+        if(state.mode === 'pve' && state.turn === 'green') setTimeout(aiPlay, 800);
+    }
+
+    function aiPlay() {
+        if(state.gameOver) return;
+        let choice = null;
+
+        const randomPick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+        const allMovesFor = (color) => {
+            const list = [];
+            Object.keys(state.board).forEach(id => {
+                const pieceId = parseInt(id);
+                if (state.board[pieceId] === color) {
+                    getMoves(pieceId).forEach(m => list.push({ from: pieceId, ...m }));
+                }
+            });
+            return list;
+        };
+        const countCapturesFrom = (toId, color) => {
+            const enemy = color === 'green' ? 'red' : 'green';
+            if (!adj[toId]) return 0;
+            let total = 0;
+            adj[toId].forEach(mid => {
+                if (state.board[mid] !== enemy) return;
+                const n1 = nodes[toId], n2 = nodes[mid];
+                const tx = n2.x + (n2.x - n1.x), ty = n2.y + (n2.y - n1.y);
+                const land = Object.values(nodes).find(x => Math.abs(x.x - tx) < 5 && Math.abs(x.y - ty) < 5);
+                if (land && !state.board[land.id] && adj[mid].includes(land.id)) total++;
+            });
+            return total;
+        };
+
+        if (state.isCombo && state.selected !== null) {
+            const caps = getMoves(state.selected, true);
+            if (caps.length > 0) {
+                if (state.aiLevel === 'hard') {
+                    const bestScore = Math.max(...caps.map(m => countCapturesFrom(m.to, 'green')));
+                    const best = caps.filter(m => countCapturesFrom(m.to, 'green') === bestScore);
+                    choice = { from: state.selected, ...randomPick(best) };
+                } else if (state.aiLevel === 'medium') {
+                    const weighted = [...caps].sort((a, b) => countCapturesFrom(b.to, 'green') - countCapturesFrom(a.to, 'green'));
+                    choice = { from: state.selected, ...weighted[0] };
+                } else {
+                    choice = { from: state.selected, ...randomPick(caps) };
+                }
+            }
+        } else {
+            const allMoves = allMovesFor('green');
+            if (allMoves.length === 0) { checkWinner(true); return; }
+
+            const caps = allMoves.filter(m => m.cap);
+            if (state.aiLevel === 'easy') {
+                choice = randomPick(allMoves);
+            } else if (state.aiLevel === 'medium') {
+                choice = caps.length > 0 ? randomPick(caps) : randomPick(allMoves);
+            } else {
+                if (caps.length > 0) {
+                    const bestScore = Math.max(...caps.map(m => countCapturesFrom(m.to, 'green')));
+                    const bestCaps = caps.filter(m => countCapturesFrom(m.to, 'green') === bestScore);
+                    choice = randomPick(bestCaps);
+                } else {
+                    const scored = allMoves.map(m => ({ ...m, score: countCapturesFrom(m.to, 'green') - countCapturesFrom(m.to, 'red') }));
+                    const bestScore = Math.max(...scored.map(m => m.score));
+                    choice = randomPick(scored.filter(m => m.score === bestScore));
+                }
+            }
+        }
+
+        if(choice) performMove(choice.from, choice.to, choice.cap);
+        else finishTurn();
+    }
+
+    function updateUI() {
+        const t = document.getElementById('turn-txt');
+        const s = document.getElementById('status');
+        const sc = document.getElementById('score');
+        const cm = document.getElementById('combo-msg');
+        if(!t || !s || !sc || !cm) return;
+        
+        t.innerText = state.turn === 'red' ? 'Kırmızı' : (state.mode === 'pvp' ? 'Yeşil' : 'Bilgisayar');
+        s.style.background = state.turn === 'red' ? '#e53935' : '#4caf50';
+        s.style.color = 'white';
+        sc.innerText = `Kırmızı: ${state.score.red} | Yeşil: ${state.score.green}`;
+        cm.style.display = state.isCombo ? 'block' : 'none';
+    }
+
+    function render() {
+        nodesLayer.innerHTML = '';
+        const moves = state.selected ? getMoves(state.selected, state.isCombo) : [];
+        Object.values(nodes).forEach(n => {
+            const pos = mapCoords(n.x, n.y);
+            const px = pos.px, py = pos.py;
+            
+            // Sadece aktif noktalarda dot (nokta) çizilir
+            const pt = document.createElement('div');
+            pt.className = 'node-point'; pt.style.left = px + '%'; pt.style.top = py + '%';
+            nodesLayer.appendChild(pt);
+
+            const hb = document.createElement('div');
+            hb.className = 'node-hitbox'; hb.style.left = px + '%'; hb.style.top = py + '%';
+            hb.onclick = () => handleNodeClick(n.id);
+            nodesLayer.appendChild(hb);
+
+            if(moves.some(m => m.to === n.id)) {
+                const hint = document.createElement('div');
+                hint.className = 'hint'; hint.style.left = px + '%'; hint.style.top = py + '%';
+                nodesLayer.appendChild(hint);
+            }
+            if(state.board[n.id]) {
+                const s = document.createElement('div');
+                s.className = `stone ${state.board[n.id]} ${state.selected === n.id ? 'selected' : ''}`;
+                s.style.left = px + '%'; s.style.top = py + '%';
+                nodesLayer.appendChild(s);
+            }
+        });
+    }
+
+    function checkWinner(aiStuck = false) {
+        let msg = "";
+        if(state.score.green === 0 || aiStuck) msg = "KIRMIZI KAZANDI!";
+        else if(state.score.red === 0) msg = "YEŞİL KAZANDI!";
+        if(msg) { 
+            state.gameOver = true; 
+            const t = document.getElementById('turn-txt');
+            if(t) t.innerText = msg;
+            showWinnerModal(msg);
+        }
+    }
+
+    function showWinnerModal(message) {
+        if(winnerTitle) winnerTitle.innerText = message;
+        if(winnerModal) winnerModal.classList.add('show');
+        playSfx('win');
+    }
+
+    function hideWinnerModal() {
+        if(winnerModal) winnerModal.classList.remove('show');
+    }
+
+    function toggleTheme() {
+        const body = document.body;
+        const btn = document.getElementById('themeBtn');
+        const currentTheme = body.getAttribute('data-theme') || 'dark';
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', nextTheme);
+        if(btn) btn.innerText = nextTheme === 'dark' ? '☀️ GÜNDÜZ MODU' : '🌙 GECE MODU';
+    }
+
+    function closeHowToScreen() {
+        if (howToScreen) howToScreen.style.display = 'none';
+    }
+
+    window.addEventListener('resize', () => {
+        drawBoardLines();
+        render();
+    });
+
+    document.body.setAttribute('data-theme', 'dark');
+    if (gameModeSelect) gameModeSelect.addEventListener('change', updateModeUI);
+    updateModeUI();
+    setupAudio();
+    buildGraph(); initGame();
+</script>
+</body>
+</html>
