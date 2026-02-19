@@ -7,11 +7,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        /* MEB Uyumlu Fontlar: Okunaklı ve Türkçe karakter destekli standart fontlar */
         :root { --neon: #38bdf8; --target: #4ade80; --danger: #ef4444; --gold: #facc15; }
         
-        body { margin: 0; overflow: hidden; background: #000; font-family: 'Orbitron', sans-serif; touch-action: none; color: #e2e8f0; }
+        body { 
+            margin: 0; overflow: hidden; 
+            background-color: #000;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%); 
+            font-family: 'Segoe UI', 'Calibri', 'Arial', sans-serif; 
+            touch-action: none; 
+            color: #e2e8f0; 
+        }
         
+        canvas { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            z-index: 0; 
+            outline: none; 
+        }
+
         #top-bar { 
             position: fixed; top: 10px; left: 0; width: 100%; 
             display: flex; justify-content: flex-start; align-items: center; flex-wrap: wrap; 
@@ -24,7 +39,12 @@
         }
         .reward-badge { border-color: var(--gold); color: var(--gold); }
 
-        #main-menu { position: fixed; inset: 0; background: radial-gradient(circle, #0f172a 0%, #000 100%); z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 20px 40px 20px; overflow-y: auto; box-sizing: border-box; }
+        /* GÜNCELLEME: justify-content: flex-start ile taşma sorunu çözüldü */
+        #main-menu { 
+            position: fixed; inset: 0; background: transparent; 
+            z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; 
+            padding: 80px 20px 80px 20px; overflow-y: auto; box-sizing: border-box; 
+        }
         .menu-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 20px; }
         .menu-item { 
             width: 60px; height: 60px; background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; 
@@ -80,7 +100,11 @@
         }
         @keyframes floatUp { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
 
-        .info-card { margin-top: 30px; max-width: 540px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 16px; padding: 18px 22px; font-size: 0.8rem; color: #cbd5f5; line-height: 1.6; }
+        .info-card { 
+            margin-top: 30px; margin-bottom: 50px; max-width: 540px; 
+            background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(56, 189, 248, 0.4); 
+            border-radius: 16px; padding: 20px 24px; font-size: 0.9rem; color: #cbd5f5; line-height: 1.7; 
+        }
         .info-card h3 { margin: 0 0 10px 0; font-size: 1rem; color: var(--neon); text-align: center; }
 
         @media (max-width: 900px) {
@@ -131,9 +155,11 @@
         </div>
         <div class="info-card" id="menu-info">
             <h3>Nasıl Oynanır?</h3>
-            <p>Her seviyede dağılmış düğümleri sürükleyin ve hayalet hedef şeklin köşelerine yerleştirin. Çoğu seviyede her düğüm boşta kalan herhangi bir köşeye oturur. Üçgen Prizma seviyesinde her düğüm yalnızca kendi eşleştiği noktaya yerleşir. Tüm düğümler doğru konuma ulaştığında şekil restore olur.</p>
+            <p>Her seviyede dağılmış düğümleri sürükleyin ve hayalet hedef şeklin köşelerine yerleştirin. Sadece köşeleri doldurmak yetmez; kenarların da hedef şekle birebir uyması gerekir. Tüm düğümler doğru konuma ve doğru bağlantı yapısına ulaştığında şekil restore olur.</p>
             <h3>Puanlama</h3>
-            <p>Her yerleştirmede güncel ödül puanı kazanırsınız. Ödül, seviyedeki süre parçalarına göre azalır. Çakışma uyarısı alırsanız GERİ AL diyerek son güvenli duruma dönün.</p>
+            <p>Her yerleştirmede güncel ödül puanı kazanırsınız. Seviye süresi arttıkça puan azalır. Çakışma uyarısı alırsanız 'GERİ AL' diyerek son güvenli duruma dönün.</p>
+            <h3>Joker Kullanımı</h3>
+            <p>Her seviyede bir kez 'İLK ADIM JOKERİ' kullanabilirsiniz. Bu joker, yerleşmemiş düğümlerden birini otomatik olarak doğru hedefine yerleştirir. Joker kullanmak o anki seviye puanınızı yarıya düşürür.</p>
             <h3>Kontroller</h3>
             <ul>
                 <li>Dokunun veya tıklayın: Düğümü seçin ve sürükleyin.</li>
@@ -150,10 +176,14 @@
                 <button id="panel-toggle" class="panel-toggle" onclick="game.toggleUIPanel()">GİZLE</button>
             </div>
             <div class="panel-body">
+                <div style="text-align: center; color: var(--gold); font-size: 0.9rem; font-weight: bold; margin-bottom: 5px;">SEVİYE: <span id="current-level-display">1</span></div>
                 <div id="timer-display" class="panel-timer">00.0</div>
                 <h2 id="target-name" class="panel-target">-</h2>
                 <div class="bar-bg"><div id="bar-fill"></div></div>
                 <div class="panel-progress">UYUM: %<span id="percent-val">0</span></div>
+                <button id="joker-btn" class="btn" style="width: 100%; font-size: 0.7rem; background: #f59e0b; color: #000; font-weight: 800; display: none;" onclick="game.useJoker()">
+                    ✨ İLK ADIM JOKERİ
+                </button>
                 <button class="btn secondary-btn" style="width: 100%; font-size: 0.7rem;" onclick="game.openHelp()">YARDIM ❔</button>
                 <button class="btn" style="width: 100%; font-size: 0.7rem;" onclick="game.showMenu()">ANA MENÜ 🏠</button>
             </div>
@@ -170,21 +200,30 @@
 
     <div id="win-screen">
         <div class="win-content">
-            <h1 style="color:var(--target); font-size: 2rem; margin: 0;">BAŞARILI!</h1>
+            <h1 id="win-title" style="color:var(--target); font-size: 2rem; margin: 0;">BAŞARILI!</h1>
             <div id="win-stats" style="color:#fff; margin: 15px 0; font-size: 1rem;"></div>
-            <button class="btn" style="background:var(--target); padding: 12px 30px;" onclick="game.nextLevel()">SIRADAKİ ▶</button>
+            <button id="next-btn" class="btn" style="background:var(--target); padding: 12px 30px;" onclick="game.nextLevel()">SIRADAKİ ▶</button>
         </div>
     </div>
+
+    <!-- Havai Fişek Konteynırı -->
+    <div id="fireworks-container" style="position: fixed; inset: 0; pointer-events: none; z-index: 6500; display: none;"></div>
 
     <div id="help-overlay">
         <div class="help-card">
             <h2>Nasıl Oynanır?</h2>
-            <p>Dağılmış düğümleri sürükleyin ve yeşil hayalet şeklin köşelerine yerleştirin. Çoğu seviyede her düğüm boş bir köşeye yerleşir. Üçgen Prizma seviyesinde her düğüm yalnızca kendi eşleştiği noktaya oturur.</p>
+            <p>Dağılmış düğümleri sürükleyin ve yeşil hayalet şeklin köşelerine yerleştirin. Sadece köşeleri doldurmak yetmez; kenarların da hedef şekle birebir uyması gerekir.</p>
             <h3>Puanlama</h3>
             <ul>
                 <li>Her başarılı yerleşimde o anki ödül puanını kazanırsınız.</li>
-                <li>Ödül, seviyedeki süre segmentleri ilerledikçe azalır. Ne kadar hızlı olursanız o kadar fazla puan toplarsınız.</li>
-                <li>Çakışma uyarısı aldığınızda GERİ AL seçeneğiyle son güvenli konuma dönersiniz.</li>
+                <li>Ödül, seviye süresi arttıkça azalır. Ne kadar hızlı olursanız o kadar fazla puan toplarsınız.</li>
+                <li>Çakışma uyarısı aldığınızda 'GERİ AL' seçeneğiyle son güvenli konuma dönersiniz.</li>
+            </ul>
+            <h3>Joker Kullanımı</h3>
+            <ul>
+                <li>Seviye başına bir adet 'İLK ADIM JOKERİ' hakkınız vardır.</li>
+                <li>Joker kullanıldığında, henüz yerleşmemiş rastgele bir düğüm doğru konumuna otomatik olarak taşınır.</li>
+                <li>Joker kullanımında o anki seviye puanınız %50 oranında azalır.</li>
             </ul>
             <h3>Kontroller</h3>
             <ul>
@@ -198,6 +237,17 @@
         </div>
     </div>
 
+    <div id="reset-modal" style="position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95); z-index: 8000; display: none; align-items: center; justify-content: center; padding: 20px;">
+        <div class="help-card" style="max-width: 400px; text-align: center; border-color: var(--danger);">
+            <h2 style="color: var(--danger);">⚠️ DİKKAT</h2>
+            <p>Tüm ilerlemeniz ve toplam puanınız kalıcı olarak silinecektir. Devam etmek istediğinize emin misiniz?</p>
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 25px;">
+                <button class="btn" style="background: var(--danger); color: white; margin: 0; min-width: 100px;" onclick="game.confirmReset()">EVET, SIFIRLA</button>
+                <button class="btn secondary-btn" style="margin: 0; min-width: 100px;" onclick="game.closeResetModal()">İPTAL</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const PHI = (1 + Math.sqrt(5)) / 2;
         const COLORS = { normal: 0x38bdf8, snapped: 0xfacc15, target: 0x00ff88, danger: 0xff0000, safe: 0x4ade80, surface: 0x00ff88 };
@@ -207,7 +257,7 @@
             { name: "Küp", nodes: [[1,1,1], [1,1,-1], [1,-1,1], [1,-1,-1], [-1,1,1], [-1,1,-1], [-1,-1,1], [-1,-1,-1]], edges: [[0,1],[0,2],[0,4],[1,3],[1,5],[2,3],[2,6],[3,7],[4,5],[4,6],[5,7],[6,7]], faces: [[0,2,3],[0,3,1],[4,5,7],[4,7,6],[0,1,5],[0,5,4],[2,6,7],[2,7,3],[0,4,6],[0,6,2],[1,3,7],[1,7,5]], scale: 22, time: 45 },
             { name: "Sekizyüzlü", nodes: [[1,0,0], [-1,0,0], [0,1,0], [0,-1,0], [0,0,1], [0,0,-1]], edges: [[0,2],[0,3],[0,4],[0,5],[1,2],[1,3],[1,4],[1,5],[2,4],[2,5],[3,4],[3,5]], faces: [[0,2,4],[0,4,3],[0,3,5],[0,5,2],[1,2,5],[1,5,3],[1,3,4],[1,4,2]], scale: 30, time: 40 },
             { name: "Kare Piramit", nodes: [[0,0,1.4], [1,1,0], [1,-1,0], [-1,1,0], [-1,-1,0]], edges: [[0,1],[0,2],[0,3],[0,4],[1,2],[2,4],[4,3],[3,1]], faces: [[0,1,2],[0,2,4],[0,4,3],[0,3,1],[1,2,3,4]], scale: 30, time: 40 },
-            { name: "Üçgen Prizma", nodes: [[1,0,1], [-0.5,0.86,1], [-0.5,-0.86,1], [1,0,-1], [-0.5,0.86,-1], [-0.5,-0.86,-1]], edges: [[0,1],[1,2],[2,0],[3,4],[4,5],[5,3],[0,3],[1,4],[2,5]], faces: [[0,1,2],[3,5,4],[0,3,4,1],[1,4,5,2],[2,5,3,0]], scale: 28, time: 50, strictTargets: true },
+            { name: "Üçgen Prizma", nodes: [[1,0,1], [-0.5,0.86,1], [-0.5,-0.86,1], [1,0,-1], [-0.5,0.86,-1], [-0.5,-0.86,-1]], edges: [[0,1],[1,2],[2,0],[3,4],[4,5],[5,3],[0,3],[1,4],[2,5]], faces: [[0,1,2],[3,5,4],[0,3,4,1],[1,4,5,2],[2,5,3,0]], scale: 28, time: 50 },
             { name: "Beşgen Piramit", nodes: (()=>{let v=[[0,0,1.5]]; for(let i=0; i<5; i++){let a=(i/5)*Math.PI*2; v.push([Math.cos(a),Math.sin(a),0])} return v})(), edges: [[0,1],[0,2],[0,3],[0,4],[0,5],[1,2],[2,3],[3,4],[4,5],[5,1]], faces: [[0,1,2],[0,2,3],[0,3,4],[0,4,5],[0,5,1],[1,2,3,4,5]], scale: 32, time: 60 }
         ];
 
@@ -223,12 +273,16 @@
                 
                 this.nodes = []; this.edges = []; this.targetPoints = []; this.isSolved = false;
                 this.scene = new THREE.Scene();
+                // Arkaplan rengini doğrudan sahneye veriyoruz
+                this.scene.background = new THREE.Color(0x020617); 
 
-                this.camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 1, 1000);
+                this.camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 1, 3000);
                 this.camera.position.set(0, 80, 140);
-                this.renderer = new THREE.WebGLRenderer({ antialias: true });
+
+                this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
                 this.renderer.setSize(window.innerWidth, window.innerHeight);
-                this.renderer.setPixelRatio(window.devicePixelRatio);
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.renderer.setClearColor(0x020617, 1);
                 document.body.appendChild(this.renderer.domElement);
 
                 this.scene.add(new THREE.AmbientLight(0xffffff, 0.4));
@@ -247,19 +301,93 @@
                 this.strictSnapping = false;
                 this.panelCollapsed = false;
                 this.panelPreference = null;
+                this.stars = null;
 
-                window.addEventListener('pointerdown', e => this.onPointerDown(e));
+                // SES DOSYALARI
+                this.sounds = {
+                    bgm: new Audio('bgm.mp3'),
+                    click: new Audio('click.mp3'),
+                    snap: new Audio('snap.mp3'),
+                    collision: new Audio('collision.mp3'),
+                    win: new Audio('win.mp3'),
+                    undo: new Audio('undo.mp3'),
+                    fail: new Audio('fail.mp3')
+                };
+                this.sounds.bgm.loop = true;
+                this.sounds.bgm.volume = 0.4;
+                this.audioStarted = false;
+
+                // Mobil için ses kilidini açan olaylar
+                const unlockAudio = () => {
+                    this.startAudioContext();
+                };
+                window.addEventListener('pointerdown', e => {
+                    this.onPointerDown(e);
+                    unlockAudio();
+                });
+                window.addEventListener('click', unlockAudio);
+                window.addEventListener('touchstart', unlockAudio);
+
                 window.addEventListener('pointermove', e => this.onPointerMove(e));
                 window.addEventListener('pointerup', () => this.onPointerUp());
                 window.addEventListener('resize', () => this.onResize());
 
+                this.createStarField();
                 this.initMenu();
                 this.animate();
                 this.updateGlobalUI();
                 this.updatePanelResponsive();
             }
 
+            createStarField() {
+                const geometry = new THREE.BufferGeometry();
+                const count = 3000;
+                const positions = new Float32Array(count * 3);
+                const colors = new Float32Array(count * 3);
+
+                for (let i = 0; i < count; i++) {
+                    const r = 300 + Math.random() * 600;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos(2 * Math.random() - 1);
+
+                    const x = r * Math.sin(phi) * Math.cos(theta);
+                    const y = r * Math.sin(phi) * Math.sin(theta);
+                    const z = r * Math.cos(phi);
+
+                    positions[i * 3] = x;
+                    positions[i * 3 + 1] = y;
+                    positions[i * 3 + 2] = z;
+
+                    const colorType = Math.random();
+                    if (colorType > 0.9) {
+                        colors[i * 3] = 1.0; colors[i * 3 + 1] = 0.9; colors[i * 3 + 2] = 0.7;
+                    } else if (colorType > 0.7) {
+                        colors[i * 3] = 0.7; colors[i * 3 + 1] = 0.9; colors[i * 3 + 2] = 1.0;
+                    } else if (colorType > 0.5) {
+                        colors[i * 3] = 0.9; colors[i * 3 + 1] = 0.7; colors[i * 3 + 2] = 1.0;
+                    } else {
+                        colors[i * 3] = 1.0; colors[i * 3 + 1] = 1.0; colors[i * 3 + 2] = 1.0;
+                    }
+                }
+
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+                const material = new THREE.PointsMaterial({
+                    size: 2.2,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.9,
+                    sizeAttenuation: true,
+                    depthWrite: false
+                });
+
+                this.stars = new THREE.Points(geometry, material);
+                this.scene.add(this.stars);
+            }
+
             toggleUIPanel() {
+                this.playSound('click');
                 this.setPanelCollapsed(!this.panelCollapsed, true);
             }
 
@@ -286,6 +414,30 @@
                 this.setPanelCollapsed(autoCollapse, false);
             }
 
+            // SES KONTROLLERİ
+            startAudioContext() {
+                if (this.audioStarted) return;
+                
+                // Mobil tarayıcılarda (iOS/Android) sesi oynatmak için bir kez play() çağrılmalı
+                this.sounds.bgm.play()
+                    .then(() => {
+                        this.audioStarted = true;
+                        // Kilidi açtıktan sonra dinleyicileri kaldırabiliriz (isteğe bağlı)
+                    })
+                    .catch(err => {
+                        console.log("Ses henüz çalınamıyor (Kullanıcı etkileşimi bekleniyor):", err);
+                    });
+            }
+
+            playSound(name) {
+                if (!this.sounds[name]) return;
+                // Aynı sesin üst üste binmesi için klonlayıp çalıyoruz (BGM hariç)
+                if (name === 'bgm') return;
+                const s = this.sounds[name].cloneNode();
+                s.volume = this.sounds[name].volume;
+                s.play().catch(() => {});
+            }
+
             getCurrentReward() {
                 const data = POLYTOPES[this.currentLevel];
                 const elapsed = (Date.now() - this.startTime) / 1000;
@@ -303,12 +455,17 @@
                     const isLocked = i > this.unlockedLevel;
                     item.className = `menu-item ${isLocked ? 'locked' : ''}`;
                     item.innerText = isLocked ? '🔒' : i + 1;
-                    if(!isLocked) item.onclick = () => { this.currentLevel = i; this.startLevel(); };
+                    if(!isLocked) item.onclick = () => { 
+                        this.playSound('click');
+                        this.currentLevel = i; 
+                        this.startLevel(); 
+                    };
                     grid.appendChild(item);
                 });
             }
 
             showMenu() { 
+                this.playSound('click');
                 this.isSolved = true; this.isCelebrating = false; this.controls.autoRotate = false;
                 document.getElementById('main-menu').style.display = 'flex'; 
                 document.getElementById('ui').style.display = 'none'; 
@@ -323,16 +480,20 @@
                 this.closeHelp();
                 this.updatePanelResponsive();
                 
-                while(this.scene.children.length > 2) this.scene.remove(this.scene.children[this.scene.children.length-1]);
+                // Sahneyi temizle (Işıkları ve yıldızları koru: 0, 1, 2 nolu çocukları tut)
+                while(this.scene.children.length > 3) this.scene.remove(this.scene.children[this.scene.children.length-1]);
                 this.nodes = []; this.edges = []; this.targetPoints = []; this.isSolved = false; this.isCelebrating = false;
                 this.controls.autoRotate = false;
                 this.hasMoved = false; 
                 this.levelScore = 0;
+                this.jokerUsed = false;
+                document.getElementById('joker-btn').style.display = 'block';
                 this.startTime = Date.now();
 
                 const data = POLYTOPES[this.currentLevel];
                 this.strictSnapping = !!data.strictTargets;
                 document.getElementById('target-name').innerText = data.name;
+                document.getElementById('current-level-display').innerText = this.currentLevel + 1;
 
                 // Hedef Noktalar (Ghost form)
                 data.nodes.forEach((p, i) => {
@@ -389,6 +550,7 @@
                 this.raycaster.setFromCamera(this.mouse, this.camera);
                 const hits = this.raycaster.intersectObjects(this.nodes);
                 if(hits.length > 0) {
+                    this.playSound('click');
                     this.draggedNode = hits[0].object;
                     this.dragStartPos = this.draggedNode.position.clone(); // Başlangıç pozisyonunu kaydet
                     this.hasMoved = false; // Yeni sürüklemede hareket bilgisi sıfırlansın
@@ -440,7 +602,13 @@
                         const snapPos = this.targetPoints[targetIndex].pos;
                         this.draggedNode.position.copy(snapPos);
                         if (this.draggedNode.userData.currentTarget !== targetIndex) {
-                            this.triggerScore(this.draggedNode.position);
+                            if (this.draggedNode.userData.onRail) {
+                                const penalty = this.draggedNode.userData.lastSnapValue || 0;
+                                this.levelScore -= penalty;
+                                this.showScoreEffect(this.draggedNode.position, -penalty);
+                            }
+                            this.playSound('snap');
+                            this.triggerScore(this.draggedNode);
                         }
                         this.draggedNode.userData.onRail = true;
                         this.draggedNode.userData.currentTarget = targetIndex;
@@ -448,6 +616,12 @@
                     }
 
                     if(!foundSnap) {
+                        if (this.draggedNode.userData.onRail) {
+                            const penalty = this.draggedNode.userData.lastSnapValue || 0;
+                            this.levelScore -= penalty;
+                            this.showScoreEffect(this.draggedNode.position, -penalty);
+                            this.draggedNode.userData.lastSnapValue = 0;
+                        }
                         this.draggedNode.userData.onRail = false;
                         this.draggedNode.userData.currentTarget = null;
                     }
@@ -458,19 +632,21 @@
                 }
             }
 
-            triggerScore(pos) {
+            triggerScore(node) {
                 const gain = this.getCurrentReward();
                 this.levelScore += gain;
-                this.showScoreEffect(pos, gain);
+                node.userData.lastSnapValue = gain;
+                this.showScoreEffect(node.position, gain);
             }
 
             showScoreEffect(pos, val) {
                 const vector = pos.clone().project(this.camera);
                 const div = document.createElement('div');
                 div.className = 'score-float';
+                if (val < 0) div.style.color = '#ef4444'; 
                 div.style.left = (vector.x * 0.5 + 0.5) * window.innerWidth + 'px';
                 div.style.top = (vector.y * -0.5 + 0.5) * window.innerHeight + 'px';
-                div.innerText = "+" + val;
+                div.innerText = (val > 0 ? "+" : "") + val;
                 document.body.appendChild(div);
                 setTimeout(() => div.remove(), 1000);
             }
@@ -485,8 +661,74 @@
                 this.draggedNode = null;
                 this.hasMoved = false; // Bir sonraki sürükleme için sıfırla
                 this.controls.enabled = true;
+                
+                // ZORUNLU KONTROL: Tüm düğümler yerleşmiş mi + şekil DOĞRU MU? (İzomorfizm kontrolü)
                 let snappedCount = this.nodes.filter(n => n.userData.onRail).length;
-                if(!this.isSolved && snappedCount === this.nodes.length) this.complete();
+                if(!this.isSolved && snappedCount === this.nodes.length) {
+                    if (this.checkIsomorphism()) {
+                        this.complete();
+                    } else {
+                        this.playSound('fail');
+                        // Tüm topların yerleştiğini ama şeklin yanlış olduğunu kullanıcıya bildir (opsiyonel)
+                        console.log("Şekil yanlış kuruldu! Kenarlar eşleşmiyor."); 
+                    }
+                }
+            }
+
+            // IZOMORFIZM KONTROLÜ: Mevcut bağlantıların hedef şeklin bağlantılarıyla eşleşip eşleşmediğini kontrol eder
+            checkIsomorphism() {
+                const data = POLYTOPES[this.currentLevel];
+                // Eğer seviyede kenar verisi yoksa (örn. autoEdge), kontrolü pas geç (her zaman doğru kabul et)
+                if (!data.edges) return true;
+
+                // Mevcut yerleşim haritası: nodeIndex -> targetIndex
+                // nodeIndex: edges dizisindeki düğüm indeksleri
+                // targetIndex: targetPoints ve data.edges'deki hedef nokta indeksleri
+                const mapping = []; 
+                for(let i=0; i<this.nodes.length; i++) {
+                    const node = this.nodes[i];
+                    if (node.userData.currentTarget === null) return false; // Herhangi biri yerleşmemişse zaten yanlıştır
+                    mapping[i] = node.userData.currentTarget;
+                }
+
+                // Hedef kenarların listesi (string olarak 'min-max' formatında saklayalım)
+                const targetEdgesSet = new Set();
+                data.edges.forEach(e => {
+                    const u = e[0], v = e[1];
+                    targetEdgesSet.add(Math.min(u,v) + "-" + Math.max(u,v));
+                });
+
+                // Mevcut Düğümlerin oluşturduğu kenarları kontrol edelim
+                // this.edges dizisi, düğümler arasındaki fiziksel bağları tutar.
+                // Bu bağlar (n1, n2) düğümleri arasındadır.
+                // Biz n1 ve n2'nin yerleştiği hedef noktaları (targetIndex) bulup,
+                // bu iki hedef nokta arasında gerçekte bir kenar olmalı mı diye bakacağız.
+                
+                // Oyundaki tüm kırmızı çizgiler (this.edges) hedeflenen kenarlarla (data.edges) uyuşmalı.
+                // Eğer oyuncunun oluşturduğu bir kenar, hedef şekilde yoksa -> YANLIŞ ŞEKİL
+                
+                // 1. ADIM: Oyuncu kenarlarının hedefte karşılığı var mı?
+                for (let i = 0; i < this.edges.length; i++) {
+                    const edgeObj = this.edges[i];
+                    // Bu kenarın uçları hangi düğümler? (indexlerini bulmamız lazım)
+                    const idx1 = this.nodes.indexOf(edgeObj.n1);
+                    const idx2 = this.nodes.indexOf(edgeObj.n2);
+                    
+                    if (idx1 === -1 || idx2 === -1) continue; // Hata toleransı
+
+                    // Bu düğümler hangi hedeflere oturdu?
+                    const t1 = mapping[idx1];
+                    const t2 = mapping[idx2];
+                    
+                    // Bu hedefler arasında bir kenar olmalı mı?
+                    const key = Math.min(t1,t2) + "-" + Math.max(t1,t2);
+                    if (!targetEdgesSet.has(key)) {
+                        // Oyuncu, aralarında kenar olmaması gereken iki nokta arasına kenar koymuş (çünkü düğümleri yanlış yerleştirmiş)
+                        return false; 
+                    }
+                }
+                
+                return true; 
             }
 
             updateMouse(e) { this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1; this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1; }
@@ -496,6 +738,7 @@
             }
 
             openHelp() {
+                this.playSound('click');
                 const overlay = document.getElementById('help-overlay');
                 if(!overlay) return;
                 overlay.style.display = 'flex';
@@ -506,6 +749,7 @@
             }
 
             closeHelp() {
+                this.playSound('click');
                 const overlay = document.getElementById('help-overlay');
                 if(!overlay) return;
                 overlay.style.display = 'none';
@@ -540,9 +784,13 @@
                 } return false;
             }
 
-            triggerCollisionLock() { this.draggedNode = null; this.hasMoved = false; this.controls.enabled = false; document.getElementById('collision-lock').style.display = 'flex'; }
+            triggerCollisionLock() { 
+                this.playSound('collision');
+                this.draggedNode = null; this.hasMoved = false; this.controls.enabled = false; document.getElementById('collision-lock').style.display = 'flex'; 
+            }
             
             restoreSafeState() {
+                this.playSound('undo');
                 this.nodes.forEach((n, i) => { 
                     n.position.copy(this.lastSafePos[i]); 
                     let snappedIndex = -1;
@@ -661,9 +909,13 @@
             }
 
             complete() {
+                this.playSound('win');
                 this.isSolved = true; this.isCelebrating = true; this.controls.autoRotate = true;
                 const bonus = (this.currentLevel >= 3) ? 500 * Math.pow(2, this.currentLevel - 2) : 500;
                 this.levelScore += bonus; this.totalScore += this.levelScore;
+                
+                const isLastLevel = this.currentLevel === POLYTOPES.length - 1;
+                
                 if(this.currentLevel === this.unlockedLevel) this.unlockedLevel++;
                 localStorage.setItem('polyMax', this.unlockedLevel);
                 localStorage.setItem('polyScore', this.totalScore);
@@ -675,14 +927,134 @@
                     this.surfaceMesh.material.color.setHex(0x4ade80); 
                     this.surfaceMesh.material.depthWrite = true; // Kazanınca yüzeyi netleştir
                 }
+                
+                if (isLastLevel) {
+                    this.triggerFireworks();
+                }
+
                 setTimeout(() => {
                     document.getElementById('win-screen').style.display = 'flex';
+                    if (isLastLevel) {
+                        document.getElementById('win-title').innerText = "TÜM SEVİYELER TAMAMLANDI!";
+                        document.getElementById('next-btn').innerText = "TEKRAR OYNA ↺";
+                        document.getElementById('next-btn').onclick = () => { location.reload(); };
+                    }
                     document.getElementById('win-stats').innerHTML = `SKOR: ${this.levelScore} <br> <span style="font-size:0.8rem; color:var(--gold)">+${bonus} BONUS PUAN</span>`;
                 }, 2000);
             }
 
-            resetData() { if(confirm("Tüm ilerleme sıfırlanacak?")) { localStorage.clear(); location.reload(); } }
-            nextLevel() { this.currentLevel = Math.min(this.currentLevel + 1, POLYTOPES.length - 1); this.startLevel(); }
+            triggerFireworks() {
+                const container = document.getElementById('fireworks-container');
+                container.style.display = 'block';
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => this.createFirework(), i * 300);
+                }
+                setTimeout(() => { container.style.display = 'none'; container.innerHTML = ''; }, 10000);
+            }
+
+            createFirework() {
+                const container = document.getElementById('fireworks-container');
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * window.innerHeight;
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffffff'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                for (let i = 0; i < 30; i++) {
+                    const particle = document.createElement('div');
+                    particle.style.position = 'absolute';
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    particle.style.width = '4px';
+                    particle.style.height = '4px';
+                    particle.style.borderRadius = '50%';
+                    particle.style.backgroundColor = color;
+                    particle.style.boxShadow = `0 0 10px ${color}`;
+                    
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 5 + 2;
+                    const vx = Math.cos(angle) * speed;
+                    const vy = Math.sin(angle) * speed;
+                    
+                    container.appendChild(particle);
+                    
+                    let opacity = 1;
+                    const anim = () => {
+                        const curX = parseFloat(particle.style.left);
+                        const curY = parseFloat(particle.style.top);
+                        particle.style.left = (curX + vx) + 'px';
+                        particle.style.top = (curY + vy) + 'px';
+                        opacity -= 0.02;
+                        particle.style.opacity = opacity;
+                        if (opacity > 0) requestAnimationFrame(anim);
+                        else particle.remove();
+                    };
+                    requestAnimationFrame(anim);
+                }
+            }
+
+            resetData() { 
+                this.playSound('click');
+                document.getElementById('reset-modal').style.display = 'flex';
+            }
+            confirmReset() {
+                localStorage.clear(); 
+                location.reload();
+            }
+            closeResetModal() {
+                this.playSound('click');
+                document.getElementById('reset-modal').style.display = 'none';
+            }
+            nextLevel() { 
+                this.playSound('click');
+                this.currentLevel = Math.min(this.currentLevel + 1, POLYTOPES.length - 1); 
+                this.startLevel(); 
+            }
+
+            useJoker() {
+                if(this.isSolved || this.jokerUsed) return;
+                this.playSound('snap');
+                this.jokerUsed = true;
+                document.getElementById('joker-btn').style.display = 'none';
+
+                // Puan eksiltme: Joker kullanıldığında o anki puanın yarısı silinir
+                if (this.levelScore > 0) {
+                    const penalty = Math.floor(this.levelScore / 2);
+                    this.levelScore -= penalty;
+                    this.showScoreEffect(this.camera.position, -penalty); 
+                }
+
+                // Henüz yerleşmemiş bir düğüm bul
+                const node = this.nodes.find(n => !n.userData.onRail);
+                if (node) {
+                    const tidx = node.userData.targetIndex;
+                    const targetPos = this.targetPoints[tidx].pos;
+                    
+                    node.position.copy(targetPos);
+                    node.userData.onRail = true;
+                    node.userData.currentTarget = tidx;
+                    node.userData.lastSnapValue = 0; 
+                    node.material.color.setHex(COLORS.snapped);
+                    node.material.emissive.setHex(COLORS.snapped);
+                    
+                    this.updateLines();
+                    this.updateProgress();
+
+                    // Seviye bitti mi kontrol et
+                    let snappedCount = this.nodes.filter(n => n.userData.onRail).length;
+                    if(snappedCount === this.nodes.length && this.checkIsomorphism()) {
+                        this.complete();
+                        return;
+                    }
+
+                    // Çakışma yoksa güvenli noktayı güncelle
+                    if (!this.detectCollision(3.0)) {
+                        this.lastSafePos = this.nodes.map(n => n.position.clone());
+                    }
+                    
+                    this.showScoreEffect(node.position, "JOKER");
+                }
+            }
+
             onResize() {
                 this.camera.aspect = window.innerWidth / window.innerHeight;
                 this.camera.updateProjectionMatrix();
@@ -693,7 +1065,14 @@
             animate() { 
                 requestAnimationFrame(() => this.animate()); 
                 this.controls.update(); 
-                if(!this.isSolved) {
+                
+                if (this.stars) {
+                    this.stars.position.copy(this.camera.position);
+                    this.stars.rotation.y += 0.00035;
+                    this.stars.rotation.x += 0.00012;
+                }
+
+                if(!this.isSolved && this.startTime) {
                     const elapsed = (Date.now() - this.startTime) / 1000;
                     const data = POLYTOPES[this.currentLevel];
                     const rem = Math.max(0, data.time - (elapsed % data.time));
