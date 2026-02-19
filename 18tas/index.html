@@ -92,7 +92,15 @@
 
         svg { position: absolute; width: 100%; height: 100%; pointer-events: none; }
         
-        .node-point { position: absolute; width: 6px; height: 6px; background: var(--line-color); border-radius: 50%; transform: translate(-50%, -50%); opacity: 0.6; }
+        .node-point {
+            position: absolute; width: 11px; height: 11px;
+            background: rgba(20,10,5,0.55);
+            border: 2px solid rgba(255,255,255,0.45);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+            z-index: 5;
+        }
 
         .node-hitbox { position: absolute; width: 50px; height: 50px; transform: translate(-50%, -50%); cursor: pointer; z-index: 30; }
 
@@ -114,6 +122,25 @@
         .stone.red { background: var(--stone-red); }
         .stone.green { background: var(--stone-green); }
         .stone.selected { box-shadow: 0 0 20px 8px white; z-index: 25; scale: 1.1; }
+
+        /* Sıra göstergesi – tahta kenarı parlaması */
+        #game-board-container { transition: box-shadow 0.4s ease; }
+        #game-board-container.turn-red {
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 0 4px #e53935, 0 0 28px 8px rgba(229,57,53,0.55);
+        }
+        #game-board-container.turn-green {
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 0 4px #43a047, 0 0 28px 8px rgba(67,160,71,0.55);
+        }
+
+        /* Status bar mini taş göstergesi */
+        .status-bar { display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .turn-stone-dot {
+            width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+            transition: background 0.35s ease, box-shadow 0.35s ease;
+        }
+        .turn-stone-dot.red   { background: radial-gradient(circle at 30% 30%, #ff8a80, #e53935 60%, #8e0000); box-shadow: 0 3px 10px rgba(229,57,53,0.7); }
+        .turn-stone-dot.green { background: radial-gradient(circle at 30% 30%, #a5d6a7, #4caf50 60%, #1b5e20); box-shadow: 0 3px 10px rgba(76,175,80,0.7); }
 
         #combo-msg { color: #ffeb3b; font-size: 0.8rem; text-align: center; display: none; margin-top: 5px; font-weight: bold; }
 
@@ -393,6 +420,10 @@
                 </div>
             </div>
 
+            <div class="howto-actions" style="margin-top:16px;">
+                <button class="primary" style="width:100%; padding:13px; font-size:1.05rem; letter-spacing:1px;" onclick="closeHowToScreen()">▶ OYUNA BAŞLA</button>
+            </div>
+
             <hr class="intro-divider">
 
             <!-- Oyun kuralları -->
@@ -417,9 +448,6 @@
                 <div class="menu-info-item">❓ <strong>Nasıl Oynanır</strong><br>Bu kural ekranını istediğin zaman yeniden açmana yarar.</div>
             </div>
 
-            <div class="howto-actions">
-                <button class="primary" onclick="closeHowToScreen()">OYUNA BAŞLA</button>
-            </div>
         </div>
     </div>
 
@@ -457,7 +485,10 @@
     <div id="main-wrapper">
         <div id="sidebar">
             <h1>18 TAŞLI DAMA</h1>
-            <div id="status" class="status-bar">Sıra: <span id="turn-txt">Kırmızı</span></div>
+            <div id="status" class="status-bar">
+                <span id="turn-stone" class="turn-stone-dot red"></span>
+                Sıra: <span id="turn-txt">Kırmızı</span>
+            </div>
             <div id="combo-msg">⚡ KOMBO DEVAM EDİYOR!</div>
 
             <div class="panel">
@@ -502,21 +533,26 @@
     let adj = {};
     let state = { board: {}, turn: 'red', selected: null, isCombo: false, score: { red: 18, green: 18 }, mode: 'pvp', aiLevel: 'medium', gameOver: false };
 
-    const musicPlaylist = [
-        'bg1.mp3',
-        'music/bgm-2.mp3',
-        'music/bgm-3.mp3'
+    const introPlaylist = [
+        'intro.mp3'
+    ];
+
+    const gamePlaylist = [
+        'bgm-1.mp3',
+        'bgm-2.mp3',
+        'bgm-3.mp3'
     ];
 
     const audioState = {
-        enabled: false,
-        hasInteracted: false,
+        enabled: true,          // varsayılan AÇIK
+        screen: 'intro',        // 'intro' | 'game'
         trackIndex: 0,
         bgm: new Audio(),
         sfx: {
-            move: new Audio('move.mp3'),
+            move:    new Audio('move.mp3'),
             capture: new Audio('capture.mp3'),
-            win: new Audio('win.mp3')
+            win:     new Audio('win.mp3'),
+            click:   new Audio('click.mp3')
         }
     };
 
@@ -535,43 +571,75 @@
     function setupAudio() {
         audioState.bgm.volume = 0.35;
         audioState.bgm.loop = false;
-        audioState.bgm.preload = 'none';
-        audioState.bgm.addEventListener('ended', () => nextTrack(true));
+        audioState.bgm.preload = 'auto';
+        audioState.bgm.addEventListener('ended', () => {
+            if (audioState.screen === 'intro') {
+                // Giriş müziği bitti → başa dön
+                loadBgm('intro', 0);
+                tryPlay();
+            } else {
+                // Oyun müziği bitti → sıradaki parça
+                const next = (audioState.trackIndex + 1) % gamePlaylist.length;
+                loadBgm('game', next);
+                tryPlay();
+            }
+        });
 
         Object.values(audioState.sfx).forEach(s => {
             s.volume = 0.55;
-            s.preload = 'none';
+            s.preload = 'auto';
         });
 
-        const unlock = () => {
-            audioState.hasInteracted = true;
-            if (audioState.enabled) playBgm();
-        };
+        // Butonlarda global click sesi
+        document.addEventListener('click', e => {
+            if (e.target.closest('button') && audioState.enabled) playSfx('click');
+        }, true);
 
-        ['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
-            window.addEventListener(evt, unlock, { once: true });
-        });
-
-        loadTrack(audioState.trackIndex);
+        loadBgm('intro', 0);
+        tryPlay();              // Tarayıcı izin verirse hemen başlat
         updateMusicUI();
     }
 
-    function loadTrack(index) {
-        audioState.trackIndex = (index + musicPlaylist.length) % musicPlaylist.length;
-        audioState.bgm.src = musicPlaylist[audioState.trackIndex];
+    function loadBgm(screen, index) {
+        audioState.screen = screen;
+        audioState.trackIndex = index;
+        const src = screen === 'intro'
+            ? introPlaylist[index % introPlaylist.length]
+            : gamePlaylist[index % gamePlaylist.length];
+        audioState.bgm.src = src;
+        audioState.bgm.load();
     }
 
-    function playBgm() {
-        if (!audioState.enabled || !audioState.hasInteracted) return;
-        audioState.bgm.play().catch(() => {
-            updateMusicUI('MÜZİK AÇ');
+    function tryPlay() {
+        if (!audioState.enabled) return;
+        audioState.bgm.play().then(() => {
+            // Başarılı – autoplay izni verildi
+        }).catch(() => {
+            // Tarayıcı engeli – ilk etkileşim bekleniyor
+            const unlock = () => {
+                if (audioState.enabled) {
+                    audioState.bgm.play().catch(() => {});
+                }
+                ['pointerdown', 'touchstart', 'keydown'].forEach(ev =>
+                    window.removeEventListener(ev, unlock));
+            };
+            ['pointerdown', 'touchstart', 'keydown'].forEach(ev =>
+                window.addEventListener(ev, unlock, { once: true }));
         });
     }
+
+    function switchToBgm(screen) {
+        const wasPlaying = !audioState.bgm.paused;
+        loadBgm(screen, 0);
+        if (audioState.enabled) tryPlay();
+    }
+
+    function playBgm() { tryPlay(); }
 
     function toggleMusic() {
         audioState.enabled = !audioState.enabled;
         if (audioState.enabled) {
-            playBgm();
+            tryPlay();
         } else {
             audioState.bgm.pause();
         }
@@ -579,9 +647,10 @@
     }
 
     function nextTrack(autoPlay = false) {
-        const shouldPlay = autoPlay || (audioState.enabled && !audioState.bgm.paused);
-        loadTrack(audioState.trackIndex + 1);
-        if (shouldPlay) playBgm();
+        const next = audioState.screen === 'intro' ? 0
+            : (audioState.trackIndex + 1) % gamePlaylist.length;
+        loadBgm(audioState.screen, next);
+        if (autoPlay || audioState.enabled) tryPlay();
         updateMusicUI();
     }
 
@@ -594,10 +663,7 @@
 
     function updateMusicUI(overrideLabel = '') {
         if (!musicBtn) return;
-        if (overrideLabel) {
-            musicBtn.innerText = `🎵 ${overrideLabel}`;
-            return;
-        }
+        if (overrideLabel) { musicBtn.innerText = `🎵 ${overrideLabel}`; return; }
         musicBtn.innerText = audioState.enabled ? '🔇 MÜZİK KAPAT' : '🎵 MÜZİK AÇ';
     }
 
@@ -758,72 +824,192 @@
     }
 
     function aiPlay() {
-        if(state.gameOver) return;
-        let choice = null;
+        if (state.gameOver) return;
 
-        const randomPick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-        const allMovesFor = (color) => {
+        const randomPick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+        /* ── Tahta üzerinde çalışan yardımcılar ── */
+        function movesOnBoard(board, id) {
             const list = [];
-            Object.keys(state.board).forEach(id => {
-                const pieceId = parseInt(id);
-                if (state.board[pieceId] === color) {
-                    getMoves(pieceId).forEach(m => list.push({ from: pieceId, ...m }));
+            const color = board[id];
+            if (!color) return list;
+            const enemy = color === 'red' ? 'green' : 'red';
+            if (!adj[id]) return list;
+            adj[id].forEach(to => {
+                if (!board[to]) {
+                    list.push({ from: id, to, cap: null });
+                } else if (board[to] === enemy) {
+                    const n1 = nodes[id], n2 = nodes[to];
+                    const tx = n2.x + (n2.x - n1.x), ty = n2.y + (n2.y - n1.y);
+                    const land = Object.values(nodes).find(x => Math.abs(x.x - tx) < 5 && Math.abs(x.y - ty) < 5);
+                    if (land && !board[land.id] && adj[to].includes(land.id))
+                        list.push({ from: id, to: land.id, cap: to });
                 }
             });
             return list;
-        };
-        const countCapturesFrom = (toId, color) => {
-            const enemy = color === 'green' ? 'red' : 'green';
-            if (!adj[toId]) return 0;
-            let total = 0;
-            adj[toId].forEach(mid => {
-                if (state.board[mid] !== enemy) return;
-                const n1 = nodes[toId], n2 = nodes[mid];
-                const tx = n2.x + (n2.x - n1.x), ty = n2.y + (n2.y - n1.y);
-                const land = Object.values(nodes).find(x => Math.abs(x.x - tx) < 5 && Math.abs(x.y - ty) < 5);
-                if (land && !state.board[land.id] && adj[mid].includes(land.id)) total++;
-            });
-            return total;
-        };
+        }
 
-        if (state.isCombo && state.selected !== null) {
-            const caps = getMoves(state.selected, true);
-            if (caps.length > 0) {
-                if (state.aiLevel === 'hard') {
-                    const bestScore = Math.max(...caps.map(m => countCapturesFrom(m.to, 'green')));
-                    const best = caps.filter(m => countCapturesFrom(m.to, 'green') === bestScore);
-                    choice = { from: state.selected, ...randomPick(best) };
-                } else if (state.aiLevel === 'medium') {
-                    const weighted = [...caps].sort((a, b) => countCapturesFrom(b.to, 'green') - countCapturesFrom(a.to, 'green'));
-                    choice = { from: state.selected, ...weighted[0] };
-                } else {
-                    choice = { from: state.selected, ...randomPick(caps) };
+        function allMovesOnBoard(board, color) {
+            const list = [];
+            for (const id in board)
+                if (board[id] === color) movesOnBoard(board, +id).forEach(m => list.push(m));
+            return list;
+        }
+
+        function applyMove(board, from, to, cap) {
+            const b = Object.assign({}, board);
+            b[to] = b[from]; b[from] = null;
+            if (cap != null) b[cap] = null;
+            return b;
+        }
+
+        function countPieces(board, color) {
+            let n = 0;
+            for (const k in board) if (board[k] === color) n++;
+            return n;
+        }
+
+        /* Rakibin alabildiği taş sayısını döner (risk skoru) */
+        function captureRisk(board, color) {
+            const enemy = color === 'red' ? 'green' : 'red';
+            const caps = allMovesOnBoard(board, enemy).filter(m => m.cap != null);
+            return new Set(caps.map(m => m.cap)).size;
+        }
+
+        /* Pozisyon değerlendirme – yeşil perspektifinden */
+        function evaluate(board) {
+            const gc = countPieces(board, 'green');
+            const rc = countPieces(board, 'red');
+            if (rc === 0) return 9999;
+            if (gc === 0) return -9999;
+            let score = (gc - rc) * 100;
+            score -= captureRisk(board, 'green') * 35;   // yeşil tehlikede
+            score += captureRisk(board, 'red')   * 35;   // kırmızı tehlikede
+            score += allMovesOnBoard(board, 'green').length * 2; // hareketlilik
+            score -= allMovesOnBoard(board, 'red').length  * 2;
+            return score;
+        }
+
+        /* Alpha-beta minimax – kombo sırası aynı oyuncuda kalır */
+        function minimax(board, depth, alpha, beta, maximizing, comboId) {
+            const gc = countPieces(board, 'green');
+            const rc = countPieces(board, 'red');
+            if (rc === 0) return 9999 + depth * 5;
+            if (gc === 0) return -(9999 + depth * 5);
+            if (depth === 0) return evaluate(board);
+
+            let moves;
+            if (comboId != null) {
+                moves = movesOnBoard(board, comboId).filter(m => m.cap != null);
+                if (moves.length === 0) {
+                    // Kombo bitti, sıra değişti
+                    return minimax(board, depth - 1, alpha, beta, !maximizing, null);
                 }
-            }
-        } else {
-            const allMoves = allMovesFor('green');
-            if (allMoves.length === 0) { checkWinner(true); return; }
-
-            const caps = allMoves.filter(m => m.cap);
-            if (state.aiLevel === 'easy') {
-                choice = randomPick(allMoves);
-            } else if (state.aiLevel === 'medium') {
-                choice = caps.length > 0 ? randomPick(caps) : randomPick(allMoves);
             } else {
-                if (caps.length > 0) {
-                    const bestScore = Math.max(...caps.map(m => countCapturesFrom(m.to, 'green')));
-                    const bestCaps = caps.filter(m => countCapturesFrom(m.to, 'green') === bestScore);
-                    choice = randomPick(bestCaps);
-                } else {
-                    const scored = allMoves.map(m => ({ ...m, score: countCapturesFrom(m.to, 'green') - countCapturesFrom(m.to, 'red') }));
-                    const bestScore = Math.max(...scored.map(m => m.score));
-                    choice = randomPick(scored.filter(m => m.score === bestScore));
+                const color = maximizing ? 'green' : 'red';
+                moves = allMovesOnBoard(board, color);
+                if (moves.length === 0) return maximizing ? -9999 : 9999;
+                // Yakalamalar önce (alpha-beta budama verimliliği artar)
+                moves.sort((a, b) => (b.cap != null ? 1 : 0) - (a.cap != null ? 1 : 0));
+            }
+
+            if (maximizing) {
+                let best = -Infinity;
+                for (const m of moves) {
+                    const nb = applyMove(board, m.from, m.to, m.cap);
+                    // Yakalama varsa komboyu kontrol et
+                    const nextCombo = (m.cap != null && movesOnBoard(nb, m.to).some(x => x.cap != null)) ? m.to : null;
+                    const val = minimax(nb, depth - 1, alpha, beta, nextCombo != null ? true : false, nextCombo);
+                    if (val > best) best = val;
+                    alpha = Math.max(alpha, val);
+                    if (beta <= alpha) break;
                 }
+                return best;
+            } else {
+                let best = Infinity;
+                for (const m of moves) {
+                    const nb = applyMove(board, m.from, m.to, m.cap);
+                    const nextCombo = (m.cap != null && movesOnBoard(nb, m.to).some(x => x.cap != null)) ? m.to : null;
+                    const val = minimax(nb, depth - 1, alpha, beta, nextCombo != null ? false : true, nextCombo);
+                    if (val < best) best = val;
+                    beta = Math.min(beta, val);
+                    if (beta <= alpha) break;
+                }
+                return best;
             }
         }
 
-        if(choice) performMove(choice.from, choice.to, choice.cap);
-        else finishTurn();
+        const board = Object.assign({}, state.board);
+
+        /* ══ KOLAY: tamamen rastgele ══ */
+        if (state.aiLevel === 'easy') {
+            if (state.isCombo) {
+                const caps = getMoves(state.selected, true);
+                if (caps.length) performMove(state.selected, caps[0].to, caps[0].cap);
+                else finishTurn();
+                return;
+            }
+            const all = allMovesOnBoard(board, 'green');
+            if (!all.length) { checkWinner(true); return; }
+            const m = randomPick(all);
+            performMove(m.from, m.to, m.cap);
+            return;
+        }
+
+        /* ══ ORTA: açgözlü + 1 adım savunma farkındalığı ══ */
+        if (state.aiLevel === 'medium') {
+            if (state.isCombo) {
+                const caps = getMoves(state.selected, true);
+                if (caps.length) {
+                    const scored = caps.map(m => {
+                        const nb = applyMove(board, state.selected, m.to, m.cap);
+                        return { m, s: countPieces(nb, 'green') - countPieces(nb, 'red') - captureRisk(nb, 'green') * 0.3 };
+                    });
+                    scored.sort((a, b) => b.s - a.s);
+                    performMove(state.selected, scored[0].m.to, scored[0].m.cap);
+                } else finishTurn();
+                return;
+            }
+            const all = allMovesOnBoard(board, 'green');
+            if (!all.length) { checkWinner(true); return; }
+            const caps = all.filter(m => m.cap);
+            const pool = caps.length ? caps : all;
+            const scored = pool.map(m => {
+                const nb = applyMove(board, m.from, m.to, m.cap);
+                return { m, score: (countPieces(nb, 'green') - countPieces(nb, 'red')) * 10 - captureRisk(nb, 'green') * 4 };
+            });
+            scored.sort((a, b) => b.score - a.score);
+            const best = scored[0].m;
+            performMove(best.from, best.to, best.cap);
+            return;
+        }
+
+        /* ══ ZOR: minimax + alpha-beta, derinlik 5 ══ */
+        if (state.isCombo) {
+            const caps = getMoves(state.selected, true);
+            if (!caps.length) { finishTurn(); return; }
+            let best = null, bestScore = -Infinity;
+            for (const m of caps) {
+                const nb = applyMove(board, state.selected, m.to, m.cap);
+                const sc = minimax(nb, 4, -Infinity, Infinity, false, null);
+                if (sc > bestScore) { bestScore = sc; best = m; }
+            }
+            performMove(state.selected, best.to, best.cap);
+            return;
+        }
+
+        const all = allMovesOnBoard(board, 'green');
+        if (!all.length) { checkWinner(true); return; }
+        // Yakalamalar önce – alpha-beta daha verimli çalışır
+        const ordered = [...all.filter(m => m.cap), ...all.filter(m => !m.cap)];
+        let best = null, bestScore = -Infinity;
+        for (const m of ordered) {
+            const nb = applyMove(board, m.from, m.to, m.cap);
+            const nextCombo = (m.cap != null && movesOnBoard(nb, m.to).some(x => x.cap != null)) ? m.to : null;
+            const sc = minimax(nb, 5, -Infinity, Infinity, false, nextCombo);
+            if (sc > bestScore) { bestScore = sc; best = m; }
+        }
+        performMove(best.from, best.to, best.cap);
     }
 
     function updateUI() {
@@ -838,6 +1024,17 @@
         s.style.color = 'white';
         sc.innerText = `Kırmızı: ${state.score.red} | Yeşil: ${state.score.green}`;
         cm.style.display = state.isCombo ? 'block' : 'none';
+
+        // Mini taş göstergesi
+        const ts = document.getElementById('turn-stone');
+        if (ts) ts.className = 'turn-stone-dot ' + state.turn;
+
+        // Tahta kenarı parlaması
+        const bc = document.getElementById('game-board-container');
+        if (bc) {
+            bc.classList.toggle('turn-red',   state.turn === 'red');
+            bc.classList.toggle('turn-green', state.turn === 'green');
+        }
     }
 
     function render() {
@@ -924,11 +1121,13 @@
         const wrap = document.getElementById('intro-diff-wrap');
         if (wrap) wrap.style.display = introMode === 'pve' ? 'block' : 'none';
         if (howToScreen) howToScreen.style.display = 'flex';
+        switchToBgm('intro');
     }
 
     function closeHowToScreen() {
         if (howToScreen) howToScreen.style.display = 'none';
         hideWinnerModal();
+        switchToBgm('game');
         initGame();
     }
 
