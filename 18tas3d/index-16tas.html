@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="icon" href="data:,">
-    <title>18 Taşlı Dama – 3D</title>
+    <title>16 Taş 3D Dama</title>
     <script type="importmap">
     {
         "imports": {
@@ -15,20 +15,20 @@
     </script>
     <style>
         :root {
-            --sidebar-bg: #3d2b1f;
-            --text-color: #f5e6d3;
+            --sidebar-bg: #2a1e3a;
+            --text-color: #f0e8ff;
             --board-bg:   #c59830;
-            --btn-bg:     #5d4037;
+            --btn-bg:     #4a3560;
             --btn-outline-color:  var(--board-bg);
             --btn-outline-border: var(--board-bg);
         }
         body[data-theme='light'] {
-            --sidebar-bg: #ece0d3;
-            --text-color: #2f241b;
+            --sidebar-bg: #ece0f5;
+            --text-color: #2a1a3a;
             --board-bg:   #d6aa48;
-            --btn-bg:     #6d4c41;
-            --btn-outline-color:  #7b3e19;
-            --btn-outline-border: #7b3e19;
+            --btn-bg:     #6d4c91;
+            --btn-outline-color:  #6d3a99;
+            --btn-outline-border: #6d3a99;
         }
 
         * { box-sizing: border-box; }
@@ -43,7 +43,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Aurora bg canvas */
         #bg-canvas {
             position: fixed; inset: 0;
             width: 100%; height: 100%;
@@ -55,15 +54,14 @@
         /* ── Sidebar ── */
         #sidebar {
             width: 280px;
-            background-color: rgba(41,27,16,0.93);
+            background-color: rgba(28,18,44,0.93);
             padding: 22px;
             box-shadow: 2px 0 18px rgba(0,0,0,0.6);
             display: flex; flex-direction: column; gap: 12px;
             z-index: 10; flex-shrink: 0;
         }
-        body[data-theme='light'] #sidebar { background-color: rgba(230,216,200,0.93); }
+        body[data-theme='light'] #sidebar { background-color: rgba(220,208,240,0.93); }
 
-        /* inner wrapper — flex column on all screen sizes */
         #sidebar-inner {
             display: flex;
             flex-direction: column;
@@ -71,24 +69,24 @@
             flex: 1;
         }
 
-        h1 { margin: 0; color: var(--board-bg); font-size: 17px; text-transform: uppercase; letter-spacing: 2px; text-align: center; border-bottom: 2px solid #5d4037; padding-bottom: 10px; }
+        h1 { margin: 0; color: var(--board-bg); font-size: 16px; text-transform: uppercase; letter-spacing: 2px; text-align: center; border-bottom: 2px solid #5d3a7a; padding-bottom: 10px; }
         .panel { background: rgba(0,0,0,0.22); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); }
 
         .status-bar {
             display: flex; align-items: center; justify-content: center; gap: 10px;
             font-size: 1rem; font-weight: bold; text-align: center;
-            padding: 10px; background: #f5e6d3; color: #3d2b1f; border-radius: 6px;
+            padding: 10px; background: #f0e8ff; color: #2a1e3a; border-radius: 6px;
         }
         .turn-stone-dot {
             width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
             box-shadow: 0 3px 8px rgba(0,0,0,0.5);
             transition: background 0.35s ease;
         }
-        .turn-stone-dot.red   { background: radial-gradient(circle at 30% 30%, #ff8a80, #e53935 60%, #8e0000); }
-        .turn-stone-dot.green { background: radial-gradient(circle at 30% 30%, #a5d6a7, #4caf50 60%, #1b5e20); }
+        .turn-stone-dot.white  { background: radial-gradient(circle at 32% 32%, #ffffff, #bbb 60%, #888); }
+        .turn-stone-dot.yellow { background: radial-gradient(circle at 32% 32%, #fff176, #ffd600 60%, #b35900); }
 
         select, button { padding: 10px; border-radius: 6px; border: none; background: var(--btn-bg); color: white; cursor: pointer; font-weight: bold; font-family: inherit; }
-        button.primary  { background: #e53935; color: white; }
+        button.primary  { background: #7b1fa2; color: white; }
         button.outline  { background: transparent; border: 2px solid var(--btn-outline-border); color: var(--btn-outline-color); }
 
         #combo-msg { color: #ffeb3b; font-size: 0.8rem; text-align: center; display: none; margin-top: 5px; font-weight: bold; }
@@ -108,7 +106,7 @@
         #winner-modal.show { display: flex; }
         .winner-dialog {
             width: min(460px, 100%);
-            background: linear-gradient(145deg, #3e316d, #2c2554);
+            background: linear-gradient(145deg, #3e1d6d, #2c1a54);
             border: 2px solid rgba(255,255,255,0.22);
             border-radius: 18px; padding: 36px 28px 28px;
             text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.7); color: #fff;
@@ -120,9 +118,9 @@
             100% { transform: scale(1) rotate(0); }
         }
         .winner-headline { margin: 0 0 6px; font-size: 1.7rem; font-weight: 900; letter-spacing: 2px; }
-        .winner-headline.red-win   { color: #ff8a80; }
-        .winner-headline.green-win { color: #a5d6a7; }
-        .winner-headline.ai-win    { color: #ef9a9a; }
+        .winner-headline.white-win  { color: #eeeeee; }
+        .winner-headline.yellow-win { color: #ffd600; }
+        .winner-headline.ai-win     { color: #ce93d8; }
         .winner-sub { margin: 0 0 24px; font-size: 1.05rem; opacity: 0.85; line-height: 1.5; }
         .winner-actions { display: flex; gap: 12px; justify-content: center; }
         .winner-actions button { flex: 1; max-width: 180px; padding: 12px; font-size: 0.95rem; }
@@ -135,7 +133,7 @@
             position: fixed; inset: 0; z-index: 2000;
             display: flex; align-items: center; justify-content: center;
             padding: 18px;
-            background: radial-gradient(circle at top, #4e3d85, #3e316d 50%, #2c2554);
+            background: radial-gradient(circle at top, #4e1d85, #3e1d6d 50%, #2c1a54);
             color: #fff;
         }
         .howto-card {
@@ -150,7 +148,7 @@
         .intro-section-label { text-align: center; font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.65; margin: 16px 0 8px; }
         .intro-mode-btns, .intro-diff-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 6px; }
         .mode-btn { padding: 11px 26px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.08); color: #fff; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: inherit; }
-        .mode-btn.active { background: #e53935; border-color: #e53935; box-shadow: 0 0 14px rgba(229,57,53,0.45); }
+        .mode-btn.active { background: #7b1fa2; border-color: #7b1fa2; box-shadow: 0 0 14px rgba(123,31,162,0.5); }
         .mode-btn:hover:not(.active) { background: rgba(255,255,255,0.18); }
         .diff-btn { padding: 8px 20px; border-radius: 6px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.07); color: #fff; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: inherit; }
         .diff-btn.active { background: #5c6bc0; border-color: #7986cb; box-shadow: 0 0 10px rgba(92,107,192,0.4); }
@@ -169,7 +167,7 @@
         .howto-modal-card {
             width: min(680px, 100%); max-height: 90dvh; overflow-y: auto;
             border-radius: 14px; padding: 22px;
-            background: linear-gradient(145deg, #3e316d, #2c2554);
+            background: linear-gradient(145deg, #3e1d6d, #2c1a54);
             border: 1px solid rgba(255,255,255,0.18);
             color: #fff; box-shadow: 0 20px 60px rgba(0,0,0,0.7);
         }
@@ -177,7 +175,7 @@
         /* ── Landscape lock ── */
         #landscape-lock {
             display: none; position: fixed; inset: 0; z-index: 9999;
-            background: #1a0e05; color: #f5e6d3;
+            background: #1a0e25; color: #f0e8ff;
             flex-direction: column; align-items: center; justify-content: center;
             gap: 20px; text-align: center; padding: 30px;
         }
@@ -187,9 +185,7 @@
         .lock-text { font-size: 1.15rem; font-weight: bold; line-height: 1.6; }
 
         /* ── Mobile toggle bar ── */
-        #menu-toggle-bar {
-            display: none;
-        }
+        #menu-toggle-bar { display: none; }
 
         @media (max-width: 900px) {
             body { flex-direction: column; overflow-y: auto; height: auto; }
@@ -198,59 +194,34 @@
             select, button { width: 100%; min-height: 44px; }
             .menu-info-grid { grid-template-columns: 1fr; }
 
-            /* sidebar becomes a collapsible strip at the bottom */
             #sidebar {
-                width: 100%;
-                order: 2;
-                padding: 0;
-                gap: 0;
-                overflow: hidden;
-                max-height: 52px;
+                width: 100%; order: 2; padding: 0; gap: 0;
+                overflow: hidden; max-height: 52px;
                 transition: max-height 0.35s ease;
+                flex-direction: column-reverse;
             }
-            #sidebar.open {
-                max-height: 600px;
-            }
+            #sidebar.open { max-height: 600px; }
 
-            /* always-visible toggle bar */
             #menu-toggle-bar {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 10px 16px;
-                cursor: pointer;
-                user-select: none;
+                display: flex; align-items: center; justify-content: space-between;
+                padding: 10px 16px; cursor: pointer; user-select: none;
                 background: rgba(0,0,0,0.18);
-                border-bottom: 1px solid rgba(255,255,255,0.08);
-                min-height: 52px;
-                box-sizing: border-box;
+                border-top: 1px solid rgba(255,255,255,0.08);
+                min-height: 52px; box-sizing: border-box;
             }
             #menu-toggle-bar span {
-                font-size: 0.85rem;
-                font-weight: bold;
-                letter-spacing: 1.5px;
-                text-transform: uppercase;
-                opacity: 0.85;
+                font-size: 0.85rem; font-weight: bold;
+                letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.85;
             }
             #menu-toggle-btn {
-                width: auto !important;
-                min-height: unset !important;
-                padding: 6px 14px;
-                font-size: 0.8rem;
+                width: auto !important; min-height: unset !important;
+                padding: 6px 14px; font-size: 0.8rem;
                 background: rgba(255,255,255,0.12);
                 border: 1px solid rgba(255,255,255,0.2);
-                border-radius: 20px;
-                color: inherit;
+                border-radius: 20px; color: inherit;
             }
 
-            /* inner content with padding */
-            #sidebar-inner {
-                padding: 14px;
-                display: flex;
-                flex-direction: column;
-                gap: 12px;
-            }
-            /* title already shown in toggle bar on mobile */
+            #sidebar-inner { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
             #sidebar-inner h1 { display: none; }
         }
     </style>
@@ -268,7 +239,7 @@
     <!-- Intro / howto screen -->
     <div id="howto-screen" role="dialog" aria-modal="true">
         <div class="howto-card">
-            <h2 class="howto-title">18 Taşlı Dama – 3D</h2>
+            <h2 class="howto-title">16 Taş 3D Dama</h2>
 
             <p class="intro-section-label">Oyun Modu</p>
             <div class="intro-mode-btns">
@@ -295,7 +266,8 @@
                 <li><strong>Hamle yapmak:</strong> Kendi taşınıza tıklayın, ardından gitmek istediğiniz boş noktaya tıklayın. Taşlar yalnızca çizgiler üzerinde ilerler.</li>
                 <li><strong>Rakip taşı almak:</strong> Bir rakip taşının tam karşısındaki nokta boşsa üzerinden atlayarak o noktaya geçer, rakip taş oyundan çıkar.</li>
                 <li><strong>Kombo:</strong> Taş aldıktan sonra aynı taşla zincirleme alma fırsatı çıkarsa komboyu sürdürebilirsiniz.</li>
-                <li><strong>Kazanma koşulu:</strong> Rakibinin 18 taşının tamamını tahtadan kaldıran oyuncu kazanır.</li>
+                <li><strong>Kazanma koşulu:</strong> Rakibinin 16 taşının tamamını tahtadan kaldıran oyuncu kazanır.</li>
+                <li><strong>Beyaz taşlar</strong> ilk hamleyi yapar.</li>
             </ul>
 
             <hr class="intro-divider">
@@ -323,13 +295,13 @@
     <!-- In-game how-to modal -->
     <div id="howto-modal-bg" role="dialog" aria-modal="true" onclick="closeHowtoModal(event)">
         <div class="howto-modal-card" onclick="event.stopPropagation()">
-            <h2 class="howto-title" style="margin:0 0 12px;text-align:center;font-size:1.45rem;">18 Taşlı Dama – 3D</h2>
+            <h2 class="howto-title" style="margin:0 0 12px;text-align:center;font-size:1.45rem;">16 Taş 3D Dama</h2>
             <p class="howto-sub" style="margin-bottom:10px;">Nasıl Oynanır?</p>
             <ul class="howto-list">
                 <li><strong>Hamle yapmak:</strong> Kendi taşınıza tıklayın, ardından hedef noktaya tıklayın.</li>
                 <li><strong>Taş almak:</strong> Rakip taşın üzerinden atlayarak o taşı oyundan çıkarın.</li>
                 <li><strong>Kombo:</strong> Ardışık atlamalar sıra değiştirmez.</li>
-                <li><strong>Kazanma:</strong> Rakibinin tüm taşlarını alan oyuncu kazanır.</li>
+                <li><strong>Kazanma:</strong> Rakibinin tüm 16 taşını alan oyuncu kazanır.</li>
             </ul>
             <div class="howto-actions">
                 <button class="primary" onclick="closeHowtoModal()">TAMAM</button>
@@ -340,24 +312,22 @@
     <!-- Main layout -->
     <div id="main-wrapper">
         <div id="sidebar">
-            <!-- Always-visible toggle bar (mobile only) -->
             <div id="menu-toggle-bar" onclick="toggleSidebar()">
-                <span>18 TAŞLI DAMA 3D</span>
+                <span>16 TAŞ 3D DAMA</span>
                 <button id="menu-toggle-btn">▲ MENÜ</button>
             </div>
 
-            <!-- Collapsible inner content -->
             <div id="sidebar-inner">
-                <h1>18 TAŞLI DAMA 3D</h1>
+                <h1>16 TAŞ 3D DAMA</h1>
 
                 <div id="status" class="status-bar">
-                    <span id="turn-stone" class="turn-stone-dot red"></span>
-                    Sıra: <span id="turn-txt">Kırmızı</span>
+                    <span id="turn-stone" class="turn-stone-dot white"></span>
+                    Sıra: <span id="turn-txt">Beyaz</span>
                 </div>
                 <div id="combo-msg">⚡ KOMBO DEVAM EDİYOR!</div>
 
                 <div class="panel">
-                    <div id="score" style="text-align:center;font-weight:bold;color:#fff;">Kırmızı: 18 | Yeşil: 18</div>
+                    <div id="score" style="text-align:center;font-weight:bold;color:#fff;">Beyaz: 16 | Sarı: 16</div>
                 </div>
 
                 <div class="panel" style="display:flex;flex-direction:column;gap:8px;">
@@ -399,25 +369,35 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
     // ════════════════════════════════════════════════════════════════════
-    //  CONSTANTS
+    //  CONSTANTS  (16 Taş — 9×9 ızgara, sadeleştirilmiş graf)
     // ════════════════════════════════════════════════════════════════════
-    const disabledNodes = [1, 7, 9, 17, 27, 35, 37, 43];
-    const startX = 65, startY = 55, stepX = 90, stepY = 85;
-    const drawnMainLinks = [
-        [0,36],[0,20],[2,38],[2,42],[2,6],[3,39],[4,24],[4,20],[4,40],[5,41],
-        [6,42],[6,38],[8,44],[8,24],[10,28],[11,15],[16,34],[20,36],[20,40],
-        [20,24],[24,44],[24,40],[29,33],[38,42],[18,20],[24,26]
+
+    // 2D grid coords used for jump-landing geometry check
+    const STEP = 90;
+    const OFFSET = 45;
+
+    // The two sets of 16 stone starting positions
+    const wStoneIDs = [2, 10, 12, 18, 20, 28, 30, 36, 38, 46, 48, 54, 56, 64, 74, 76];
+    const yStoneIDs = [4, 6, 16, 24, 26, 32, 34, 42, 44, 50, 52, 60, 62, 68, 70, 78];
+
+    // Long-range connection pairs (identical to ai_studio_code (24).html)
+    const LINKS = [
+        [2,6],[2,18],[2,62],[2,74],[4,36],[4,44],[4,76],[6,26],[6,54],[6,78],
+        [10,70],[16,64],[18,26],[18,54],[18,78],[26,62],[26,74],[36,44],[36,76],
+        [44,76],[54,62],[54,74],[62,78],[74,78]
     ];
 
-    // 3D board mapping: col → X, row → Z
-    const SC = { sx: 1.1, sz: 1.2, ox: -4.4, oz: -2.4 };
-    const SURF_Y  = 0.175;   // half of BOARD_H
+    // 3D board mapping  (square board, rows 0-8 and cols 0-8)
+    const SC     = { sx: 1.1, sz: 1.1, ox: -4.4, oz: -4.4 };
+    const SURF_Y  = 0.175;
     const STONE_R = 0.36;
-    const BOARD_W = 9.8, BOARD_H = 0.35, BOARD_D = 5.8;
+    const BOARD_W = 10.2;
+    const BOARD_H = 0.35;
+    const BOARD_D = 10.2;
 
     function nodePos3D(id) {
         return new THREE.Vector3(
-            (id % 9)            * SC.sx + SC.ox,
+            (id % 9) * SC.sx + SC.ox,
             SURF_Y,
             Math.floor(id / 9) * SC.sz + SC.oz
         );
@@ -426,10 +406,10 @@
     // ════════════════════════════════════════════════════════════════════
     //  GAME STATE
     // ════════════════════════════════════════════════════════════════════
-    let nodes = [], adj = {};
+    let nodes = {}, adj = {};
     let state = {
-        board: {}, turn: 'red', selected: null, isCombo: false,
-        score: { red: 18, green: 18 }, mode: 'pve', aiLevel: 'medium',
+        board: {}, turn: 'white', selected: null, isCombo: false,
+        score: { white: 16, yellow: 16 }, mode: 'pve', aiLevel: 'medium',
         gameOver: false, aiMoveHistory: []
     };
     let introMode = 'pve', introDiff = 'medium';
@@ -437,9 +417,9 @@
     // ════════════════════════════════════════════════════════════════════
     //  AUDIO
     // ════════════════════════════════════════════════════════════════════
-    const musicBtn        = document.getElementById('musicBtn');
-    const introPlaylist   = ['intro.mp3'];
-    const gamePlaylist    = ['bgm-1.mp3'];
+    const musicBtn      = document.getElementById('musicBtn');
+    const introPlaylist = ['intro.mp3'];
+    const gamePlaylist  = ['bgm-1.mp3'];
     const audioState = {
         enabled: true, screen: 'intro', trackIndex: 0,
         bgm: new Audio(),
@@ -463,9 +443,7 @@
         document.addEventListener('click', e => {
             if (e.target.closest('button') && audioState.enabled) playSfx('click');
         }, true);
-        loadBgm('intro', 0);
-        tryPlay();
-        updateMusicUI();
+        loadBgm('intro', 0); tryPlay(); updateMusicUI();
     }
 
     function loadBgm(screen, index) {
@@ -473,8 +451,7 @@
         const src = screen === 'intro' ? introPlaylist[index % introPlaylist.length]
                                        : gamePlaylist[index % gamePlaylist.length];
         audioState.bgm.loop = (screen === 'game');
-        audioState.bgm.src = src;
-        audioState.bgm.load();
+        audioState.bgm.src = src; audioState.bgm.load();
     }
 
     function tryPlay() {
@@ -517,171 +494,151 @@
     canvasArea.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0c0809);
-    // no fog — keeps distant stars visible
+    scene.background = new THREE.Color(0x0c0810);
 
     const camera = new THREE.PerspectiveCamera(
-        50,
-        canvasArea.clientWidth / canvasArea.clientHeight,
-        0.1, 120
+        50, canvasArea.clientWidth / canvasArea.clientHeight, 0.1, 140
     );
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping    = true;
-    controls.dampingFactor    = 0.07;
-    controls.minPolarAngle    = 0.08;
-    controls.maxPolarAngle    = Math.PI / 2.05;
-    controls.minDistance      = 3;
-    controls.maxDistance      = 22;
+    controls.enableDamping = true; controls.dampingFactor = 0.07;
+    controls.minPolarAngle = 0.08; controls.maxPolarAngle = Math.PI / 2.05;
+    controls.minDistance = 3; controls.maxDistance = 26;
     controls.target.set(0, 0, 0);
 
-    // ── Camera default position per viewport ─────────────────
     let userMovedCamera = false;
     controls.addEventListener('start', () => { userMovedCamera = true; });
 
     function setCameraDefault() {
         const isMobile = window.innerWidth <= 900;
-        if (isMobile) {
-            // Portrait mobile: pull back so full board width fits
-            camera.position.set(0, 11, 14);
-        } else {
-            camera.position.set(0, 7.5, 9);
-        }
-        controls.target.set(0, 0, 0);
-        controls.update();
+        camera.position.set(0, isMobile ? 15 : 11, isMobile ? 18 : 13);
+        controls.target.set(0, 0, 0); controls.update();
     }
     setCameraDefault();
 
     // ── Lighting ────────────────────────────────────────────
-    scene.add(new THREE.AmbientLight(0xfff5e0, 0.42));
+    scene.add(new THREE.AmbientLight(0xfff0f8, 0.42));
 
-    const dirLight = new THREE.DirectionalLight(0xfff8f0, 1.5);
-    dirLight.position.set(3, 10, 6);
-    dirLight.castShadow = true;
+    const dirLight = new THREE.DirectionalLight(0xfffaf5, 1.6);
+    dirLight.position.set(3, 12, 6); dirLight.castShadow = true;
     dirLight.shadow.mapSize.set(2048, 2048);
-    dirLight.shadow.camera.near = 0.5;
-    dirLight.shadow.camera.far  = 40;
-    dirLight.shadow.camera.left   = -9;
-    dirLight.shadow.camera.right  =  9;
-    dirLight.shadow.camera.top    =  6;
-    dirLight.shadow.camera.bottom = -6;
+    dirLight.shadow.camera.near = 0.5; dirLight.shadow.camera.far = 50;
+    dirLight.shadow.camera.left = -9; dirLight.shadow.camera.right  = 9;
+    dirLight.shadow.camera.top  =  9; dirLight.shadow.camera.bottom = -9;
     dirLight.shadow.bias = -0.001;
     scene.add(dirLight);
 
-    const warmLight = new THREE.PointLight(0xffa040, 1.3, 20, 1.8);
-    warmLight.position.set(0, 5.5, 0);
-    scene.add(warmLight);
+    const warmLight = new THREE.PointLight(0xffa040, 1.1, 24, 1.8);
+    warmLight.position.set(0, 6, 0); scene.add(warmLight);
 
-    const rimLight = new THREE.PointLight(0x4040ff, 0.4, 28, 2);
-    rimLight.position.set(-2, 5, -14);
-    scene.add(rimLight);
+    const rimLight = new THREE.PointLight(0x8040ff, 0.4, 32, 2);
+    rimLight.position.set(-2, 5, -16); scene.add(rimLight);
 
-    // ── Board frame (dark wood base) ────────────────────────
+    // ── Board frame ──────────────────────────────────────────
     {
-        const geo = new THREE.BoxGeometry(BOARD_W + 0.65, 0.14, BOARD_D + 0.65);
-        const mat = new THREE.MeshStandardMaterial({ color: 0x3d2010, roughness: 0.82, metalness: 0.06 });
+        const geo = new THREE.BoxGeometry(BOARD_W + 0.7, 0.14, BOARD_D + 0.7);
+        const mat = new THREE.MeshStandardMaterial({ color: 0x2a1040, roughness: 0.82, metalness: 0.06 });
         const mesh = new THREE.Mesh(geo, mat);
         mesh.position.y = -(BOARD_H / 2 + 0.07);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        scene.add(mesh);
+        mesh.castShadow = true; mesh.receiveShadow = true; scene.add(mesh);
     }
 
-    // ── Board surface ───────────────────────────────────────
+    // ── Board surface ────────────────────────────────────────
     const boardGeo = new THREE.BoxGeometry(BOARD_W, BOARD_H, BOARD_D);
-    const boardMat = new THREE.MeshStandardMaterial({ color: 0xc08818, roughness: 0.55, metalness: 0.09 });
+    const boardMat = new THREE.MeshStandardMaterial({ color: 0x1a0a2e, roughness: 0.55, metalness: 0.09 });
     const boardMesh = new THREE.Mesh(boardGeo, boardMat);
-    boardMesh.castShadow = true;
-    boardMesh.receiveShadow = true;
-    scene.add(boardMesh);
-
-    // Board visible edges
-    const boardEdges = new THREE.LineSegments(
+    boardMesh.castShadow = true; boardMesh.receiveShadow = true; scene.add(boardMesh);
+    scene.add(new THREE.LineSegments(
         new THREE.EdgesGeometry(boardGeo),
-        new THREE.LineBasicMaterial({ color: 0x3d2b1f })
-    );
-    scene.add(boardEdges);
+        new THREE.LineBasicMaterial({ color: 0x4a2a6a })
+    ));
 
     // ════════════════════════════════════════════════════════════════════
-    //  GRAPH BUILDING
+    //  GRAPH BUILDING  (simplified graph algorithm from ai_studio_code)
     // ════════════════════════════════════════════════════════════════════
-    const nodeHitMeshes = [];    // for raycasting click detection
+    const nodeHitMeshes = [];
 
-    function gcd(a, b) { return b ? gcd(b, a % b) : a; }
-
-    function addNode(id, x, y) {
-        if (disabledNodes.includes(id)) return;
-        nodes[id] = { id, x, y };
-        adj[id] = [];
-    }
-
-    function link(u, v) {
-        if (disabledNodes.includes(u) || disabledNodes.includes(v)) return;
-        if (!adj[u]) adj[u] = [];
-        if (!adj[v]) adj[v] = [];
-        if (!adj[u].includes(v)) adj[u].push(v);
-        if (!adj[v].includes(u)) adj[v].push(u);
-    }
-
-    function addPath(u, v) {
-        const r1 = Math.floor(u/9), c1 = u%9;
-        const r2 = Math.floor(v/9), c2 = v%9;
-        const dr = r2-r1, dc = c2-c1;
-        const steps = gcd(Math.abs(dr), Math.abs(dc));
-        const sr = dr/steps, sc = dc/steps;
-        let last = u;
-        for (let i = 1; i <= steps; i++) {
-            const nid = (r1 + i*sr)*9 + (c1 + i*sc);
-            if (!disabledNodes.includes(nid)) { link(last, nid); last = nid; }
-        }
-    }
-
-    // Shared geometries / materials
-    const nodeDotGeo = new THREE.CylinderGeometry(0.10, 0.10, 0.03, 14);
-    const nodeDotMat = new THREE.MeshStandardMaterial({ color: 0x281006, roughness: 0.5, metalness: 0.35 });
-
-    const hitCircleGeo = new THREE.CircleGeometry(0.44, 10);
+    const hitCircleGeo = new THREE.CircleGeometry(0.60, 12);
     hitCircleGeo.rotateX(-Math.PI / 2);
     const hitCircleMat = new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide });
 
-    const lineMat = new THREE.LineBasicMaterial({ color: 0x4a2c10 });
+    const nodeDotGeo = new THREE.CylinderGeometry(0.10, 0.10, 0.03, 14);
+    const nodeDotMat = new THREE.MeshStandardMaterial({ color: 0x3a1a5a, roughness: 0.5, metalness: 0.35 });
+    const lineMat3D = new THREE.LineBasicMaterial({ color: 0x5a3a8a });
 
     function buildGraph() {
-        nodes = []; adj = {};
-        for (let r = 0; r < 5; r++)
-            for (let c = 0; c < 9; c++)
-                addNode(r*9+c, startX + c*stepX, startY + r*stepY);
+        nodes = {}; adj = {};
 
-        drawnMainLinks.forEach(l => addPath(l[0], l[1]));
+        // Step 1: expand all long-range links into unit edges
+        const rawAdj = {};
+        LINKS.forEach(([u, v]) => {
+            const r1 = Math.floor(u / 9), c1 = u % 9;
+            const r2 = Math.floor(v / 9), c2 = v % 9;
+            const dr = Math.sign(r2 - r1), dc = Math.sign(c2 - c1);
+            const steps = Math.max(Math.abs(r2 - r1), Math.abs(c2 - c1));
+            for (let i = 0; i < steps; i++) {
+                const a = (r1 + i * dr) * 9 + (c1 + i * dc);
+                const b = (r1 + (i + 1) * dr) * 9 + (c1 + (i + 1) * dc);
+                if (!rawAdj[a]) rawAdj[a] = new Set();
+                if (!rawAdj[b]) rawAdj[b] = new Set();
+                rawAdj[a].add(b); rawAdj[b].add(a);
+            }
+        });
 
-        // Node dots + invisible hit targets
+        // Step 2: keep only branching nodes or stone positions
+        const allStones = new Set([...wStoneIDs, ...yStoneIDs]);
+        const activeNodeIDs = Object.keys(rawAdj).filter(id => {
+            const intId = parseInt(id);
+            return rawAdj[id].size !== 2 || allStones.has(intId);
+        }).map(Number);
+
+        // Step 3: build simplified adjacency (skip-over degree-2 intermediates)
+        activeNodeIDs.forEach(startNode => {
+            const r = Math.floor(startNode / 9), c = startNode % 9;
+            nodes[startNode] = {
+                id: startNode,
+                x: OFFSET + c * STEP,
+                y: OFFSET + r * STEP
+            };
+            adj[startNode] = [];
+
+            rawAdj[startNode].forEach(neighbor => {
+                let prev = startNode, curr = neighbor;
+                while (!activeNodeIDs.includes(curr)) {
+                    const next = Array.from(rawAdj[curr]).find(n => n !== prev);
+                    prev = curr; curr = next;
+                }
+                if (!adj[startNode].includes(curr)) adj[startNode].push(curr);
+            });
+        });
+
+        // Step 4: build 3D visuals
+        const seen = new Set();
         Object.values(nodes).forEach(n => {
             const pos = nodePos3D(n.id);
 
+            // Node dot
             const dot = new THREE.Mesh(nodeDotGeo, nodeDotMat);
             dot.position.set(pos.x, SURF_Y + 0.022, pos.z);
-            dot.receiveShadow = true;
-            scene.add(dot);
+            dot.receiveShadow = true; scene.add(dot);
 
+            // Invisible hit circle
             const hit = new THREE.Mesh(hitCircleGeo, hitCircleMat.clone());
             hit.position.set(pos.x, SURF_Y + 0.06, pos.z);
             hit.userData.nodeId = n.id;
-            scene.add(hit);
-            nodeHitMeshes.push(hit);
-        });
+            scene.add(hit); nodeHitMeshes.push(hit);
 
-        // Connection lines
-        const seen = new Set();
-        Object.values(nodes).forEach(n => {
+            // Connection lines
             adj[n.id].forEach(toId => {
                 const key = n.id < toId ? `${n.id}-${toId}` : `${toId}-${n.id}`;
-                if (seen.has(key)) return;
-                seen.add(key);
+                if (seen.has(key)) return; seen.add(key);
                 const p1 = nodePos3D(n.id).clone();
                 const p2 = nodePos3D(toId).clone();
                 p1.y = p2.y = SURF_Y + 0.012;
-                const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
-                scene.add(new THREE.Line(geo, lineMat));
+                scene.add(new THREE.Line(
+                    new THREE.BufferGeometry().setFromPoints([p1, p2]),
+                    lineMat3D
+                ));
             });
         });
     }
@@ -691,44 +648,43 @@
     // ════════════════════════════════════════════════════════════════════
     const stoneGeo = new THREE.SphereGeometry(STONE_R, 40, 40);
 
-    // Material factory — clone each time so emissiveIntensity can be animated independently
     function makeStoneMat(color, selected) {
-        return new THREE.MeshStandardMaterial(color === 'red'
-            ? { color: 0xe53935, roughness: 0.20, metalness: 0.20,
-                emissive: selected ? 0xff5533 : 0x8e0000,
-                emissiveIntensity: selected ? 0.55 : 0.08 }
-            : { color: 0x4caf50, roughness: 0.20, metalness: 0.20,
-                emissive: selected ? 0x44ff44 : 0x1b5e20,
-                emissiveIntensity: selected ? 0.55 : 0.08 }
-        );
+        if (color === 'white') {
+            return new THREE.MeshStandardMaterial({
+                color: 0xe8e8e8, roughness: 0.15, metalness: 0.30,
+                emissive: selected ? 0xaaaaff : 0x334466,
+                emissiveIntensity: selected ? 0.55 : 0.08
+            });
+        } else { // yellow
+            return new THREE.MeshStandardMaterial({
+                color: 0xffd600, roughness: 0.18, metalness: 0.20,
+                emissive: selected ? 0xffcc00 : 0x5a3a00,
+                emissiveIntensity: selected ? 0.60 : 0.10
+            });
+        }
     }
 
     const hintGeo = new THREE.CylinderGeometry(0.26, 0.26, 0.045, 20);
     const hintMat = new THREE.MeshStandardMaterial({
-        color: 0xffffff, transparent: true, opacity: 0.5,
-        emissive: 0xffffff, emissiveIntensity: 0.35
+        color: 0xce93d8, transparent: true, opacity: 0.5,
+        emissive: 0xce93d8, emissiveIntensity: 0.40
     });
 
-    let stoneMeshes  = {};   // nodeId → Mesh
-    let hintMeshObjs = [];   // array of hint Meshes
+    let stoneMeshes  = {};
+    let hintMeshObjs = [];
 
     function renderBoard() {
-        // Clear existing stones
         Object.values(stoneMeshes).forEach(m => { if (m) scene.remove(m); });
         stoneMeshes = {};
-
-        // Clear hints
         hintMeshObjs.forEach(m => scene.remove(m));
         hintMeshObjs = [];
 
         const validMoves = state.selected !== null
-            ? getMoves(state.selected, state.isCombo)
-            : [];
+            ? getMoves(state.selected, state.isCombo) : [];
 
         Object.values(nodes).forEach(n => {
             const pos = nodePos3D(n.id);
 
-            // Stone
             if (state.board[n.id]) {
                 const color = state.board[n.id];
                 const isSel = state.selected === n.id;
@@ -736,33 +692,25 @@
                 mesh.position.set(pos.x, SURF_Y + STONE_R + (isSel ? 0.10 : 0), pos.z);
                 mesh.castShadow = true;
                 if (isSel) mesh.scale.setScalar(1.09);
-                scene.add(mesh);
-                stoneMeshes[n.id] = mesh;
+                scene.add(mesh); stoneMeshes[n.id] = mesh;
             }
 
-            // Hint disc
             if (validMoves.some(m => m.to === n.id)) {
                 const hint = new THREE.Mesh(hintGeo, hintMat.clone());
                 hint.position.set(pos.x, SURF_Y + 0.025, pos.z);
-                scene.add(hint);
-                hintMeshObjs.push(hint);
+                scene.add(hint); hintMeshObjs.push(hint);
             }
         });
     }
 
-    // Bobbing + pulse animation for selected stone & hints
     let animClock = 0;
     function animateStones(dt) {
         animClock += dt * 0.0028;
-
         const selMesh = stoneMeshes[state.selected];
         if (selMesh) {
-            const bob = Math.sin(animClock * 2.2) * 0.045;
-            const base = nodePos3D(state.selected);
-            selMesh.position.y = SURF_Y + STONE_R + 0.10 + bob;
+            selMesh.position.y = SURF_Y + STONE_R + 0.10 + Math.sin(animClock * 2.2) * 0.045;
             selMesh.material.emissiveIntensity = 0.38 + Math.sin(animClock * 2.8) * 0.24;
         }
-
         const hintPulse = 0.30 + Math.sin(animClock * 3.2) * 0.20;
         hintMeshObjs.forEach(h => { h.material.opacity = hintPulse; });
     }
@@ -772,12 +720,15 @@
     // ════════════════════════════════════════════════════════════════════
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
-    let pointerMoved = false;
+    let pDownPos = null;
+    const DRAG_THR = 8;
 
-    renderer.domElement.addEventListener('pointerdown', () => { pointerMoved = false; });
-    renderer.domElement.addEventListener('pointermove', () => { pointerMoved = true; });
+    renderer.domElement.addEventListener('pointerdown', e => { pDownPos = { x: e.clientX, y: e.clientY }; });
     renderer.domElement.addEventListener('pointerup', e => {
-        if (pointerMoved) return;   // drag → orbit, not a click
+        if (!pDownPos) return;
+        const dx = e.clientX - pDownPos.x, dy = e.clientY - pDownPos.y;
+        pDownPos = null;
+        if (Math.sqrt(dx*dx + dy*dy) > DRAG_THR) return;
         const rect = renderer.domElement.getBoundingClientRect();
         mouse.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
         mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
@@ -787,20 +738,24 @@
     });
 
     // ════════════════════════════════════════════════════════════════════
-    //  GAME LOGIC  (identical to the 2-D version)
+    //  GAME LOGIC
     // ════════════════════════════════════════════════════════════════════
     function getMoves(id, onlyCaps = false) {
         const list = [];
         const color = state.board[id];
-        const enemy = color === 'red' ? 'green' : 'red';
+        const enemy = color === 'white' ? 'yellow' : 'white';
         if (!adj[id]) return list;
         adj[id].forEach(to => {
             if (!state.board[to] && !onlyCaps) {
                 list.push({ to, cap: null });
             } else if (state.board[to] === enemy) {
+                // Compute landing position geometrically
                 const n1 = nodes[id], n2 = nodes[to];
-                const tx = n2.x + (n2.x - n1.x), ty = n2.y + (n2.y - n1.y);
-                const land = Object.values(nodes).find(x => Math.abs(x.x - tx) < 5 && Math.abs(x.y - ty) < 5);
+                const tx = n2.x + (n2.x - n1.x);
+                const ty = n2.y + (n2.y - n1.y);
+                const land = Object.values(nodes).find(
+                    x => Math.abs(x.x - tx) < 5 && Math.abs(x.y - ty) < 5
+                );
                 if (land && !state.board[land.id] && adj[to].includes(land.id))
                     list.push({ to: land.id, cap: to });
             }
@@ -809,7 +764,7 @@
     }
 
     function handleNodeClick(id) {
-        if (state.gameOver || (state.mode === 'pve' && state.turn === 'green')) return;
+        if (state.gameOver || (state.mode === 'pve' && state.turn === 'yellow')) return;
         if (state.isCombo) {
             if (id === state.selected) { finishTurn(); return; }
             const move = getMoves(state.selected, true).find(m => m.to === id);
@@ -828,13 +783,13 @@
         state.board[to] = state.board[from]; state.board[from] = null;
         if (capId) {
             state.board[capId] = null;
-            state.turn === 'red' ? state.score.green-- : state.score.red--;
+            state.turn === 'white' ? state.score.yellow-- : state.score.white--;
             playSfx('capture');
             const nextCaps = getMoves(to, true);
             if (nextCaps.length > 0) {
                 state.isCombo = true; state.selected = to;
                 renderBoard(); updateUI();
-                if (state.mode === 'pve' && state.turn === 'green') setTimeout(aiPlay, 1400);
+                if (state.mode === 'pve' && state.turn === 'yellow') setTimeout(aiPlay, 1400);
                 return;
             }
         } else { playSfx('move'); }
@@ -844,13 +799,13 @@
     function finishTurn() {
         checkWinner(); if (state.gameOver) return;
         state.isCombo = false; state.selected = null;
-        state.turn = state.turn === 'red' ? 'green' : 'red';
+        state.turn = state.turn === 'white' ? 'yellow' : 'white';
         renderBoard(); updateUI();
-        if (state.mode === 'pve' && state.turn === 'green') setTimeout(aiPlay, 1300);
+        if (state.mode === 'pve' && state.turn === 'yellow') setTimeout(aiPlay, 1300);
     }
 
     // ════════════════════════════════════════════════════════════════════
-    //  AI  (minimax + alpha-beta, depth 5 for Hard — identical to 2-D)
+    //  AI  (minimax + alpha-beta)
     // ════════════════════════════════════════════════════════════════════
     function aiPlay() {
         if (state.gameOver) return;
@@ -858,7 +813,7 @@
 
         function movesOnB(b, id) {
             const list = [], col = b[id]; if (!col) return list;
-            const enemy = col === 'red' ? 'green' : 'red';
+            const enemy = col === 'white' ? 'yellow' : 'white';
             if (!adj[id]) return list;
             adj[id].forEach(to => {
                 if (!b[to]) list.push({ from: id, to, cap: null });
@@ -881,49 +836,50 @@
             const nb = Object.assign({}, b); nb[to] = nb[fr]; nb[fr] = null;
             if (cap != null) nb[cap] = null; return nb;
         }
-        function cnt(b, col) { let n=0; for (const k in b) if (b[k]===col) n++; return n; }
+        function cnt(b, col) { let n = 0; for (const k in b) if (b[k] === col) n++; return n; }
         function risk(b, col) {
-            const enemy = col==='red'?'green':'red';
+            const enemy = col==='white'?'yellow':'white';
             return new Set(allMoves(b, enemy).filter(m=>m.cap).map(m=>m.cap)).size;
         }
         function eval_(b) {
-            const g=cnt(b,'green'), r=cnt(b,'red');
-            if (r===0) return 9999; if (g===0) return -9999;
-            let s = (g-r)*100;
-            s -= risk(b,'green')*35; s += risk(b,'red')*35;
-            s += allMoves(b,'green').length*2; s -= allMoves(b,'red').length*2;
+            const y = cnt(b,'yellow'), w = cnt(b,'white');
+            if (w === 0) return  9999; if (y === 0) return -9999;
+            let s = (y - w) * 100;
+            s -= risk(b,'yellow') * 35; s += risk(b,'white') * 35;
+            s += allMoves(b,'yellow').length * 2; s -= allMoves(b,'white').length * 2;
             return s;
         }
         function mm(b, d, a, be, max, combo) {
-            const g=cnt(b,'green'), r=cnt(b,'red');
-            if (r===0) return 9999+d*5; if (g===0) return-(9999+d*5);
-            if (d===0) return eval_(b);
+            const y = cnt(b,'yellow'), w = cnt(b,'white');
+            if (w === 0) return  9999 + d * 5;
+            if (y === 0) return -(9999 + d * 5);
+            if (d === 0) return eval_(b);
             let moves;
-            if (combo!=null) {
-                moves = movesOnB(b, combo).filter(m=>m.cap);
+            if (combo != null) {
+                moves = movesOnB(b, combo).filter(m => m.cap);
                 if (!moves.length) return mm(b, d-1, a, be, !max, null);
             } else {
-                const col = max?'green':'red';
+                const col = max ? 'yellow' : 'white';
                 moves = allMoves(b, col);
-                if (!moves.length) return max?-9999:9999;
-                moves.sort((x,y)=>(y.cap!=null?1:0)-(x.cap!=null?1:0));
+                if (!moves.length) return max ? -9999 : 9999;
+                moves.sort((x, y) => (y.cap != null ? 1 : 0) - (x.cap != null ? 1 : 0));
             }
             if (max) {
-                let best=-Infinity;
+                let best = -Infinity;
                 for (const m of moves) {
-                    const nb=applyMv(b,m.from,m.to,m.cap);
-                    const nc=(m.cap&&movesOnB(nb,m.to).some(x=>x.cap))?m.to:null;
-                    const v=mm(nb,d-1,a,be,nc!=null,nc);
-                    if(v>best) best=v; a=Math.max(a,v); if(be<=a) break;
+                    const nb = applyMv(b, m.from, m.to, m.cap);
+                    const nc = (m.cap && movesOnB(nb,m.to).some(x=>x.cap)) ? m.to : null;
+                    const v  = mm(nb, d-1, a, be, nc != null, nc);
+                    if (v > best) best = v; a = Math.max(a, v); if (be <= a) break;
                 }
                 return best;
             } else {
-                let best=Infinity;
+                let best = Infinity;
                 for (const m of moves) {
-                    const nb=applyMv(b,m.from,m.to,m.cap);
-                    const nc=(m.cap&&movesOnB(nb,m.to).some(x=>x.cap))?m.to:null;
-                    const v=mm(nb,d-1,a,be,nc?false:true,nc);
-                    if(v<best) best=v; be=Math.min(be,v); if(be<=a) break;
+                    const nb = applyMv(b, m.from, m.to, m.cap);
+                    const nc = (m.cap && movesOnB(nb,m.to).some(x=>x.cap)) ? m.to : null;
+                    const v  = mm(nb, d-1, a, be, nc ? false : true, nc);
+                    if (v < best) best = v; be = Math.min(be, v); if (be <= a) break;
                 }
                 return best;
             }
@@ -931,76 +887,95 @@
 
         const board = Object.assign({}, state.board);
 
-        /* EASY */
+        // ── Easy ──
         if (state.aiLevel === 'easy') {
             if (state.isCombo) {
                 const caps = getMoves(state.selected, true);
                 if (caps.length) performMove(state.selected, caps[0].to, caps[0].cap); else finishTurn();
                 return;
             }
-            const all = allMoves(board, 'green');
+            const all = allMoves(board, 'yellow');
             if (!all.length) { checkWinner(true); return; }
-            const m = rnd(all); performMove(m.from, m.to, m.cap); return;
+            const em = rnd(all); performMove(em.from, em.to, em.cap);
+            return;
         }
 
-        /* MEDIUM */
+        // helper for medium & hard
+        const applyMvLocal = applyMv;
+
+        // ── Medium ──
         if (state.aiLevel === 'medium') {
             if (state.isCombo) {
                 const caps = getMoves(state.selected, true);
                 if (caps.length) {
                     const sc = caps.map(m => {
-                        const nb = applyMv(board, state.selected, m.to, m.cap);
-                        return { m, s: cnt(nb,'green')-cnt(nb,'red')-risk(nb,'green')*0.3 };
+                        const nb = applyMvLocal(board, state.selected, m.to, m.cap);
+                        return { m, s: cnt(nb,'yellow')-cnt(nb,'white')-risk(nb,'yellow')*0.3 };
                     });
-                    sc.sort((a,b)=>b.s-a.s);
+                    sc.sort((a,b) => b.s - a.s);
                     performMove(state.selected, sc[0].m.to, sc[0].m.cap);
                 } else finishTurn();
                 return;
             }
-            const all = allMoves(board, 'green');
+            const all = allMoves(board, 'yellow');
             if (!all.length) { checkWinner(true); return; }
-            const caps = all.filter(m=>m.cap), pool = caps.length?caps:all;
+            const caps = all.filter(m=>m.cap), pool = caps.length ? caps : all;
             const hist = state.aiMoveHistory;
             const scored = pool.map(m => {
-                const nb = applyMv(board, m.from, m.to, m.cap);
-                let s = (cnt(nb,'green')-cnt(nb,'red'))*10 - risk(nb,'green')*4;
+                const nb = applyMvLocal(board, m.from, m.to, m.cap);
+                let s = (cnt(nb,'yellow')-cnt(nb,'white'))*10 - risk(nb,'yellow')*4;
                 s -= hist.filter(k=>k===`${m.from}-${m.to}`).length * 200;
                 return { m, score: s };
             });
-            scored.sort((a,b)=>b.score-a.score);
+            scored.sort((a,b) => b.score - a.score);
             const best = scored[0].m;
             state.aiMoveHistory.push(`${best.from}-${best.to}`);
             if (state.aiMoveHistory.length > 8) state.aiMoveHistory.shift();
             performMove(best.from, best.to, best.cap); return;
         }
 
-        /* HARD */
+        // ── Hard ──
         if (state.isCombo) {
             const caps = getMoves(state.selected, true);
             if (!caps.length) { finishTurn(); return; }
-            let best=null, bs=-Infinity;
+            let best = null, bs = -Infinity;
             for (const m of caps) {
-                const nb = applyMv(board, state.selected, m.to, m.cap);
+                const nb = applyMvLocal(board, state.selected, m.to, m.cap);
                 const sc = mm(nb, 4, -Infinity, Infinity, false, null);
-                if (sc>bs) { bs=sc; best=m; }
+                if (sc > bs) { bs = sc; best = m; }
             }
             performMove(state.selected, best.to, best.cap); return;
         }
-        const all = allMoves(board, 'green');
+        const all = allMoves(board, 'yellow');
         if (!all.length) { checkWinner(true); return; }
         const ordered = [...all.filter(m=>m.cap), ...all.filter(m=>!m.cap)];
         const hist = state.aiMoveHistory;
-        let best=null, bs=-Infinity;
+        let best = null, bs = -Infinity;
         for (const m of ordered) {
-            const nb = applyMv(board, m.from, m.to, m.cap);
-            const nc = (m.cap && movesOnB(nb,m.to).some(x=>x.cap)) ? m.to : null;
+            const nb = applyMvLocal(board, m.from, m.to, m.cap);
+            const nc = (m.cap && movesOnB2(nb, m.to)) ? m.to : null;
             let sc = mm(nb, 5, -Infinity, Infinity, false, nc);
             sc -= hist.filter(k=>k===`${m.from}-${m.to}`).length * 250;
-            if (sc>bs) { bs=sc; best=m; }
+            if (sc > bs) { bs = sc; best = m; }
         }
         state.aiMoveHistory.push(`${best.from}-${best.to}`);
         if (state.aiMoveHistory.length > 8) state.aiMoveHistory.shift();
         performMove(best.from, best.to, best.cap);
+
+        function movesOnB2(b, id) {
+            const list = [], col = b[id]; if (!col) return false;
+            const enemy = col === 'white' ? 'yellow' : 'white';
+            if (!adj[id]) return false;
+            adj[id].forEach(to => {
+                if (b[to] === enemy) {
+                    const n1 = nodes[id], n2 = nodes[to];
+                    const tx = n2.x+(n2.x-n1.x), ty = n2.y+(n2.y-n1.y);
+                    const land = Object.values(nodes).find(x => Math.abs(x.x-tx)<5 && Math.abs(x.y-ty)<5);
+                    if (land && !b[land.id] && adj[to].includes(land.id)) list.push(true);
+                }
+            });
+            return list.length > 0;
+        }
     }
 
     // ════════════════════════════════════════════════════════════════════
@@ -1012,11 +987,14 @@
         const sc = document.getElementById('score');
         const cm = document.getElementById('combo-msg');
         if (!t||!s||!sc||!cm) return;
-        t.innerText = state.turn==='red' ? 'Kırmızı' : (state.mode==='pvp'?'Yeşil':'Bilgisayar');
-        s.style.background = state.turn==='red' ? '#e53935' : '#4caf50';
-        s.style.color = 'white';
-        sc.innerText = `Kırmızı: ${state.score.red} | Yeşil: ${state.score.green}`;
+
+        const isWhite = state.turn === 'white';
+        t.innerText = isWhite ? 'Beyaz' : (state.mode === 'pvp' ? 'Sarı' : 'Bilgisayar');
+        s.style.background = isWhite ? '#e8e8e8' : '#ffd600';
+        s.style.color = isWhite ? '#222' : '#442200';
+        sc.innerText = `Beyaz: ${state.score.white} | Sarı: ${state.score.yellow}`;
         cm.style.display = state.isCombo ? 'block' : 'none';
+
         const ts = document.getElementById('turn-stone');
         if (ts) ts.className = 'turn-stone-dot ' + state.turn;
     }
@@ -1026,17 +1004,27 @@
     // ════════════════════════════════════════════════════════════════════
     function checkWinner(aiStuck = false) {
         let winColor = null;
-        if (state.score.green === 0 || aiStuck) winColor = 'red';
-        else if (state.score.red === 0) winColor = 'green';
+        if (state.score.yellow === 0 || aiStuck) winColor = 'white';
+        else if (state.score.white === 0) winColor = 'yellow';
         if (!winColor) return;
         state.gameOver = true;
         let headline, sub, cssClass, doFw = false;
         if (state.mode === 'pve') {
-            if (winColor === 'red') { headline='🏆 KAZANDINIZ!'; sub='Tebrikler! Bilgisayarı yendiniz.'; cssClass='red-win'; doFw=true; setTimeout(()=>playSfx('applause'),600); }
-            else                   { headline='🤖 BİLGİSAYAR KAZANDI'; sub='Bu sefer bilgisayar daha iyiydi.'; cssClass='ai-win'; }
+            if (winColor === 'white') {
+                headline = '🏆 KAZANDINIZ!'; sub = 'Tebrikler! Bilgisayarı yendiniz.';
+                cssClass = 'white-win'; doFw = true; setTimeout(()=>playSfx('applause'), 600);
+            } else {
+                headline = '🤖 BİLGİSAYAR KAZANDI'; sub = 'Bu sefer bilgisayar daha iyiydi.';
+                cssClass = 'ai-win';
+            }
         } else {
-            if (winColor === 'red') { headline='🔴 KIRMIZI KAZANDI!'; sub='Kırmızı oyuncuyu tebrik ederiz!'; cssClass='red-win'; }
-            else                    { headline='🟢 YEŞİL KAZANDI!';   sub='Yeşil oyuncuyu tebrik ederiz!';   cssClass='green-win'; }
+            if (winColor === 'white') {
+                headline = '⚪ BEYAZ KAZANDI!'; sub = 'Beyaz oyuncuyu tebrik ederiz!';
+                cssClass = 'white-win';
+            } else {
+                headline = '🟡 SARI KAZANDI!'; sub = 'Sarı oyuncuyu tebrik ederiz!';
+                cssClass = 'yellow-win';
+            }
             doFw = true;
         }
         showWinnerModal(headline, sub, cssClass, doFw);
@@ -1046,9 +1034,9 @@
         const title  = document.getElementById('winner-title');
         const subEl  = document.getElementById('winner-sub');
         const trophy = document.getElementById('winner-trophy');
-        if (title)  { title.innerText = headline; title.className = 'winner-headline '+cssClass; }
+        if (title)  { title.innerText = headline; title.className = 'winner-headline ' + cssClass; }
         if (subEl)  subEl.innerText = sub;
-        if (trophy) trophy.innerText = cssClass==='ai-win' ? '🤖' : '🏆';
+        if (trophy) trophy.innerText = cssClass === 'ai-win' ? '🤖' : '🏆';
         document.getElementById('winner-modal').classList.add('show');
         playSfx('win');
         if (doFw) startFireworks();
@@ -1058,7 +1046,6 @@
         document.getElementById('winner-modal').classList.remove('show');
         stopFireworks();
     }
-
     function closeWinnerAndGoIntro() { hideWinnerModal(); openIntroScreen(); }
 
     // ════════════════════════════════════════════════════════════════════
@@ -1071,55 +1058,58 @@
         canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         canvas.style.display = 'block';
         const ctx = canvas.getContext('2d'), particles = [];
-        const COLORS = ['#ff4444','#ff9900','#ffee00','#44ff44','#44aaff','#cc44ff','#ff44cc','#ffffff','#ff6680','#00ffcc'];
+        const COLORS = ['#ffffff','#ffd600','#ffee00','#ce93d8','#aa66ff','#44aaff','#ff44cc','#ff8844','#a5d6a7','#80deea'];
 
         function burst(x, y) {
-            const n = 90 + Math.random()*60;
-            for (let i=0; i<n; i++) {
-                const a=(Math.PI*2/n)*i + Math.random()*0.3, sp=3+Math.random()*9;
-                particles.push({ x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,alpha:1,
-                    color:COLORS[Math.floor(Math.random()*COLORS.length)],
-                    size:2+Math.random()*4, decay:0.012+Math.random()*0.012,
-                    gravity:0.12+Math.random()*0.08, trail:[] });
+            const n = 90 + Math.random() * 60;
+            for (let i = 0; i < n; i++) {
+                const a = (Math.PI*2/n)*i + Math.random()*0.3, sp = 3 + Math.random()*9;
+                particles.push({
+                    x, y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp, alpha: 1,
+                    color: COLORS[Math.floor(Math.random()*COLORS.length)],
+                    size: 2 + Math.random()*4,
+                    decay: 0.012 + Math.random()*0.012,
+                    gravity: 0.12 + Math.random()*0.08, trail: []
+                });
             }
         }
         burst(canvas.width*0.50, canvas.height*0.35);
         burst(canvas.width*0.25, canvas.height*0.45);
         burst(canvas.width*0.75, canvas.height*0.40);
 
-        let elapsed=0, idx=0, last=null;
+        let elapsed = 0, idx = 0, last = null;
         const times = Array.from({length:32}, (_,i) => 300+i*280+Math.random()*180);
 
         function frame(ts) {
-            if (!last) last=ts;
-            elapsed += ts-last; last=ts;
-            while (idx<times.length && elapsed>=times[idx]) {
+            if (!last) last = ts;
+            elapsed += ts - last; last = ts;
+            while (idx < times.length && elapsed >= times[idx]) {
                 burst(canvas.width*(0.12+Math.random()*0.76), canvas.height*(0.08+Math.random()*0.52));
                 idx++;
             }
-            ctx.fillStyle='rgba(0,0,0,0.17)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-            for (let i=particles.length-1; i>=0; i--) {
-                const p=particles[i];
-                p.trail.push({x:p.x,y:p.y,alpha:p.alpha});
-                if (p.trail.length>7) p.trail.shift();
+            ctx.fillStyle = 'rgba(0,0,0,0.17)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            for (let i = particles.length-1; i >= 0; i--) {
+                const p = particles[i];
+                p.trail.push({x:p.x, y:p.y, alpha:p.alpha});
+                if (p.trail.length > 7) p.trail.shift();
                 for (const t of p.trail) {
-                    ctx.beginPath(); ctx.arc(t.x,t.y,p.size*0.45,0,Math.PI*2);
-                    ctx.fillStyle=p.color+Math.floor(t.alpha*70).toString(16).padStart(2,'0'); ctx.fill();
+                    ctx.beginPath(); ctx.arc(t.x, t.y, p.size*0.45, 0, Math.PI*2);
+                    ctx.fillStyle = p.color + Math.floor(t.alpha*70).toString(16).padStart(2,'0'); ctx.fill();
                 }
-                ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
-                ctx.fillStyle=p.color+Math.floor(p.alpha*255).toString(16).padStart(2,'0'); ctx.fill();
-                p.x+=p.vx; p.y+=p.vy; p.vy+=p.gravity; p.vx*=0.98; p.alpha-=p.decay;
-                if (p.alpha<=0) particles.splice(i,1);
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                ctx.fillStyle = p.color + Math.floor(p.alpha*255).toString(16).padStart(2,'0'); ctx.fill();
+                p.x += p.vx; p.y += p.vy; p.vy += p.gravity; p.vx *= 0.98; p.alpha -= p.decay;
+                if (p.alpha <= 0) particles.splice(i, 1);
             }
-            if (elapsed<10000||particles.length>0) fwAnimId=requestAnimationFrame(frame); else stopFireworks();
+            if (elapsed < 10000 || particles.length > 0) fwAnimId = requestAnimationFrame(frame); else stopFireworks();
         }
         fwAnimId = requestAnimationFrame(frame);
     }
 
     function stopFireworks() {
-        if (fwAnimId) { cancelAnimationFrame(fwAnimId); fwAnimId=null; }
+        if (fwAnimId) { cancelAnimationFrame(fwAnimId); fwAnimId = null; }
         const c = document.getElementById('fw-canvas');
-        if (c) { c.style.display='none'; c.getContext('2d').clearRect(0,0,c.width,c.height); }
+        if (c) { c.style.display = 'none'; c.getContext('2d').clearRect(0, 0, c.width, c.height); }
     }
 
     // ════════════════════════════════════════════════════════════════════
@@ -1127,21 +1117,21 @@
     // ════════════════════════════════════════════════════════════════════
     function selectIntroMode(mode) {
         introMode = mode;
-        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode===mode));
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
         const wrap = document.getElementById('intro-diff-wrap');
-        if (wrap) wrap.style.display = mode==='pve' ? 'block' : 'none';
+        if (wrap) wrap.style.display = mode === 'pve' ? 'block' : 'none';
     }
 
     function selectIntroDiff(level) {
         introDiff = level;
-        document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.dataset.level===level));
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.dataset.level === level));
     }
 
     function openIntroScreen() {
-        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode===introMode));
-        document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.dataset.level===introDiff));
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === introMode));
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.dataset.level === introDiff));
         const wrap = document.getElementById('intro-diff-wrap');
-        if (wrap) wrap.style.display = introMode==='pve' ? 'block' : 'none';
+        if (wrap) wrap.style.display = introMode === 'pve' ? 'block' : 'none';
         document.getElementById('howto-screen').style.display = 'flex';
         switchToBgm('intro');
     }
@@ -1150,8 +1140,7 @@
         document.getElementById('howto-screen').style.display = 'none';
         hideWinnerModal();
         switchToBgm('game');
-        userMovedCamera = false;
-        setCameraDefault();
+        userMovedCamera = false; setCameraDefault();
         initGame();
     }
 
@@ -1163,11 +1152,10 @@
 
     function toggleTheme() {
         const body = document.body, btn = document.getElementById('themeBtn');
-        const next = (body.getAttribute('data-theme')||'dark')==='dark' ? 'light' : 'dark';
+        const next = (body.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark';
         body.setAttribute('data-theme', next);
-        if (btn) btn.innerText = next==='dark' ? '☀️ GÜNDÜZ MODU' : '🌙 GECE MODU';
-        // Adjust scene background
-        scene.background = new THREE.Color(next==='dark' ? 0x0c0809 : 0x2a1e14);
+        if (btn) btn.innerText = next === 'dark' ? '☀️ GÜNDÜZ MODU' : '🌙 GECE MODU';
+        scene.background = new THREE.Color(next === 'dark' ? 0x0c0810 : 0x1a1030);
     }
 
     function checkOrientation() {
@@ -1191,19 +1179,17 @@
     //  INIT GAME
     // ════════════════════════════════════════════════════════════════════
     function initGame() {
-        state.board = {}; state.gameOver = false; state.turn = 'red';
+        state.board = {}; state.gameOver = false; state.turn = 'white';
         state.selected = null; state.isCombo = false;
-        state.score = { red: 18, green: 18 };
+        state.score = { white: 16, yellow: 16 };
         state.mode = introMode; state.aiLevel = introDiff;
         state.aiMoveHistory = [];
         hideWinnerModal();
 
-        const greenNodes = [8,26,44,16,25,34,24,6,15,33,42,5,14,23,32,41,4,13];
-        const redNodes   = [0,18,36,10,19,28,20,2,11,29,38,3,12,21,30,39,31,40];
-        greenNodes.forEach(id => state.board[id] = 'green');
-        redNodes.forEach(id   => state.board[id] = 'red');
-        state.score.red   = Object.values(state.board).filter(v=>v==='red').length;
-        state.score.green = Object.values(state.board).filter(v=>v==='green').length;
+        wStoneIDs.forEach(id => state.board[id] = 'white');
+        yStoneIDs.forEach(id => state.board[id] = 'yellow');
+        state.score.white  = Object.values(state.board).filter(v => v === 'white').length;
+        state.score.yellow = Object.values(state.board).filter(v => v === 'yellow').length;
 
         renderBoard();
         updateUI();
@@ -1219,26 +1205,25 @@
         const positions = new Float32Array(count * 3);
         const colors    = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
-            const r     = 25 + Math.random() * 45;
+            const r     = 25 + Math.random() * 50;
             const theta = Math.random() * Math.PI * 2;
             const phi   = Math.acos(2 * Math.random() - 1);
             positions[i*3]   = r * Math.sin(phi) * Math.cos(theta);
             positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
             positions[i*3+2] = r * Math.cos(phi);
             const t = Math.random();
-            if      (t > 0.9) { colors[i*3]=1.0; colors[i*3+1]=0.8; colors[i*3+2]=0.4; } // warm gold
-            else if (t > 0.7) { colors[i*3]=0.4; colors[i*3+1]=0.8; colors[i*3+2]=1.0; } // cool blue
-            else if (t > 0.5) { colors[i*3]=0.8; colors[i*3+1]=0.4; colors[i*3+2]=1.0; } // violet
-            else              { colors[i*3]=1.0; colors[i*3+1]=1.0; colors[i*3+2]=1.0; } // white
+            if      (t > 0.9) { colors[i*3]=1.0; colors[i*3+1]=0.8; colors[i*3+2]=0.4; }
+            else if (t > 0.7) { colors[i*3]=0.8; colors[i*3+1]=0.6; colors[i*3+2]=1.0; }
+            else if (t > 0.5) { colors[i*3]=0.6; colors[i*3+1]=0.8; colors[i*3+2]=1.0; }
+            else              { colors[i*3]=1.0; colors[i*3+1]=1.0; colors[i*3+2]=1.0; }
         }
         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         geometry.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
-        const material = new THREE.PointsMaterial({
+        stars = new THREE.Points(geometry, new THREE.PointsMaterial({
             size: 0.18, vertexColors: true,
             transparent: true, opacity: 0.88,
             sizeAttenuation: true, depthWrite: false
-        });
-        stars = new THREE.Points(geometry, material);
+        }));
         scene.add(stars);
     }
 
@@ -1261,27 +1246,25 @@
     requestAnimationFrame(animate);
 
     // ════════════════════════════════════════════════════════════════════
-    //  EXPOSE TO HTML onclick HANDLERS  (module scope → global)
+    //  EXPOSE GLOBALS
     // ════════════════════════════════════════════════════════════════════
-    window.closeHowToScreen     = closeHowToScreen;
+    window.closeHowToScreen      = closeHowToScreen;
     window.closeWinnerAndGoIntro = closeWinnerAndGoIntro;
-    window.selectIntroMode      = selectIntroMode;
-    window.selectIntroDiff      = selectIntroDiff;
-    window.openIntroScreen      = openIntroScreen;
-    window.openHowtoModal       = openHowtoModal;
-    window.closeHowtoModal      = closeHowtoModal;
-    window.toggleMusic          = toggleMusic;
-    window.toggleTheme          = toggleTheme;
+    window.selectIntroMode       = selectIntroMode;
+    window.selectIntroDiff       = selectIntroDiff;
+    window.openIntroScreen       = openIntroScreen;
+    window.openHowtoModal        = openHowtoModal;
+    window.closeHowtoModal       = closeHowtoModal;
+    window.toggleMusic           = toggleMusic;
+    window.toggleTheme           = toggleTheme;
 
-    // ── Mobile sidebar toggle ──────────────────────────────────────────
-    function toggleSidebar() {
+    window.toggleSidebar = () => {
         const sb  = document.getElementById('sidebar');
         const btn = document.getElementById('menu-toggle-btn');
         const isOpen = sb.classList.toggle('open');
         btn.textContent = isOpen ? '▼ KAPAT' : '▲ MENÜ';
-    }
-    window.toggleSidebar = toggleSidebar;
-    window.resetCamera   = () => { userMovedCamera = false; setCameraDefault(); };
+    };
+    window.resetCamera = () => { userMovedCamera = false; setCameraDefault(); };
 
     // ════════════════════════════════════════════════════════════════════
     //  STARTUP
@@ -1290,7 +1273,7 @@
     buildGraph();
     setupAudio();
     createStarField();
-    // initGame() is called by closeHowToScreen() when user presses OYUNA BAŞLA
+    // initGame() is called by closeHowToScreen() on "OYUNA BAŞLA"
 
 </script>
 <script src="bg-animation.js"></script>
