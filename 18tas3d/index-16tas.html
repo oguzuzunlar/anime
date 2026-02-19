@@ -186,6 +186,7 @@
 
         /* ── Mobile toggle bar ── */
         #menu-toggle-bar { display: none; }
+        #mobile-turn-bar  { display: none; }
 
         @media (max-width: 900px) {
             body { flex-direction: column; overflow-y: auto; height: auto; }
@@ -200,7 +201,7 @@
                 transition: max-height 0.35s ease;
                 flex-direction: column-reverse;
             }
-            #sidebar.open { max-height: 600px; }
+            #sidebar.open { max-height: 1200px; overflow-y: auto; }
 
             #menu-toggle-bar {
                 display: flex; align-items: center; justify-content: space-between;
@@ -223,6 +224,25 @@
 
             #sidebar-inner { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
             #sidebar-inner h1 { display: none; }
+
+            /* Sıra göstergesi — ekranın üstünde sabit */
+            #mobile-turn-bar {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 9px 16px;
+                position: sticky;
+                top: 0;
+                z-index: 200;
+                font-size: 0.95rem;
+                font-weight: bold;
+                letter-spacing: 1px;
+                background: rgba(0,0,0,0.60);
+                backdrop-filter: blur(8px);
+                border-bottom: 1px solid rgba(255,255,255,0.10);
+                transition: background 0.3s;
+            }
         }
     </style>
 </head>
@@ -311,6 +331,12 @@
 
     <!-- Main layout -->
     <div id="main-wrapper">
+        <!-- Mobil: ekran üstü sıra çubuğu -->
+        <div id="mobile-turn-bar">
+            <span id="mob-turn-stone" class="turn-stone-dot white" style="width:18px;height:18px;"></span>
+            <span>Sıra: <strong id="mob-turn-txt">Beyaz</strong></span>
+        </div>
+
         <div id="sidebar">
             <div id="menu-toggle-bar" onclick="toggleSidebar()">
                 <span>16 TAŞ 3D DAMA</span>
@@ -335,7 +361,7 @@
                     <button class="outline" onclick="toggleTheme()" id="themeBtn">☀️ GÜNDÜZ MODU</button>
                     <button class="outline" onclick="toggleMusic()"  id="musicBtn">🎵 MÜZİK AÇ</button>
                     <button class="outline" onclick="openHowtoModal()">❓ NASIL OYNANIR</button>
-                    <a href="index.html" class="outline" style="display:block;text-align:center;text-decoration:none;padding:8px 0;border-radius:8px;">🏠 ANA MENÜ</a>
+                    <a href="portal.html" class="outline" style="display:block;text-align:center;text-decoration:none;padding:8px 0;border-radius:8px;">🏠 ANA MENÜ</a>
                 </div>
 
                 <div class="panel cam-hint">
@@ -997,6 +1023,11 @@
 
         const ts = document.getElementById('turn-stone');
         if (ts) ts.className = 'turn-stone-dot ' + state.turn;
+        // Mobil üst çubuğu güncelle
+        const mt = document.getElementById('mob-turn-txt');
+        const ms = document.getElementById('mob-turn-stone');
+        if (mt) mt.innerText = t.innerText;
+        if (ms) ms.className = 'turn-stone-dot ' + state.turn;
     }
 
     // ════════════════════════════════════════════════════════════════════
@@ -1263,6 +1294,7 @@
         const btn = document.getElementById('menu-toggle-btn');
         const isOpen = sb.classList.toggle('open');
         btn.textContent = isOpen ? '▼ KAPAT' : '▲ MENÜ';
+        if (isOpen) setTimeout(() => sb.scrollIntoView({ behavior: 'smooth', block: 'end' }), 60);
     };
     window.resetCamera = () => { userMovedCamera = false; setCameraDefault(); };
 
