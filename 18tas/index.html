@@ -578,21 +578,20 @@
     ];
 
     const gamePlaylist = [
-        'bgm-1.mp3',
-        'bgm-2.mp3',
-        'bgm-3.mp3'
+        'bgm-1.mp3'
     ];
 
     const audioState = {
-        enabled: true,          // varsayılan AÇIK
-        screen: 'intro',        // 'intro' | 'game'
+        enabled: true,
+        screen: 'intro',
         trackIndex: 0,
         bgm: new Audio(),
         sfx: {
             move:    new Audio('move.mp3'),
             capture: new Audio('capture.mp3'),
             win:     new Audio('win.mp3'),
-            click:   new Audio('click.mp3')
+            click:   new Audio('click.mp3'),
+            applause: new Audio('applause.mp3')
         }
     };
 
@@ -646,6 +645,7 @@
         const src = screen === 'intro'
             ? introPlaylist[index % introPlaylist.length]
             : gamePlaylist[index % gamePlaylist.length];
+        audioState.bgm.loop = (screen === 'game'); // oyun müziği sürekli dönüsün
         audioState.bgm.src = src;
         audioState.bgm.load();
     }
@@ -1125,6 +1125,7 @@
                 sub = 'Tebrikler! Bilgisayarı yendiniz.';
                 cssClass = 'red-win';
                 doFireworks = true;
+                setTimeout(() => playSfx('applause'), 600);
             } else {
                 // AI kazandı
                 headline = '🤖 BİLGİSAYAR KAZANDI';
