@@ -408,10 +408,10 @@
             <!-- Oyun modu seçimi -->
             <p class="intro-section-label">Oyun Modu</p>
             <div class="intro-mode-btns">
-                <button class="mode-btn active" data-mode="pvp" onclick="selectIntroMode('pvp')">👥 İki Kişi</button>
-                <button class="mode-btn" data-mode="pve" onclick="selectIntroMode('pve')">🤖 Bilgisayara Karşı</button>
+                <button class="mode-btn" data-mode="pvp" onclick="selectIntroMode('pvp')">👥 İki Kişi</button>
+                <button class="mode-btn active" data-mode="pve" onclick="selectIntroMode('pve')">🤖 Bilgisayara Karşı</button>
             </div>
-            <div id="intro-diff-wrap" style="display:none; text-align:center;">
+            <div id="intro-diff-wrap" style="display:block; text-align:center;">
                 <p class="intro-section-label" style="margin-top:10px;">Zorluk Seviyesi</p>
                 <div class="intro-diff-btns">
                     <button class="diff-btn" data-level="easy" onclick="selectIntroDiff('easy')">Kolay</button>
@@ -1099,7 +1099,7 @@
         if(btn) btn.innerText = nextTheme === 'dark' ? '☀️ GÜNDÜZ MODU' : '🌙 GECE MODU';
     }
 
-    let introMode = 'pvp';
+    let introMode = 'pve';
     let introDiff = 'medium';
 
     function selectIntroMode(mode) {
