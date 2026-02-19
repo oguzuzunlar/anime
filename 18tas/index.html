@@ -92,7 +92,15 @@
 
         svg { position: absolute; width: 100%; height: 100%; pointer-events: none; }
         
-        .node-point { position: absolute; width: 6px; height: 6px; background: var(--line-color); border-radius: 50%; transform: translate(-50%, -50%); opacity: 0.6; }
+        .node-point {
+            position: absolute; width: 11px; height: 11px;
+            background: rgba(20,10,5,0.55);
+            border: 2px solid rgba(255,255,255,0.45);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+            z-index: 5;
+        }
 
         .node-hitbox { position: absolute; width: 50px; height: 50px; transform: translate(-50%, -50%); cursor: pointer; z-index: 30; }
 
@@ -115,6 +123,25 @@
         .stone.green { background: var(--stone-green); }
         .stone.selected { box-shadow: 0 0 20px 8px white; z-index: 25; scale: 1.1; }
 
+        /* Sıra göstergesi – tahta kenarı parlaması */
+        #game-board-container { transition: box-shadow 0.4s ease; }
+        #game-board-container.turn-red {
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 0 4px #e53935, 0 0 28px 8px rgba(229,57,53,0.55);
+        }
+        #game-board-container.turn-green {
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 0 4px #43a047, 0 0 28px 8px rgba(67,160,71,0.55);
+        }
+
+        /* Status bar mini taş göstergesi */
+        .status-bar { display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .turn-stone-dot {
+            width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+            transition: background 0.35s ease, box-shadow 0.35s ease;
+        }
+        .turn-stone-dot.red   { background: radial-gradient(circle at 30% 30%, #ff8a80, #e53935 60%, #8e0000); box-shadow: 0 3px 10px rgba(229,57,53,0.7); }
+        .turn-stone-dot.green { background: radial-gradient(circle at 30% 30%, #a5d6a7, #4caf50 60%, #1b5e20); box-shadow: 0 3px 10px rgba(76,175,80,0.7); }
+
         #combo-msg { color: #ffeb3b; font-size: 0.8rem; text-align: center; display: none; margin-top: 5px; font-weight: bold; }
 
         #winner-modal {
@@ -123,8 +150,8 @@
             display: none;
             justify-content: center;
             align-items: center;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 1000;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 4000;
             padding: 20px;
             box-sizing: border-box;
         }
@@ -132,20 +159,54 @@
         #winner-modal.show { display: flex; }
 
         .winner-dialog {
-            width: min(420px, 100%);
-            background: var(--sidebar-bg);
-            border: 2px solid var(--board-bg);
-            border-radius: 12px;
-            padding: 20px;
+            position: relative;
+            width: min(460px, 100%);
+            background: linear-gradient(145deg, #3e316d, #2c2554);
+            border: 2px solid rgba(255,255,255,0.22);
+            border-radius: 18px;
+            padding: 36px 28px 28px;
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+            color: #fff;
+            z-index: 2;
         }
 
-        #winner-title {
-            margin: 0 0 14px;
-            color: var(--board-bg);
-            font-size: 1.3rem;
-            letter-spacing: 1px;
+        .winner-trophy { font-size: 3.8rem; margin-bottom: 8px; animation: trophyBounce 0.7s ease; }
+        @keyframes trophyBounce {
+            0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+            60%  { transform: scale(1.25) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .winner-headline {
+            margin: 0 0 6px;
+            font-size: 1.7rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+        }
+        .winner-headline.red-win   { color: #ff8a80; }
+        .winner-headline.green-win { color: #a5d6a7; }
+        .winner-headline.ai-win    { color: #ef9a9a; }
+
+        .winner-sub {
+            margin: 0 0 24px;
+            font-size: 1.05rem;
+            opacity: 0.85;
+            line-height: 1.5;
+        }
+
+        .winner-actions { display: flex; gap: 12px; justify-content: center; }
+        .winner-actions button { flex: 1; max-width: 180px; padding: 12px; font-size: 0.95rem; }
+
+        /* Havai fişek canvas */
+        #fw-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 3999;
+            display: none;
         }
 
         #howto-screen {
@@ -381,10 +442,10 @@
             <!-- Oyun modu seçimi -->
             <p class="intro-section-label">Oyun Modu</p>
             <div class="intro-mode-btns">
-                <button class="mode-btn active" data-mode="pvp" onclick="selectIntroMode('pvp')">👥 İki Kişi</button>
-                <button class="mode-btn" data-mode="pve" onclick="selectIntroMode('pve')">🤖 Bilgisayara Karşı</button>
+                <button class="mode-btn" data-mode="pvp" onclick="selectIntroMode('pvp')">👥 İki Kişi</button>
+                <button class="mode-btn active" data-mode="pve" onclick="selectIntroMode('pve')">🤖 Bilgisayara Karşı</button>
             </div>
-            <div id="intro-diff-wrap" style="display:none; text-align:center;">
+            <div id="intro-diff-wrap" style="display:block; text-align:center;">
                 <p class="intro-section-label" style="margin-top:10px;">Zorluk Seviyesi</p>
                 <div class="intro-diff-btns">
                     <button class="diff-btn" data-level="easy" onclick="selectIntroDiff('easy')">Kolay</button>
@@ -393,13 +454,17 @@
                 </div>
             </div>
 
+            <div class="howto-actions" style="margin-top:16px;">
+                <button class="primary" style="width:100%; padding:13px; font-size:1.05rem; letter-spacing:1px;" onclick="closeHowToScreen()">▶ OYUNA BAŞLA</button>
+            </div>
+
             <hr class="intro-divider">
 
             <!-- Oyun kuralları -->
             <p class="howto-sub" style="margin-bottom:10px;">Nasıl Oynanır?</p>
             <ul class="howto-list">
-                <li><strong>Hamle yapmak:</strong> Oyuncular sırayla oynar. Önce kendi taşlarından birine tıklarsınız, sonra taşın gidebileceği komşu boş noktayı seçersiniz. Taşlar yalnızca çizgiler üzerinde ilerleyebilir.</li>
-                <li><strong>Rakip taşı almak:</strong> Bir rakip taşının tam karşısındaki nokta boşsa, o taşın üzerinden sıçrayarak o noktaya geçebilirsiniz. Atlanan taş oyundan çıkar. Almak zorunlu değilsiniz, seçim size ait.</li>
+                <li><strong>Hamle yapmak:</strong> Oyuncular sırayla oynar. Önce kendi taşlarınızdan birine tıklarsınız, sonra taşın gidebileceği komşu boş noktayı seçersiniz. Taşlar yalnızca çizgiler üzerinde ilerleyebilir.</li>
+                <li><strong>Rakip taşı almak:</strong> Bir rakip taşının tam karşısındaki nokta boşsa, o taşın üzerinden atlayarak o noktaya geçebilirsiniz. Üzerinden atlanarak alınan taş oyundan çıkar. Taşların üzerinden atlamak zorunda değilsiniz, seçim size ait.</li>
                 <li><strong>Kombo:</strong> Taş aldıktan sonra aynı taşla zincirleme alma fırsatı çıkarsa, sıra sizde kalmak üzere komboyu sürdürebilirsiniz. Kombo sona erince sıra rakibe geçer.</li>
                 <li><strong>Kazanma koşulu:</strong> Rakibinin 18 taşının tamamını tahtadan kaldıran oyuncu oyunu kazanır.</li>
             </ul>
@@ -417,9 +482,6 @@
                 <div class="menu-info-item">❓ <strong>Nasıl Oynanır</strong><br>Bu kural ekranını istediğin zaman yeniden açmana yarar.</div>
             </div>
 
-            <div class="howto-actions">
-                <button class="primary" onclick="closeHowToScreen()">OYUNA BAŞLA</button>
-            </div>
         </div>
     </div>
 
@@ -430,9 +492,9 @@
 
             <p class="howto-sub" style="margin-bottom:10px;">Nasıl Oynanır?</p>
             <ul class="howto-list">
-                <li><strong>Hamle yapmak:</strong> Oyuncular sırayla oynar. Önce kendi taşlarından birine tıkla, sonra taşın gidebileceği komşu boş noktayı seç. Taşlar yalnızca çizgiler üzerinde ilerleyebilir.</li>
-                <li><strong>Rakip taşı almak:</strong> Bir rakip taşının tam karşısındaki nokta boşsa, o taşın üzerinden sıçrayarak o noktaya geçebilirsin. Atlanan taş oyundan çıkar. Almak zorunlu değil, seçim sana ait.</li>
-                <li><strong>Kombo:</strong> Taş aldıktan sonra aynı taşla zincirleme alma fırsatı çıkarsa, sıra sende kalmak üzere komboyu sürdürebilirsin. Kombo sona erince sıra rakibe geçer.</li>
+                <li><strong>Hamle yapmak:</strong> Oyuncular sırayla oynar. Önce kendi taşlarınızdan birine tıklarsınız, sonra taşın gidebileceği komşu boş noktayı seçersiniz. Taşlar yalnızca çizgiler üzerinde ilerleyebilir.</li>
+                <li><strong>Rakip taşı almak:</strong> Bir rakip taşının tam karşısındaki nokta boşsa, o taşın üzerinden atlayarak o noktaya geçebilirsiniz. Üzerinden atlanarak alınan taş oyundan çıkar. Taşların üzerinden atlamak zorunda değilsiniz, seçim size ait.</li>
+                <li><strong>Kombo:</strong> Taş aldıktan sonra aynı taşla zincirleme alma fırsatı çıkarsa, sıra sizde kalmak üzere komboyu sürdürebilirsiniz. Kombo sona erince sıra rakibe geçer.</li>
                 <li><strong>Kazanma koşulu:</strong> Rakibinin 18 taşının tamamını tahtadan kaldıran oyuncu oyunu kazanır.</li>
             </ul>
 
@@ -457,7 +519,10 @@
     <div id="main-wrapper">
         <div id="sidebar">
             <h1>18 TAŞLI DAMA</h1>
-            <div id="status" class="status-bar">Sıra: <span id="turn-txt">Kırmızı</span></div>
+            <div id="status" class="status-bar">
+                <span id="turn-stone" class="turn-stone-dot red"></span>
+                Sıra: <span id="turn-txt">Kırmızı</span>
+            </div>
             <div id="combo-msg">⚡ KOMBO DEVAM EDİYOR!</div>
 
             <div class="panel">
@@ -484,10 +549,16 @@
         </div>
     </div>
 
+    <canvas id="fw-canvas"></canvas>
+
     <div id="winner-modal" role="dialog" aria-modal="true" aria-labelledby="winner-title">
         <div class="winner-dialog">
-            <h2 id="winner-title">KAZANDIN!</h2>
-            <button class="primary" onclick="initGame()">YENİDEN OYNA</button>
+            <div class="winner-trophy" id="winner-trophy">🏆</div>
+            <h2 id="winner-title" class="winner-headline">KAZANDINIZ!</h2>
+            <p id="winner-sub" class="winner-sub">Tebrikler!</p>
+            <div class="winner-actions">
+                <button class="primary" onclick="closeWinnerAndGoIntro()">&#x21BA; TEKRAR OYNA</button>
+            </div>
         </div>
     </div>
 
@@ -500,23 +571,27 @@
     const musicBtn = document.getElementById('musicBtn');
     let nodes = [];
     let adj = {};
-    let state = { board: {}, turn: 'red', selected: null, isCombo: false, score: { red: 18, green: 18 }, mode: 'pvp', aiLevel: 'medium', gameOver: false };
+    let state = { board: {}, turn: 'red', selected: null, isCombo: false, score: { red: 18, green: 18 }, mode: 'pvp', aiLevel: 'medium', gameOver: false, aiMoveHistory: [] };
 
-    const musicPlaylist = [
-        'bg1.mp3',
-        'music/bgm-2.mp3',
-        'music/bgm-3.mp3'
+    const introPlaylist = [
+        'intro.mp3'
+    ];
+
+    const gamePlaylist = [
+        'bgm-1.mp3'
     ];
 
     const audioState = {
-        enabled: false,
-        hasInteracted: false,
+        enabled: true,
+        screen: 'intro',
         trackIndex: 0,
         bgm: new Audio(),
         sfx: {
-            move: new Audio('move.mp3'),
+            move:    new Audio('move.mp3'),
             capture: new Audio('capture.mp3'),
-            win: new Audio('win.mp3')
+            win:     new Audio('win.mp3'),
+            click:   new Audio('click.mp3'),
+            applause: new Audio('applause.mp3')
         }
     };
 
@@ -535,43 +610,76 @@
     function setupAudio() {
         audioState.bgm.volume = 0.35;
         audioState.bgm.loop = false;
-        audioState.bgm.preload = 'none';
-        audioState.bgm.addEventListener('ended', () => nextTrack(true));
+        audioState.bgm.preload = 'auto';
+        audioState.bgm.addEventListener('ended', () => {
+            if (audioState.screen === 'intro') {
+                // Giriş müziği bitti → başa dön
+                loadBgm('intro', 0);
+                tryPlay();
+            } else {
+                // Oyun müziği bitti → sıradaki parça
+                const next = (audioState.trackIndex + 1) % gamePlaylist.length;
+                loadBgm('game', next);
+                tryPlay();
+            }
+        });
 
         Object.values(audioState.sfx).forEach(s => {
             s.volume = 0.55;
-            s.preload = 'none';
+            s.preload = 'auto';
         });
 
-        const unlock = () => {
-            audioState.hasInteracted = true;
-            if (audioState.enabled) playBgm();
-        };
+        // Butonlarda global click sesi
+        document.addEventListener('click', e => {
+            if (e.target.closest('button') && audioState.enabled) playSfx('click');
+        }, true);
 
-        ['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
-            window.addEventListener(evt, unlock, { once: true });
-        });
-
-        loadTrack(audioState.trackIndex);
+        loadBgm('intro', 0);
+        tryPlay();              // Tarayıcı izin verirse hemen başlat
         updateMusicUI();
     }
 
-    function loadTrack(index) {
-        audioState.trackIndex = (index + musicPlaylist.length) % musicPlaylist.length;
-        audioState.bgm.src = musicPlaylist[audioState.trackIndex];
+    function loadBgm(screen, index) {
+        audioState.screen = screen;
+        audioState.trackIndex = index;
+        const src = screen === 'intro'
+            ? introPlaylist[index % introPlaylist.length]
+            : gamePlaylist[index % gamePlaylist.length];
+        audioState.bgm.loop = (screen === 'game'); // oyun müziği sürekli dönüsün
+        audioState.bgm.src = src;
+        audioState.bgm.load();
     }
 
-    function playBgm() {
-        if (!audioState.enabled || !audioState.hasInteracted) return;
-        audioState.bgm.play().catch(() => {
-            updateMusicUI('MÜZİK AÇ');
+    function tryPlay() {
+        if (!audioState.enabled) return;
+        audioState.bgm.play().then(() => {
+            // Başarılı – autoplay izni verildi
+        }).catch(() => {
+            // Tarayıcı engeli – ilk etkileşim bekleniyor
+            const unlock = () => {
+                if (audioState.enabled) {
+                    audioState.bgm.play().catch(() => {});
+                }
+                ['pointerdown', 'touchstart', 'keydown'].forEach(ev =>
+                    window.removeEventListener(ev, unlock));
+            };
+            ['pointerdown', 'touchstart', 'keydown'].forEach(ev =>
+                window.addEventListener(ev, unlock, { once: true }));
         });
     }
+
+    function switchToBgm(screen) {
+        const wasPlaying = !audioState.bgm.paused;
+        loadBgm(screen, 0);
+        if (audioState.enabled) tryPlay();
+    }
+
+    function playBgm() { tryPlay(); }
 
     function toggleMusic() {
         audioState.enabled = !audioState.enabled;
         if (audioState.enabled) {
-            playBgm();
+            tryPlay();
         } else {
             audioState.bgm.pause();
         }
@@ -579,9 +687,10 @@
     }
 
     function nextTrack(autoPlay = false) {
-        const shouldPlay = autoPlay || (audioState.enabled && !audioState.bgm.paused);
-        loadTrack(audioState.trackIndex + 1);
-        if (shouldPlay) playBgm();
+        const next = audioState.screen === 'intro' ? 0
+            : (audioState.trackIndex + 1) % gamePlaylist.length;
+        loadBgm(audioState.screen, next);
+        if (autoPlay || audioState.enabled) tryPlay();
         updateMusicUI();
     }
 
@@ -594,10 +703,7 @@
 
     function updateMusicUI(overrideLabel = '') {
         if (!musicBtn) return;
-        if (overrideLabel) {
-            musicBtn.innerText = `🎵 ${overrideLabel}`;
-            return;
-        }
+        if (overrideLabel) { musicBtn.innerText = `🎵 ${overrideLabel}`; return; }
         musicBtn.innerText = audioState.enabled ? '🔇 MÜZİK KAPAT' : '🎵 MÜZİK AÇ';
     }
 
@@ -682,6 +788,7 @@
         state.score = { red: 18, green: 18 };
         state.mode = introMode;
         state.aiLevel = introDiff;
+        state.aiMoveHistory = [];
         hideWinnerModal();
 
         // VERDİĞİNİZ 18 + 18 TAŞ DİZİLİMİ
@@ -740,7 +847,7 @@
             if(nextCaps.length > 0) {
                 state.isCombo = true; state.selected = to;
                 render(); updateUI();
-                if(state.mode === 'pve' && state.turn === 'green') setTimeout(aiPlay, 800);
+                if(state.mode === 'pve' && state.turn === 'green') setTimeout(aiPlay, 1400);
                 return;
             }
         } else {
@@ -754,7 +861,7 @@
         state.isCombo = false; state.selected = null;
         state.turn = (state.turn === 'red') ? 'green' : 'red';
         render(); updateUI();
-        if(state.mode === 'pve' && state.turn === 'green') setTimeout(aiPlay, 800);
+        if(state.mode === 'pve' && state.turn === 'green') setTimeout(aiPlay, 1300);
     }
 
     function aiPlay() {
@@ -908,12 +1015,18 @@
             if (!all.length) { checkWinner(true); return; }
             const caps = all.filter(m => m.cap);
             const pool = caps.length ? caps : all;
+            const recentMedium = state.aiMoveHistory;
             const scored = pool.map(m => {
                 const nb = applyMove(board, m.from, m.to, m.cap);
-                return { m, score: (countPieces(nb, 'green') - countPieces(nb, 'red')) * 10 - captureRisk(nb, 'green') * 4 };
+                let s = (countPieces(nb, 'green') - countPieces(nb, 'red')) * 10 - captureRisk(nb, 'green') * 4;
+                const occ = recentMedium.filter(k => k === `${m.from}-${m.to}`).length;
+                s -= occ * 200;
+                return { m, score: s };
             });
             scored.sort((a, b) => b.score - a.score);
             const best = scored[0].m;
+            state.aiMoveHistory.push(`${best.from}-${best.to}`);
+            if (state.aiMoveHistory.length > 8) state.aiMoveHistory.shift();
             performMove(best.from, best.to, best.cap);
             return;
         }
@@ -936,13 +1049,18 @@
         if (!all.length) { checkWinner(true); return; }
         // Yakalamalar önce – alpha-beta daha verimli çalışır
         const ordered = [...all.filter(m => m.cap), ...all.filter(m => !m.cap)];
+        const recentHard = state.aiMoveHistory;
         let best = null, bestScore = -Infinity;
         for (const m of ordered) {
             const nb = applyMove(board, m.from, m.to, m.cap);
             const nextCombo = (m.cap != null && movesOnBoard(nb, m.to).some(x => x.cap != null)) ? m.to : null;
-            const sc = minimax(nb, 5, -Infinity, Infinity, false, nextCombo);
+            let sc = minimax(nb, 5, -Infinity, Infinity, false, nextCombo);
+            const occ = recentHard.filter(k => k === `${m.from}-${m.to}`).length;
+            sc -= occ * 250;
             if (sc > bestScore) { bestScore = sc; best = m; }
         }
+        state.aiMoveHistory.push(`${best.from}-${best.to}`);
+        if (state.aiMoveHistory.length > 8) state.aiMoveHistory.shift();
         performMove(best.from, best.to, best.cap);
     }
 
@@ -958,6 +1076,17 @@
         s.style.color = 'white';
         sc.innerText = `Kırmızı: ${state.score.red} | Yeşil: ${state.score.green}`;
         cm.style.display = state.isCombo ? 'block' : 'none';
+
+        // Mini taş göstergesi
+        const ts = document.getElementById('turn-stone');
+        if (ts) ts.className = 'turn-stone-dot ' + state.turn;
+
+        // Tahta kenarı parlaması
+        const bc = document.getElementById('game-board-container');
+        if (bc) {
+            bc.classList.toggle('turn-red',   state.turn === 'red');
+            bc.classList.toggle('turn-green', state.turn === 'green');
+        }
     }
 
     function render() {
@@ -992,25 +1121,177 @@
     }
 
     function checkWinner(aiStuck = false) {
-        let msg = "";
-        if(state.score.green === 0 || aiStuck) msg = "KIRMIZI KAZANDI!";
-        else if(state.score.red === 0) msg = "YEŞİL KAZANDI!";
-        if(msg) { 
-            state.gameOver = true; 
-            const t = document.getElementById('turn-txt');
-            if(t) t.innerText = msg;
-            showWinnerModal(msg);
+        let winColor = null;
+        if (state.score.green === 0 || aiStuck) winColor = 'red';
+        else if (state.score.red === 0) winColor = 'green';
+        if (!winColor) return;
+
+        state.gameOver = true;
+        const t = document.getElementById('turn-txt');
+        let headline, sub, cssClass, doFireworks = false;
+
+        if (state.mode === 'pve') {
+            if (winColor === 'red') {
+                // İnsan (kırmızı) kazandı
+                headline = '🏆 KAZANDINIZ!';
+                sub = 'Tebrikler! Bilgisayarı yendiniz.';
+                cssClass = 'red-win';
+                doFireworks = true;
+                setTimeout(() => playSfx('applause'), 600);
+            } else {
+                // AI kazandı
+                headline = '🤖 BİLGİSAYAR KAZANDI';
+                sub = 'Bu sefer bilgisayar daha iyiydi. Tekrar deneyin!';
+                cssClass = 'ai-win';
+            }
+        } else {
+            // İki kişili mod
+            if (winColor === 'red') {
+                headline = '🔴 KIRMIZI OYUNCU KAZANDI!';
+                sub = 'Kırmızı renkli oyuncuyu tebrik ederiz!';
+                cssClass = 'red-win';
+            } else {
+                headline = '🟢 YEŞİL OYUNCU KAZANDI!';
+                sub = 'Yeşil renkli oyuncuyu tebrik ederiz!';
+                cssClass = 'green-win';
+            }
+            doFireworks = true;
         }
+
+        if (t) t.innerText = headline;
+        showWinnerModal(headline, sub, cssClass, doFireworks);
     }
 
-    function showWinnerModal(message) {
-        if(winnerTitle) winnerTitle.innerText = message;
-        if(winnerModal) winnerModal.classList.add('show');
+    function showWinnerModal(headline, sub, cssClass, doFireworks) {
+        const title = document.getElementById('winner-title');
+        const subEl = document.getElementById('winner-sub');
+        const trophy = document.getElementById('winner-trophy');
+        if (title) { title.innerText = headline; title.className = 'winner-headline ' + cssClass; }
+        if (subEl) subEl.innerText = sub;
+        if (trophy) trophy.innerText = cssClass === 'ai-win' ? '🤖' : '🏆';
+        if (winnerModal) winnerModal.classList.add('show');
         playSfx('win');
+        if (doFireworks) startFireworks();
     }
 
     function hideWinnerModal() {
         if(winnerModal) winnerModal.classList.remove('show');
+        stopFireworks();
+    }
+
+    function closeWinnerAndGoIntro() {
+        hideWinnerModal();
+        openIntroScreen();
+    }
+
+    /* ══════════ HAVAİ FİŞEK MOTORU ══════════ */
+    let fwAnimId = null;
+
+    function startFireworks() {
+        const canvas = document.getElementById('fw-canvas');
+        if (!canvas) return;
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+        canvas.style.display = 'block';
+        const ctx = canvas.getContext('2d');
+        const particles = [];
+
+        const COLORS = [
+            '#ff4444','#ff9900','#ffee00','#44ff44',
+            '#44aaff','#cc44ff','#ff44cc','#ffffff',
+            '#ff6680','#00ffcc'
+        ];
+
+        function spawnBurst(x, y) {
+            const count = 90 + Math.random() * 60;
+            for (let i = 0; i < count; i++) {
+                const angle = (Math.PI * 2 / count) * i + Math.random() * 0.3;
+                const speed = 3 + Math.random() * 9;
+                const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+                const size  = 2 + Math.random() * 4;
+                particles.push({
+                    x, y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    alpha: 1, color, size,
+                    decay:   0.012 + Math.random() * 0.012,
+                    gravity: 0.12  + Math.random() * 0.08,
+                    trail: []
+                });
+            }
+        }
+
+        // İlk patlamalar
+        spawnBurst(canvas.width * 0.50, canvas.height * 0.35);
+        spawnBurst(canvas.width * 0.25, canvas.height * 0.45);
+        spawnBurst(canvas.width * 0.75, canvas.height * 0.40);
+
+        let elapsed = 0;
+        const launchTimes = [];
+        for (let i = 0; i < 32; i++) {
+            launchTimes.push(300 + i * 280 + Math.random() * 180);
+        }
+        let launchIdx = 0, lastTs = null;
+
+        function frame(ts) {
+            if (!lastTs) lastTs = ts;
+            elapsed += ts - lastTs;
+            lastTs = ts;
+
+            while (launchIdx < launchTimes.length && elapsed >= launchTimes[launchIdx]) {
+                spawnBurst(
+                    canvas.width  * (0.12 + Math.random() * 0.76),
+                    canvas.height * (0.08 + Math.random() * 0.52)
+                );
+                launchIdx++;
+            }
+
+            ctx.fillStyle = 'rgba(0,0,0,0.17)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.trail.push({ x: p.x, y: p.y, alpha: p.alpha });
+                if (p.trail.length > 7) p.trail.shift();
+
+                for (let j = 0; j < p.trail.length; j++) {
+                    const t = p.trail[j];
+                    ctx.beginPath();
+                    ctx.arc(t.x, t.y, p.size * 0.45, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color + Math.floor(t.alpha * 70).toString(16).padStart(2,'0');
+                    ctx.fill();
+                }
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fillStyle = p.color + Math.floor(p.alpha * 255).toString(16).padStart(2,'0');
+                ctx.fill();
+
+                p.x  += p.vx;
+                p.y  += p.vy;
+                p.vy += p.gravity;
+                p.vx *= 0.98;
+                p.alpha -= p.decay;
+                if (p.alpha <= 0) particles.splice(i, 1);
+            }
+
+            if (elapsed < 10000 || particles.length > 0) {
+                fwAnimId = requestAnimationFrame(frame);
+            } else {
+                stopFireworks();
+            }
+        }
+
+        fwAnimId = requestAnimationFrame(frame);
+    }
+
+    function stopFireworks() {
+        if (fwAnimId) { cancelAnimationFrame(fwAnimId); fwAnimId = null; }
+        const canvas = document.getElementById('fw-canvas');
+        if (canvas) {
+            canvas.style.display = 'none';
+            canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        }
     }
 
     function toggleTheme() {
@@ -1022,7 +1303,7 @@
         if(btn) btn.innerText = nextTheme === 'dark' ? '☀️ GÜNDÜZ MODU' : '🌙 GECE MODU';
     }
 
-    let introMode = 'pvp';
+    let introMode = 'pve';
     let introDiff = 'medium';
 
     function selectIntroMode(mode) {
@@ -1044,11 +1325,13 @@
         const wrap = document.getElementById('intro-diff-wrap');
         if (wrap) wrap.style.display = introMode === 'pve' ? 'block' : 'none';
         if (howToScreen) howToScreen.style.display = 'flex';
+        switchToBgm('intro');
     }
 
     function closeHowToScreen() {
         if (howToScreen) howToScreen.style.display = 'none';
         hideWinnerModal();
+        switchToBgm('game');
         initGame();
     }
 
