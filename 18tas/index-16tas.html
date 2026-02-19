@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="data:,">
+    <title>16 Taş 3D Dama</title>
+    <script type="importmap">
+    {
+        "imports": {
+            "three":         "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+        }
+    }
+    </script>
+    <style>
+        :root {
+            --sidebar-bg: #2a1e3a;
+            --text-color: #f0e8ff;
+            --board-bg:   #c59830;
+            --btn-bg:     #4a3560;
+            --btn-outline-color:  var(--board-bg);
+            --btn-outline-border: var(--board-bg);
+        }
+        body[data-theme='light'] {
+            --sidebar-bg: #ece0f5;
+            --text-color: #2a1a3a;
+            --board-bg:   #d6aa48;
+            --btn-bg:     #6d4c91;
+            --btn-outline-color:  #6d3a99;
+            --btn-outline-border: #6d3a99;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0; padding: 0;
+            display: flex; height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text-color);
+            background: #0b0708;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #bg-canvas {
+            position: fixed; inset: 0;
+            width: 100%; height: 100%;
+            z-index: 0; pointer-events: none;
+        }
+
+        #main-wrapper { position: relative; z-index: 1; display: flex; width: 100%; height: 100%; }
+
+        /* ── Sidebar ── */
+        #sidebar {
+            width: 280px;
+            background-color: rgba(28,18,44,0.93);
+            padding: 22px;
+            box-shadow: 2px 0 18px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column; gap: 12px;
+            z-index: 10; flex-shrink: 0;
+        }
+        body[data-theme='light'] #sidebar { background-color: rgba(220,208,240,0.93); }
+
+        #sidebar-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        h1 { margin: 0; color: var(--board-bg); font-size: 16px; text-transform: uppercase; letter-spacing: 2px; text-align: center; border-bottom: 2px solid #5d3a7a; padding-bottom: 10px; }
+        .panel { background: rgba(0,0,0,0.22); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); }
+
+        .status-bar {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            font-size: 1rem; font-weight: bold; text-align: center;
+            padding: 10px; background: #f0e8ff; color: #2a1e3a; border-radius: 6px;
+        }
+        .turn-stone-dot {
+            width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+            transition: background 0.35s ease;
+        }
+        .turn-stone-dot.white  { background: radial-gradient(circle at 32% 32%, #ffffff, #bbb 60%, #888); }
+        .turn-stone-dot.yellow { background: radial-gradient(circle at 32% 32%, #fff176, #ffd600 60%, #b35900); }
+
+        select, button { padding: 10px; border-radius: 6px; border: none; background: var(--btn-bg); color: white; cursor: pointer; font-weight: bold; font-family: inherit; }
+        button.primary  { background: #7b1fa2; color: white; }
+        button.outline  { background: transparent; border: 2px solid var(--btn-outline-border); color: var(--btn-outline-color); }
+
+        #combo-msg { color: #ffeb3b; font-size: 0.8rem; text-align: center; display: none; margin-top: 5px; font-weight: bold; }
+
+        .cam-hint { font-size: 0.75rem; opacity: 0.55; text-align: center; line-height: 1.7; }
+
+        /* ── 3D canvas area ── */
+        #canvas-area { flex-grow: 1; position: relative; overflow: hidden; }
+        #canvas-area canvas { display: block; outline: none; }
+
+        /* ── Winner modal ── */
+        #winner-modal {
+            position: fixed; inset: 0; display: none;
+            justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.75); z-index: 4000; padding: 20px;
+        }
+        #winner-modal.show { display: flex; }
+        .winner-dialog {
+            width: min(460px, 100%);
+            background: linear-gradient(145deg, #3e1d6d, #2c1a54);
+            border: 2px solid rgba(255,255,255,0.22);
+            border-radius: 18px; padding: 36px 28px 28px;
+            text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.7); color: #fff;
+        }
+        .winner-trophy { font-size: 3.8rem; margin-bottom: 8px; animation: trophyBounce 0.7s ease; }
+        @keyframes trophyBounce {
+            0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+            60%  { transform: scale(1.25) rotate(5deg);  opacity: 1; }
+            100% { transform: scale(1) rotate(0); }
+        }
+        .winner-headline { margin: 0 0 6px; font-size: 1.7rem; font-weight: 900; letter-spacing: 2px; }
+        .winner-headline.white-win  { color: #eeeeee; }
+        .winner-headline.yellow-win { color: #ffd600; }
+        .winner-headline.ai-win     { color: #ce93d8; }
+        .winner-sub { margin: 0 0 24px; font-size: 1.05rem; opacity: 0.85; line-height: 1.5; }
+        .winner-actions { display: flex; gap: 12px; justify-content: center; }
+        .winner-actions button { flex: 1; max-width: 180px; padding: 12px; font-size: 0.95rem; }
+
+        /* ── Fireworks canvas ── */
+        #fw-canvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3999; display: none; }
+
+        /* ── How-to intro screen ── */
+        #howto-screen {
+            position: fixed; inset: 0; z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+            padding: 18px;
+            background: radial-gradient(circle at top, #4e1d85, #3e1d6d 50%, #2c1a54);
+            color: #fff;
+        }
+        .howto-card {
+            width: min(720px, 100%); max-height: 92dvh; overflow: auto;
+            border-radius: 14px; padding: 18px;
+            background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.18);
+        }
+        .howto-title  { margin: 0 0 12px; text-align: center; font-size: 1.6rem; letter-spacing: 1px; }
+        .howto-sub    { margin: 0 0 14px; text-align: center; opacity: 0.9; font-size: 0.95rem; }
+        .howto-list   { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 10px; line-height: 1.45; font-size: 1rem; }
+        .howto-actions { margin-top: 18px; display: flex; justify-content: center; }
+        .intro-section-label { text-align: center; font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.65; margin: 16px 0 8px; }
+        .intro-mode-btns, .intro-diff-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 6px; }
+        .mode-btn { padding: 11px 26px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.08); color: #fff; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .mode-btn.active { background: #7b1fa2; border-color: #7b1fa2; box-shadow: 0 0 14px rgba(123,31,162,0.5); }
+        .mode-btn:hover:not(.active) { background: rgba(255,255,255,0.18); }
+        .diff-btn { padding: 8px 20px; border-radius: 6px; border: 2px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.07); color: #fff; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+        .diff-btn.active { background: #5c6bc0; border-color: #7986cb; box-shadow: 0 0 10px rgba(92,107,192,0.4); }
+        .diff-btn:hover:not(.active) { background: rgba(255,255,255,0.14); }
+        .intro-divider { border: none; border-top: 1px solid rgba(255,255,255,0.12); margin: 16px 0; }
+        .menu-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+        .menu-info-item { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; padding: 8px 12px; font-size: 0.88rem; line-height: 1.5; }
+
+        /* ── In-game how-to modal ── */
+        #howto-modal-bg {
+            position: fixed; inset: 0; z-index: 3000; display: none;
+            align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.72); padding: 18px;
+        }
+        #howto-modal-bg.show { display: flex; }
+        .howto-modal-card {
+            width: min(680px, 100%); max-height: 90dvh; overflow-y: auto;
+            border-radius: 14px; padding: 22px;
+            background: linear-gradient(145deg, #3e1d6d, #2c1a54);
+            border: 1px solid rgba(255,255,255,0.18);
+            color: #fff; box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+        }
+
+        /* ── Landscape lock ── */
+        #landscape-lock {
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: #1a0e25; color: #f0e8ff;
+            flex-direction: column; align-items: center; justify-content: center;
+            gap: 20px; text-align: center; padding: 30px;
+        }
+        #landscape-lock.show { display: flex; }
+        .lock-icon { font-size: 3.5rem; animation: rotatePhone 1.5s ease-in-out infinite alternate; }
+        @keyframes rotatePhone { from { transform: rotate(0deg); } to { transform: rotate(-90deg); } }
+        .lock-text { font-size: 1.15rem; font-weight: bold; line-height: 1.6; }
+
+        /* ── Mobile toggle bar ── */
+        #menu-toggle-bar { display: none; }
+        #mobile-turn-bar  { display: none; }
+
+        @media (max-width: 900px) {
+            body { flex-direction: column; overflow-y: auto; height: auto; }
+            #main-wrapper { flex-direction: column; min-height: 100dvh; }
+            #canvas-area { order: 1; flex: 1; min-height: 60dvh; }
+            select, button { width: 100%; min-height: 44px; }
+            .menu-info-grid { grid-template-columns: 1fr; }
+
+            #sidebar {
+                width: 100%; order: 2; padding: 0; gap: 0;
+                overflow: hidden; max-height: 52px;
+                transition: max-height 0.35s ease;
+                flex-direction: column-reverse;
+            }
+            #sidebar.open { max-height: 1200px; overflow-y: auto; }
+
+            #menu-toggle-bar {
+                display: flex; align-items: center; justify-content: space-between;
+                padding: 10px 16px; cursor: pointer; user-select: none;
+                background: rgba(0,0,0,0.18);
+                border-top: 1px solid rgba(255,255,255,0.08);
+                min-height: 52px; box-sizing: border-box;
+            }
+            #menu-toggle-bar span {
+                font-size: 0.85rem; font-weight: bold;
+                letter-spacing: 1.5px; text-transform: uppercase; opacity: 0.85;
+            }
+            #menu-toggle-btn {
+                width: auto !important; min-height: unset !important;
+                padding: 6px 14px; font-size: 0.8rem;
+                background: rgba(255,255,255,0.12);
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 20px; color: inherit;
+            }
+
+            #sidebar-inner { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+            #sidebar-inner h1 { display: none; }
+
+            /* Sıra göstergesi — ekranın üstünde sabit */
+            #mobile-turn-bar {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                padding: 9px 16px;
+                position: sticky;
+                top: 0;
+                z-index: 200;
+                font-size: 0.95rem;
+                font-weight: bold;
+                letter-spacing: 1px;
+                background: rgba(0,0,0,0.60);
+                backdrop-filter: blur(8px);
+                border-bottom: 1px solid rgba(255,255,255,0.10);
+                transition: background 0.3s;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+    <!-- Landscape lock -->
+    <div id="landscape-lock">
+        <div class="lock-icon">📱</div>
+        <div class="lock-text">Lütfen cihazınızı<br><strong>dikey konuma</strong> döndürün.<br>Oyun yatay modda çalışmaz.</div>
+    </div>
+
+    <!-- Intro / howto screen -->
+    <div id="howto-screen" role="dialog" aria-modal="true">
+        <div class="howto-card">
+            <h2 class="howto-title">16 Taş 3D Dama</h2>
+
+            <p class="intro-section-label">Oyun Modu</p>
+            <div class="intro-mode-btns">
+                <button class="mode-btn" data-mode="pvp" onclick="selectIntroMode('pvp')">👥 İki Kişi</button>
+                <button class="mode-btn active" data-mode="pve" onclick="selectIntroMode('pve')">🤖 Bilgisayara Karşı</button>
+            </div>
+            <div id="intro-diff-wrap" style="display:block;text-align:center;">
+                <p class="intro-section-label" style="margin-top:10px;">Zorluk Seviyesi</p>
+                <div class="intro-diff-btns">
+                    <button class="diff-btn" data-level="easy"   onclick="selectIntroDiff('easy')">Kolay</button>
+                    <button class="diff-btn active" data-level="medium" onclick="selectIntroDiff('medium')">Orta</button>
+                    <button class="diff-btn" data-level="hard"   onclick="selectIntroDiff('hard')">Zor</button>
+                </div>
+            </div>
+
+            <div class="howto-actions" style="margin-top:16px;">
+                <button class="primary" style="width:100%;padding:13px;font-size:1.05rem;letter-spacing:1px;" onclick="closeHowToScreen()">▶ OYUNA BAŞLA</button>
+            </div>
+
+            <hr class="intro-divider">
+
+            <p class="howto-sub" style="margin-bottom:10px;">Nasıl Oynanır?</p>
+            <ul class="howto-list">
+                <li><strong>Hamle yapmak:</strong> Kendi taşınıza tıklayın, ardından gitmek istediğiniz boş noktaya tıklayın. Taşlar yalnızca çizgiler üzerinde ilerler.</li>
+                <li><strong>Rakip taşı almak:</strong> Bir rakip taşının tam karşısındaki nokta boşsa üzerinden atlayarak o noktaya geçer, rakip taş oyundan çıkar.</li>
+                <li><strong>Kombo:</strong> Taş aldıktan sonra aynı taşla zincirleme alma fırsatı çıkarsa komboyu sürdürebilirsiniz.</li>
+                <li><strong>Kazanma koşulu:</strong> Rakibinin 16 taşının tamamını tahtadan kaldıran oyuncu kazanır.</li>
+                <li><strong>Beyaz taşlar</strong> ilk hamleyi yapar.</li>
+            </ul>
+
+            <hr class="intro-divider">
+
+            <p class="howto-sub" style="margin-bottom:10px;">3D Kamera Kontrolü</p>
+            <div class="menu-info-grid">
+                <div class="menu-info-item">🖱 <strong>Sol tık + sürükle</strong><br>Tahtayı döndür</div>
+                <div class="menu-info-item">🖱 <strong>Tekerlek</strong><br>Yaklaştır / uzaklaştır</div>
+                <div class="menu-info-item">🖱 <strong>Sağ tık + sürükle</strong><br>Kaydır (pan)</div>
+                <div class="menu-info-item">📱 <strong>İki parmak</strong><br>Döndür / yaklaştır</div>
+            </div>
+
+            <hr class="intro-divider">
+
+            <p class="howto-sub" style="margin-bottom:10px;">Menü Butonları</p>
+            <div class="menu-info-grid">
+                <div class="menu-info-item">🔄 <strong>Yeni Oyun</strong><br>Tahtayı sıfırlar.</div>
+                <div class="menu-info-item">☀️🌙 <strong>Tema</strong><br>Açık / koyu mod.</div>
+                <div class="menu-info-item">🎵 <strong>Müzik</strong><br>Müziği aç/kapat.</div>
+                <div class="menu-info-item">❓ <strong>Nasıl Oynanır</strong><br>Kuralları tekrar göster.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- In-game how-to modal -->
+    <div id="howto-modal-bg" role="dialog" aria-modal="true" onclick="closeHowtoModal(event)">
+        <div class="howto-modal-card" onclick="event.stopPropagation()">
+            <h2 class="howto-title" style="margin:0 0 12px;text-align:center;font-size:1.45rem;">16 Taş 3D Dama</h2>
+            <p class="howto-sub" style="margin-bottom:10px;">Nasıl Oynanır?</p>
+            <ul class="howto-list">
+                <li><strong>Hamle yapmak:</strong> Kendi taşınıza tıklayın, ardından hedef noktaya tıklayın.</li>
+                <li><strong>Taş almak:</strong> Rakip taşın üzerinden atlayarak o taşı oyundan çıkarın.</li>
+                <li><strong>Kombo:</strong> Ardışık atlamalar sıra değiştirmez.</li>
+                <li><strong>Kazanma:</strong> Rakibinin tüm 16 taşını alan oyuncu kazanır.</li>
+            </ul>
+            <div class="howto-actions">
+                <button class="primary" onclick="closeHowtoModal()">TAMAM</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main layout -->
+    <div id="main-wrapper">
+        <!-- Mobil: ekran üstü sıra çubuğu -->
+        <div id="mobile-turn-bar">
+            <span id="mob-turn-stone" class="turn-stone-dot white" style="width:18px;height:18px;"></span>
+            <span>Sıra: <strong id="mob-turn-txt">Beyaz</strong></span>
+        </div>
+
+        <div id="sidebar">
+            <div id="menu-toggle-bar" onclick="toggleSidebar()">
+                <span>16 TAŞ 3D DAMA</span>
+                <button id="menu-toggle-btn">▲ MENÜ</button>
+            </div>
+
+            <div id="sidebar-inner">
+                <h1>16 TAŞ 3D DAMA</h1>
+
+                <div id="status" class="status-bar">
+                    <span id="turn-stone" class="turn-stone-dot white"></span>
+                    Sıra: <span id="turn-txt">Beyaz</span>
+                </div>
+                <div id="combo-msg">⚡ KOMBO DEVAM EDİYOR!</div>
+
+                <div class="panel">
+                    <div id="score" style="text-align:center;font-weight:bold;color:#fff;">Beyaz: 16 | Sarı: 16</div>
+                </div>
+
+                <div class="panel" style="display:flex;flex-direction:column;gap:8px;">
+                    <button class="primary" onclick="openIntroScreen()">🔄 YENİ OYUN</button>
+                    <button class="outline" onclick="toggleTheme()" id="themeBtn">☀️ GÜNDÜZ MODU</button>
+                    <button class="outline" onclick="toggleMusic()"  id="musicBtn">🎵 MÜZİK AÇ</button>
+                    <button class="outline" onclick="openHowtoModal()">❓ NASIL OYNANIR</button>
+                    <a href="portal.html" class="outline" style="display:block;text-align:center;text-decoration:none;padding:8px 0;border-radius:8px;">🏠 ANA MENÜ</a>
+                </div>
+
+                <div class="panel cam-hint">
+                    🖱 Sürükle: Döndür<br>
+                    🖱 Tekerlek: Yaklaştır<br>
+                    🖱 Sağ tık: Kaydır
+                </div>
+            </div>
+        </div>
+
+        <div id="canvas-area"></div>
+    </div>
+
+    <!-- Fireworks -->
+    <canvas id="fw-canvas"></canvas>
+
+    <!-- Winner modal -->
+    <div id="winner-modal" role="dialog" aria-modal="true">
+        <div class="winner-dialog">
+            <div class="winner-trophy" id="winner-trophy">🏆</div>
+            <h2 id="winner-title" class="winner-headline">KAZANDINIZ!</h2>
+            <p id="winner-sub" class="winner-sub">Tebrikler!</p>
+            <div class="winner-actions">
+                <button class="primary" onclick="closeWinnerAndGoIntro()">&#x21BA; TEKRAR OYNA</button>
+            </div>
+        </div>
+    </div>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    // ════════════════════════════════════════════════════════════════════
+    //  CONSTANTS  (16 Taş — 9×9 ızgara, sadeleştirilmiş graf)
+    // ════════════════════════════════════════════════════════════════════
+
+    // 2D grid coords used for jump-landing geometry check
+    const STEP = 90;
+    const OFFSET = 45;
+
+    // The two sets of 16 stone starting positions
+    const wStoneIDs = [2, 10, 12, 18, 20, 28, 30, 36, 38, 46, 48, 54, 56, 64, 74, 76];
+    const yStoneIDs = [4, 6, 16, 24, 26, 32, 34, 42, 44, 50, 52, 60, 62, 68, 70, 78];
+
+    // Long-range connection pairs (identical to ai_studio_code (24).html)
+    const LINKS = [
+        [2,6],[2,18],[2,62],[2,74],[4,36],[4,44],[4,76],[6,26],[6,54],[6,78],
+        [10,70],[16,64],[18,26],[18,54],[18,78],[26,62],[26,74],[36,44],[36,76],
+        [44,76],[54,62],[54,74],[62,78],[74,78]
+    ];
+
+    // 3D board mapping  (square board, rows 0-8 and cols 0-8)
+    const SC     = { sx: 1.1, sz: 1.1, ox: -4.4, oz: -4.4 };
+    const SURF_Y  = 0.175;
+    const STONE_R = 0.36;
+    const BOARD_W = 10.2;
+    const BOARD_H = 0.35;
+    const BOARD_D = 10.2;
+
+    function nodePos3D(id) {
+        return new THREE.Vector3(
+            (id % 9) * SC.sx + SC.ox,
+            SURF_Y,
+            Math.floor(id / 9) * SC.sz + SC.oz
+        );
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    //  GAME STATE
+    // ════════════════════════════════════════════════════════════════════
+    let nodes = {}, adj = {};
+    let state = {
+        board: {}, turn: 'white', selected: null, isCombo: false,
+        score: { white: 16, yellow: 16 }, mode: 'pve', aiLevel: 'medium',
+        gameOver: false, aiMoveHistory: []
+    };
+    let introMode = 'pve', introDiff = 'medium';
+
+    // ════════════════════════════════════════════════════════════════════
+    //  AUDIO
+    // ════════════════════════════════════════════════════════════════════
+    const musicBtn      = document.getElementById('musicBtn');
+    const introPlaylist = ['intro.mp3'];
+    const gamePlaylist  = ['bgm-1.mp3'];
+    const audioState = {
+        enabled: true, screen: 'intro', trackIndex: 0,
+        bgm: new Audio(),
+        sfx: {
+            move:     new Audio('move.mp3'),
+            capture:  new Audio('capture.mp3'),
+            win:      new Audio('win.mp3'),
+            click:    new Audio('click.mp3'),
+            applause: new Audio('applause.mp3')
+        }
+    };
+
+    function setupAudio() {
+        audioState.bgm.volume = 0.35;
+        audioState.bgm.preload = 'auto';
+        audioState.bgm.addEventListener('ended', () => {
+            if (audioState.screen === 'intro') { loadBgm('intro', 0); tryPlay(); }
+            else { loadBgm('game', (audioState.trackIndex + 1) % gamePlaylist.length); tryPlay(); }
+        });
+        Object.values(audioState.sfx).forEach(s => { s.volume = 0.55; s.preload = 'auto'; });
+        document.addEventListener('click', e => {
+            if (e.target.closest('button') && audioState.enabled) playSfx('click');
+        }, true);
+        loadBgm('intro', 0); tryPlay(); updateMusicUI();
+    }
+
+    function loadBgm(screen, index) {
+        audioState.screen = screen; audioState.trackIndex = index;
+        const src = screen === 'intro' ? introPlaylist[index % introPlaylist.length]
+                                       : gamePlaylist[index % gamePlaylist.length];
+        audioState.bgm.loop = (screen === 'game');
+        audioState.bgm.src = src; audioState.bgm.load();
+    }
+
+    function tryPlay() {
+        if (!audioState.enabled) return;
+        audioState.bgm.play().catch(() => {
+            const unlock = () => {
+                if (audioState.enabled) audioState.bgm.play().catch(() => {});
+                ['pointerdown','touchstart','keydown'].forEach(ev => window.removeEventListener(ev, unlock));
+            };
+            ['pointerdown','touchstart','keydown'].forEach(ev => window.addEventListener(ev, unlock, { once: true }));
+        });
+    }
+
+    function switchToBgm(screen) { loadBgm(screen, 0); if (audioState.enabled) tryPlay(); }
+    function toggleMusic() {
+        audioState.enabled = !audioState.enabled;
+        if (audioState.enabled) tryPlay(); else audioState.bgm.pause();
+        updateMusicUI();
+    }
+    function playSfx(type) {
+        const s = audioState.sfx[type]; if (!s) return;
+        s.currentTime = 0; s.play().catch(() => {});
+    }
+    function updateMusicUI() {
+        if (musicBtn) musicBtn.innerText = audioState.enabled ? '🔇 MÜZİK KAPAT' : '🎵 MÜZİK AÇ';
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    //  THREE.JS SCENE
+    // ════════════════════════════════════════════════════════════════════
+    const canvasArea = document.getElementById('canvas-area');
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(canvasArea.clientWidth, canvasArea.clientHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    canvasArea.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0c0810);
+
+    const camera = new THREE.PerspectiveCamera(
+        50, canvasArea.clientWidth / canvasArea.clientHeight, 0.1, 140
+    );
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; controls.dampingFactor = 0.07;
+    controls.minPolarAngle = 0.08; controls.maxPolarAngle = Math.PI / 2.05;
+    controls.minDistance = 3; controls.maxDistance = 26;
+    controls.target.set(0, 0, 0);
+
+    let userMovedCamera = false;
+    controls.addEventListener('start', () => { userMovedCamera = true; });
+
+    function setCameraDefault() {
+        const isMobile = window.innerWidth <= 900;
+        camera.position.set(0, isMobile ? 15 : 11, isMobile ? 18 : 13);
+        controls.target.set(0, 0, 0); controls.update();
+    }
+    setCameraDefault();
+
+    // ── Lighting ────────────────────────────────────────────
+    scene.add(new THREE.AmbientLight(0xfff0f8, 0.42));
+
+    const dirLight = new THREE.DirectionalLight(0xfffaf5, 1.6);
+    dirLight.position.set(3, 12, 6); dirLight.castShadow = true;
+    dirLight.shadow.mapSize.set(2048, 2048);
+    dirLight.shadow.camera.near = 0.5; dirLight.shadow.camera.far = 50;
+    dirLight.shadow.camera.left = -9; dirLight.shadow.camera.right  = 9;
+    dirLight.shadow.camera.top  =  9; dirLight.shadow.camera.bottom = -9;
+    dirLight.shadow.bias = -0.001;
+    scene.add(dirLight);
+
+    const warmLight = new THREE.PointLight(0xffa040, 1.1, 24, 1.8);
+    warmLight.position.set(0, 6, 0); scene.add(warmLight);
+
+    const rimLight = new THREE.PointLight(0x8040ff, 0.4, 32, 2);
+    rimLight.position.set(-2, 5, -16); scene.add(rimLight);
+
+    // ── Board frame ──────────────────────────────────────────
+    {
+        const geo = new THREE.BoxGeometry(BOARD_W + 0.7, 0.14, BOARD_D + 0.7);
+        const mat = new THREE.MeshStandardMaterial({ color: 0x2a1040, roughness: 0.82, metalness: 0.06 });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.y = -(BOARD_H / 2 + 0.07);
+        mesh.castShadow = true; mesh.receiveShadow = true; scene.add(mesh);
+    }
+
+    // ── Board surface ────────────────────────────────────────
+    const boardGeo = new THREE.BoxGeometry(BOARD_W, BOARD_H, BOARD_D);
+    const boardMat = new THREE.MeshStandardMaterial({ color: 0x1a0a2e, roughness: 0.55, metalness: 0.09 });
+    const boardMesh = new THREE.Mesh(boardGeo, boardMat);
+    boardMesh.castShadow = true; boardMesh.receiveShadow = true; scene.add(boardMesh);
+    scene.add(new THREE.LineSegments(
+        new THREE.EdgesGeometry(boardGeo),
+        new THREE.LineBasicMaterial({ color: 0x4a2a6a })
+    ));
+
+    // ════════════════════════════════════════════════════════════════════
+    //  GRAPH BUILDING  (simplified graph algorithm from ai_studio_code)
+    // ════════════════════════════════════════════════════════════════════
+    const nodeHitMeshes = [];
+
+    const hitCircleGeo = new THREE.CircleGeometry(0.60, 12);
+    hitCircleGeo.rotateX(-Math.PI / 2);
+    const hitCircleMat = new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide });
+
+    const nodeDotGeo = new THREE.CylinderGeometry(0.10, 0.10, 0.03, 14);
+    const nodeDotMat = new THREE.MeshStandardMaterial({ color: 0x3a1a5a, roughness: 0.5, metalness: 0.35 });
+    const lineMat3D = new THREE.LineBasicMaterial({ color: 0x5a3a8a });
+
+    function buildGraph() {
+        nodes = {}; adj = {};
+
+        // Step 1: expand all long-range links into unit edges
+        const rawAdj = {};
+        LINKS.forEach(([u, v]) => {
+            const r1 = Math.floor(u / 9), c1 = u % 9;
+            const r2 = Math.floor(v / 9), c2 = v % 9;
+            const dr = Math.sign(r2 - r1), dc = Math.sign(c2 - c1);
+            const steps = Math.max(Math.abs(r2 - r1), Math.abs(c2 - c1));
+            for (let i = 0; i < steps; i++) {
+                const a = (r1 + i * dr) * 9 + (c1 + i * dc);
+                const b = (r1 + (i + 1) * dr) * 9 + (c1 + (i + 1) * dc);
+                if (!rawAdj[a]) rawAdj[a] = new Set();
+                if (!rawAdj[b]) rawAdj[b] = new Set();
+                rawAdj[a].add(b); rawAdj[b].add(a);
+            }
+        });
+
+        // Step 2: keep only branching nodes or stone positions
+        const allStones = new Set([...wStoneIDs, ...yStoneIDs]);
+        const activeNodeIDs = Object.keys(rawAdj).filter(id => {
+            const intId = parseInt(id);
+            return rawAdj[id].size !== 2 || allStones.has(intId);
+        }).map(Number);
+
+        // Step 3: build simplified adjacency (skip-over degree-2 intermediates)
+        activeNodeIDs.forEach(startNode => {
+            const r = Math.floor(startNode / 9), c = startNode % 9;
+            nodes[startNode] = {
+                id: startNode,
+                x: OFFSET + c * STEP,
+                y: OFFSET + r * STEP
+            };
+            adj[startNode] = [];
+
+            rawAdj[startNode].forEach(neighbor => {
+                let prev = startNode, curr = neighbor;
+                while (!activeNodeIDs.includes(curr)) {
+                    const next = Array.from(rawAdj[curr]).find(n => n !== prev);
+                    prev = curr; curr = next;
+                }
+                if (!adj[startNode].includes(curr)) adj[startNode].push(curr);
+            });
+        });
+
+        // Step 4: build 3D visuals
+        const seen = new Set();
+        Object.values(nodes).forEach(n => {
+            const pos = nodePos3D(n.id);
+
+            // Node dot
+            const dot = new THREE.Mesh(nodeDotGeo, nodeDotMat);
+            dot.position.set(pos.x, SURF_Y + 0.022, pos.z);
+            dot.receiveShadow = true; scene.add(dot);
+
+            // Invisible hit circle
+            const hit = new THREE.Mesh(hitCircleGeo, hitCircleMat.clone());
+            hit.position.set(pos.x, SURF_Y + 0.06, pos.z);
+            hit.userData.nodeId = n.id;
+            scene.add(hit); nodeHitMeshes.push(hit);
+
+            // Connection lines
+            adj[n.id].forEach(toId => {
+                const key = n.id < toId ? `${n.id}-${toId}` : `${toId}-${n.id}`;
+                if (seen.has(key)) return; seen.add(key);
+                const p1 = nodePos3D(n.id).clone();
+                const p2 = nodePos3D(toId).clone();
+                p1.y = p2.y = SURF_Y + 0.012;
+                scene.add(new THREE.Line(
+                    new THREE.BufferGeometry().setFromPoints([p1, p2]),
+                    lineMat3D
+                ));
+            });
+        });
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    //  STONE MESHES
+    // ════════════════════════════════════════════════════════════════════
+    const stoneGeo = new THREE.SphereGeometry(STONE_R, 40, 40);
+
+    function makeStoneMat(color, selected) {
+        if (color === 'white') {
+            return new THREE.MeshStandardMaterial({
+                color: 0xe8e8e8, roughness: 0.15, metalness: 0.30,
+                emissive: selected ? 0xaaaaff : 0x334466,
+                emissiveIntensity: selected ? 0.55 : 0.08
+            });
+        } else { // yellow
+            return new THREE.MeshStandardMaterial({
+                color: 0xffd600, roughness: 0.18, metalness: 0.20,
+                emissive: selected ? 0xffcc00 : 0x5a3a00,
+                emissiveIntensity: selected ? 0.60 : 0.10
+            });
+        }
+    }
+
+    const hintGeo = new THREE.CylinderGeometry(0.26, 0.26, 0.045, 20);
+    const hintMat = new THREE.MeshStandardMaterial({
+        color: 0xce93d8, transparent: true, opacity: 0.5,
+        emissive: 0xce93d8, emissiveIntensity: 0.40
+    });
+
+    let stoneMeshes  = {};
+    let hintMeshObjs = [];
+
+    function renderBoard() {
+        Object.values(stoneMeshes).forEach(m => { if (m) scene.remove(m); });
+        stoneMeshes = {};
+        hintMeshObjs.forEach(m => scene.remove(m));
+        hintMeshObjs = [];
+
+        const validMoves = state.selected !== null
+            ? getMoves(state.selected, state.isCombo) : [];
+
+        Object.values(nodes).forEach(n => {
+            const pos = nodePos3D(n.id);
+
+            if (state.board[n.id]) {
+                const color = state.board[n.id];
+                const isSel = state.selected === n.id;
+                const mesh = new THREE.Mesh(stoneGeo, makeStoneMat(color, isSel));
+                mesh.position.set(pos.x, SURF_Y + STONE_R + (isSel ? 0.10 : 0), pos.z);
+                mesh.castShadow = true;
+                if (isSel) mesh.scale.setScalar(1.09);
+                scene.add(mesh); stoneMeshes[n.id] = mesh;
+            }
+
+            if (validMoves.some(m => m.to === n.id)) {
+                const hint = new THREE.Mesh(hintGeo, hintMat.clone());
+                hint.position.set(pos.x, SURF_Y + 0.025, pos.z);
+                scene.add(hint); hintMeshObjs.push(hint);
+            }
+        });
+    }
+
+    let animClock = 0;
+    function animateStones(dt) {
+        animClock += dt * 0.0028;
+        const selMesh = stoneMeshes[state.selected];
+        if (selMesh) {
+            selMesh.position.y = SURF_Y + STONE_R + 0.10 + Math.sin(animClock * 2.2) * 0.045;
+            selMesh.material.emissiveIntensity = 0.38 + Math.sin(animClock * 2.8) * 0.24;
+        }
+        const hintPulse = 0.30 + Math.sin(animClock * 3.2) * 0.20;
+        hintMeshObjs.forEach(h => { h.material.opacity = hintPulse; });
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    //  RAYCASTING / POINTER CLICK
+    // ════════════════════════════════════════════════════════════════════
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    let pDownPos = null;
+    const DRAG_THR = 8;
+
+    renderer.domElement.addEventListener('pointerdown', e => { pDownPos = { x: e.clientX, y: e.clientY }; });
+    renderer.domElement.addEventListener('pointerup', e => {
+        if (!pDownPos) return;
+        const dx = e.clientX - pDownPos.x, dy = e.clientY - pDownPos.y;
+        pDownPos = null;
+        if (Math.sqrt(dx*dx + dy*dy) > DRAG_THR) return;
+        const rect = renderer.domElement.getBoundingClientRect();
+        mouse.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+        mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const hits = raycaster.intersectObjects(nodeHitMeshes, false);
+        if (hits.length > 0) handleNodeClick(hits[0].object.userData.nodeId);
+    });
+
+    // ════════════════════════════════════════════════════════════════════
+    //  GAME LOGIC
+    // ════════════════════════════════════════════════════════════════════
+    function getMoves(id, onlyCaps = false) {
+        const list = [];
+        const color = state.board[id];
+        const enemy = color === 'white' ? 'yellow' : 'white';
+        if (!adj[id]) return list;
+        adj[id].forEach(to => {
+            if (!state.board[to] && !onlyCaps) {
+                list.push({ to, cap: null });
+            } else if (state.board[to] === enemy) {
+                // Compute landing position geometrically
+                const n1 = nodes[id], n2 = nodes[to];
+                const tx = n2.x + (n2.x - n1.x);
+                const ty = n2.y + (n2.y - n1.y);
+                const land = Object.values(nodes).find(
+                    x => Math.abs(x.x - tx) < 5 && Math.abs(x.y - ty) < 5
+                );
+                if (land && !state.board[land.id] && adj[to].includes(land.id))
+                    list.push({ to: land.id, cap: to });
+            }
+        });
+        return list;
+    }
+
+    function handleNodeClick(id) {
+        if (state.gameOver || (state.mode === 'pve' && state.turn === 'yellow')) return;
+        if (state.isCombo) {
+            if (id === state.selected) { finishTurn(); return; }
+            const move = getMoves(state.selected, true).find(m => m.to === id);
+            if (move) performMove(state.selected, id, move.cap);
+            return;
+        }
+        if (state.board[id] === state.turn) state.selected = id;
+        else if (state.selected !== null && !state.board[id]) {
+            const move = getMoves(state.selected).find(m => m.to === id);
+            if (move) performMove(state.selected, id, move.cap);
+        }
+        renderBoard();
+    }
+
+    function performMove(from, to, capId) {
+        state.board[to] = state.board[from]; state.board[from] = null;
+        if (capId) {
+            state.board[capId] = null;
+            state.turn === 'white' ? state.score.yellow-- : state.score.white--;
+            playSfx('capture');
+            const nextCaps = getMoves(to, true);
+            if (nextCaps.length > 0) {
+                state.isCombo = true; state.selected = to;
+                renderBoard(); updateUI();
+                if (state.mode === 'pve' && state.turn === 'yellow') setTimeout(aiPlay, 1400);
+                return;
+            }
+        } else { playSfx('move'); }
+        finishTurn();
+    }
+
+    function finishTurn() {
+        checkWinner(); if (state.gameOver) return;
+        state.isCombo = false; state.selected = null;
+        state.turn = state.turn === 'white' ? 'yellow' : 'white';
+        renderBoard(); updateUI();
+        if (state.mode === 'pve' && state.turn === 'yellow') setTimeout(aiPlay, 1300);
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    //  AI  (minimax + alpha-beta)
+    // ════════════════════════════════════════════════════════════════════
+    function aiPlay() {
+        if (state.gameOver) return;
+        const rnd = arr => arr[Math.floor(Math.random() * arr.length)];
+
+        function movesOnB(b, id) {
+            const list = [], col = b[id]; if (!col) return list;
+            const enemy = col === 'white' ? 'yellow' : 'white';
+            if (!adj[id]) return list;
+            adj[id].forEach(to => {
+                if (!b[to]) list.push({ from: id, to, cap: null });
+                else if (b[to] === enemy) {
+                    const n1 = nodes[id], n2 = nodes[to];
+                    const tx = n2.x+(n2.x-n1.x), ty = n2.y+(n2.y-n1.y);
+                    const land = Object.values(nodes).find(x => Math.abs(x.x-tx)<5 && Math.abs(x.y-ty)<5);
+                    if (land && !b[land.id] && adj[to].includes(land.id))
+                        list.push({ from: id, to: land.id, cap: to });
+                }
+            });
+            return list;
+        }
+        function allMoves(b, col) {
+            const list = [];
+            for (const id in b) if (b[id] === col) movesOnB(b, +id).forEach(m => list.push(m));
+            return list;
+        }
+        function applyMv(b, fr, to, cap) {
+            const nb = Object.assign({}, b); nb[to] = nb[fr]; nb[fr] = null;
+            if (cap != null) nb[cap] = null; return nb;
+        }
+        function cnt(b, col) { let n = 0; for (const k in b) if (b[k] === col) n++; return n; }
+        function risk(b, col) {
+            const enemy = col==='white'?'yellow':'white';
+            return new Set(allMoves(b, enemy).filter(m=>m.cap).map(m=>m.cap)).size;
+        }
+        function eval_(b) {
+            const y = cnt(b,'yellow'), w = cnt(b,'white');
+            if (w === 0) return  9999; if (y === 0) return -9999;
+            let s = (y - w) * 100;
+            s -= risk(b,'yellow') * 35; s += risk(b,'white') * 35;
+            s += allMoves(b,'yellow').length * 2; s -= allMoves(b,'white').length * 2;
+            return s;
+        }
+        function mm(b, d, a, be, max, combo) {
+            const y = cnt(b,'yellow'), w = cnt(b,'white');
+            if (w === 0) return  9999 + d * 5;
+            if (y === 0) return -(9999 + d * 5);
+            if (d === 0) return eval_(b);
+            let moves;
+            if (combo != null) {
+                moves = movesOnB(b, combo).filter(m => m.cap);
+                if (!moves.length) return mm(b, d-1, a, be, !max, null);
+            } else {
+                const col = max ? 'yellow' : 'white';
+                moves = allMoves(b, col);
+                if (!moves.length) return max ? -9999 : 9999;
+                moves.sort((x, y) => (y.cap != null ? 1 : 0) - (x.cap != null ? 1 : 0));
+            }
+            if (max) {
+                let best = -Infinity;
+                for (const m of moves) {
+                    const nb = applyMv(b, m.from, m.to, m.cap);
+                    const nc = (m.cap && movesOnB(nb,m.to).some(x=>x.cap)) ? m.to : null;
+                    const v  = mm(nb, d-1, a, be, nc != null, nc);
+                    if (v > best) best = v; a = Math.max(a, v); if (be <= a) break;
+                }
+                return best;
+            } else {
+                let best = Infinity;
+                for (const m of moves) {
+                    const nb = applyMv(b, m.from, m.to, m.cap);
+                    const nc = (m.cap && movesOnB(nb,m.to).some(x=>x.cap)) ? m.to : null;
+                    const v  = mm(nb, d-1, a, be, nc ? false : true, nc);
+                    if (v < best) best = v; be = Math.min(be, v); if (be <= a) break;
+                }
+                return best;
+            }
+        }
+
+        const board = Object.assign({}, state.board);
+
+        // ── Easy ──
+        if (state.aiLevel === 'easy') {
+            if (state.isCombo) {
+                const caps = getMoves(state.selected, true);
+                if (caps.length) performMove(state.selected, caps[0].to, caps[0].cap); else finishTurn();
+                return;
+            }
+            const all = allMoves(board, 'yellow');
+            if (!all.length) { checkWinner(true); return; }
+            const em = rnd(all); performMove(em.from, em.to, em.cap);
+            return;
+        }
+
+        // helper for medium & hard
+        const applyMvLocal = applyMv;
+
+        // ── Medium ──
+        if (state.aiLevel === 'medium') {
+            if (state.isCombo) {
+                const caps = getMoves(state.selected, true);
+                if (caps.length) {
+                    const sc = caps.map(m => {
+                        const nb = applyMvLocal(board, state.selected, m.to, m.cap);
+                        return { m, s: cnt(nb,'yellow')-cnt(nb,'white')-risk(nb,'yellow')*0.3 };
+                    });
+                    sc.sort((a,b) => b.s - a.s);
+                    performMove(state.selected, sc[0].m.to, sc[0].m.cap);
+                } else finishTurn();
+                return;
+            }
+            const all = allMoves(board, 'yellow');
+            if (!all.length) { checkWinner(true); return; }
+            const caps = all.filter(m=>m.cap), pool = caps.length ? caps : all;
+            const hist = state.aiMoveHistory;
+            const scored = pool.map(m => {
+                const nb = applyMvLocal(board, m.from, m.to, m.cap);
+                let s = (cnt(nb,'yellow')-cnt(nb,'white'))*10 - risk(nb,'yellow')*4;
+                s -= hist.filter(k=>k===`${m.from}-${m.to}`).length * 200;
+                return { m, score: s };
+            });
+            scored.sort((a,b) => b.score - a.score);
+            const best = scored[0].m;
+            state.aiMoveHistory.push(`${best.from}-${best.to}`);
+            if (state.aiMoveHistory.length > 8) state.aiMoveHistory.shift();
+            performMove(best.from, best.to, best.cap); return;
+        }
+
+        // ── Hard ──
+        if (state.isCombo) {
+            const caps = getMoves(state.selected, true);
+            if (!caps.length) { finishTurn(); return; }
+            let best = null, bs = -Infinity;
+            for (const m of caps) {
+                const nb = applyMvLocal(board, state.selected, m.to, m.cap);
+                const sc = mm(nb, 4, -Infinity, Infinity, false, null);
+                if (sc > bs) { bs = sc; best = m; }
+            }
+            performMove(state.selected, best.to, best.cap); return;
+        }
+        const all = allMoves(board, 'yellow');
+        if (!all.length) { checkWinner(true); return; }
+        const ordered = [...all.filter(m=>m.cap), ...all.filter(m=>!m.cap)];
+        const hist = state.aiMoveHistory;
+        let best = null, bs = -Infinity;
+        for (const m of ordered) {
+            const nb = applyMvLocal(board, m.from, m.to, m.cap);
+            const nc = (m.cap && movesOnB2(nb, m.to)) ? m.to : null;
+            let sc = mm(nb, 5, -Infinity, Infinity, false, nc);
+            sc -= hist.filter(k=>k===`${m.from}-${m.to}`).length * 250;
+            if (sc > bs) { bs = sc; best = m; }
+        }
+        state.aiMoveHistory.push(`${best.from}-${best.to}`);
+        if (state.aiMoveHistory.length > 8) state.aiMoveHistory.shift();
+        performMove(best.from, best.to, best.cap);
+
+        function movesOnB2(b, id) {
+            const list = [], col = b[id]; if (!col) return false;
+            const enemy = col === 'white' ? 'yellow' : 'white';
+            if (!adj[id]) return false;
+            adj[id].forEach(to => {
+                if (b[to] === enemy) {
+                    const n1 = nodes[id], n2 = nodes[to];
+                    const tx = n2.x+(n2.x-n1.x), ty = n2.y+(n2.y-n1.y);
+                    const land = Object.values(nodes).find(x => Math.abs(x.x-tx)<5 && Math.abs(x.y-ty)<5);
+                    if (land && !b[land.id] && adj[to].includes(land.id)) list.push(true);
+                }
+            });
+            return list.length > 0;
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    //  UI
+    // ════════════════════════════════════════════════════════════════════
+    function updateUI() {
+        const t  = document.getElementById('turn-txt');
+        const s  = document.getElementById('status');
+        const sc = document.getElementById('score');
+        const cm = document.getElementById('combo-msg');
+        if (!t||!s||!sc||!cm) return;
+
+        const isWhite = state.turn === 'white';
+        t.innerText = isWhite ? 'Beyaz' : (state.mode === 'pvp' ? 'Sarı' : 'Bilgisayar');
+        s.style.background = isWhite ? '#e8e8e8' : '#ffd600';
+        s.style.color = isWhite ? '#222' : '#442200';
+        sc.innerText = `Beyaz: ${state.score.white} | Sarı: ${state.score.yellow}`;
+        cm.style.display = state.isCombo ? 'block' : 'none';
+
+        const ts = document.getElementById('turn-stone');
+        if (ts) ts.className = 'turn-stone-dot ' + state.turn;
+        // Mobil üst çubuğu güncelle
+        const mt = document.getElementById('mob-turn-txt');
+        const ms = document.getElementById('mob-turn-stone');
+        if (mt) mt.innerText = t.innerText;
+        if (ms) ms.className = 'turn-stone-dot ' + state.turn;
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    //  WINNER
+    // ════════════════════════════════════════════════════════════════════
+    function checkWinner(aiStuck = false) {
+        let winColor = null;
+        if (state.score.yellow === 0 || aiStuck) winColor = 'white';
+        else if (state.score.white === 0) winColor = 'yellow';
+        if (!winColor) return;
+        state.gameOver = true;
+        let headline, sub, cssClass, doFw = false;
+        if (state.mode === 'pve') {
+            if (winColor === 'white') {
+                headline = '🏆 KAZANDINIZ!'; sub = 'Tebrikler! Bilgisayarı yendiniz.';
+                cssClass = 'white-win'; doFw = true; setTimeout(()=>playSfx('applause'), 600);
+            } else {
+                headline = '🤖 BİLGİSAYAR KAZANDI'; sub = 'Bu sefer bilgisayar daha iyiydi.';
+                cssClass = 'ai-win';
+            }
+        } else {
+            if (winColor === 'white') {
+                headline = '⚪ BEYAZ KAZANDI!'; sub = 'Beyaz oyuncuyu tebrik ederiz!';
+                cssClass = 'white-win';
+            } else {
+                headline = '🟡 SARI KAZANDI!'; sub = 'Sarı oyuncuyu tebrik ederiz!';
+                cssClass = 'yellow-win';
+            }
+            doFw = true;
+        }
+        showWinnerModal(headline, sub, cssClass, doFw);
+    }
+
+    function showWinnerModal(headline, sub, cssClass, doFw) {
+        const title  = document.getElementById('winner-title');
+        const subEl  = document.getElementById('winner-sub');
+        const trophy = document.getElementById('winner-trophy');
+        if (title)  { title.innerText = headline; title.className = 'winner-headline ' + cssClass; }
+        if (subEl)  subEl.innerText = sub;
+        if (trophy) trophy.innerText = cssClass === 'ai-win' ? '🤖' : '🏆';
+        document.getElementById('winner-modal').classList.add('show');
+        playSfx('win');
+        if (doFw) startFireworks();
+    }
+
+    function hideWinnerModal() {
+        document.getElementById('winner-modal').classList.remove('show');
+        stopFireworks();
+    }
+    function closeWinnerAndGoIntro() { hideWinnerModal(); openIntroScreen(); }
+
+    // ════════════════════════════════════════════════════════════════════
+    //  FIREWORKS
+    // ════════════════════════════════════════════════════════════════════
+    let fwAnimId = null;
+
+    function startFireworks() {
+        const canvas = document.getElementById('fw-canvas'); if (!canvas) return;
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        canvas.style.display = 'block';
+        const ctx = canvas.getContext('2d'), particles = [];
+        const COLORS = ['#ffffff','#ffd600','#ffee00','#ce93d8','#aa66ff','#44aaff','#ff44cc','#ff8844','#a5d6a7','#80deea'];
+
+        function burst(x, y) {
+            const n = 90 + Math.random() * 60;
+            for (let i = 0; i < n; i++) {
+                const a = (Math.PI*2/n)*i + Math.random()*0.3, sp = 3 + Math.random()*9;
+                particles.push({
+                    x, y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp, alpha: 1,
+                    color: COLORS[Math.floor(Math.random()*COLORS.length)],
+                    size: 2 + Math.random()*4,
+                    decay: 0.012 + Math.random()*0.012,
+                    gravity: 0.12 + Math.random()*0.08, trail: []
+                });
+            }
+        }
+        burst(canvas.width*0.50, canvas.height*0.35);
+        burst(canvas.width*0.25, canvas.height*0.45);
+        burst(canvas.width*0.75, canvas.height*0.40);
+
+        let elapsed = 0, idx = 0, last = null;
+        const times = Array.from({length:32}, (_,i) => 300+i*280+Math.random()*180);
+
+        function frame(ts) {
+            if (!last) last = ts;
+            elapsed += ts - last; last = ts;
+            while (idx < times.length && elapsed >= times[idx]) {
+                burst(canvas.width*(0.12+Math.random()*0.76), canvas.height*(0.08+Math.random()*0.52));
+                idx++;
+            }
+            ctx.fillStyle = 'rgba(0,0,0,0.17)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            for (let i = particles.length-1; i >= 0; i--) {
+                const p = particles[i];
+                p.trail.push({x:p.x, y:p.y, alpha:p.alpha});
+                if (p.trail.length > 7) p.trail.shift();
+                for (const t of p.trail) {
+                    ctx.beginPath(); ctx.arc(t.x, t.y, p.size*0.45, 0, Math.PI*2);
+                    ctx.fillStyle = p.color + Math.floor(t.alpha*70).toString(16).padStart(2,'0'); ctx.fill();
+                }
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                ctx.fillStyle = p.color + Math.floor(p.alpha*255).toString(16).padStart(2,'0'); ctx.fill();
+                p.x += p.vx; p.y += p.vy; p.vy += p.gravity; p.vx *= 0.98; p.alpha -= p.decay;
+                if (p.alpha <= 0) particles.splice(i, 1);
+            }
+            if (elapsed < 10000 || particles.length > 0) fwAnimId = requestAnimationFrame(frame); else stopFireworks();
+        }
+        fwAnimId = requestAnimationFrame(frame);
+    }
+
+    function stopFireworks() {
+        if (fwAnimId) { cancelAnimationFrame(fwAnimId); fwAnimId = null; }
+        const c = document.getElementById('fw-canvas');
+        if (c) { c.style.display = 'none'; c.getContext('2d').clearRect(0, 0, c.width, c.height); }
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    //  INTRO / THEME / ORIENTATION
+    // ════════════════════════════════════════════════════════════════════
+    function selectIntroMode(mode) {
+        introMode = mode;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+        const wrap = document.getElementById('intro-diff-wrap');
+        if (wrap) wrap.style.display = mode === 'pve' ? 'block' : 'none';
+    }
+
+    function selectIntroDiff(level) {
+        introDiff = level;
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.dataset.level === level));
+    }
+
+    function openIntroScreen() {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === introMode));
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.dataset.level === introDiff));
+        const wrap = document.getElementById('intro-diff-wrap');
+        if (wrap) wrap.style.display = introMode === 'pve' ? 'block' : 'none';
+        document.getElementById('howto-screen').style.display = 'flex';
+        switchToBgm('intro');
+    }
+
+    function closeHowToScreen() {
+        document.getElementById('howto-screen').style.display = 'none';
+        hideWinnerModal();
+        switchToBgm('game');
+        userMovedCamera = false; setCameraDefault();
+        initGame();
+    }
+
+    function openHowtoModal()   { document.getElementById('howto-modal-bg').classList.add('show'); }
+    function closeHowtoModal(e) {
+        if (!e || e.target === document.getElementById('howto-modal-bg'))
+            document.getElementById('howto-modal-bg').classList.remove('show');
+    }
+
+    function toggleTheme() {
+        const body = document.body, btn = document.getElementById('themeBtn');
+        const next = (body.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', next);
+        if (btn) btn.innerText = next === 'dark' ? '☀️ GÜNDÜZ MODU' : '🌙 GECE MODU';
+        scene.background = new THREE.Color(next === 'dark' ? 0x0c0810 : 0x1a1030);
+    }
+
+    function checkOrientation() {
+        const isMobile = window.matchMedia('(max-width:900px)').matches;
+        const isLandscape = window.innerWidth > window.innerHeight;
+        const lock = document.getElementById('landscape-lock');
+        if (isMobile && isLandscape) lock.classList.add('show'); else lock.classList.remove('show');
+    }
+
+    window.addEventListener('resize', () => {
+        camera.aspect = canvasArea.clientWidth / canvasArea.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(canvasArea.clientWidth, canvasArea.clientHeight);
+        if (!userMovedCamera) setCameraDefault();
+        checkOrientation();
+    });
+    window.addEventListener('orientationchange', checkOrientation);
+    checkOrientation();
+
+    // ════════════════════════════════════════════════════════════════════
+    //  INIT GAME
+    // ════════════════════════════════════════════════════════════════════
+    function initGame() {
+        state.board = {}; state.gameOver = false; state.turn = 'white';
+        state.selected = null; state.isCombo = false;
+        state.score = { white: 16, yellow: 16 };
+        state.mode = introMode; state.aiLevel = introDiff;
+        state.aiMoveHistory = [];
+        hideWinnerModal();
+
+        wStoneIDs.forEach(id => state.board[id] = 'white');
+        yStoneIDs.forEach(id => state.board[id] = 'yellow');
+        state.score.white  = Object.values(state.board).filter(v => v === 'white').length;
+        state.score.yellow = Object.values(state.board).filter(v => v === 'yellow').length;
+
+        renderBoard();
+        updateUI();
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    //  STAR FIELD
+    // ════════════════════════════════════════════════════════════════════
+    let stars;
+    function createStarField() {
+        const geometry = new THREE.BufferGeometry();
+        const count = 2500;
+        const positions = new Float32Array(count * 3);
+        const colors    = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+            const r     = 25 + Math.random() * 50;
+            const theta = Math.random() * Math.PI * 2;
+            const phi   = Math.acos(2 * Math.random() - 1);
+            positions[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+            positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+            positions[i*3+2] = r * Math.cos(phi);
+            const t = Math.random();
+            if      (t > 0.9) { colors[i*3]=1.0; colors[i*3+1]=0.8; colors[i*3+2]=0.4; }
+            else if (t > 0.7) { colors[i*3]=0.8; colors[i*3+1]=0.6; colors[i*3+2]=1.0; }
+            else if (t > 0.5) { colors[i*3]=0.6; colors[i*3+1]=0.8; colors[i*3+2]=1.0; }
+            else              { colors[i*3]=1.0; colors[i*3+1]=1.0; colors[i*3+2]=1.0; }
+        }
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
+        stars = new THREE.Points(geometry, new THREE.PointsMaterial({
+            size: 0.18, vertexColors: true,
+            transparent: true, opacity: 0.88,
+            sizeAttenuation: true, depthWrite: false
+        }));
+        scene.add(stars);
+    }
+
+    // ════════════════════════════════════════════════════════════════════
+    //  RENDER LOOP
+    // ════════════════════════════════════════════════════════════════════
+    let prevNow = performance.now();
+    function animate(now) {
+        requestAnimationFrame(animate);
+        const dt = now - prevNow; prevNow = now;
+        controls.update();
+        animateStones(dt);
+        if (stars) {
+            stars.position.copy(camera.position);
+            stars.rotation.y += 0.00035;
+            stars.rotation.x += 0.00012;
+        }
+        renderer.render(scene, camera);
+    }
+    requestAnimationFrame(animate);
+
+    // ════════════════════════════════════════════════════════════════════
+    //  EXPOSE GLOBALS
+    // ════════════════════════════════════════════════════════════════════
+    window.closeHowToScreen      = closeHowToScreen;
+    window.closeWinnerAndGoIntro = closeWinnerAndGoIntro;
+    window.selectIntroMode       = selectIntroMode;
+    window.selectIntroDiff       = selectIntroDiff;
+    window.openIntroScreen       = openIntroScreen;
+    window.openHowtoModal        = openHowtoModal;
+    window.closeHowtoModal       = closeHowtoModal;
+    window.toggleMusic           = toggleMusic;
+    window.toggleTheme           = toggleTheme;
+
+    window.toggleSidebar = () => {
+        const sb  = document.getElementById('sidebar');
+        const btn = document.getElementById('menu-toggle-btn');
+        const isOpen = sb.classList.toggle('open');
+        btn.textContent = isOpen ? '▼ KAPAT' : '▲ MENÜ';
+        if (isOpen) setTimeout(() => sb.scrollIntoView({ behavior: 'smooth', block: 'end' }), 60);
+    };
+    window.resetCamera = () => { userMovedCamera = false; setCameraDefault(); };
+
+    // ════════════════════════════════════════════════════════════════════
+    //  STARTUP
+    // ════════════════════════════════════════════════════════════════════
+    document.body.setAttribute('data-theme', 'dark');
+    buildGraph();
+    setupAudio();
+    createStarField();
+    // initGame() is called by closeHowToScreen() on "OYUNA BAŞLA"
+
+</script>
+<script src="bg-animation.js"></script>
+</body>
+</html>
