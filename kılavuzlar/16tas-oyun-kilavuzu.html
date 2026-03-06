@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>16 Taşlı Dama – Oyun Kılavuzu</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+    background: #f0ece6;
+    color: #1a0a2e;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto 20mm;
+    background: #fff;
+    padding: 16mm 18mm 14mm 18mm;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    position: relative;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+  }
+
+  /* ─── Başlık bandı ─── */
+  .header-band {
+    background: linear-gradient(135deg, #2d0a4e 0%, #6b21a8 60%, #a855f7 100%);
+    color: #fff;
+    border-radius: 10px;
+    padding: 13px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 13px;
+  }
+  .header-icon { font-size: 36px; flex-shrink: 0; }
+  .header-text h1 { font-size: 19px; font-weight: 900; letter-spacing: 1px; }
+  .header-text p  { font-size: 11px; opacity: 0.87; margin-top: 2px; }
+  .badge {
+    margin-left: auto;
+    background: rgba(255,255,255,0.22);
+    border: 1.5px solid rgba(255,255,255,0.5);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 10.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* ─── Bölüm başlığı ─── */
+  .section-title {
+    font-size: 13.5px;
+    font-weight: 900;
+    color: #6b21a8;
+    border-left: 4px solid #a855f7;
+    padding-left: 8px;
+    margin: 13px 0 7px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ─── Düzen ─── */
+  .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-bottom: 11px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; margin-bottom: 11px; }
+
+  /* ─── Kart ─── */
+  .card {
+    background: #faf5ff;
+    border: 1.5px solid #d8b4fe;
+    border-radius: 9px;
+    padding: 10px 12px;
+  }
+  .card h3 { font-size: 12px; font-weight: 800; color: #7c3aed; margin-bottom: 5px; }
+  .card p, .card ul { font-size: 11.5px; color: #1a0a2e; line-height: 1.6; }
+  .card ul { padding-left: 15px; }
+
+  /* ─── Kural adımları ─── */
+  .rule-list { list-style: none; }
+  .rule-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+    background: #faf5ff;
+    border: 1.5px solid #d8b4fe;
+    border-radius: 8px;
+    padding: 8px 11px;
+  }
+  .rule-icon { font-size: 18px; flex-shrink: 0; line-height: 1.3; }
+  .rule-text { font-size: 11.5px; line-height: 1.6; }
+  .rule-text strong { color: #6b21a8; }
+
+  /* ─── Bilgi / Kazanma kutuları ─── */
+  .info-box {
+    background: #f5f0ff;
+    border: 1.5px solid #c084fc;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 11.5px;
+    margin: 8px 0;
+  }
+  .info-box strong { color: #7c3aed; }
+
+  .win-box {
+    background: linear-gradient(135deg, #f5f0ff, #ede8ff);
+    border: 2px solid #7c3aed;
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 12px;
+    margin: 10px 0;
+    text-align: center;
+  }
+  .win-box .win-title { font-size: 15px; font-weight: 900; color: #6b21a8; margin-bottom: 6px; }
+
+  /* ─── Taş renkleri ─── */
+  .stone-sample {
+    display: inline-block;
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 4px;
+    border: 1.5px solid rgba(0,0,0,0.12);
+  }
+  .stone-white  { background: radial-gradient(circle at 32% 32%, #ffffff, #bbb 60%, #888); }
+  .stone-yellow { background: radial-gradient(circle at 32% 32%, #fff176, #ffd600 60%, #b35900); }
+
+  /* ─── Hamle rozetleri ─── */
+  .badge-move    { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; border-radius: 5px; padding: 1px 6px; font-size: 10.5px; font-weight: 700; }
+  .badge-capture { background: #fce4ec; color: #b71c1c; border: 1px solid #ef9a9a; border-radius: 5px; padding: 1px 6px; font-size: 10.5px; font-weight: 700; }
+  .badge-combo   { background: #fff8e1; color: #e65100; border: 1px solid #ffcc80; border-radius: 5px; padding: 1px 6px; font-size: 10.5px; font-weight: 700; }
+
+  /* ─── Hamle örnekleri ─── */
+  .move-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin: 8px 0 12px; }
+  .move-card {
+    background: #faf5ff;
+    border: 1.5px solid #d8b4fe;
+    border-radius: 9px;
+    padding: 9px 10px;
+    text-align: center;
+  }
+  .move-card h4 { font-size: 11.5px; font-weight: 800; color: #6b21a8; margin-bottom: 6px; }
+  .move-card p  { font-size: 10.5px; color: #1a0a2e; line-height: 1.5; margin-top: 5px; }
+
+  /* ─── Strateji ipuçları ─── */
+  .tip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 8px 0; }
+  .tip-item {
+    background: #f0f4ff;
+    border: 1.5px solid #a5b4fc;
+    border-radius: 8px;
+    padding: 8px 11px;
+    font-size: 11px;
+  }
+  .tip-item strong { color: #3730a3; font-size: 11.5px; }
+
+  /* ─── Diziliş SVG ─── */
+  .setup-wrap { display: flex; justify-content: center; margin: 6px 0; }
+
+  /* ─── Fark tablosu ─── */
+  .diff-table {
+    background: #faf5ff;
+    border: 1.5px solid #d8b4fe;
+    border-radius: 9px;
+    overflow: hidden;
+    margin: 8px 0;
+    font-size: 11.5px;
+  }
+  .diff-table table { margin: 0; }
+  .diff-table th { background: #7c3aed; font-size: 11px; }
+  .diff-table td { border-bottom: 1px solid #d8b4fe; }
+
+  .footer-note {
+    text-align: center;
+    font-size: 10px;
+    color: #aaa;
+    margin-top: 14px;
+    border-top: 1px solid #d8b4fe;
+    padding-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     16 TAŞLI DAMA – OYUN KILAVUZU
+══════════════════════════════════════════ -->
+<div class="page">
+
+  <div class="header-band">
+    <div class="header-icon">🌟</div>
+    <div class="header-text">
+      <h1>16 TAŞLI DAMA — OYUN KILAVUZU</h1>
+      <p>İki kişilik bağlantı ağı strateji oyunu · Beyaz &amp; Sarı takım · 16 + 16 taş</p>
+    </div>
+    <div class="badge">2 Oyuncu</div>
+  </div>
+
+  <!-- ── Hızlı Bakış ── -->
+  <div class="three-col">
+    <div class="card">
+      <h3>👥 Oyuncu Sayısı</h3>
+      <p><strong>2 oyuncu</strong><br>
+         Beyaz takım – Sarı takım<br>
+         Sırayla hamle yapılır.</p>
+    </div>
+    <div class="card">
+      <h3>⏱ Ortalama Süre</h3>
+      <p><strong>20 – 40 dakika</strong><br>
+         Karmaşık tahta geometrisi nedeniyle 18 Taşlı Dama'ya kıyasla daha stratejik bir oyundur.</p>
+    </div>
+    <div class="card">
+      <h3>🧩 Zorluk</h3>
+      <p><strong>Orta–Zor</strong><br>
+         Uzun çapraz bağlantılar beklenmedik hamle yolları oluşturur. 10 yaş ve üzeri için uygundur.</p>
+    </div>
+  </div>
+
+  <!-- ── Başlangıç Dizilişi ── -->
+  <div class="section-title">Başlangıç Dizilişi</div>
+  <div class="two-col" style="align-items:start;">
+    <div>
+      <p style="font-size:11.5px; margin-bottom:8px;">
+        Tahta, 9×9 temel ızgara üzerine çizilmiş özel bir <strong>bağlantı ağından</strong> oluşur. 
+        Aktif düğüm noktaları yaklaşık 32 adettir. Oyun başladığında her oyuncu 
+        <strong>16 taşını</strong> belirlenmiş başlangıç noktalarına koyar; 
+        ortada birkaç <strong>boş nokta</strong> kalır.
+      </p>
+      <div class="info-box">
+        <strong><span class="stone-sample stone-white"></span>Beyaz (16 taş) başlangıç noktaları:</strong><br>
+        Satır-Sütun olarak: (0,2) · (1,1) · (1,3) ·(2,0) · (2,2) · (3,1) · (3,3) · (4,0) · (4,2) · 
+        (5,1) · (5,3) · (6,0) · (6,2) · (7,1) · (8,2) · (8,4)<br><br>
+        <strong><span class="stone-sample stone-yellow"></span>Sarı (16 taş) başlangıç noktaları:</strong><br>
+        Satır-Sütun olarak: (0,4) · (0,6) · (1,7) · (2,6) · (2,8) · (3,5) · (3,7) · (4,6) · (4,8) · 
+        (5,5) · (5,7) · (6,6) · (6,8) · (7,7) · (8,4) · (8,6)<br><br>
+        <em style="font-size:10.5px;">Başlangıç noktaları tahtanın üzerine oyun öncesi işaretlenmiş olabilir.</em>
+      </div>
+      <div class="info-box">
+        <strong>🎲 Sıra:</strong> Beyaz oyuncu her zaman <strong>ilk hamleyi</strong> yapar. 
+        Taraflar anlaşarak yer değiştirebilir.
+      </div>
+    </div>
+
+    <!-- Diziliş SVG -->
+    <div class="setup-wrap">
+      <!--
+        KOD VERİSİNDEN HESAPLANAN KOORDİNATLAR
+        ─────────────────────────────────────────
+        Izgara: 9×9 (id = satır*9 + sütun)
+        SVG adımı = 22 px, offset = 5 px
+        x(id) = 5 + (id % 9) * 22   →  sütun 0..8 → x 5..181
+        y(id) = 5 + Math.floor(id/9)*22  →  satır 0..8 → y 5..181
+
+        Beyaz: 2,10,12,18,20,28,30,36,38,46,48,54,56,64,74,76
+        Sarı : 4,6,16,24,26,32,34,42,44,50,52,60,62,68,70,78
+
+        24 BAĞLANTI (oyun kodundan LINKS dizisi):
+        [2,6]  [2,18] [2,62] [2,74]
+        [4,36] [4,44] [4,76]
+        [6,26] [6,54] [6,78]
+        [10,70][16,64]
+        [18,26][18,54][18,78]
+        [26,62][26,74]
+        [36,44][36,76][44,76]
+        [54,62][54,74][62,78][74,78]
+      -->
+      <svg width="440" height="490" viewBox="0 0 440 490" xmlns="http://www.w3.org/2000/svg">
+        <rect width="440" height="440" rx="10" fill="#1a0a2e" stroke="#5a3a8a" stroke-width="2"/>
+
+        <!-- ── 24 GERÇEK BAĞLANTI ÇİZGİSİ (step=50, offset=15) ── -->
+        <!-- [2,6]  id2=(col2,row0)→(115,15)  id6=(col6,row0)→(315,15) -->
+        <line x1="115" y1="15"  x2="315" y2="15"  stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [2,18] -->
+        <line x1="115" y1="15"  x2="15"  y2="115" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [2,62] -->
+        <line x1="115" y1="15"  x2="415" y2="315" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [2,74] -->
+        <line x1="115" y1="15"  x2="115" y2="415" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [4,36] -->
+        <line x1="215" y1="15"  x2="15"  y2="215" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [4,44] -->
+        <line x1="215" y1="15"  x2="415" y2="215" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [4,76] -->
+        <line x1="215" y1="15"  x2="215" y2="415" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [6,26] -->
+        <line x1="315" y1="15"  x2="415" y2="115" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [6,54] -->
+        <line x1="315" y1="15"  x2="15"  y2="315" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [6,78] -->
+        <line x1="315" y1="15"  x2="315" y2="415" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [10,70] -->
+        <line x1="65"  y1="65"  x2="365" y2="365" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [16,64] -->
+        <line x1="365" y1="65"  x2="65"  y2="365" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [18,26] -->
+        <line x1="15"  y1="115" x2="415" y2="115" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [18,54] -->
+        <line x1="15"  y1="115" x2="15"  y2="315" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [18,78] -->
+        <line x1="15"  y1="115" x2="315" y2="415" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [26,62] -->
+        <line x1="415" y1="115" x2="415" y2="315" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [26,74] -->
+        <line x1="415" y1="115" x2="115" y2="415" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [36,44] -->
+        <line x1="15"  y1="215" x2="415" y2="215" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [36,76] -->
+        <line x1="15"  y1="215" x2="215" y2="415" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [44,76] -->
+        <line x1="415" y1="215" x2="215" y2="415" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [54,62] -->
+        <line x1="15"  y1="315" x2="415" y2="315" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [54,74] -->
+        <line x1="15"  y1="315" x2="115" y2="415" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [62,78] -->
+        <line x1="415" y1="315" x2="315" y2="415" stroke="#7a5ab0" stroke-width="1.8"/>
+        <!-- [74,78] -->
+        <line x1="115" y1="415" x2="315" y2="415" stroke="#7a5ab0" stroke-width="1.8"/>
+
+        <!-- ── BEYAZ TAŞLAR ── wStoneIDs=[2,10,12,18,20,28,30,36,38,46,48,54,56,64,74,76] -->
+        <circle cx="115" cy="15"  r="14" fill="url(#wG2)"/>  <!-- id2  -->
+        <circle cx="65"  cy="65"  r="14" fill="url(#wG2)"/>  <!-- id10 -->
+        <circle cx="165" cy="65"  r="14" fill="url(#wG2)"/>  <!-- id12 -->
+        <circle cx="15"  cy="115" r="14" fill="url(#wG2)"/>  <!-- id18 -->
+        <circle cx="115" cy="115" r="14" fill="url(#wG2)"/>  <!-- id20 -->
+        <circle cx="65"  cy="165" r="14" fill="url(#wG2)"/>  <!-- id28 -->
+        <circle cx="165" cy="165" r="14" fill="url(#wG2)"/>  <!-- id30 -->
+        <circle cx="15"  cy="215" r="14" fill="url(#wG2)"/>  <!-- id36 -->
+        <circle cx="115" cy="215" r="14" fill="url(#wG2)"/>  <!-- id38 -->
+        <circle cx="65"  cy="265" r="14" fill="url(#wG2)"/>  <!-- id46 -->
+        <circle cx="165" cy="265" r="14" fill="url(#wG2)"/>  <!-- id48 -->
+        <circle cx="15"  cy="315" r="14" fill="url(#wG2)"/>  <!-- id54 -->
+        <circle cx="115" cy="315" r="14" fill="url(#wG2)"/>  <!-- id56 -->
+        <circle cx="65"  cy="365" r="14" fill="url(#wG2)"/>  <!-- id64 -->
+        <circle cx="115" cy="415" r="14" fill="url(#wG2)"/>  <!-- id74 -->
+        <circle cx="215" cy="415" r="14" fill="url(#wG2)"/>  <!-- id76 -->
+
+        <!-- ── SARI TAŞLAR ── yStoneIDs=[4,6,16,24,26,32,34,42,44,50,52,60,62,68,70,78] -->
+        <circle cx="215" cy="15"  r="14" fill="url(#yG2)"/>  <!-- id4  -->
+        <circle cx="315" cy="15"  r="14" fill="url(#yG2)"/>  <!-- id6  -->
+        <circle cx="365" cy="65"  r="14" fill="url(#yG2)"/>  <!-- id16 -->
+        <circle cx="315" cy="115" r="14" fill="url(#yG2)"/>  <!-- id24 -->
+        <circle cx="415" cy="115" r="14" fill="url(#yG2)"/>  <!-- id26 -->
+        <circle cx="265" cy="165" r="14" fill="url(#yG2)"/>  <!-- id32 -->
+        <circle cx="365" cy="165" r="14" fill="url(#yG2)"/>  <!-- id34 -->
+        <circle cx="315" cy="215" r="14" fill="url(#yG2)"/>  <!-- id42 -->
+        <circle cx="415" cy="215" r="14" fill="url(#yG2)"/>  <!-- id44 -->
+        <circle cx="265" cy="265" r="14" fill="url(#yG2)"/>  <!-- id50 -->
+        <circle cx="365" cy="265" r="14" fill="url(#yG2)"/>  <!-- id52 -->
+        <circle cx="315" cy="315" r="14" fill="url(#yG2)"/>  <!-- id60 -->
+        <circle cx="415" cy="315" r="14" fill="url(#yG2)"/>  <!-- id62 -->
+        <circle cx="265" cy="365" r="14" fill="url(#yG2)"/>  <!-- id68 -->
+        <circle cx="365" cy="365" r="14" fill="url(#yG2)"/>  <!-- id70 -->
+        <circle cx="315" cy="415" r="14" fill="url(#yG2)"/>  <!-- id78 -->
+
+        <!-- ── Lejant ── -->
+        <rect x="0" y="442" width="440" height="48" fill="rgba(0,0,0,0.45)" rx="0"/>
+        <circle cx="30"  cy="466" r="14" fill="url(#wG2)"/>
+        <text x="50" y="471" font-size="18" fill="#e2d0ff" font-weight="bold">Beyaz (16)</text>
+        <circle cx="240" cy="466" r="14" fill="url(#yG2)"/>
+        <text x="260" y="471" font-size="18" fill="#fde68a" font-weight="bold">Sarı (16)</text>
+
+        <defs>
+          <radialGradient id="wG2" cx="35%" cy="35%" r="65%">
+            <stop offset="0%"   stop-color="#ffffff"/>
+            <stop offset="60%"  stop-color="#cccccc"/>
+            <stop offset="100%" stop-color="#888888"/>
+          </radialGradient>
+          <radialGradient id="yG2" cx="35%" cy="35%" r="65%">
+            <stop offset="0%"   stop-color="#fff59d"/>
+            <stop offset="60%"  stop-color="#ffd600"/>
+            <stop offset="100%" stop-color="#b35900"/>
+          </radialGradient>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── Oynanış Kuralları ── -->
+  <div class="section-title">Oynanış Kuralları</div>
+  <ul class="rule-list">
+    <li>
+      <div class="rule-icon">⚪</div>
+      <div class="rule-text">
+        <strong>Sıra:</strong> Beyaz oyuncu <strong>ilk hamleyi</strong> yapar; 
+        ardından oyuncular dönüşümlü olarak birer hamle yapar. Kendi sırasında hamle yapamayan oyuncu kaybeder.
+      </div>
+    </li>
+    <li>
+      <div class="rule-icon">➡️</div>
+      <div class="rule-text">
+        <strong>Normal Hamle:</strong> Aktif noktadaki bir taş, aralarında <strong>çizgi bağlantısı bulunan 
+        komşu boş noktaya</strong> bir adım kayabilir. Yalnızca doğrudan bağlı komşu noktalar hedeftir. 
+        <span class="badge-move">Normal Hamle</span>
+      </div>
+    </li>
+    <li>
+      <div class="rule-icon">⚡</div>
+      <div class="rule-text">
+        <strong>Yeme (Atlama) Hamlesi:</strong> Bir taş, komşu noktadaki <strong>rakip taşın üzerinden atlayabilir</strong>. 
+        Atlama koşulu: rakip taşın tam karşısında (devam eden çizgi üzerinde) <strong>boş bir nokta</strong> bulunmalıdır. 
+        Atlanılan taş oyundan çıkar. <span class="badge-capture">Yeme</span>
+      </div>
+    </li>
+    <li>
+      <div class="rule-icon">🔥</div>
+      <div class="rule-text">
+        <strong>Zincir Yeme (Kombo):</strong> Bir atlama sonrasında aynı taş tekrar atlama yapabiliyorsa 
+        <strong>sıra bitmez</strong> ve oyuncu isterse zinciri sürdürebilir. 
+        Oyuncu, zincir yapabilse dahi hamleyi herhangi bir noktada sonlandırabilir. 
+        <span class="badge-combo">Kombo</span>
+      </div>
+    </li>
+    <li>
+      <div class="rule-icon">🔗</div>
+      <div class="rule-text">
+        <strong>Uzun Bağlantılar:</strong> Bu tahtanın en önemli özelliği; bazı noktalar arasındaki 
+        bağlantı <strong>tahta üzerinde uzun bir çizgiyle</strong> temsil edilir. 
+        Bu, tek hamlede geniş bir mesafe katetmeyi ya da beklenmedik açılardan atlama yapmayı mümkün kılar. 
+        Çizgi bağlantısı olmayan noktalar arasında hamle yapılamaz.
+      </div>
+    </li>
+    <li>
+      <div class="rule-icon">🚫</div>
+      <div class="rule-text">
+        <strong>Zorunlu Yeme Yok:</strong> Yeme hamlesi yapma imkânı olsa bile bunu yapmak 
+        <em>zorunlu değildir</em>. Oyuncu dilerse normal hamle seçebilir.
+      </div>
+    </li>
+  </ul>
+
+  <!-- ── Hamle Örnekleri ── -->
+  <div class="section-title">Hamle Örnekleri</div>
+  <div class="move-cards">
+    <div class="move-card">
+      <h4>⬜ Normal Hamle</h4>
+      <svg width="90" height="75" viewBox="0 0 90 75" xmlns="http://www.w3.org/2000/svg">
+        <rect width="90" height="75" rx="5" fill="#1a0a2e"/>
+        <line x1="10" y1="37" x2="80" y2="37" stroke="#7a5ab0" stroke-width="1.5"/>
+        <line x1="45" y1="10" x2="45" y2="65" stroke="#7a5ab0" stroke-width="1.5"/>
+        <circle cx="15" cy="37" r="10" fill="url(#wh1)"/>
+        <circle cx="45" cy="37" r="10" fill="none" stroke="#7a5ab0" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <circle cx="75" cy="37" r="6" fill="none" stroke="#5a3a8a" stroke-width="0.8" opacity="0.4"/>
+        <text x="43" y="40.5" font-size="9" fill="#9f60e0" text-anchor="middle" font-weight="bold">→</text>
+        <defs>
+          <radialGradient id="wh1" cx="35%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#ffffff"/><stop offset="65%" stop-color="#cccccc"/><stop offset="100%" stop-color="#888"/>
+          </radialGradient>
+        </defs>
+      </svg>
+      <p>Taş, bağlantı çizgisi ile bağlı boş noktaya kayar.</p>
+    </div>
+    <div class="move-card">
+      <h4>✕ Yeme (Atlama)</h4>
+      <svg width="90" height="75" viewBox="0 0 90 75" xmlns="http://www.w3.org/2000/svg">
+        <rect width="90" height="75" rx="5" fill="#1a0a2e"/>
+        <line x1="8" y1="37" x2="82" y2="37" stroke="#7a5ab0" stroke-width="1.5"/>
+        <circle cx="15" cy="37" r="10" fill="url(#wh2)"/>
+        <circle cx="45" cy="37" r="10" fill="url(#yw2)"/>
+        <circle cx="75" cy="37" r="10" fill="none" stroke="#7a5ab0" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <path d="M25 30 Q44 20 63 30" stroke="#ffd600" stroke-width="2" fill="none"/>
+        <polygon points="65,28 62,35 57,29" fill="#ffd600"/>
+        <text x="45" y="52" font-size="11" fill="#ef5350" text-anchor="middle" font-weight="900">✕</text>
+        <defs>
+          <radialGradient id="wh2" cx="35%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#fff"/><stop offset="65%" stop-color="#ccc"/><stop offset="100%" stop-color="#888"/>
+          </radialGradient>
+          <radialGradient id="yw2" cx="35%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#fff59d"/><stop offset="65%" stop-color="#ffd600"/><stop offset="100%" stop-color="#b35900"/>
+          </radialGradient>
+        </defs>
+      </svg>
+      <p>Rakip taşın üzerinden atla, taşını al.</p>
+    </div>
+    <div class="move-card">
+      <h4>🌟 Uzun Bağlantı Atlaması</h4>
+      <svg width="90" height="75" viewBox="0 0 90 75" xmlns="http://www.w3.org/2000/svg">
+        <rect width="90" height="75" rx="5" fill="#1a0a2e"/>
+        <line x1="10" y1="65" x2="80" y2="10" stroke="#7a5ab0" stroke-width="1.5"/>
+        <circle cx="15" cy="62" r="9" fill="url(#wh3)"/>
+        <circle cx="45" cy="37" r="9" fill="url(#yw3)"/>
+        <circle cx="75" cy="13" r="9" fill="none" stroke="#9f60e0" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <path d="M22 57 L66 20" stroke="#ffd600" stroke-width="1.8" stroke-dasharray="3,2"/>
+        <polygon points="68,17 66,25 61,20" fill="#ffd600"/>
+        <text x="44" y="50" font-size="8" fill="#ef5350" text-anchor="middle" font-weight="900">✕</text>
+        <defs>
+          <radialGradient id="wh3" cx="35%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#fff"/><stop offset="65%" stop-color="#ccc"/><stop offset="100%" stop-color="#888"/>
+          </radialGradient>
+          <radialGradient id="yw3" cx="35%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#fff59d"/><stop offset="65%" stop-color="#ffd600"/><stop offset="100%" stop-color="#b35900"/>
+          </radialGradient>
+        </defs>
+      </svg>
+      <p>Uzun çizgi üzerinde uzak noktadan atlama yapılabilir.</p>
+    </div>
+  </div>
+
+  <!-- ── Kazanma Koşulu ── -->
+  <div class="win-box">
+    <div class="win-title">🏆 Nasıl Kazanılır?</div>
+    <p>Rakibinin <strong>tüm taşlarını</strong> tahtadan kaldıran oyuncu oyunu kazanır.<br>
+       Rakip hiçbir <strong>geçerli hamle yapamıyorsa</strong> (tüm noktalar dolu veya bağlantı kesik) 
+       o da kaybetmiş sayılır.</p>
+  </div>
+
+  <!-- ── 18 vs 16 Karşılaştırma ── -->
+  <div class="section-title">18 Taşlı Dama ile Farklar</div>
+  <div class="diff-table">
+    <table>
+      <thead>
+        <tr><th>Özellik</th><th>18 Taşlı Dama</th><th>16 Taşlı Dama</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Taş sayısı (her oyuncu)</td><td>18</td><td>16</td></tr>
+        <tr><td>Tahta ızgarası</td><td>9×5</td><td>9×9 (seçici)</td></tr>
+        <tr><td>Aktif düğüm sayısı</td><td>37</td><td>~32</td></tr>
+        <tr><td>Tahta şekli</td><td>Yatay dikdörtgen</td><td>Kare</td></tr>
+        <tr><td>İlk oynayan</td><td>Kırmızı</td><td>Beyaz</td></tr>
+        <tr><td>Özel özellik</td><td>Oval kenarlı ızgara</td><td>Uzun çapraz bağlantılar</td></tr>
+        <tr><td>Zorluk</td><td>Orta</td><td>Orta–Zor</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Strateji İpuçları ── -->
+  <div class="section-title">Strateji İpuçları</div>
+  <div class="tip-grid">
+    <div class="tip-item">
+      <strong>🔗 Uzun Yolları Kullan</strong><br>
+      Uzun çapraz bağlantılar hem hızlı hareket hem de çoklu atlama fırsatı sunar. 
+      Bu yolları erken fark et.
+    </div>
+    <div class="tip-item">
+      <strong>🛡 Çaprazları Kapat</strong><br>
+      Rakibin uzun bir çizgi boyunca saldırmasını engellemek için 
+      o çizginin kritik düğüm noktasını taşlarınla tıka.
+    </div>
+    <div class="tip-item">
+      <strong>⛓ Zincir Kurmak</strong><br>
+      İki ve üç taşlık zincir yemeler oyunu tek hamlede değiştirebilir; 
+      bu pozisyonları önceden kur.
+    </div>
+    <div class="tip-item">
+      <strong>🎯 Merkezi Kontrol Et</strong><br>
+      İki büyük çaprazın kesiştigi merkezi kontrol altında tutmak 
+      tahtanın her yerine erişim sağlar.
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>💎 Önemli Fark:</strong> 16 Taşlı Dama'da taşlar <strong>herhangi bir yönde</strong> 
+    (ileri, geri, çapraz) hareket edebilir — 18 Taşlı Dama'dan bu açıdan farklı değildir. 
+    Ancak uzun bağlantılar, çok uzaktaki bir taşı bile tek hamlede tehdit edebilir. 
+    Her hamlede tüm uzun bağlantı çizgilerini gözden geçirmek stratejik avantaj sağlar.
+  </div>
+
+  <div class="footer-note">
+    16 Taşlı Dama · Oyun Kılavuzu · 2 Oyuncu · Sayfa 1/1
+  </div>
+</div>
+
+</body>
+</html>

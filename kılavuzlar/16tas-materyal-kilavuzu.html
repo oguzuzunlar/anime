@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>16 Taşlı Dama – Somut Materyal Kılavuzu</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', 'Segoe UI', sans-serif;
+    background: #f0ece6;
+    color: #1a0a2e;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto 20mm;
+    background: #fff;
+    padding: 16mm 18mm 14mm 18mm;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    position: relative;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; page-break-after: always; }
+  }
+
+  /* ─── Başlık bandı (mor/uzay teması) ─── */
+  .header-band {
+    background: linear-gradient(135deg, #2d0a4e 0%, #6b21a8 60%, #a855f7 100%);
+    color: #fff;
+    border-radius: 10px;
+    padding: 13px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 13px;
+  }
+  .header-icon { font-size: 36px; flex-shrink: 0; }
+  .header-text h1 { font-size: 19px; font-weight: 900; letter-spacing: 1px; }
+  .header-text p  { font-size: 11px; opacity: 0.87; margin-top: 2px; }
+  .badge {
+    margin-left: auto;
+    background: rgba(255,255,255,0.22);
+    border: 1.5px solid rgba(255,255,255,0.5);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 10.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* ─── Bölüm başlığı ─── */
+  .section-title {
+    font-size: 13.5px;
+    font-weight: 900;
+    color: #6b21a8;
+    border-left: 4px solid #a855f7;
+    padding-left: 8px;
+    margin: 13px 0 7px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ─── Düzen ─── */
+  .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-bottom: 11px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; margin-bottom: 11px; }
+
+  /* ─── Kart ─── */
+  .card {
+    background: #faf5ff;
+    border: 1.5px solid #d8b4fe;
+    border-radius: 9px;
+    padding: 10px 12px;
+  }
+  .card h3 { font-size: 12px; font-weight: 800; color: #7c3aed; margin-bottom: 5px; }
+  .card p  { font-size: 11.5px; color: #1a0a2e; line-height: 1.55; }
+
+  /* ─── Adım listesi ─── */
+  .step-list { list-style: none; }
+  .step-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+    background: #faf5ff;
+    border: 1.5px solid #d8b4fe;
+    border-radius: 8px;
+    padding: 8px 11px;
+  }
+  .step-num {
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: #fff;
+    border-radius: 50%;
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 900;
+    flex-shrink: 0;
+  }
+  .step-text { font-size: 11.5px; line-height: 1.55; }
+  .step-text strong { color: #6b21a8; }
+
+  /* ─── Tablo ─── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+    margin: 8px 0;
+  }
+  th {
+    background: #6b21a8;
+    color: #fff;
+    padding: 6px 9px;
+    text-align: left;
+    font-size: 11px;
+  }
+  td {
+    padding: 5px 9px;
+    border-bottom: 1px solid #d8b4fe;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #faf5ff; }
+
+  /* ─── Bilgi / uyarı kutuları ─── */
+  .info-box {
+    background: #f5f0ff;
+    border: 1.5px solid #c084fc;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 11.5px;
+    margin: 8px 0;
+  }
+  .info-box strong { color: #7c3aed; }
+
+  .warn-box {
+    background: #fff7ed;
+    border: 1.5px solid #fb923c;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 11.5px;
+    margin: 8px 0;
+  }
+
+  /* ─── Taş örnekleri ─── */
+  .stone-sample {
+    display: inline-block;
+    width: 17px; height: 17px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 4px;
+    border: 1.5px solid rgba(0,0,0,0.12);
+  }
+  .stone-white  { background: radial-gradient(circle at 32% 32%, #ffffff, #bbb 60%, #888); }
+  .stone-yellow { background: radial-gradient(circle at 32% 32%, #fff176, #ffd600 60%, #b35900); }
+
+  /* ─── Boyut etiketi ─── */
+  .dim-tag {
+    font-size: 10px; font-weight: 700;
+    color: #7c3aed; background: #f3e8ff;
+    border: 1px solid #c084fc;
+    border-radius: 4px; padding: 1px 5px;
+    display: inline-block; margin: 0 2px;
+  }
+
+  /* ─── Tahta SVG wrapper ─── */
+  .board-wrap { display: flex; justify-content: center; margin: 10px 0 6px; }
+
+  .footer-note {
+    text-align: center;
+    font-size: 10px;
+    color: #aaa;
+    margin-top: 14px;
+    border-top: 1px solid #d8b4fe;
+    padding-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="header-band">
+    <div class="header-icon">🔮</div>
+    <div class="header-text">
+      <h1>16 TAŞLI DAMA — SOMUT MATERYAL YAPIM KILAVUZU</h1>
+      <p>Bağlantı ağı tahtasının ve oyun taşlarının ahşap/karton malzemeden üretilmesi için rehber</p>
+    </div>
+    <div class="badge">📄 A4 Baskı</div>
+  </div>
+
+  <!-- ── Ürün Tanıtımı ── -->
+  <div class="section-title">Ürün Hakkında</div>
+  <div class="two-col">
+    <div class="card">
+      <h3>🎯 Oyun Profili</h3>
+      <p>16 Taşlı Dama, 9×9 ızgara üzerine çizilmiş özel bir <strong>bağlantı ağı</strong> tahtasında oynanır. 
+         Bu tahta standart bir kare ızgara değil; uzun çapraz ve yatay çizgilerin oluşturduğu 
+         geometrik bir grafiktir. Her oyuncu <strong>16 taş</strong> ile oynar.</p>
+    </div>
+    <div class="card">
+      <h3>📐 Tahta Yapısı</h3>
+      <p>9×9 ızgara tabanına 24 uzun bağlantı (link) çizilir. Bu çizgiler birbirini keserek 
+         <strong>yaklaşık 32 aktif düğüm noktası</strong> oluşturur. Taşlar yalnızca bu düğüm 
+         noktalarına konulur; düğümler arasındaki çizgiler boyunca hareket edilir.</p>
+    </div>
+  </div>
+
+  <!-- ── Gerekli Malzeme ── -->
+  <div class="section-title">Gerekli Malzemeler</div>
+  <table>
+    <thead>
+      <tr><th>Malzeme</th><th>Adet / Ölçü</th><th>Alternatif</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>MDF levha veya kontrplak (4–6 mm)</td><td>34 cm × 34 cm (en az)</td><td>Sert karton / strafor + kapak kağıdı</td></tr>
+      <tr><td><span class="stone-sample stone-white"></span>Beyaz veya açık gri taşlar (Ø 18–22 mm)</td><td>16 adet</td><td>Beyaz boyalı yuvarlak topak / tahta rondelası</td></tr>
+      <tr><td><span class="stone-sample stone-yellow"></span>Sarı veya altın renkli taşlar (Ø 18–22 mm)</td><td>16 adet</td><td>Sarı boyalı topak / sarı düğme</td></tr>
+      <tr><td>Pergel + cetvel + kare</td><td>1 takım</td><td>—</td></tr>
+      <tr><td>Koyu mor / lacivert akrilik boya (tahta zemin)</td><td>1 şişe</td><td>İstege bağlı; doğal ahşap da uygundur</td></tr>
+      <tr><td>Açık renk (gümüş / bej) boya veya piroğraf (çizgiler için)</td><td>—</td><td>Lazer kesim / baskı şablonu</td></tr>
+      <tr><td>İnce fırça (1–2 mm)</td><td>1 adet</td><td>—</td></tr>
+      <tr><td>Şeffaf mat vernik</td><td>—</td><td>İsteğe bağlı</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ── Boyut ve Şema ── -->
+  <div class="section-title">Tahta Ölçü Şeması</div>
+  <div class="two-col" style="align-items:start;">
+    <div>
+      <div class="info-box">
+        <strong>Önerilen ölçüler:</strong><br>
+        • Tahta dış boyutu: <span class="dim-tag">32 cm × 32 cm</span><br>
+        • Temel ızgara adımı (stepX = stepY): <span class="dim-tag">3.5 cm</span><br>
+        • Başlangıç boşluğu (sol/üst): <span class="dim-tag">2 cm</span><br>
+        • Toplam ızgara: 9 sütun × 9 satır = 81 kesişim<br>
+        • <strong>Aktif düğüm</strong> sayısı: <span class="dim-tag">~32 nokta</span><br>
+        • Düğüm delik çapı: <span class="dim-tag">5–6 mm</span><br>
+        • Taş çapı: <span class="dim-tag">18–20 mm</span>
+      </div>
+      <div class="warn-box">
+        ⚠️ <strong>Önemli:</strong> Bu tahta düz bir ızgara değildir. 
+        Sadece belirlenen 24 uzun bağlantı çizgisi çizilir; tüm ızgara çizgileri değil. 
+        Aktif olmayan ızgara noktalarına delik açılmaz.
+      </div>
+    </div>
+
+    <!-- Tahta ağ diyagramı -->
+    <div class="board-wrap">
+      <svg width="440" height="490" viewBox="0 0 440 490" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="wG" cx="35%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#ffffff"/>
+            <stop offset="65%" stop-color="#bbbbbb"/>
+            <stop offset="100%" stop-color="#888888"/>
+          </radialGradient>
+          <radialGradient id="yG" cx="35%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#fff176"/>
+            <stop offset="65%" stop-color="#ffd600"/>
+            <stop offset="100%" stop-color="#b35900"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Board background -->
+        <rect width="440" height="440" rx="10" fill="#1a0a2e" stroke="#5a3a8a" stroke-width="2"/>
+
+        <!-- 81 grid node dots (formula: x=15+col*50, y=15+row*50) -->
+        <circle cx="15" cy="15" r="3" fill="#4a2a7a"/><circle cx="65" cy="15" r="3" fill="#4a2a7a"/><circle cx="115" cy="15" r="3" fill="#4a2a7a"/><circle cx="165" cy="15" r="3" fill="#4a2a7a"/><circle cx="215" cy="15" r="3" fill="#4a2a7a"/><circle cx="265" cy="15" r="3" fill="#4a2a7a"/><circle cx="315" cy="15" r="3" fill="#4a2a7a"/><circle cx="365" cy="15" r="3" fill="#4a2a7a"/><circle cx="415" cy="15" r="3" fill="#4a2a7a"/>
+        <circle cx="15" cy="65" r="3" fill="#4a2a7a"/><circle cx="65" cy="65" r="3" fill="#4a2a7a"/><circle cx="115" cy="65" r="3" fill="#4a2a7a"/><circle cx="165" cy="65" r="3" fill="#4a2a7a"/><circle cx="215" cy="65" r="3" fill="#4a2a7a"/><circle cx="265" cy="65" r="3" fill="#4a2a7a"/><circle cx="315" cy="65" r="3" fill="#4a2a7a"/><circle cx="365" cy="65" r="3" fill="#4a2a7a"/><circle cx="415" cy="65" r="3" fill="#4a2a7a"/>
+        <circle cx="15" cy="115" r="3" fill="#4a2a7a"/><circle cx="65" cy="115" r="3" fill="#4a2a7a"/><circle cx="115" cy="115" r="3" fill="#4a2a7a"/><circle cx="165" cy="115" r="3" fill="#4a2a7a"/><circle cx="215" cy="115" r="3" fill="#4a2a7a"/><circle cx="265" cy="115" r="3" fill="#4a2a7a"/><circle cx="315" cy="115" r="3" fill="#4a2a7a"/><circle cx="365" cy="115" r="3" fill="#4a2a7a"/><circle cx="415" cy="115" r="3" fill="#4a2a7a"/>
+        <circle cx="15" cy="165" r="3" fill="#4a2a7a"/><circle cx="65" cy="165" r="3" fill="#4a2a7a"/><circle cx="115" cy="165" r="3" fill="#4a2a7a"/><circle cx="165" cy="165" r="3" fill="#4a2a7a"/><circle cx="215" cy="165" r="3" fill="#4a2a7a"/><circle cx="265" cy="165" r="3" fill="#4a2a7a"/><circle cx="315" cy="165" r="3" fill="#4a2a7a"/><circle cx="365" cy="165" r="3" fill="#4a2a7a"/><circle cx="415" cy="165" r="3" fill="#4a2a7a"/>
+        <circle cx="15" cy="215" r="3" fill="#4a2a7a"/><circle cx="65" cy="215" r="3" fill="#4a2a7a"/><circle cx="115" cy="215" r="3" fill="#4a2a7a"/><circle cx="165" cy="215" r="3" fill="#4a2a7a"/><circle cx="215" cy="215" r="3" fill="#4a2a7a"/><circle cx="265" cy="215" r="3" fill="#4a2a7a"/><circle cx="315" cy="215" r="3" fill="#4a2a7a"/><circle cx="365" cy="215" r="3" fill="#4a2a7a"/><circle cx="415" cy="215" r="3" fill="#4a2a7a"/>
+        <circle cx="15" cy="265" r="3" fill="#4a2a7a"/><circle cx="65" cy="265" r="3" fill="#4a2a7a"/><circle cx="115" cy="265" r="3" fill="#4a2a7a"/><circle cx="165" cy="265" r="3" fill="#4a2a7a"/><circle cx="215" cy="265" r="3" fill="#4a2a7a"/><circle cx="265" cy="265" r="3" fill="#4a2a7a"/><circle cx="315" cy="265" r="3" fill="#4a2a7a"/><circle cx="365" cy="265" r="3" fill="#4a2a7a"/><circle cx="415" cy="265" r="3" fill="#4a2a7a"/>
+        <circle cx="15" cy="315" r="3" fill="#4a2a7a"/><circle cx="65" cy="315" r="3" fill="#4a2a7a"/><circle cx="115" cy="315" r="3" fill="#4a2a7a"/><circle cx="165" cy="315" r="3" fill="#4a2a7a"/><circle cx="215" cy="315" r="3" fill="#4a2a7a"/><circle cx="265" cy="315" r="3" fill="#4a2a7a"/><circle cx="315" cy="315" r="3" fill="#4a2a7a"/><circle cx="365" cy="315" r="3" fill="#4a2a7a"/><circle cx="415" cy="315" r="3" fill="#4a2a7a"/>
+        <circle cx="15" cy="365" r="3" fill="#4a2a7a"/><circle cx="65" cy="365" r="3" fill="#4a2a7a"/><circle cx="115" cy="365" r="3" fill="#4a2a7a"/><circle cx="165" cy="365" r="3" fill="#4a2a7a"/><circle cx="215" cy="365" r="3" fill="#4a2a7a"/><circle cx="265" cy="365" r="3" fill="#4a2a7a"/><circle cx="315" cy="365" r="3" fill="#4a2a7a"/><circle cx="365" cy="365" r="3" fill="#4a2a7a"/><circle cx="415" cy="365" r="3" fill="#4a2a7a"/>
+        <circle cx="15" cy="415" r="3" fill="#4a2a7a"/><circle cx="65" cy="415" r="3" fill="#4a2a7a"/><circle cx="115" cy="415" r="3" fill="#4a2a7a"/><circle cx="165" cy="415" r="3" fill="#4a2a7a"/><circle cx="215" cy="415" r="3" fill="#4a2a7a"/><circle cx="265" cy="415" r="3" fill="#4a2a7a"/><circle cx="315" cy="415" r="3" fill="#4a2a7a"/><circle cx="365" cy="415" r="3" fill="#4a2a7a"/><circle cx="415" cy="415" r="3" fill="#4a2a7a"/>
+
+        <!-- 24 bağlantı çizgisi (LINKS dizisinden – gerçek oyun verisi, step=50 offset=15) -->
+        <line x1="115" y1="15"  x2="315" y2="15"  stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="115" y1="15"  x2="15"  y2="115" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="115" y1="15"  x2="415" y2="315" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="115" y1="15"  x2="115" y2="415" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="215" y1="15"  x2="15"  y2="215" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="215" y1="15"  x2="415" y2="215" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="215" y1="15"  x2="215" y2="415" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="315" y1="15"  x2="415" y2="115" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="315" y1="15"  x2="15"  y2="315" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="315" y1="15"  x2="315" y2="415" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="65"  y1="65"  x2="365" y2="365" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="365" y1="65"  x2="65"  y2="365" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="15"  y1="115" x2="415" y2="115" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="15"  y1="115" x2="15"  y2="315" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="15"  y1="115" x2="315" y2="415" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="415" y1="115" x2="415" y2="315" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="415" y1="115" x2="115" y2="415" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="15"  y1="215" x2="415" y2="215" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="15"  y1="215" x2="215" y2="415" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="415" y1="215" x2="215" y2="415" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="15"  y1="315" x2="415" y2="315" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="15"  y1="315" x2="115" y2="415" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="415" y1="315" x2="315" y2="415" stroke="#9f60e0" stroke-width="1.8"/>
+        <line x1="115" y1="415" x2="315" y2="415" stroke="#9f60e0" stroke-width="1.8"/>
+
+        <!-- Beyaz taşlar (wStoneIDs: 2,10,12,18,20,28,30,36,38,46,48,54,56,64,74,76) -->
+        <circle cx="115" cy="15"  r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="65"  cy="65"  r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="165" cy="65"  r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="15"  cy="115" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="115" cy="115" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="65"  cy="165" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="165" cy="165" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="15"  cy="215" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="115" cy="215" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="65"  cy="265" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="165" cy="265" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="15"  cy="315" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="115" cy="315" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="65"  cy="365" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="115" cy="415" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <circle cx="215" cy="415" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+
+        <!-- Sarı taşlar (yStoneIDs: 4,6,16,24,26,32,34,42,44,50,52,60,62,68,70,78) -->
+        <circle cx="215" cy="15"  r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="315" cy="15"  r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="365" cy="65"  r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="315" cy="115" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="415" cy="115" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="265" cy="165" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="365" cy="165" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="315" cy="215" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="415" cy="215" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="265" cy="265" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="365" cy="265" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="315" cy="315" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="415" cy="315" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="265" cy="365" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="365" cy="365" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <circle cx="315" cy="415" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+
+        <!-- Lejant -->
+        <rect x="0" y="442" width="440" height="48" fill="rgba(0,0,0,0.45)" rx="0"/>
+        <circle cx="30"  cy="466" r="14" fill="url(#wG)" stroke="#d8b4fe" stroke-width="1"/>
+        <text x="50" y="471" font-size="18" fill="#e2d0ff" font-weight="bold">Beyaz taşlar (16)</text>
+        <circle cx="240" cy="466" r="14" fill="url(#yG)" stroke="#fde68a" stroke-width="1"/>
+        <text x="260" y="471" font-size="18" fill="#fde68a" font-weight="bold">Sarı taşlar (16)</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── Tahta Yapım Adımları ── -->
+  <div class="section-title">Tahta Yapım Adımları</div>
+  <ul class="step-list">
+    <li>
+      <div class="step-num">1</div>
+      <div class="step-text">
+        <strong>Levhayı hazırlayın:</strong> 34 cm × 34 cm MDF veya kontrplak kesin. 
+        Yüzeyi zımpara ile düzeltin. İsteğe bağlı olarak arka yüze dört plastik ayak yapıştırın.
+      </div>
+    </li>
+    <li>
+      <div class="step-num">2</div>
+      <div class="step-text">
+        <strong>Temel ızgarayı çizin (kurşun kalem):</strong> Sol üst köşeden 2 cm içeriden başlayarak, 
+        yatay ve dikey olarak <strong>3.5 cm arayla 9×9 = 81 kesişim noktası</strong> işaretleyin. 
+        Bu noktalar sadece çizim referansıdır; hepsi aktif değildir.
+      </div>
+    </li>
+    <li>
+      <div class="step-num">3</div>
+      <div class="step-text">
+        <strong>24 bağlantı çizgisini çizin:</strong> Aşağıdaki koordinat çiftleri arasına çizgi çekin 
+        (koordinatlar satır,sütun olarak verilmiştir — 0'dan başlar):
+        <br><br>
+        <em style="font-size:10.5px; color:#7c3aed;">
+        (0,2)↔(0,6) · (0,2)↔(2,0) · (0,2)↔(6,8) · (0,2)↔(8,2) · 
+        (0,4)↔(4,0) · (0,4)↔(4,8) · (0,4)↔(8,4) · (0,6)↔(2,8) · 
+        (0,6)↔(6,0) · (0,6)↔(8,6) · (1,1)↔(7,7) · (1,7)↔(7,1) · 
+        (2,0)↔(2,8) · (2,0)↔(6,0) · (2,0)↔(8,6) · (2,8)↔(6,8) · 
+        (2,8)↔(8,2) · (4,0)↔(4,8) · (4,0)↔(8,4) · (4,8)↔(8,4) · 
+        (6,0)↔(6,8) · (6,0)↔(8,2) · (6,8)↔(8,6) · (8,2)↔(8,6)
+        </em>
+      </div>
+    </li>
+    <li>
+      <div class="step-num">4</div>
+      <div class="step-text">
+        <strong>Aktif düğüm noktalarını belirleyin:</strong> Çizgilerin kesiştiği ve taş konulacak noktaları 
+        (yaklaşık 32 adet) daire ile işaretleyin. Bu noktalar çizgilerin uç noktaları ile 
+        üç ve daha fazla çizginin kesiştiği yerlerdir.
+      </div>
+    </li>
+    <li>
+      <div class="step-num">5</div>
+      <div class="step-text">
+        <strong>Zemin boyası:</strong> Tahta yüzeyini <strong>koyu mor / lacivert</strong> akrilik boya ile 
+        boyayın (mor-uzay teması). Çizgileri kuru fırça ya da piroğraf ile ince çizgiler halinde 
+        gümüş/bej renkte yeniden çizin; aktif düğüm noktaları da sığ deliklerle işaretlenir.
+      </div>
+    </li>
+    <li>
+      <div class="step-num">6</div>
+      <div class="step-text">
+        <strong>Yüzeyi koruyun:</strong> Boya tamamen kuruduktan sonra <strong>mat şeffaf vernik</strong> 
+        uygulayın. Vernik hem tahtayı korur hem de taşların kaygan hareket etmesini sağlar.
+      </div>
+    </li>
+  </ul>
+
+  <!-- ── Taşların Yapımı ── -->
+  <div class="section-title">Oyun Taşlarının Yapımı</div>
+  <div class="three-col">
+    <div class="card">
+      <h3><span class="stone-sample stone-white"></span>Beyaz Taşlar (16 adet)</h3>
+      <p>Ø 18–20 mm yuvarlak ahşap topak veya tahta rondelalar beyaz / bej / gümüş akrilik boya ile boyanır. 
+         Üstüne şeffaf vernik uygulanır.</p>
+    </div>
+    <div class="card">
+      <h3><span class="stone-sample stone-yellow"></span>Sarı Taşlar (16 adet)</h3>
+      <p>Aynı boyut ve yöntemle altın sarısı, mat sarı veya turuncu boyanır. 
+         Tahtanın koyu zeminine karşı net görünür olması kritiktir.</p>
+    </div>
+    <div class="card">
+      <h3>🔄 Alternatifler</h3>
+      <p>İki farklı boya rengiyle jeton, büyük düğme, mermer bilye, 
+         ya da 3D yazıcıyla basılmış disk kullanılabilir. 
+         Taşlar birbirinden net ayırt edilmeli.</p>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>💡 Baskı Şablonu İpucu:</strong> Tahta çizgisini bilgisayarda çizip A3 kağıda 
+    bastırabilirsiniz. Bastırılan kağıdı tahta üzerine yapıştırıp üstüne şeffaf kaplama folyo 
+    serilerek hızlı ve hassas bir tahta yapılabilir.
+  </div>
+
+  <div class="footer-note">
+    16 Taşlı Dama · Somut Materyal Yapım Kılavuzu · Sayfa 1/1
+  </div>
+</div>
+
+</body>
+</html>

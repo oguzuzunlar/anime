@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Oyun Kılavuzları</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: #1a0e08; color: #f0e8d8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+  h1 { font-size: 28px; font-weight: 900; margin-bottom: 8px; text-align: center; }
+  p.sub { font-size: 14px; opacity: 0.65; margin-bottom: 36px; text-align: center; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 700px; width: 100%; }
+  .card {
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 22px 24px;
+    display: flex; flex-direction: column; gap: 10px;
+    text-decoration: none; color: inherit;
+    transition: transform 0.15s, background 0.15s;
+  }
+  .card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.13); }
+  .card.brown { border-color: #c07328; }
+  .card.purple { border-color: #a855f7; }
+  .card h2 { font-size: 16px; font-weight: 900; }
+  .card h2 .game-tag { opacity: 0.6; font-weight: 700; font-size: 13px; display: block; margin-bottom: 2px; }
+  .card p { font-size: 12px; opacity: 0.75; line-height: 1.6; }
+  .card .open-btn {
+    margin-top: 4px;
+    display: inline-block;
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    align-self: flex-start;
+  }
+  .brown .open-btn { background: linear-gradient(135deg, #c07328, #e8a040); }
+  .purple .open-btn { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+  footer { margin-top: 40px; font-size: 11px; opacity: 0.35; text-align: center; }
+</style>
+</head>
+<body>
+  <h1>🎲 Oyun Kılavuzları</h1>
+  <p class="sub">A4 baskıya hazır somut materyal yapım &amp; oyun kılavuzları</p>
+
+  <div class="grid">
+    <a class="card brown" href="18tas-materyal-kilavuzu.html">
+      <h2><span class="game-tag">18 Taşlı Dama</span>Materyal Yapım Kılavuzu</h2>
+      <p>Tahta ve taşların ahşap/karton malzemeden nasıl yapılacağını açıklar. Ölçüler, adımlar ve malzeme listesi.</p>
+      <span class="open-btn">📄 Aç</span>
+    </a>
+    <a class="card brown" href="18tas-oyun-kilavuzu.html">
+      <h2><span class="game-tag">18 Taşlı Dama</span>Oyun Kılavuzu</h2>
+      <p>İki oyuncunun oyunu nasıl oynayacağını anlatır. Başlangıç dizilişi, hamleler, zincir atlamalar, kazanma koşulu.</p>
+      <span class="open-btn">📄 Aç</span>
+    </a>
+    <a class="card purple" href="16tas-materyal-kilavuzu.html">
+      <h2><span class="game-tag">16 Taşlı Dama</span>Materyal Yapım Kılavuzu</h2>
+      <p>Bağlantı ağı tahtasının yapımı için ölçüler ve 24 bağlantı koordinatları. MDF veya baskı şablonu ile yapım.</p>
+      <span class="open-btn">📄 Aç</span>
+    </a>
+    <a class="card purple" href="16tas-oyun-kilavuzu.html">
+      <h2><span class="game-tag">16 Taşlı Dama</span>Oyun Kılavuzu</h2>
+      <p>Oyun kuralları, başlangıç dizilişi, uzun bağlantılar üzerinden atlama ve strateji ipuçları.</p>
+      <span class="open-btn">📄 Aç</span>
+    </a>
+  </div>
+
+  <footer>Her kılavuz A4 baskıya uygundur · Tarayıcıda "Yazdır" → "PDF Olarak Kaydet" ile dışa aktarılabilir</footer>
+</body>
+</html>
