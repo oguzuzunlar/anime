@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dönme Dönüşümü Materyali – Portal</title>
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --primary-dark: #0099cc;
+            --success: #27ae60;
+            --bg: #050508;
+            --bg-card: #0d0f1e;
+            --bg-card2: #10132a;
+            --border: #1e2340;
+            --text-main: #eef3ff;
+            --text-soft: #c7d1e8;
+            --text-muted: #7a8db0;
+            --accent1: #33a4ff;
+            --accent2: #a78bfa;
+            --accent3: #34d399;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ── HEADER ─────────────────────────────────────── */
+        header {
+            background: linear-gradient(135deg, #07091a 0%, #0d1233 60%, #071623 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 36px 24px 32px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0,210,255,0.10) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .header-badge {
+            display: inline-block;
+            background: rgba(0,210,255,0.12);
+            border: 1px solid rgba(0,210,255,0.3);
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+        }
+        header h1 {
+            font-size: clamp(1.6rem, 4vw, 2.6rem);
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.01em;
+            margin-bottom: 10px;
+        }
+        header h1 span { color: var(--primary); }
+        header p.subtitle {
+            color: var(--text-soft);
+            font-size: clamp(0.88rem, 2vw, 1rem);
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        /* ── MAIN LAYOUT ─────────────────────────────────── */
+        main {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        /* ── SECTION CARDS ───────────────────────────────── */
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 28px;
+        }
+        .section-card h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-card h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 1.15em;
+            background: var(--primary);
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+        .section-card p {
+            color: var(--text-soft);
+            font-size: 0.95rem;
+            line-height: 1.65;
+        }
+
+        /* ── KAZANIMLAR LİSTESİ ──────────────────────────── */
+        .outcome-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .outcome-list li {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            color: var(--text-soft);
+            font-size: 0.93rem;
+            line-height: 1.55;
+        }
+        .outcome-list li::before {
+            content: '✦';
+            color: var(--accent1);
+            font-size: 0.7rem;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        /* ── KONULAR 2-SÜTUN ─────────────────────────────── */
+        .topics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 600px) {
+            .topics-grid { grid-template-columns: 1fr; }
+        }
+        .topic-chip {
+            background: rgba(51,164,255,0.08);
+            border: 1px solid rgba(51,164,255,0.2);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text-soft);
+            font-size: 0.88rem;
+            line-height: 1.45;
+        }
+        .topic-chip b { color: var(--accent1); font-weight: 600; }
+
+        /* ── DİKKAT UNSURI ───────────────────────────────── */
+        .notice-box {
+            background: rgba(167,139,250,0.07);
+            border: 1px solid rgba(167,139,250,0.22);
+            border-radius: 10px;
+            padding: 14px 18px;
+            color: var(--text-soft);
+            font-size: 0.93rem;
+            line-height: 1.6;
+        }
+        .notice-box strong { color: var(--accent2); }
+
+        /* ── UYGULAMA KARTLARI ───────────────────────────── */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .app-card {
+            background: var(--bg-card2);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 26px 24px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+            text-decoration: none;
+        }
+        .app-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 24px rgba(0,210,255,0.10);
+            transform: translateY(-3px);
+        }
+        .app-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .icon-kesif  { background: rgba(0,210,255,0.12); }
+        .icon-uygulama { background: rgba(52,211,153,0.12); }
+        .icon-serbest  { background: rgba(167,139,250,0.12); }
+        .icon-formul   { background: rgba(251,191,36,0.12); }
+
+        .app-card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .app-card-desc {
+            font-size: 0.87rem;
+            color: var(--text-soft);
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+        .app-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .tag {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 20px;
+            letter-spacing: 0.03em;
+        }
+        .tag-blue   { background: rgba(0,210,255,0.12);   color: var(--primary); }
+        .tag-green  { background: rgba(52,211,153,0.12);  color: var(--accent3); }
+        .tag-purple { background: rgba(167,139,250,0.12); color: var(--accent2); }
+        .tag-yellow { background: rgba(251,191,36,0.12);  color: #fbbf24; }
+
+        .app-card-cta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 2px;
+        }
+        .app-card:hover .app-card-cta { text-decoration: underline; }
+
+        /* ── FOOTER ──────────────────────────────────────── */
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+        }
+
+        /* ── MATERyal özellikleri FLEX ────────────────────── */
+        .specs-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .spec-chip {
+            background: rgba(0,210,255,0.07);
+            border: 1px solid rgba(0,210,255,0.15);
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            color: var(--text-soft);
+        }
+        .spec-chip span { color: var(--primary); font-weight: 700; }
+
+        /* ── SEKMELİ NAVİGASYON ─────────────────────────── */
+        .tab-nav {
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            background: rgba(5,5,8,0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+            padding: 0 16px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tab-nav::-webkit-scrollbar { display: none; }
+        .tab-nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 14px 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-decoration: none;
+            white-space: nowrap;
+            border-bottom: 2px solid transparent;
+            transition: color 0.18s, border-color 0.18s;
+        }
+        .tab-nav a:hover {
+            color: var(--text-main);
+            border-bottom-color: rgba(0,210,255,0.4);
+        }
+        .tab-nav a.active,
+        .tab-nav a:focus-visible {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        .tab-nav a .tab-icon { font-size: 1rem; }
+        @media (max-width: 480px) {
+            .tab-nav a { padding: 12px 12px; font-size: 0.78rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+     
+        <h1>Dönme Dönüşümü Materyali</h1>
+        <p class="subtitle">Koordinat düzleminde dönme dönüşümlerini keşfetmeye yönelik dijital etkinlik materyali</p>
+    </header>
+
+    <!-- SEKMELİ NAVİGASYON -->
+    <nav class="tab-nav" id="tab-nav" aria-label="Bölüm gezintisi">
+        <a href="#sec-konular" class="tab-nav-link"><span class="tab-icon">📚</span> Konular</a>
+        <a href="#sec-kazanimlar" class="tab-nav-link"><span class="tab-icon">🎯</span> Kazanımlar</a>
+        <a href="#sec-dikkat" class="tab-nav-link"><span class="tab-icon">⚠️</span> Dikkat Unsurları</a>
+        <a href="#sec-etkinlikler" class="tab-nav-link"><span class="tab-icon">🚀</span> Dijital Etkinlikler</a>
+    </nav>
+
+    <main>
+
+
+
+        <!-- KONULAR -->
+        <div class="section-card" id="sec-konular">
+            <h2>Konular</h2>
+            <p style="margin-bottom:16px;">Dönme dönüşümü materyali aşağıdaki konularda kullanılabilir:</p>
+            <div class="topics-grid">
+                <div class="topic-chip">
+                    Analitik düzlemde koordinatları verilen bir noktanın  dönme dönüşümleri altındaki görüntüsünün koordinatlarının bulunması
+                </div>
+
+            </div>
+        </div>
+
+        <!-- KAZANIMLAR -->
+        <div class="section-card" id="sec-kazanimlar">
+            <h2>Kazanımlar</h2>
+            <ul class="outcome-list">
+                <li>Analitik düzlemde koordinatları verilen bir noktanın  dönme dönüşümleri altındaki görüntüsünün koordinatlarını bulur.</li>
+                <li>Geometrik şekil ile şeklin dönme sonucu oluşan görüntüsünün eş olduğunu kavrar.</li>
+                <li>Dönme açısı kavramını açıklar.</li>
+
+            </ul>
+        </div>
+
+        <!-- DİKKAT UNSURLARI -->
+        <div class="section-card" id="sec-dikkat">
+            <h2>Dikkat Unsurları</h2>
+            <div class="notice-box">
+                Bu etkinliklere başlamadan önce aşağıdaki konularda <strong>ön bilgiye</strong> sahip olunması önerilir:<br><br>
+                Açı · Yönlü açı · Eşlik · İki nokta arasındaki uzaklık · Trigonometrik Özdeşlikler
+            </div>
+        </div>
+
+        <!-- ETKİNLİKLER -->
+        <div class="section-card" id="sec-etkinlikler">
+            <h2>Dijital Etkinlikler</h2>
+            <div class="apps-grid">
+
+                <!-- Uygulama 2 -->
+                <a class="app-card" href="uygulama1.html">
+                    <div class="app-card-icon icon-kesif">🔍</div>
+                    <div>
+                        <div class="app-card-title">Uygulama 1</div>
+                        <div class="app-card-desc">
+                            Adım adım rehberli turlarla 90°, 180° ve 270° dönüşleri keşfedin. Her adımda koordinatların nasıl değiştiğini gözlemleyip sıra sende bölümünde kendinizi sınayın.
+                        </div>
+                    </div>
+
+                    <div class="app-card-cta">Etkinliği Aç →</div>
+                </a>
+
+                <!-- Uygulama-2 -->
+                <a class="app-card" href="formul_kesfi_meb_revizeli.html">
+                    <div class="app-card-icon icon-formul">🧮</div>
+                    <div>
+                        <div class="app-card-title">Uygulama-2</div>
+                        <div class="app-card-desc">
+                            Bu uygulamada dönme dönüşümünün genel formülü adım adım keşfedilir. Kutupsal gösterimden toplam açı ilişkilerine uzanan rehberli süreçte formülün nasıl oluştuğu incelenir.
+                        </div>
+                    </div>
+
+                    <div class="app-card-cta">Etkinliği Aç →</div>
+                </a>
+
+                <!-- Serbest Mod -->
+                <a class="app-card" href="serbest.html">
+                    <div class="app-card-icon icon-serbest">🎨</div>
+                    <div>
+                        <div class="app-card-title">Serbest Keşif Modu</div>
+                        <div class="app-card-desc">
+                            İstediğiniz noktayı istediğiniz açıyla döndürün; kural yok, sınır yok. Sürükle-bırak araçlarıyla koordinat düzlemini özgürce keşfedin.
+                        </div>
+                    </div>
+
+                    <div class="app-card-cta">Etkinliği Aç →</div>
+                </a>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Aktif sekmeyi scroll pozisyonuna göre vurgula
+        const sections = [
+            { id: 'sec-konular',     link: 'a[href="#sec-konular"]' },
+            { id: 'sec-kazanimlar',  link: 'a[href="#sec-kazanimlar"]' },
+            { id: 'sec-dikkat',      link: 'a[href="#sec-dikkat"]' },
+            { id: 'sec-etkinlikler', link: 'a[href="#sec-etkinlikler"]' }
+        ];
+        const navLinks = document.querySelectorAll('.tab-nav-link');
+
+        function setActive(id) {
+            navLinks.forEach(l => l.classList.remove('active'));
+            const active = document.querySelector(`a[href="#${id}"]`);
+            if (active) {
+                active.classList.add('active');
+                // Sticky nav içinde görünür yap (yatay scroll)
+                active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+            }
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
+        }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+
+        sections.forEach(s => {
+            const el = document.getElementById(s.id);
+            if (el) observer.observe(el);
+        });
+
+        // Smooth scroll + scroll-margin-top için nav yüksekliğini hesapla
+        document.querySelectorAll('.tab-nav-link').forEach(a => {
+            a.addEventListener('click', e => {
+                const target = document.querySelector(a.getAttribute('href'));
+                if (!target) return;
+                e.preventDefault();
+                const navH = document.getElementById('tab-nav').offsetHeight;
+                const top = target.getBoundingClientRect().top + window.scrollY - navH - 16;
+                window.scrollTo({ top, behavior: 'smooth' });
+            });
+        });
+    </script>
+
+</body>
+</html>

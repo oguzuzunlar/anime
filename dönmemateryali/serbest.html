@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Serbest Mod – Dönme Dönüşümü</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --shadow: 0 8px 32px rgba(0,0,0,0.16);
+    --bg-page:   linear-gradient(135deg, #e8f0f8 0%, #d5e8f5 100%);
+    --bg-card:   #ffffff;
+    --bg-card2:  #f8fafc;
+    --border:    #e2e8f0;
+    --text-main: #1a3a5c;
+    --text-soft: #64748b;
+    --text-dim:  #94a3b8;
+    --card-border-left-angle:  #d32f2f;
+    --card-border-left-shape:  #7c3aed;
+    --card-border-left-step:   #0e7490;
+    --card-border-left-vtx:    #0369a1;
+    --vtx-th:    #94a3b8;
+    --vtx-td:    #1a3a5c;
+    --vtx-border:#e2e8f0;
+    --lock-bg:   #ede9fe;
+    --lock-color:#7c3aed;
+    --lock-snapped-bg: #dcfce7;
+    --lock-snapped-color: #15803d;
+    --home-bg:   rgba(255,255,255,0.92);
+    --home-border:#bcd0e8;
+    --home-color: #1a3a5c;
+    --home-hover: #e8f4ff;
+    --guide-bg:   #ffffff;
+    --guide-tool-bg: #f8fafc;
+    --guide-tool-border: #e2e8f0;
+    --guide-title:#1a3a5c;
+    --guide-sub:  #64748b;
+    --guide-info-color: #1a3a5c;
+    --guide-span: #475569;
+    --canvas-card-border: #c8dff0;
+  }
+
+  body.dark-theme {
+    --bg-page:   linear-gradient(135deg, #05050a 0%, #0a0f1e 100%);
+    --bg-card:   #0d1120;
+    --bg-card2:  #101525;
+    --border:    #1e2640;
+    --text-main: #eef3ff;
+    --text-soft: #8899bb;
+    --text-dim:  #4a5a7a;
+    --vtx-th:    #4a6080;
+    --vtx-td:    #c8d8f0;
+    --vtx-border:#1e2a40;
+    --lock-bg:   #1a1240;
+    --lock-color:#a78bfa;
+    --lock-snapped-bg: #0a2010;
+    --lock-snapped-color: #34d399;
+    --home-bg:   rgba(13,17,32,0.92);
+    --home-border:#2a3555;
+    --home-color: #c8d8f0;
+    --home-hover: #1a2240;
+    --guide-bg:   #0d1120;
+    --guide-tool-bg: #101525;
+    --guide-tool-border: #1e2640;
+    --guide-title:#c8d8f0;
+    --guide-sub:  #5a7099;
+    --guide-info-color:#c8d8f0;
+    --guide-span: #8899bb;
+    --canvas-card-border: #1e2a40;
+  }
+
+  /* ── MASAÜSTÜ: tam ekran, kaydırma yok ── */
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg-page);
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 58px 18px 10px;
+    gap: 10px;
+    transition: background .3s;
+  }
+
+  .page-title {
+    flex-shrink: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-main);
+    text-align: center;
+    letter-spacing: .3px;
+    line-height: 1.2;
+  }
+
+  /* ── Ana içerik: panel sol, canvas sağ ── */
+  .main-area {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  /* ── CANVAS KARTI ── */
+  .canvas-card {
+    flex: 1;
+    min-width: 0;
+    background: var(--bg-card);
+    border-radius: 22px;
+    padding: 14px;
+    box-shadow: var(--shadow);
+    border: 3px solid var(--canvas-card-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+    touch-action: none;
+    overflow: hidden;
+  }
+
+  .card-label {
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #d32f2f;
+    letter-spacing: .6px;
+    text-align: center;
+  }
+
+  canvas#grid {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    border-radius: 8px;
+    cursor: grab;
+    display: block;
+  }
+  canvas#grid:active { cursor: grabbing; }
+
+  .canvas-hint {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  /* ── BİLGİ PANELİ: sabit genişlik ── */
+  .info-panel {
+    flex-shrink: 0;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+    order: -1;
+  }
+
+  .angle-card {
+    background: var(--bg-card);
+    border-radius: 18px;
+    padding: 14px 16px 14px 20px;
+    box-shadow: var(--shadow);
+    border-left: 5px solid var(--card-border-left-angle);
+  }
+
+  .angle-card h3 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    margin-bottom: 10px;
+  }
+
+  /* ── DÖNDÜRME DÜĞMESİ ── */
+  .knob-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+  #knob-canvas {
+    cursor: grab;
+    touch-action: none;
+    flex-shrink: 0;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    display: block;
+  }
+  #knob-canvas:active { cursor: grabbing; }
+  .knob-readout {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1 1 120px;
+  }
+
+  .angle-value {
+    font-size: 46px;
+    font-weight: 900;
+    color: var(--text-main);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .angle-value span {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-soft);
+  }
+
+  .angle-hint {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .direction-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #dcfce7;
+    color: #15803d;
+    white-space: nowrap;
+  }
+  .direction-badge.ccw { background: #dbeafe; color: #1d4ed8; }
+
+  .controls-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 11px 8px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .btn:hover  { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,.18); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-reset   { background: linear-gradient(135deg,#b91c1c,#dc2626); color: #fff; }
+  .btn-initial  { background: linear-gradient(135deg,#7c3aed,#9333ea); color: #fff; }
+  .btn-cw    { background: linear-gradient(135deg,#15803d,#16a34a); color: #fff; }
+  .btn-ccw   { background: linear-gradient(135deg,#1d4ed8,#2563eb); color: #fff; }
+  .btn-history { background: linear-gradient(135deg,#0369a1,#0284c7); color:#fff; }
+  .btn-history.active {
+    background: linear-gradient(135deg,#1e3a8a,#1d4ed8);
+    outline: 2.5px solid #93c5fd;
+    outline-offset: 1px;
+  }
+
+  /* ── ŞEKİL SEÇİCİ ── */
+  .shapes-card {
+    background: var(--bg-card);
+    border-radius: 18px;
+    padding: 14px 18px;
+    box-shadow: var(--shadow);
+    border-left: 5px solid var(--card-border-left-shape);
+  }
+  .shapes-card h3 {
+    font-size: 12px; font-weight: 700; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: .7px; margin-bottom: 10px;
+  }
+  .shapes-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .shape-btn {
+    flex: 0 1 calc(33% - 6px); min-width: 58px; border: 2px solid var(--border); border-radius: 12px;
+    background: var(--bg-card2); cursor: pointer; padding: 8px 6px;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    transition: border-color .2s, background .2s, transform .15s;
+    font-size: 11px; font-weight: 700; color: var(--text-soft);
+  }
+  .shape-btn:hover { border-color: #7c3aed; background: #f3f0ff; transform: translateY(-2px); }
+  .shape-btn.active { border-color: #7c3aed; background: #ede9fe; color: #5b21b6; }
+  .shape-btn svg { display: block; }
+  .lock-hint {
+    margin-top: 8px; font-size: 11px; color: var(--lock-color);
+    background: var(--lock-bg); border-radius: 8px; padding: 5px 9px; line-height: 1.4;
+  }
+  .lock-hint.snapped { background: var(--lock-snapped-bg); color: var(--lock-snapped-color); }
+
+  /* ── NOKTA ARACI ── */
+  .shape-btn.point-active { border-color: #dc2626; background: #fff1f2; color: #991b1b; }
+  .point-draw-panel {
+    background: #fff1f2;
+    border-radius: 14px;
+    padding: 12px 15px;
+    border-left: 5px solid #dc2626;
+    box-shadow: var(--shadow);
+  }
+  .point-draw-panel h4 {
+    font-size: 12px; font-weight: 700; color: #991b1b; margin-bottom: 7px;
+    text-transform: uppercase; letter-spacing: .6px;
+  }
+  .point-info {
+    font-size: 11px; color: #7f1d1d; margin-bottom: 8px; line-height: 1.5;
+    background: #fee2e2; border-radius: 7px; padding: 5px 8px;
+  }
+  .point-vtx-list { font-size: 10.5px; color: #b91c1c; margin-bottom: 8px; min-height: 14px; font-family: monospace; }
+  .btn-point-clear  { background: linear-gradient(135deg,#b91c1c,#dc2626); color:#fff; }
+  .btn-point-cancel { background: linear-gradient(135deg,#475569,#64748b); color:#fff; }
+  .shape-btn.poly-active { border-color: #d97706; background: #fffbeb; color: #92400e; }
+  .poly-draw-panel {
+    background: #fffbeb;
+    border-radius: 14px;
+    padding: 12px 15px;
+    border-left: 5px solid #d97706;
+    box-shadow: var(--shadow);
+  }
+  .poly-draw-panel h4 {
+    font-size: 12px; font-weight: 700; color: #92400e; margin-bottom: 7px;
+    text-transform: uppercase; letter-spacing: .6px;
+  }
+  .poly-info {
+    font-size: 11px; color: #78350f; margin-bottom: 8px; line-height: 1.5;
+    background: #fef3c7; border-radius: 7px; padding: 5px 8px;
+  }
+  .poly-vtx-list { font-size: 10.5px; color: #a16207; margin-bottom: 8px; min-height: 14px; }
+  .poly-actions { display: flex; gap: 7px; }
+  .btn-poly-ok     { background: linear-gradient(135deg,#15803d,#16a34a); color:#fff; }
+  .btn-poly-cancel { background: linear-gradient(135deg,#b91c1c,#dc2626); color:#fff; }
+
+  /* ── HIZLI DÖNDÜRME ADIM BUTONLARI ── */
+  .step-card {
+    background: var(--bg-card);
+    border-radius: 18px;
+    padding: 12px 18px;
+    box-shadow: var(--shadow);
+    border-left: 5px solid var(--card-border-left-step);
+  }
+  .step-card h3 {
+    font-size: 12px; font-weight: 700; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: .7px; margin-bottom: 8px;
+  }
+  .step-row { display: flex; gap: 6px; }
+  .btn-step-cw  { background: linear-gradient(135deg,#15803d,#16a34a); color: #fff; font-size: 11.5px; padding: 9px 4px; }
+  .btn-step-ccw { background: linear-gradient(135deg,#1d4ed8,#2563eb); color: #fff; font-size: 11.5px; padding: 9px 4px; }
+
+  /* ── KÖŞE NOKTALARI TABLOSU ── */
+  .vertices-card {
+    background: var(--bg-card);
+    border-radius: 18px;
+    padding: 14px 18px;
+    box-shadow: var(--shadow);
+    border-left: 5px solid var(--card-border-left-vtx);
+  }
+  .vertices-card h3 {
+    font-size: 12px; font-weight: 700; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: .7px; margin-bottom: 10px;
+  }
+  .vtx-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .vtx-table th {
+    text-align: center; font-size: 10.5px; font-weight: 700;
+    color: var(--vtx-th); padding: 2px 4px; border-bottom: 1px solid var(--vtx-border);
+  }
+  .vtx-table td {
+    text-align: center; padding: 3px 4px; color: var(--vtx-td); font-weight: 600;
+  }
+  .vtx-table td.arrow { color: #d32f2f; font-size: 13px; }
+  .vtx-table td.result { color: #15803d; font-weight: 700; }
+
+  /* ── ANA SAYFA BUTONU ── */
+  .home-btn {
+    position: fixed;
+    top: 10px;
+    left: 12px;
+    z-index: 4600;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 64px;
+    padding: 0 24px;
+    background: linear-gradient(180deg, #394467 0%, #2f395d 100%);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 26px;
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.08);
+    cursor: pointer;
+    letter-spacing: 0.2px;
+    transition: transform .18s, box-shadow .18s, filter .18s;
+  }
+  .home-btn::before {
+    content: '🏠';
+    font-size: 2rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.28));
+  }
+  .home-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+    box-shadow: 0 14px 34px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  @media (max-width: 768px) {
+    .home-btn {
+      gap: 8px;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 18px;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+    .home-btn::before { font-size: 1.35rem; }
+  }
+
+  /* ── TEMA BUTONU ── */
+  #theme-toggle {
+    position: fixed;
+    top: 10px;
+    right: 12px;
+    z-index: 4600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 36px;
+    padding: 0 14px;
+    background: var(--home-bg);
+    border: 1.5px solid var(--home-border);
+    border-radius: 20px;
+    color: var(--home-color);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: background .18s, box-shadow .18s;
+  }
+  #theme-toggle:hover { background: var(--home-hover); }
+  @media (max-width: 768px) { #theme-toggle { height: 28px; font-size: 0.68rem; padding: 0 9px; } }
+
+  /* ── YÖNERGe MODAL ── */
+  .guide-overlay {
+    position: fixed; inset: 0; z-index: 5000;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(15,24,48,0.82);
+    padding: 16px;
+  }
+  .guide-box {
+    width: min(640px, 95vw);
+    background: var(--guide-bg);
+    border-radius: 18px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.28);
+    padding: 26px 24px 20px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .guide-box h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--guide-title);
+    text-align: center;
+    margin: 0;
+  }
+  .guide-box .guide-sub {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--guide-sub);
+    margin-top: -8px;
+  }
+  .guide-tools {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .guide-tool-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: var(--guide-tool-bg);
+    border: 1px solid var(--guide-tool-border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .guide-tool-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .guide-tool-info b {
+    display: block;
+    font-size: 0.87rem;
+    color: var(--guide-info-color);
+    margin-bottom: 2px;
+  }
+  .guide-tool-info span {
+    font-size: 0.8rem;
+    color: var(--guide-span);
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+  .guide-start-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity .18s;
+  }
+  .guide-start-btn:hover { opacity: 0.88; }
+  /* Masaüstü / mobil yönerge metni geçişi */
+  .guide-mobile { display: none; }
+  .guide-desktop { display: inline; }
+  @media (max-width: 768px) {
+    .guide-mobile  { display: inline; }
+    .guide-desktop { display: none; }
+  }
+
+  /* ── MOBİL: dikey düzen, kaydırmalı ── */
+  @media (max-width: 768px) {
+    body { height: auto; overflow-y: auto; overflow-x: hidden; padding: 52px 10px 12px; gap: 12px; }
+    .main-area { flex-direction: column; align-items: stretch; }
+    .canvas-card { height: clamp(300px, 85vw, 520px); order: -1; }
+    .info-panel { width: 100%; order: 0; }
+    .knob-row { gap: 12px; }
+    #knob-canvas { width: clamp(108px, 34vw, 138px); height: clamp(108px, 34vw, 138px); }
+    .knob-readout { flex-basis: 110px; }
+    .angle-value { font-size: 42px; }
+    .page-title  { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- YÖNERGe MODAL -->
+<div class="guide-overlay" id="guide-overlay" aria-modal="true" role="dialog">
+  <div class="guide-box">
+    <h2>🎨 Serbest Mod</h2>
+    <p class="guide-sub">Dönme Dönüşümü Materyali</p>
+    <div class="guide-tools">
+      <div class="guide-tool-row">
+        <div class="guide-tool-icon">🟢</div>
+        <div class="guide-tool-info">
+          <b>Döndürme Çubuğu</b>
+          <span>
+            <span class="guide-desktop">Masaüstünde sol panelde bulunan düğmeyi sürükleyerek veya hemen altındaki butonları kullanarak şekli istenen açıya döndürün.</span>
+            <span class="guide-mobile">Mobilde kanvasın alt bölümünde yer alan kontrol panelindeki düğmeyi sürükleyerek veya hızlı döndürme butonlarına basarak şekli döndürün.</span>
+          </span>
+        </div>
+      </div>
+      <div class="guide-tool-row">
+        <div class="guide-tool-icon">⚡</div>
+        <div class="guide-tool-info">
+          <b>Hızlı Döndürme</b>
+          <span>±30°, ±60°, ±90° adım butonlarıyla tek tıkla hassas dönüşler yapın. Pozitif değerler saat yönünün tersine, negatifler saat yönünde döndürür.</span>
+        </div>
+      </div>
+      <div class="guide-tool-row">
+        <div class="guide-tool-icon">📐</div>
+        <div class="guide-tool-info">
+          <b>Şekil Seçici</b>
+          <span class="guide-desktop">Sol panelden üçgen ya da dikdörtgen seçebilir, çokgen çiz aracıyla kendi şeklinizi oluşturabilir veya nokta ekleyerek tek bir nokta yerleştirebilirsiniz. Şekli seçtikten sonra kırmızı köşe noktasını çubuğun ucuna yaklaştırıp döndürme için kilitleyin.</span>
+          <span class="guide-mobile">Alt bölümden üçgen ya da dikdörtgen seçebilir, çokgen çiz aracıyla kendi şeklinizi oluşturabilir veya nokta ekleyerek tek bir nokta yerleştirebilirsiniz. Şekli seçtikten sonra kırmızı köşe noktasını çubuğun ucuna yaklaştırıp döndürme için kilitleyin.</span>
+        </div>
+      </div>
+      <div class="guide-tool-row">
+        <div class="guide-tool-icon">🕘</div>
+        <div class="guide-tool-info">
+          <b>Geçmiş Konumunu Göster</b>
+          <span>Bu butona basarak şeklin döndürülmeden önceki konumunu soluk renkte görebilir; başlangıç ve bitiş durumunu karşılaştırabilirsiniz.</span>
+        </div>
+      </div>
+      <div class="guide-tool-row">
+        <div class="guide-tool-icon">📊</div>
+        <div class="guide-tool-info">
+          <b>Köşe Noktaları Tablosu</b>
+          <span>
+            <span class="guide-desktop">Şekil seçildiğinde sol panelde asıl ve döndürülmüş koordinatlar otomatik olarak listelenir.</span>
+            <span class="guide-mobile">Şekil seçildiğinde alt bölümde asıl ve döndürülmüş koordinatlar otomatik olarak listelenir. Tablo görünmüyorsa biraz aşağı kaydırın.</span>
+          </span>
+        </div>
+      </div>
+    </div>
+    <button class="guide-start-btn" onclick="document.getElementById('guide-overlay').style.display='none'">✓ Anladım, Başlayalım!</button>
+  </div>
+</div>
+
+<!-- ANA SAYFA -->
+<a class="home-btn" href="index.html">Ana Sayfa</a>
+
+<!-- TEMA BUTONU -->
+<button id="theme-toggle" type="button" onclick="toggleTheme()">🌙 Gece Modu</button>
+
+<div class="page-title">Serbest Mod</div>
+
+<div class="main-area">
+
+  <!-- IZGARA KANVASI -->
+  <div class="canvas-card">
+    <div class="card-label">Dönme Dönüşümü Materyali</div>
+    <canvas id="grid"></canvas>
+    <div class="canvas-hint">
+      <span class="guide-desktop">Sol paneldeki düğmeyi veya hızlı döndürme butonlarını kullanın.</span>
+      <span class="guide-mobile">Alt bölümdeki kontrol panelini kullanarak döndürme yapın.</span>
+    </div>
+  </div>
+
+  <!-- INFO PANEL -->
+  <div class="info-panel">
+
+    <div class="angle-card">
+      <h3>Dönme Açısı</h3>
+      <div class="knob-row">
+        <canvas id="knob-canvas" width="150" height="150"></canvas>
+        <div class="knob-readout">
+          <div class="angle-value" id="angle-display">0<span>°</span></div>
+          <div id="direction-badge" class="direction-badge">— 0°</div>
+          <div class="angle-hint">Düğmeyi sürükleyerek<br>açıyı ayarlayın.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <button class="btn btn-ccw" onclick="rotate(-5)">↺ −5°</button>
+      <button class="btn btn-initial" onclick="resetToInitial()">⌂ İlk Konum</button>
+      <button class="btn btn-reset" onclick="resetBar()">⟳ Sıfırla</button>
+      <button class="btn btn-cw"  onclick="rotate( 5)">↻ +5°</button>
+    </div>
+
+    <!-- ADIM BUTONLARI -->
+    <div class="step-card">
+      <h3>Hızlı Döndürme</h3>
+      <div class="step-row">
+        <button class="btn btn-step-ccw" onclick="rotate(-90)">↺ −90°</button>
+        <button class="btn btn-step-ccw" onclick="rotate(-60)">↺ −60°</button>
+        <button class="btn btn-step-ccw" onclick="rotate(-30)">↺ −30°</button>
+      </div>
+      <div class="step-row" style="margin-top:6px">
+        <button class="btn btn-step-cw"  onclick="rotate( 30)">↻ +30°</button>
+        <button class="btn btn-step-cw"  onclick="rotate( 60)">↻ +60°</button>
+        <button class="btn btn-step-cw"  onclick="rotate( 90)">↻ +90°</button>
+      </div>
+      <div style="margin-top:10px">
+        <button class="btn btn-history" id="btn-history"
+          style="width:100%;font-size:12px;padding:8px 0;"
+          onclick="toggleHistory()">🕘 Geçmiş Konumu Göster</button>
+      </div>
+    </div>
+
+    <!-- ŞEKİL SEÇİCİ -->
+    <div class="shapes-card">
+      <h3>Şekil Seç</h3>
+      <div class="shapes-row">
+        <button class="shape-btn" id="btn-point" onclick="startPointMode()">
+          <svg width="44" height="38" viewBox="0 0 44 38">
+            <circle cx="22" cy="20" r="7" fill="#fecaca" stroke="#dc2626" stroke-width="2.5"/>
+            <text x="22" y="8" text-anchor="middle" font-size="9" fill="#dc2626" font-weight="700">A</text>
+          </svg>
+          Nokta Ekle
+        </button>
+        <button class="shape-btn" id="btn-triangle" onclick="toggleShape('triangle')">
+          <svg width="44" height="38" viewBox="0 0 44 38">
+            <polygon points="22,3 42,35 2,35" fill="#bfdbfe" stroke="#1d4ed8" stroke-width="2"/>
+            <circle cx="2" cy="35" r="4" fill="#d32f2f"/>
+          </svg>
+          Üçgen
+        </button>
+        <button class="shape-btn" id="btn-rect" onclick="toggleShape('rect')">
+          <svg width="44" height="38" viewBox="0 0 44 38">
+            <rect x="3" y="9" width="38" height="22" fill="#d1fae5" stroke="#15803d" stroke-width="2"/>
+            <circle cx="3" cy="9" r="4" fill="#d32f2f"/>
+          </svg>
+          Dikdörtgen
+        </button>
+        <button class="shape-btn" id="btn-poly" onclick="startPolyDraw()">
+          <svg width="44" height="38" viewBox="0 0 44 38">
+            <polygon points="22,3 40,14 33,34 11,34 4,14" fill="#fef9c3" stroke="#ca8a04" stroke-width="2" stroke-dasharray="4,2"/>
+            <circle cx="22" cy="3" r="3" fill="#d97706"/>
+            <circle cx="40" cy="14" r="3" fill="#d97706"/>
+            <circle cx="33" cy="34" r="3" fill="#d97706"/>
+            <circle cx="11" cy="34" r="3" fill="#d97706"/>
+            <circle cx="4" cy="14" r="3" fill="#d97706"/>
+            <text x="22" y="20" text-anchor="middle" font-size="9" fill="#92400e" font-weight="700">+</text>
+          </svg>
+          Çokgen Çiz
+        </button>
+      </div>
+      <div class="lock-hint" id="lock-hint">🔴 Kırmızı noktaya çubuğun ucunu getirin → kilitlenir</div>
+    </div>
+
+    <!-- NOKTA ÇİZİM PANELİ -->
+    <div class="point-draw-panel" id="point-draw-panel" style="display:none">
+      <h4>🟢 Nokta Ekle</h4>
+      <div class="point-info">
+        Düzleme tıklayın — kafes noktasına bir nokta ekleyin.
+        Nokta eklendikten sonra çubukla döndürebilirsiniz.
+      </div>
+      <div class="poly-actions">
+        <button class="btn btn-point-cancel" onclick="cancelPointMode()">&#x2715; İptal</button>
+      </div>
+    </div>
+
+    <!-- ÇOKGEN ÇİZİM PANELİ -->
+    <div class="poly-draw-panel" id="poly-draw-panel" style="display:none">
+      <h4>📍 Çokgen Oluştur</h4>
+      <div class="poly-info">
+        Kafes noktalarına tıklayın (tam sayı koordinatlar). En az 3 köşe sonra <b>Tamamla</b>'ya basın.
+        İlk noktanın üzerine tıklamak da bitirir.
+      </div>
+      <div class="poly-vtx-list" id="poly-vtx-list"></div>
+      <div class="poly-actions">
+        <button class="btn btn-poly-ok" onclick="finishPolyDraw()" id="btn-poly-ok" disabled>✓ Tamamla</button>
+        <button class="btn btn-poly-cancel" onclick="cancelPolyDraw()">✕ İptal</button>
+      </div>
+    </div>
+
+    <!-- KÖŞE NOKTALARI -->
+    <div class="vertices-card" id="vertices-card" style="display:none">
+      <h3>Köşe Noktaları</h3>
+      <table class="vtx-table">
+        <thead><tr><th>Nokta</th><th>Asıl</th><th></th><th>Döndürülmüş</th></tr></thead>
+        <tbody id="vtx-body"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ─── Sabit geometri parametreleri ─── */
+const CELLS      = 10;
+const BAR_HALF_W = 0.10;
+const MIN_RADIUS = 0.5;
+const MAX_RADIUS = 9.5;
+const ALPHA      = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+let barRadius = 4;
+
+/* ─── Şekil durumu ─── */
+const SHAPES = {
+  triangle: {
+    verts: [{x:1,y:1},{x:4,y:1},{x:2,y:4}],
+    labels:['A','B','C'],
+    color:'#bfdbfe', stroke:'#1d4ed8'
+  },
+  rect: {
+    verts: [{x:1,y:1},{x:4,y:1},{x:4,y:3},{x:1,y:3}],
+    labels:['A','B','C','D'],
+    color:'#d1fae5', stroke:'#15803d'
+  }
+};
+
+/* Ağırlık merkezi: köşelerin aritmetik ortalaması */
+function centroid(verts) {
+  const cx = verts.reduce((s,v) => s + v.x, 0) / verts.length;
+  const cy = verts.reduce((s,v) => s + v.y, 0) / verts.length;
+  return {x: cx, y: cy};
+}
+
+let activeShape   = null;   // 'triangle' | 'rect' | null
+let isSnapped     = false;  // çubuk kilit noktasına kilitli mi
+let snapAngle0    = 0;      // kilitleme anındaki angleDeg
+const SNAP_PX     = 22;     // yakalama mesafesi (piksel)
+let showHistory   = false;  // önceki + şimdiki konum birlikte gösterilsin mi
+
+/* ─── Dinamik boyutlar (resizeCanvas() tarafından güncellenir) ─── */
+let W, H, CX, CY, CELL;
+
+let angleDeg   = 0;
+let isDragging = false;
+let isResizing = false;
+let lastAngle  = 0;
+
+/* ─── Nokta aracı ─── */
+function startPointMode() {
+  // Aktif nokta şekli varsa toggle off
+  if (activeShape === 'point') {
+    document.getElementById('btn-point').classList.remove('active');
+    activeShape = null; isSnapped = false; showHistory = false;
+    document.getElementById('btn-history')?.classList.remove('active');
+    document.getElementById('vertices-card').style.display = 'none';
+    resetBar();
+    draw();
+    return;
+  }
+  if (polyDrawMode) cancelPolyDraw();
+  if (activeShape) {
+    document.getElementById('btn-'+activeShape)?.classList.remove('active');
+    activeShape = null; isSnapped = false; showHistory = false;
+    document.getElementById('btn-history')?.classList.remove('active');
+    document.getElementById('vertices-card').style.display = 'none';
+    resetBar();
+  }
+  pointMode  = true;
+  pointHover = null;
+  document.getElementById('point-draw-panel').style.display = '';
+  document.getElementById('btn-point').classList.add('point-active');
+  canvas.style.cursor = 'crosshair';
+  draw();
+}
+function cancelPointMode() {
+  pointMode  = false;
+  pointHover = null;
+  document.getElementById('point-draw-panel').style.display = 'none';
+  document.getElementById('btn-point').classList.remove('point-active');
+  canvas.style.cursor = '';
+  draw();
+}
+
+/* ─── Nokta aracı hover önizlemesi ─── */
+function drawPlacedPoints() {
+  if (!pointMode || !pointHover) return;
+  if (Math.abs(pointHover.x) > CELLS || Math.abs(pointHover.y) > CELLS) return;
+  const R  = Math.max(6, CELL * 0.25);
+  const sx = CX + pointHover.x * CELL;
+  const sy = CY - pointHover.y * CELL;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(sx, sy, R + 4, 0, Math.PI * 2);
+  ctx.fillStyle   = 'rgba(220,38,38,0.15)';
+  ctx.strokeStyle = '#dc2626';
+  ctx.lineWidth   = 1.5;
+  ctx.setLineDash([4, 3]);
+  ctx.fill();
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+/* ─── Çokgen çizim durumu ─── */
+let polyDrawMode = false;
+let polyVerts    = [];    // {x,y} tam sayı kafes noktası
+let polyHover    = null;  // fare altındaki en yakın kafes noktası
+
+/* ─── Nokta araci durumu ─── */
+let pointMode  = false;
+let pointHover = null;  // fare altındaki kafes noktası
+
+function startPolyDraw() {
+  // Aktif şekli kapat
+  if (activeShape) {
+    const oldBtn = document.getElementById('btn-'+activeShape);
+    if (oldBtn) oldBtn.classList.remove('active');
+    activeShape = null;
+    isSnapped   = false;
+    document.getElementById('vertices-card').style.display = 'none';
+  }
+  if (pointMode) cancelPointMode();
+  polyDrawMode = true;
+  polyVerts    = [];
+  polyHover    = null;
+  document.getElementById('poly-draw-panel').style.display = '';
+  document.getElementById('poly-vtx-list').textContent    = 'Henüz nokta seçilmedi';
+  document.getElementById('btn-poly-ok').disabled         = true;
+  document.getElementById('btn-poly').classList.add('active');
+  const hintEl = document.getElementById('lock-hint');
+  hintEl.textContent = '📍 Kafes noktalarına tıklayın → çokgen oluşturun';
+  hintEl.className   = 'lock-hint';
+  canvas.style.cursor = 'crosshair';
+  draw();
+}
+
+function cancelPolyDraw() {
+  polyDrawMode = false;
+  polyVerts    = [];
+  polyHover    = null;
+  document.getElementById('poly-draw-panel').style.display = 'none';
+  document.getElementById('btn-poly').classList.remove('active');
+  canvas.style.cursor = '';
+  draw();
+}
+
+function finishPolyDraw() {
+  if (polyVerts.length < 3) return;
+  polyDrawMode = false;
+  polyHover    = null;
+  document.getElementById('poly-draw-panel').style.display = 'none';
+  document.getElementById('btn-poly').classList.remove('active');
+  canvas.style.cursor = '';
+
+  const ctr  = centroid(polyVerts);
+  SHAPES.custom = {
+    verts:  polyVerts.map(v => ({...v})),
+    lock:   ctr,
+    labels: polyVerts.map((_,i) => ALPHA[i] || String(i+1)),
+    color:  '#fef3c7',
+    stroke: '#d97706'
+  };
+
+  // doğrudan aktifleştir
+  if (activeShape) {
+    const oldBtn = document.getElementById('btn-'+activeShape);
+    if (oldBtn) oldBtn.classList.remove('active');
+  }
+  activeShape = 'custom';
+  const S     = SHAPES.custom;
+  barRadius   = Math.max(MIN_RADIUS, Math.sqrt(ctr.x**2 + ctr.y**2));
+  angleDeg    = Math.atan2(ctr.y, ctr.x) * 180 / Math.PI;
+  snapAngle0  = angleDeg;
+  isSnapped   = true;
+  document.getElementById('vertices-card').style.display = '';
+  const hintEl = document.getElementById('lock-hint');
+  hintEl.textContent = '🟢 Kilitlendi! Şimdi çubuğu döndürün → şekil de döner';
+  hintEl.className   = 'lock-hint snapped';
+  updateVertexTable();
+  draw();
+}
+
+function polyCanvasClick(e) {
+  // ─ Nokta modu: tek nokta ekle, şekil olarak aktifleştir ─
+  if (pointMode) {
+    const rect   = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const mx = (e.clientX - rect.left) * scaleX;
+    const my = (e.clientY - rect.top)  * scaleY;
+    const gx = Math.round((mx - CX) / CELL);
+    const gy = Math.round(-(my - CY) / CELL);
+    if (Math.abs(gx) > CELLS || Math.abs(gy) > CELLS) return true;
+    // SHAPES.point olarak kaydet
+    SHAPES.point = {
+      verts:  [{x: gx, y: gy}],
+      lock:   {x: gx, y: gy},
+      labels: ['A'],
+      color:  '#fecaca',
+      stroke: '#dc2626'
+    };
+    // Nokta modunu kapat
+    pointMode  = false;
+    pointHover = null;
+    document.getElementById('point-draw-panel').style.display = 'none';
+    document.getElementById('btn-point').classList.remove('point-active');
+    canvas.style.cursor = '';
+    // Aktif nokta şekli olarak aktifleştir
+    if (activeShape) document.getElementById('btn-'+activeShape)?.classList.remove('active');
+    activeShape = 'point';
+    document.getElementById('btn-point').classList.add('active');
+    barRadius  = Math.max(MIN_RADIUS, Math.sqrt(gx**2 + gy**2));
+    angleDeg   = Math.atan2(gy, gx) * 180 / Math.PI;
+    snapAngle0 = angleDeg;
+    isSnapped  = true;
+    document.getElementById('vertices-card').style.display = '';
+    const hEl = document.getElementById('lock-hint');
+    hEl.textContent = '🟢 Kilitlendi! Şimdi çubuğu döndürün → nokta da döner';
+    hEl.className   = 'lock-hint snapped';
+    updateVertexTable();
+    draw();
+    return true;
+  }
+  // ─ Polychon modu ─
+  if (!polyDrawMode) return false;
+  const rect   = canvas.getBoundingClientRect();
+  const scaleX = canvas.width  / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const mx = (e.clientX - rect.left) * scaleX;
+  const my = (e.clientY - rect.top)  * scaleY;
+  // Kafes noktasına yaklaştır (tam sayıya yuvarla)
+  const gx = Math.round((mx - CX) / CELL);
+  const gy = Math.round(-(my - CY) / CELL);
+  // Sınır kontrolü
+  if (Math.abs(gx) > CELLS || Math.abs(gy) > CELLS) return true;
+  // İlk nokta üzerine tıklamak bitirme anlamına gelir (≥ 3 nokta varsa)
+  if (polyVerts.length >= 3 && gx === polyVerts[0].x && gy === polyVerts[0].y) {
+    finishPolyDraw();
+    return true;
+  }
+  // Aynı nokta tekrar eklenmesin
+  if (polyVerts.some(v => v.x === gx && v.y === gy)) return true;
+  polyVerts.push({x: gx, y: gy});
+  // Listeyi güncelle
+  document.getElementById('poly-vtx-list').textContent =
+    polyVerts.map((v,i) => `${ALPHA[i]||i+1}(${v.x},${v.y})`).join('  ');
+  document.getElementById('btn-poly-ok').disabled = polyVerts.length < 3;
+  draw();
+  return true;
+}
+
+/* ─── Şekli aç/kapat ─── */
+function toggleShape(name) {
+  // Çokgen çizim modundaysa önce iptal et
+  if (polyDrawMode) cancelPolyDraw();
+  if (pointMode)    cancelPointMode();
+
+  if (activeShape === name) {
+    activeShape = null;
+    isSnapped   = false;
+    showHistory = false;
+    document.getElementById('btn-history')?.classList.remove('active');
+    document.getElementById('btn-'+name)?.classList.remove('active');
+    document.getElementById('vertices-card').style.display = 'none';
+    resetBar();
+  } else {
+    if (activeShape) document.getElementById('btn-'+activeShape)?.classList.remove('active');
+    activeShape = name;
+    document.getElementById('btn-'+name)?.classList.add('active');
+    document.getElementById('vertices-card').style.display = '';
+
+    // Çubuğu ağırlık merkezine otomatik kilitle
+    const S    = SHAPES[name];
+    const ctr  = centroid(S.verts);
+    S.lock     = ctr;   // checkSnap için de güncelle
+    barRadius  = Math.max(MIN_RADIUS, Math.sqrt(ctr.x ** 2 + ctr.y ** 2));
+    angleDeg   = Math.atan2(ctr.y, ctr.x) * 180 / Math.PI;
+    snapAngle0 = angleDeg;
+    isSnapped  = true;
+
+    const hintEl = document.getElementById('lock-hint');
+    hintEl.textContent = '🟢 Kilitlendi! Şimdi çubuğu döndürün → şekil de döner';
+    hintEl.className   = 'lock-hint snapped';
+
+    updateVertexTable();
+  }
+  draw();
+}
+
+const canvas = document.getElementById('grid');
+const ctx    = canvas.getContext('2d');
+
+/* ─── Canvas boyutunu kapsayıcıya göre hesapla ve yeniden çiz ─── */
+function resizeCanvas() {
+  const card   = canvas.parentElement;
+  const labelEl = card.querySelector('.card-label');
+  const hintEl  = card.querySelector('.canvas-hint');
+  const padPx   = 14 * 2;
+  const labelH  = (labelEl ? labelEl.offsetHeight + 6 : 22);
+  const hintH   = (hintEl  ? hintEl.offsetHeight  + 6 : 18);
+  const availW  = card.clientWidth  - padPx;
+  const availH  = card.clientHeight - padPx - labelH - hintH;
+  const S       = Math.max(Math.min(availW, availH), 260);
+  if (canvas.width === S && canvas.height === S) return;
+  canvas.width  = S;
+  canvas.height = S;
+  W    = S;  H    = S;
+  CX   = W / 2;  CY = H / 2;
+  CELL = W / (2 * CELLS + 1);
+  resizeKnobCanvas();
+  draw();
+}
+
+/* ─────────────────────────────── ÇİZİM ─────────────────────────────── */
+function draw() {
+  if (!W) return;
+  ctx.clearRect(0, 0, W, H);
+
+  // Arkaplan
+  ctx.fillStyle = '#c8dff0';
+  ctx.fillRect(0, 0, W, H);
+
+  // ── Izgara çizgileri ──
+  ctx.strokeStyle = '#7faacc';
+  ctx.lineWidth   = 0.5;
+  for (let i = -CELLS; i <= CELLS; i++) {
+    const x = CX + i * CELL;
+    const y = CY + i * CELL;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // ── Kesik daire ──
+  const r = barRadius * CELL;
+  ctx.save();
+  ctx.strokeStyle = '#c06070';
+  ctx.lineWidth   = 1.8;
+  const dashLen = Math.max(4, CELL * 0.25);
+  ctx.setLineDash([dashLen, dashLen]);
+  ctx.beginPath();
+  ctx.arc(CX, CY, r, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+
+  // ── Eksenler (her iki uçta da ok) ──
+  ctx.strokeStyle = '#d32f2f';
+  ctx.lineWidth   = 2;
+  ctx.beginPath(); ctx.moveTo(0,  CY); ctx.lineTo(W,  CY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(CX,  0); ctx.lineTo(CX,  H); ctx.stroke();
+  drawArrow(W,  CY, 'right');   // +x
+  drawArrow(0,  CY, 'left');    // −x
+  drawArrow(CX,  0, 'up');      // +y
+  drawArrow(CX,  H, 'down');   // −y
+
+  // ── Eksen etiketleri ──
+  const fontSize = Math.max(9, Math.min(13, CELL * 0.55));
+  ctx.fillStyle  = '#1a3a5c';
+  ctx.font       = `${fontSize}px Segoe UI, sans-serif`;
+  ctx.textAlign  = 'center';
+  for (let i = -CELLS; i <= CELLS; i++) {
+    if (i === 0) continue;
+    ctx.fillText( i,              CX + i * CELL, CY + fontSize + 3);
+    ctx.fillText(-i, CX - fontSize - 3, CY + i * CELL + fontSize * 0.35);
+  }
+  ctx.fillStyle = '#94a3b8';
+  ctx.fillText('x', W - 5, CY - 5);
+  ctx.fillText('y', CX + 7, 11);
+
+  // ── Aktif şekli çiz: önce gövde (çubuğun altında kalır) ──
+  if (showHistory && activeShape) drawGhostBody();
+  if (activeShape) drawShapeBody();
+  // ── Yerleştirilmiş noktalar (glovde altında) ──
+  drawPlacedPoints();
+  // ── Çokgen önizlemesi ──
+  if (polyDrawMode) drawPolyPreview();
+
+  // ── Hayalet çubuk (başlangıç konumu) ──
+  if (showHistory && activeShape) {
+    const ghostRad = (-snapAngle0 * Math.PI) / 180;
+    const ghostLen = barRadius * CELL;
+    const ghostHW  = BAR_HALF_W * CELL;
+    ctx.save();
+    ctx.globalAlpha = 0.28;
+    ctx.translate(CX, CY);
+    ctx.rotate(ghostRad);
+    ctx.fillStyle = '#64748b';
+    ctx.beginPath();
+    ctx.roundRect(3, -ghostHW, ghostLen - 6, ghostHW * 2, 3);
+    ctx.fill();
+    ctx.restore();
+    ctx.globalAlpha = 1;
+    // Hayalet uç noktası
+    const gTipX = ghostLen * Math.cos(ghostRad);
+    const gTipY = ghostLen * Math.sin(ghostRad);
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    ctx.beginPath();
+    ctx.arc(CX + gTipX, CY + gTipY, Math.max(3, CELL * 0.15), 0, Math.PI * 2);
+    ctx.fillStyle   = '#64748b';
+    ctx.fill();
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Döndürülmüş yeşil çubuk ──
+  // 0° konumu: pozitif x ekseni; matematiksel CCW = ekranda CCW (y ekseni yukarı)
+  const rad = (-angleDeg * Math.PI) / 180;  // canvas CW = math CCW ters
+
+  // 0°'de çubuk pozitif x yönüne uzanır
+  const tipX0 = barRadius * CELL;  // x-eksenine paralel
+  const tipY0 = 0;
+
+  // Döndürülmüş uç (merkezden ekran ofseti)
+  const tipX_rot = tipX0 * Math.cos(rad) - tipY0 * Math.sin(rad);
+  const tipY_rot = tipX0 * Math.sin(rad) + tipY0 * Math.cos(rad);
+
+  ctx.save();
+  ctx.translate(CX, CY);
+  ctx.rotate(rad);
+
+  const len      = barRadius * CELL;
+  const halfW    = BAR_HALF_W * CELL;
+  const barAngle = 0;  // 0°'de x-eksenine hizalı
+
+  ctx.save();
+  ctx.rotate(barAngle);
+
+  // Shadow
+  ctx.shadowColor   = 'rgba(0,0,0,0.35)';
+  ctx.shadowBlur    = 8;
+  ctx.shadowOffsetX = 3;
+  ctx.shadowOffsetY = 3;
+
+  // Main bar body
+  const grad = ctx.createLinearGradient(0, -halfW, 0, halfW);
+  grad.addColorStop(0, '#5a9a5a');
+  grad.addColorStop(0.5, '#2d5a2d');
+  grad.addColorStop(1, '#1a3a1a');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.roundRect(3, -halfW, len - 6, halfW * 2, 3);
+  ctx.fill();
+
+  ctx.shadowColor = 'transparent';
+
+  // Subtle highlight stripe
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.beginPath();
+  ctx.roundRect(5, -halfW + 1, len - 10, halfW * 0.6, 2);
+  ctx.fill();
+
+  ctx.restore();
+  ctx.restore();
+
+  // ── Uç nokta halkası (üpheçi, sürüklenebilir) ──
+  const dotR = Math.max(1, CELL * 0.05);
+  ctx.beginPath();
+  ctx.arc(CX + tipX_rot, CY + tipY_rot, dotR, 0, Math.PI * 2);
+  ctx.fillStyle   = 'rgba(255,255,255,0.92)';
+  ctx.shadowColor = 'rgba(0,0,0,0.4)';
+  ctx.shadowBlur  = 5;
+  ctx.fill();
+  ctx.shadowBlur  = 0;
+  ctx.strokeStyle = '#3a6e3a';
+  ctx.lineWidth   = 2.5;
+  ctx.stroke();
+
+  // ── Orijin noktası ──
+  ctx.beginPath();
+  ctx.arc(CX, CY, Math.max(3.5, CELL * 0.18), 0, Math.PI * 2);
+  ctx.fillStyle   = '#d32f2f';
+  ctx.shadowColor = 'rgba(0,0,0,0.3)';
+  ctx.shadowBlur  = 4;
+  ctx.fill();
+  ctx.shadowBlur  = 0;
+
+  // ── Orijin “O” etiketi ──
+  const oFontSize = Math.max(9, Math.min(12, CELL * 0.48));
+  const oText     = 'O';
+  ctx.save();
+  ctx.font      = `bold ${oFontSize}px Segoe UI,sans-serif`;
+  const oW      = ctx.measureText(oText).width + 6;
+  const oH      = oFontSize + 6;
+  const oPad    = 3;
+  // Orijinin sol-altına yerleştir
+  const oBoxX = CX - oW - 4;
+  const oBoxY = CY + 4;
+  ctx.shadowColor = 'rgba(0,0,0,0.18)';
+  ctx.shadowBlur  = 4;
+  ctx.fillStyle   = 'rgba(255,255,255,0.88)';
+  ctx.beginPath();
+  ctx.roundRect(oBoxX, oBoxY, oW, oH, 3);
+  ctx.fill();
+  ctx.shadowBlur  = 0;
+  ctx.fillStyle   = '#d32f2f';
+  ctx.textAlign   = 'center';
+  ctx.textBaseline= 'top';
+  ctx.fillText(oText, oBoxX + oW / 2, oBoxY + oPad);
+  ctx.restore();
+
+  // ── Aktif şekli çiz ──  ← bu satır yukarıya taşındı
+
+  updateInfo(tipX_rot / CELL, -tipY_rot / CELL);
+  checkSnap(CX + tipX_rot, CY + tipY_rot);
+
+  // ── Etiketler + kilit noktası: çubuğun üstünde ──
+  if (activeShape) drawShapeLabels();
+  if (showHistory && activeShape) drawGhostLabels();
+}
+
+/* ── Şekil + kilit noktası çizimi ── */
+
+/* Etiket + koordinat kutucuğu: merkez noktadan dışarıya itilmiş, beyaz arka planlı */
+function drawLabel(lbl, coordStr, ptSX, ptSY, centSX, centSY, labelColor, coordColor) {
+  const fs   = Math.max(9,  Math.min(12, CELL * 0.5));
+  const fsc  = Math.max(7,  Math.min(9,  CELL * 0.38));
+  const pad  = 3;
+  const gap  = 3;
+
+  // Şeklin merkezinden köşeye yönen vektörü normalleştir
+  let dx = ptSX - centSX, dy = ptSY - centSY;
+  const len = Math.sqrt(dx*dx + dy*dy) || 1;
+  dx /= len; dy /= len;
+
+  // Köşe noktasından dışarıya itmek için mesafe = nokta yarıçapı + boşluk
+  const push = Math.max(14, CELL * 0.55);
+  const bx   = ptSX + dx * push;  // temel öteleme merkezi
+  const by   = ptSY + dy * push;
+
+  ctx.save();
+  ctx.textBaseline = 'alphabetic';
+
+  // Boyut ölçümü
+  ctx.font = `bold ${fs}px Segoe UI,sans-serif`;
+  const wLbl  = ctx.measureText(lbl).width;
+  ctx.font = `${fsc}px Segoe UI,sans-serif`;
+  const wCoord = ctx.measureText(coordStr).width;
+  const totalW = Math.max(wLbl, wCoord) + pad * 2;
+  const totalH = fs + fsc + gap + pad * 2;
+
+  // Arka plan kutusu (beyaz, hafif gölge)
+  ctx.shadowColor   = 'rgba(0,0,0,0.22)';
+  ctx.shadowBlur    = 5;
+  ctx.fillStyle     = 'rgba(255,255,255,0.93)';
+  // Canvas sınırları içinde kal (etiket hiçbir zaman kesilmesin)
+  const margin = 4;
+  let bx0 = bx - totalW / 2;
+  let by0 = by - totalH / 2;
+  bx0 = Math.max(margin, Math.min(W - totalW - margin, bx0));
+  by0 = Math.max(margin, Math.min(H - totalH - margin, by0));
+  const radius = 4;
+  ctx.beginPath();
+  ctx.roundRect(bx0, by0, totalW, totalH, radius);
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Harf
+  ctx.font         = `bold ${fs}px Segoe UI,sans-serif`;
+  ctx.fillStyle    = labelColor;
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'top';
+  ctx.fillText(lbl, bx, by0 + pad);
+
+  // Koordinat
+  ctx.font         = `${fsc}px Segoe UI,sans-serif`;
+  ctx.fillStyle    = coordColor;
+  ctx.fillText(coordStr, bx, by0 + pad + fs + gap);
+
+  ctx.restore();
+}
+
+function drawShape() { drawShapeBody(); drawShapeLabels(); }
+
+function _shapeTransformAt(rotDeg) {
+  const S   = SHAPES[activeShape];
+  const rad = (rotDeg * Math.PI) / 180;
+  const toScreen = p => ({
+    sx: CX + (p.x * Math.cos(rad) - p.y * Math.sin(rad)) * CELL,
+    sy: CY - (p.x * Math.sin(rad) + p.y * Math.cos(rad)) * CELL
+  });
+  const pts    = S.verts.map(toScreen);
+  const centSX = pts.reduce((s,p) => s + p.sx, 0) / pts.length;
+  const centSY = pts.reduce((s,p) => s + p.sy, 0) / pts.length;
+  return { S, rad, pts, centSX, centSY, toScreen };
+}
+function _shapeTransform() {
+  return _shapeTransformAt(isSnapped ? angleDeg - snapAngle0 : 0);
+}
+
+/* ── Başlangıç konumundaki hayalet şekil ── */
+function drawGhostBody() {
+  const { S, pts } = _shapeTransformAt(0);
+  ctx.save();
+  if (pts.length === 1) {
+    const R = Math.max(6, CELL * 0.26);
+    ctx.beginPath();
+    ctx.arc(pts[0].sx, pts[0].sy, R, 0, Math.PI * 2);
+    ctx.fillStyle   = 'rgba(148,163,184,0.22)';
+    ctx.fill();
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth   = 2;
+    ctx.setLineDash([5, 3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  } else {
+    ctx.beginPath();
+    ctx.moveTo(pts[0].sx, pts[0].sy);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].sx, pts[i].sy);
+    ctx.closePath();
+    ctx.fillStyle   = 'rgba(148,163,184,0.18)';
+    ctx.fill();
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth   = 2;
+    ctx.setLineDash([7, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.restore();
+}
+function drawGhostLabels() {
+  const { S, pts, centSX, centSY, toScreen } = _shapeTransformAt(0);
+  const effCentSX = pts.length === 1 ? pts[0].sx              : centSX;
+  const effCentSY = pts.length === 1 ? pts[0].sy + CELL * 1.8 : centSY;
+  S.labels.forEach((lbl, i) => {
+    drawLabel(
+      lbl,
+      formatCoordinate(S.verts[i].x, S.verts[i].y),
+      pts[i].sx, pts[i].sy, effCentSX, effCentSY,
+      '#7e8fa3', '#94a3b8'
+    );
+  });
+  // Hayalet kilit noktası
+  const lk = toScreen(S.lock);
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(lk.sx, lk.sy, 7, 0, Math.PI * 2);
+  ctx.fillStyle   = 'rgba(148,163,184,0.35)';
+  ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth   = 1.5;
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+}
+function toggleHistory() {
+  showHistory = !showHistory;
+  const btn = document.getElementById('btn-history');
+  if (btn) {
+    btn.textContent = showHistory ? '🕘 Geçmiş Konumunu Gizle' : '🕘 Geçmiş Konumu Göster';
+    showHistory ? btn.classList.add('active') : btn.classList.remove('active');
+  }
+  draw();
+}
+
+function drawShapeBody() {
+  const { S, pts } = _shapeTransform();
+  ctx.save();
+  if (pts.length === 1) {
+    // Tek nokta: dolu daire
+    const R = Math.max(6, CELL * 0.26);
+    ctx.beginPath();
+    ctx.arc(pts[0].sx, pts[0].sy, R, 0, Math.PI * 2);
+    ctx.fillStyle   = S.color;
+    ctx.globalAlpha = 0.92;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = S.stroke;
+    ctx.lineWidth   = 2.5;
+    ctx.stroke();
+  } else {
+    ctx.beginPath();
+    ctx.moveTo(pts[0].sx, pts[0].sy);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].sx, pts[i].sy);
+    ctx.closePath();
+    ctx.fillStyle   = S.color;
+    ctx.globalAlpha = 0.72;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = S.stroke;
+    ctx.lineWidth   = 2;
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawShapeLabels() {
+  const { S, rad, pts, centSX, centSY, toScreen } = _shapeTransform();
+
+  // Köşe etiketleri + koordinat (beyaz kutucuklu)
+  // Tek noktada centroid == nokta: etiketin daima üstte çıkması için sahte merkez aşağıya
+  const effCentSX = pts.length === 1 ? pts[0].sx              : centSX;
+  const effCentSY = pts.length === 1 ? pts[0].sy + CELL * 1.8 : centSY;
+  S.labels.forEach((lbl, i) => {
+    const rx = +(S.verts[i].x * Math.cos(rad) - S.verts[i].y * Math.sin(rad)).toFixed(10);
+    const ry = +(S.verts[i].x * Math.sin(rad) + S.verts[i].y * Math.cos(rad)).toFixed(10);
+    drawLabel(
+      lbl, formatCoordinate(rx, ry),
+      pts[i].sx, pts[i].sy, effCentSX, effCentSY,
+      S.stroke, '#334155'
+    );
+  });
+
+  // Kilit noktası
+  ctx.save();
+  const lk = toScreen(S.lock);
+  const lockPointScale = window.innerWidth <= 768 ? (1 / 3) : 1;
+  const pulse = (isSnapped ? 9 : 6) * lockPointScale;
+  ctx.beginPath();
+  ctx.arc(lk.sx, lk.sy, pulse, 0, Math.PI*2);
+  ctx.fillStyle   = isSnapped ? '#16a34a' : '#d32f2f';
+  ctx.shadowColor = isSnapped ? 'rgba(22,163,74,.5)' : 'rgba(211,47,47,.5)';
+  ctx.shadowBlur  = 10;
+  ctx.fill();
+  ctx.shadowBlur  = 0;
+  ctx.restore();
+}
+
+/* ── Çokgen çizim önizlemesi ── */
+function drawPolyPreview() {
+  const toS = (gx, gy) => ({ sx: CX + gx * CELL, sy: CY - gy * CELL });
+
+  // Tüm kafes noktalarında hafif ızgara vurgusu (snap hedefleri)
+  ctx.save();
+  ctx.fillStyle = 'rgba(202,138,4,0.18)';
+  for (let gx = -CELLS; gx <= CELLS; gx++) {
+    for (let gy = -CELLS; gy <= CELLS; gy++) {
+      const p = toS(gx, gy);
+      ctx.beginPath();
+      ctx.arc(p.sx, p.sy, 3, 0, Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  // Hover snap noktası vurgu
+  if (polyHover && Math.abs(polyHover.x) <= CELLS && Math.abs(polyHover.y) <= CELLS) {
+    const hp = toS(polyHover.x, polyHover.y);
+    const isFirst = polyVerts.length >= 3 && polyHover.x === polyVerts[0].x && polyHover.y === polyVerts[0].y;
+    ctx.beginPath();
+    ctx.arc(hp.sx, hp.sy, 7, 0, Math.PI*2);
+    ctx.fillStyle   = isFirst ? 'rgba(22,163,74,0.5)' : 'rgba(202,138,4,0.45)';
+    ctx.fill();
+    ctx.strokeStyle = isFirst ? '#16a34a' : '#ca8a04';
+    ctx.lineWidth   = 1.5;
+    ctx.stroke();
+  }
+  if (polyVerts.length === 0) { ctx.restore(); return; }
+
+  const pts = polyVerts.map(v => toS(v.x, v.y));
+
+  // Mevcut kenarlar
+  ctx.beginPath();
+  ctx.moveTo(pts[0].sx, pts[0].sy);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].sx, pts[i].sy);
+  // Hover ön çizgisi
+  if (polyHover && Math.abs(polyHover.x) <= CELLS && Math.abs(polyHover.y) <= CELLS) {
+    const hp = toS(polyHover.x, polyHover.y);
+    ctx.lineTo(hp.sx, hp.sy);
+  }
+  ctx.strokeStyle = '#d97706';
+  ctx.lineWidth   = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Köşe noktaları
+  // Centroid hesapla
+  const centSX2 = polyVerts.reduce((s,v) => s + (CX + v.x * CELL), 0) / polyVerts.length;
+  const centSY2 = polyVerts.reduce((s,v) => s + (CY - v.y * CELL), 0) / polyVerts.length;
+  polyVerts.forEach((v, i) => {
+    const p = toS(v.x, v.y);
+    ctx.beginPath();
+    ctx.arc(p.sx, p.sy, 5, 0, Math.PI*2);
+    ctx.fillStyle   = '#d97706';
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth   = 1.5;
+    ctx.stroke();
+    // Harf + koordinat kutucuğu
+    drawLabel(ALPHA[i] || String(i+1), `(${v.x},${v.y})`, p.sx, p.sy, centSX2, centSY2, '#92400e', '#78350f');
+  });
+
+  // Ağırlık merkezi önizlemesi (≥ 3 nokta varsa)
+  if (polyVerts.length >= 3) {
+    ctx.beginPath();
+    ctx.arc(centSX2, centSY2, 7, 0, Math.PI*2);
+    ctx.fillStyle   = 'rgba(16,163,74,0.25)';
+    ctx.fill();
+    ctx.strokeStyle = '#16a34a';
+    ctx.lineWidth   = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // Küçük + işareti
+    ctx.strokeStyle = '#16a34a';
+    ctx.lineWidth   = 1.5;
+    ctx.beginPath(); ctx.moveTo(centSX2 - 5, centSY2); ctx.lineTo(centSX2 + 5, centSY2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(centSX2, centSY2 - 5); ctx.lineTo(centSX2, centSY2 + 5); ctx.stroke();
+  }
+
+  ctx.textBaseline = 'alphabetic';
+  ctx.restore();
+}
+
+/* ── Snap kontrolü ── */
+function checkSnap(tipSX, tipSY) {
+  if (!activeShape) return;
+  const S   = SHAPES[activeShape];
+  const lkSX = CX + S.lock.x * CELL;
+  const lkSY = CY - S.lock.y * CELL;
+  const dist = Math.sqrt((tipSX - lkSX)**2 + (tipSY - lkSY)**2);
+  if (!isSnapped && dist < SNAP_PX) {
+    isSnapped  = true;
+    snapAngle0 = angleDeg;
+    barRadius  = Math.sqrt(S.lock.x**2 + S.lock.y**2);
+    const hintEl = document.getElementById('lock-hint');
+    hintEl.textContent = '🟢 Kilitlendi! Şimdi çubuğu döndürün → şekil de döner';
+    hintEl.className   = 'lock-hint snapped';
+    // draw() zaten devam ettiğinden burada tekrar çağırmıyoruz
+  }
+  updateVertexTable();
+}
+
+/* ── Köşe tablosunu güncelle ── */
+function updateVertexTable() {
+  if (!activeShape) return;
+  const S    = SHAPES[activeShape];
+  const rotA = isSnapped ? (angleDeg - snapAngle0) : 0;
+  const rad  = (rotA * Math.PI) / 180;
+  const tbody = document.getElementById('vtx-body');
+  tbody.innerHTML = '';
+  S.verts.forEach((v, i) => {
+    const rx = +(v.x * Math.cos(rad) - v.y * Math.sin(rad)).toFixed(10);
+    const ry = +(v.x * Math.sin(rad) + v.y * Math.cos(rad)).toFixed(10);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${S.labels[i]}</td>`
+      + `<td>${formatCoordinate(v.x, v.y)}</td>`
+      + `<td class="arrow">→</td>`
+      + `<td class="result">${formatCoordinate(rx, ry)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function drawArrow(x, y, dir) {
+  const a = Math.max(5, CELL * 0.28);
+  ctx.beginPath();
+  if      (dir === 'right') { ctx.moveTo(x, y); ctx.lineTo(x - a*2, y - a); ctx.lineTo(x - a*2, y + a); }
+  else if (dir === 'left')  { ctx.moveTo(x, y); ctx.lineTo(x + a*2, y - a); ctx.lineTo(x + a*2, y + a); }
+  else if (dir === 'up')    { ctx.moveTo(x, y); ctx.lineTo(x - a, y + a*2); ctx.lineTo(x + a, y + a*2); }
+  else if (dir === 'down')  { ctx.moveTo(x, y); ctx.lineTo(x - a, y - a*2); ctx.lineTo(x + a, y - a*2); }
+  ctx.closePath();
+  ctx.fillStyle = '#d32f2f';
+  ctx.fill();
+}
+
+/* ── Tam sayıyı sadeleştirilmiş kök formuna çevir: n → [k, r] öyle ki n = k²·r ── */
+function simplifyRoot(n) {
+  let coeff = 1, rad = n;
+  for (let k = Math.floor(Math.sqrt(n)); k >= 2; k--) {
+    if (rad % (k * k) === 0) { coeff *= k; rad /= (k * k); break; }
+  }
+  return [coeff, rad];
+}
+
+/* ── √-sembolü ile güzel sayı gösterimi ── */
+function niceNum(v) {
+  if (Math.abs(v) < 1e-8) return '0';
+  const sign = v < 0 ? '\u2212' : '';
+  const av   = Math.abs(v);
+
+  // Tam sayı?
+  const ri = Math.round(av);
+  if (Math.abs(av - ri) < 1e-6) return sign + ri;
+
+  // n/2 (yarım tam sayı)?
+  const r2 = Math.round(av * 2);
+  if (Math.abs(av * 2 - r2) < 1e-6 && r2 % 2 !== 0) return sign + r2 + '/2';
+
+  // v² tam sayı → k√r  (örn. 2√3, √13)
+  const v2  = av * av;
+  const v2r = Math.round(v2);
+  if (Math.abs(v2 - v2r) < 1e-6 && v2r > 0) {
+    const [c, r] = simplifyRoot(v2r);
+    if (r === 1) return sign + c;
+    return sign + (c > 1 ? c : '') + '\u221a' + r;
+  }
+
+  // v² = n/4 → k√r/2  (örn. √13/2, √3/2)
+  const v2x4  = v2 * 4;
+  const v2x4r = Math.round(v2x4);
+  if (Math.abs(v2x4 - v2x4r) < 1e-6 && v2x4r > 0 && v2x4r % 4 !== 0) {
+    const [c, r] = simplifyRoot(v2x4r);
+    if (r === 1) return sign + c + '/2';
+    return sign + (c > 1 ? c : '') + '\u221a' + r + '/2';
+  }
+
+  return sign + av.toFixed(2).replace('.', ',');
+}
+
+function formatCoordinate(x, y) {
+  return `(${niceNum(x)};${niceNum(y)})`;
+}
+
+/* ─────────────────────── DÖNDÜRME DÜĞMESİ (KNOB) ──────────────────── */
+const knobCanvas = document.getElementById('knob-canvas');
+const kctx       = knobCanvas.getContext('2d');
+let knobDragging = false;
+let knobLastAngle = 0;
+let knobRawAngle = 0;
+const KNOB_STEP_DEG = 5;
+
+// Kadön yuvarlak: şekil aktifken şeklein dönmüş olduğu açıyı (delta),
+// yoksa çubuğun mutlak açısını döndürür.
+function shapeRotation() {
+  return isSnapped ? angleDeg - snapAngle0 : angleDeg;
+}
+
+function displayedKnobRotation() {
+  return snapKnobAngleToStep(shapeRotation());
+}
+
+function snapKnobAngleToStep(angle) {
+  return Math.round(angle / KNOB_STEP_DEG) * KNOB_STEP_DEG;
+}
+
+function alignKnobStartToStep() {
+  const snappedAngle = snapKnobAngleToStep(angleDeg);
+  const delta = snappedAngle - angleDeg;
+  angleDeg = snappedAngle;
+  if (activeShape && isSnapped) snapAngle0 += delta;
+  knobRawAngle = angleDeg;
+}
+
+function resizeKnobCanvas() {
+  const row = knobCanvas.parentElement;
+  const readout = row ? row.querySelector('.knob-readout') : null;
+  const rowWidth = row ? row.clientWidth : 150;
+  const isMobile = window.innerWidth <= 768;
+  const readoutReserve = readout ? Math.max(96, Math.min(readout.offsetWidth, isMobile ? 140 : 170)) : 116;
+  const gap = isMobile ? 12 : 16;
+  const minSize = isMobile ? 108 : 120;
+  const maxSize = isMobile ? 138 : 150;
+  const targetSize = Math.max(minSize, Math.min(maxSize, rowWidth - readoutReserve - gap));
+
+  if (knobCanvas.width === targetSize && knobCanvas.height === targetSize) return;
+  knobCanvas.width = targetSize;
+  knobCanvas.height = targetSize;
+  drawKnob();
+}
+
+function drawKnob() {
+  const KW = knobCanvas.width, KH = knobCanvas.height;
+  const KCX = KW / 2, KCY = KH / 2;
+  const KR  = KW / 2 - 8;
+  kctx.clearRect(0, 0, KW, KH);
+
+  // Outer shadow ring
+  kctx.save();
+  kctx.beginPath();
+  kctx.arc(KCX, KCY, KR + 3, 0, Math.PI * 2);
+  kctx.fillStyle = '#e2e8f0';
+  kctx.fill();
+  kctx.restore();
+
+  // Dial face
+  kctx.beginPath();
+  kctx.arc(KCX, KCY, KR, 0, Math.PI * 2);
+  const faceGrad = kctx.createRadialGradient(KCX - KR*0.2, KCY - KR*0.2, 0, KCX, KCY, KR);
+  faceGrad.addColorStop(0, '#f8fafc');
+  faceGrad.addColorStop(1, '#e2e8f0');
+  kctx.fillStyle = faceGrad;
+  kctx.fill();
+
+  // Coloured arc showing rotation amount (delta from shape initial position)
+  const dispDeg = displayedKnobRotation();
+  const ang360  = ((dispDeg % 360) + 360) % 360;
+  if (ang360 > 0.5) {
+    kctx.beginPath();
+    kctx.moveTo(KCX, KCY);
+    kctx.arc(KCX, KCY, KR - 2, 0, -(ang360 * Math.PI / 180), true);
+    kctx.fillStyle = 'rgba(29,78,216,0.10)';
+    kctx.fill();
+  }
+
+  // Tick marks + labels every 30°
+  for (let d = 0; d < 360; d += 10) {
+    const ca = Math.cos(-d * Math.PI / 180);
+    const sa = Math.sin(-d * Math.PI / 180);
+    const isMajor = d % 30 === 0;
+    const isMed   = d % 10 === 0;
+    const tickLen = isMajor ? 9 : isMed ? 5 : 3;
+    kctx.beginPath();
+    kctx.moveTo(KCX + (KR - tickLen) * ca, KCY + (KR - tickLen) * sa);
+    kctx.lineTo(KCX + KR * ca,              KCY + KR * sa);
+    kctx.strokeStyle = isMajor ? '#475569' : '#94a3b8';
+    kctx.lineWidth   = isMajor ? 1.5 : 0.7;
+    kctx.stroke();
+    if (isMajor) {
+      const lr = KR - 18;
+      kctx.font         = `bold ${Math.max(7, KR * 0.115)}px Segoe UI,sans-serif`;
+      kctx.fillStyle    = '#475569';
+      kctx.textAlign    = 'center';
+      kctx.textBaseline = 'middle';
+      kctx.fillText(String(d), KCX + lr * ca, KCY + lr * sa);
+    }
+  }
+  kctx.textBaseline = 'alphabetic';
+
+  // Needle — points to shapeRotation() not raw angleDeg
+  const pAngle = -(displayedKnobRotation() * Math.PI / 180);
+  kctx.save();
+  kctx.shadowColor   = 'rgba(29,78,216,0.35)';
+  kctx.shadowBlur    = 4;
+  kctx.beginPath();
+  kctx.moveTo(KCX - Math.cos(pAngle) * 6, KCY - Math.sin(pAngle) * 6);
+  kctx.lineTo(KCX + Math.cos(pAngle) * (KR - 10), KCY + Math.sin(pAngle) * (KR - 10));
+  kctx.strokeStyle = '#1d4ed8';
+  kctx.lineWidth   = 2.5;
+  kctx.lineCap     = 'round';
+  kctx.stroke();
+  kctx.restore();
+
+  // Centre cap
+  kctx.beginPath();
+  kctx.arc(KCX, KCY, 7, 0, Math.PI * 2);
+  kctx.fillStyle   = '#1d4ed8';
+  kctx.fill();
+  kctx.strokeStyle = '#fff';
+  kctx.lineWidth   = 2;
+  kctx.stroke();
+}
+
+function knobAngleFromEvent(e) {
+  const r    = knobCanvas.getBoundingClientRect();
+  const cx   = r.left + r.width  / 2;
+  const cy   = r.top  + r.height / 2;
+  const cx_e = e.touches ? e.touches[0].clientX : e.clientX;
+  const cy_e = e.touches ? e.touches[0].clientY : e.clientY;
+  return Math.atan2(cy_e - cy, cx_e - cx) * 180 / Math.PI;
+}
+
+knobCanvas.addEventListener('mousedown', e => {
+  alignKnobStartToStep();
+  knobDragging  = true;
+  knobLastAngle = knobAngleFromEvent(e);
+  updateVertexTable();
+  draw();
+  e.preventDefault();
+});
+knobCanvas.addEventListener('touchstart', e => {
+  alignKnobStartToStep();
+  knobDragging  = true;
+  knobLastAngle = knobAngleFromEvent(e);
+  updateVertexTable();
+  draw();
+  e.preventDefault();
+}, { passive: false });
+window.addEventListener('mousemove', e => {
+  if (!knobDragging) return;
+  const cur  = knobAngleFromEvent(e);
+  let   diff = cur - knobLastAngle;
+  if (diff >  180) diff -= 360;
+  if (diff < -180) diff += 360;
+  knobRawAngle  -= diff;   // CCW positive (matches main canvas)
+  angleDeg       = snapKnobAngleToStep(knobRawAngle);
+  knobLastAngle  = cur;
+  if (activeShape) {
+    const ctr = SHAPES[activeShape].lock;
+    barRadius = Math.max(MIN_RADIUS, Math.sqrt(ctr.x**2 + ctr.y**2));
+    isSnapped = true;
+  }
+  updateVertexTable();
+  draw();
+});
+window.addEventListener('touchmove', e => {
+  if (!knobDragging) return;
+  e.preventDefault();
+  const cur  = knobAngleFromEvent(e);
+  let   diff = cur - knobLastAngle;
+  if (diff >  180) diff -= 360;
+  if (diff < -180) diff += 360;
+  knobRawAngle  -= diff;
+  angleDeg       = snapKnobAngleToStep(knobRawAngle);
+  knobLastAngle  = cur;
+  if (activeShape) {
+    const ctr = SHAPES[activeShape].lock;
+    barRadius = Math.max(MIN_RADIUS, Math.sqrt(ctr.x**2 + ctr.y**2));
+    isSnapped = true;
+  }
+  updateVertexTable();
+  draw();
+}, { passive: false });
+window.addEventListener('mouseup',  () => { knobDragging = false; knobRawAngle = angleDeg; });
+window.addEventListener('touchend', () => { knobDragging = false; knobRawAngle = angleDeg; });
+window.addEventListener('touchcancel', () => { knobDragging = false; knobRawAngle = angleDeg; });
+
+/* ─────────────────────────────── UI ─────────────────────────────── */
+function updateInfo(tipX_math, tipY_math) {
+  // Gösterilecek açı: şekil aktifken başlangıç–son konum arasındaki delta, yoks absolut açı
+  const disp = displayedKnobRotation();
+  const ang  = ((disp % 360) + 360) % 360;
+  document.getElementById('angle-display').innerHTML =
+    Math.round(ang) + '<span>°</span>';
+
+  const badge = document.getElementById('direction-badge');
+  if (ang < 0.5) {
+    badge.textContent = '— 0°';
+    badge.className   = 'direction-badge';
+  } else {
+    badge.textContent = `↺ ${Math.round(ang)}°`;
+    badge.className   = 'direction-badge ccw';
+  }
+
+  drawKnob();
+}
+
+/* ─────────────────────────────── CONTROLS ─────────────────────────── */
+function rotate(delta) {
+  angleDeg += delta;
+  knobRawAngle = angleDeg;
+  updateVertexTable();
+  draw();
+}
+
+function resetToInitial() {
+  if (!activeShape) return;
+  // Rotasyon delta'sını sıfırla: şeklel başlangıç konumuna dön
+  angleDeg = snapAngle0;
+  knobRawAngle = angleDeg;
+  updateVertexTable();
+  draw();
+}
+
+function resetBar() {
+  if (activeShape) {
+    // Şekil aktifken çubuğu sıfırla → şekli başlangıç konumuna geri getir
+    const S   = SHAPES[activeShape];
+    const ctr = S.lock || centroid(S.verts);
+    barRadius  = Math.max(MIN_RADIUS, Math.sqrt(ctr.x**2 + ctr.y**2));
+    angleDeg   = Math.atan2(ctr.y, ctr.x) * 180 / Math.PI;
+    snapAngle0 = angleDeg;
+    isSnapped  = true;
+  } else {
+    angleDeg  = 0;
+    isSnapped = false;
+    barRadius = 4;
+    const hintEl = document.getElementById('lock-hint');
+    if (hintEl) { hintEl.textContent = '🔴 Kırmızı noktaya çubuğun ucunu getirin → kilitlenir'; hintEl.className='lock-hint'; }
+  }
+  knobRawAngle = angleDeg;
+  updateVertexTable();
+  draw();
+}
+
+/* ─────────────────────────────── DRAG ──────────────────────────────── */
+function getAngleFromEvent(e) {
+  const rect  = canvas.getBoundingClientRect();
+  const scaleX = canvas.width  / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  const dx = (clientX - rect.left)  * scaleX - CX;
+  const dy = (clientY - rect.top)   * scaleY - CY;
+  return Math.atan2(dy, dx) * 180 / Math.PI;
+}
+
+/* ── Uç noktaya olan mesafeyi hesapla (px) ── */
+function distToTip(e) {
+  const rect    = canvas.getBoundingClientRect();
+  const scaleX  = canvas.width  / rect.width;
+  const scaleY  = canvas.height / rect.height;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  const mx   = (clientX - rect.left) * scaleX;
+  const my   = (clientY - rect.top)  * scaleY;
+  const rad  = (-angleDeg * Math.PI) / 180;
+  const tipSX = CX + barRadius * CELL * Math.cos(rad);
+  const tipSY = CY + barRadius * CELL * Math.sin(rad);
+  return Math.sqrt((mx - tipSX) ** 2 + (my - tipSY) ** 2);
+}
+
+/* ── Merkezden mesafeyi barRadius birimi olarak döndür ── */
+function getRadiusFromEvent(e) {
+  const rect    = canvas.getBoundingClientRect();
+  const scaleX  = canvas.width  / rect.width;
+  const scaleY  = canvas.height / rect.height;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  const mx = (clientX - rect.left) * scaleX - CX;
+  const my = (clientY - rect.top)  * scaleY - CY;
+  return Math.sqrt(mx ** 2 + my ** 2) / CELL;
+}
+
+canvas.addEventListener('mousedown', e => {
+  if (polyDrawMode) return;  // poly modunda sürükleme başlatma
+  if (pointMode)    return;  // nokta modunda sürükleme yok
+  const hitR = Math.max(18, CELL * 0.5);
+  if (!isSnapped && distToTip(e) < hitR) {
+    isResizing = true;
+  } else {
+    isDragging = true;
+    lastAngle  = getAngleFromEvent(e);
+  }
+});
+canvas.addEventListener('click', e => { polyCanvasClick(e); });
+canvas.addEventListener('dblclick', e => { if (polyDrawMode && polyVerts.length >= 3) finishPolyDraw(); });
+canvas.addEventListener('touchstart', e => {
+  if (polyDrawMode) return;  // click event ile yönetilir
+  if (pointMode)    return;  // nokta modunda dokunma drag yok
+  e.preventDefault();
+  const hitR = Math.max(22, CELL * 0.6);
+  if (!isSnapped && distToTip(e) < hitR) {
+    isResizing = true;
+  } else {
+    isDragging = true;
+    lastAngle  = getAngleFromEvent(e);
+  }
+}, { passive: false });
+
+window.addEventListener('mousemove', e => {
+  if (polyDrawMode) {
+    const rect   = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const mx = (e.clientX - rect.left) * scaleX;
+    const my = (e.clientY - rect.top)  * scaleY;
+    polyHover = { x: Math.round((mx - CX) / CELL), y: Math.round(-(my - CY) / CELL) };
+    draw();
+    return;
+  }
+  if (pointMode) {
+    const rect   = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const mx = (e.clientX - rect.left) * scaleX;
+    const my = (e.clientY - rect.top)  * scaleY;
+    pointHover = { x: Math.round((mx - CX) / CELL), y: Math.round(-(my - CY) / CELL) };
+    draw();
+    return;
+  }
+  if (isResizing) {
+    if (!isSnapped) {
+      barRadius = Math.min(MAX_RADIUS, Math.max(MIN_RADIUS, getRadiusFromEvent(e)));
+      draw();
+    }
+    return;
+  }
+  if (!isDragging) return;
+  const cur  = getAngleFromEvent(e);
+  let   diff = cur - lastAngle;
+  if (diff >  180) diff -= 360;
+  if (diff < -180) diff += 360;
+  angleDeg -= diff;
+  lastAngle  = cur;
+  // Şekil aktifse çubuk úcı her zaman kilitli kalsın
+  if (activeShape) {
+    const ctr = SHAPES[activeShape].lock;
+    barRadius = Math.max(MIN_RADIUS, Math.sqrt(ctr.x**2 + ctr.y**2));
+    isSnapped = true;
+  }
+  draw();
+});
+window.addEventListener('touchmove', e => {
+  if (isResizing) {
+    e.preventDefault();
+    if (!isSnapped) {
+      barRadius = Math.min(MAX_RADIUS, Math.max(MIN_RADIUS, getRadiusFromEvent(e)));
+      draw();
+    }
+    return;
+  }
+  if (!isDragging) return;
+  e.preventDefault();
+  const cur  = getAngleFromEvent(e);
+  let   diff = cur - lastAngle;
+  if (diff >  180) diff -= 360;
+  if (diff < -180) diff += 360;
+  angleDeg -= diff;
+  lastAngle  = cur;
+  // Şekil aktifse çubuk úcı her zaman kilitli kalsın
+  if (activeShape) {
+    const ctr = SHAPES[activeShape].lock;
+    barRadius = Math.max(MIN_RADIUS, Math.sqrt(ctr.x**2 + ctr.y**2));
+    isSnapped = true;
+  }
+  draw();
+}, { passive: false });
+
+window.addEventListener('mouseup',  () => { isDragging = false; isResizing = false; });
+window.addEventListener('touchend', () => { isDragging = false; isResizing = false; });
+
+/* ─── Klavye kısayolları ─── */
+document.addEventListener('keydown', (e) => {
+  // Metin kutusuna yazılıyorsa kısayolları yoksay
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  const tag = e.key;
+  if (tag === 'ArrowLeft' || tag === 'ArrowRight') {
+    e.preventDefault();
+    const dir   = tag === 'ArrowRight' ? 1 : -1;
+    const delta = e.ctrlKey ? 90 : e.shiftKey ? 30 : 5;
+    rotate(dir * delta);
+  } else if (tag === 'r' || tag === 'R') {
+    resetBar();
+  } else if (tag === 'Escape') {
+    if (polyDrawMode) cancelPolyDraw();
+  }
+});
+
+/* ─── Tema ─── */
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.body.classList.add('dark-theme');
+    document.getElementById('theme-toggle').textContent = '☀️ Gündüz Modu';
+  } else {
+    document.body.classList.remove('dark-theme');
+    document.getElementById('theme-toggle').textContent = '🌙 Gece Modu';
+  }
+  localStorage.setItem('serbest-theme', theme);
+}
+function toggleTheme() {
+  applyTheme(document.body.classList.contains('dark-theme') ? 'light' : 'dark');
+}
+applyTheme(localStorage.getItem('serbest-theme') || 'dark');
+
+/* ─── ResizeObserver: kapsayıcı boyutu değişince canvas'ı güncelle ─── */
+const ro = new ResizeObserver(() => resizeCanvas());
+ro.observe(canvas.parentElement);
+const knobRo = new ResizeObserver(() => resizeKnobCanvas());
+knobRo.observe(knobCanvas.parentElement);
+
+/* ─── İlk değerler ─── */
+
+resizeKnobCanvas();
+resizeCanvas();
+</script>
+</body>
+</html>

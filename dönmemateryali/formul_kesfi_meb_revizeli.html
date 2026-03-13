@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dönme Formülünü Keşfet - MEB Revizeli</title>
+    <style>
+        :root {
+            --primary: #00d2ff; --success: #27ae60; --error: #e74c3c;
+            --bg: #050508; --text-main: #eef3ff; --text-soft: #c7d1e8;
+            --step-accent: #33a4ff; --formula-bg: rgba(0,180,255,0.10);
+            --formula-border: #00d2ff; --panel-bg: rgba(10,12,24,0.82);
+        }
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+            background: var(--bg); font-family: sans-serif; touch-action: none;
+            display: flex; flex-direction: column;
+        }
+        #canvas-container { width: 100%; flex-grow: 1; position: relative; }
+        #ui-panel {
+            width: 100%; height: 32%; flex-shrink: 0;
+            background: var(--panel-bg); backdrop-filter: blur(12px);
+            border-top: 1px solid #2a3055; display: flex; flex-direction: column;
+            padding: 14px; box-sizing: border-box; z-index: 1000; position: relative;
+        }
+        @media (min-width: 768px) {
+            body { flex-direction: row; }
+            #ui-panel { width: 360px; height: 100%; border-top: none; border-right: 1px solid #2a3055; order: -1; padding-top: 58px; }
+            #canvas-container { height: 100%; width: calc(100% - 360px); }
+        }
+        @media (max-width: 900px) and (orientation: landscape) {
+            body { flex-direction: row; }
+            #ui-panel { width: 50%; height: 100%; border-top: none; border-right: 1px solid #2a3055; order: -1; padding: 58px 8px 8px; }
+            #canvas-container { width: 50%; height: 100%; }
+            h2 { font-size: 0.9rem; }
+            #step-desc { font-size: 0.72rem; padding: 8px; }
+            #desc-text { margin-bottom: 8px; }
+            .formula-box { font-size: 0.74rem; padding: 8px 10px; margin: 8px 0; }
+            .derivation-line { font-size: 0.72rem; line-height: 1.35; }
+            .fill-row, .quiz-row { font-size: 0.76rem; gap: 4px; }
+            .fill-row input, .quiz-row input { width: 42px; height: 28px; font-size: 0.9rem; }
+            .controls { gap: 6px; }
+            button { height: 36px; font-size: 0.78rem; }
+            #panel-toggle { height: 28px; font-size: 0.68rem; padding: 0 8px; margin-bottom: 6px; }
+            mjx-container[jax="CHTML"] { font-size: 88% !important; max-width: 100% !important; }
+        }
+        h2 { color: var(--primary); margin: 0 0 8px 0; font-size: 1.05rem; text-align: center; line-height: 1.2; }
+        #step-desc {
+            flex-grow: 1; background: rgba(0,0,0,0.28); padding: 10px; border-radius: 8px;
+            font-size: 0.83rem; line-height: 1.45; color: var(--text-main);
+            border: 1px solid #1e2540; overflow-y: auto;
+            display: flex; flex-direction: column; justify-content: flex-start;
+        }
+        #desc-text { flex-grow: 0; margin-bottom: 12px; color: var(--text-soft); }
+        .desc-intro  { color: var(--text-main); }
+        .desc-formula{ color: #ffd166; font-weight: 700; }
+        .desc-remark { color: #a5f3fc; }
+        .desc-success{ color: var(--success); font-weight: 700; }
+        .desc-error  { color: var(--error); font-weight: 700; }
+        .desc-hint   { color: #ffc66d; }
+        .formula-box {
+            background: var(--formula-bg); border: 1px solid var(--formula-border);
+            border-radius: 8px; padding: 10px 14px; margin: 10px 0;
+            font-size: 0.92rem; text-align: center; color: #ffd166;
+        }
+        mjx-container[jax="CHTML"] {
+            font-style: normal !important;
+        }
+        mjx-container[jax="CHTML"] * {
+            font-style: normal !important;
+        }
+        mjx-container[jax="CHTML"] mjx-mi,
+        mjx-container[jax="CHTML"] mjx-mn,
+        mjx-container[jax="CHTML"] mjx-mo,
+        mjx-container[jax="CHTML"] mjx-mtext,
+        mjx-container[jax="CHTML"] mjx-mstyle {
+            font-style: normal !important;
+            font-family: sans-serif !important;
+        }
+        .derivation-line {
+            padding: 3px 0; color: #cbd5e1;
+            border-bottom: 1px dashed rgba(255,255,255,0.06); margin: 3px 0;
+        }
+        .derivation-line.highlight { color: #ffd166; font-weight: 700; }
+        .controls {
+            display: grid; grid-template-columns: 1fr 2fr; gap: 8px;
+            margin-top: 8px; flex-shrink: 0;
+        }
+        #panel-toggle {
+            align-self: flex-end; width: auto; height: 30px; padding: 0 10px;
+            margin-bottom: 8px; background: rgba(46,53,82,0.92); color: #eef3ff;
+            border: 1px solid #3a4468; border-radius: 999px; font-size: 0.74rem;
+        }
+        .intro-prompt {
+            margin: 0 0 12px 0; padding: 10px 12px; border-radius: 10px;
+            border: 1px solid rgba(0,210,255,0.35); background: rgba(0,210,255,0.08);
+            color: #dff6ff; line-height: 1.5;
+        }
+        .intro-prompt b { color: #7dd3fc; }
+        button {
+            height: 44px; background: var(--primary); border: none; color: #000;
+            border-radius: 6px; font-weight: bold; font-size: 0.88rem; cursor: pointer;
+        }
+        button:active { opacity: 0.7; transform: scale(0.95); }
+        .btn-back { background: #2e3552; color: #eef3ff; }
+        #fill-area {
+            display: none; margin: 10px 0 4px; flex-shrink: 0;
+        }
+        .fill-row {
+            display: flex; align-items: center; gap: 6px;
+            flex-wrap: wrap; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-main);
+        }
+        .fill-row input {
+            width: 52px; height: 32px; background: #111; border: 1px solid var(--primary);
+            color: white; text-align: center; border-radius: 4px; font-size: 1rem;
+        }
+        .btn-check { background: var(--success); color: white; width: 100%; cursor: pointer; }
+        #quiz-area { display: none; margin-top: 8px; flex-shrink: 0; }
+        .quiz-row {
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+            margin-bottom: 8px; font-size: 0.88rem; color: var(--text-main);
+        }
+        .quiz-row input {
+            width: 52px; height: 32px; background: #111; border: 1px solid var(--primary);
+            color: white; text-align: center; border-radius: 4px; font-size: 1rem;
+        }
+        body.panel-collapsed #ui-panel {
+            background: rgba(10,12,24,0.72);
+        }
+        @media (min-width: 768px) {
+            body.panel-collapsed #ui-panel { width: 88px; padding: 58px 8px 8px; }
+            body.panel-collapsed #main-title,
+            body.panel-collapsed #progress-bar,
+            body.panel-collapsed #step-desc { display: none; }
+            body.panel-collapsed #panel-toggle { width: 100%; margin-bottom: 0; }
+            #ui-panel { padding-left: 8px; padding-right: 8px; }
+            #step-desc { padding: 8px; }
+            .formula-box { font-size: 0.78rem; padding: 8px 10px; }
+            .derivation-line { font-size: 0.76rem; line-height: 1.35; }
+            .fill-row, .quiz-row { font-size: 0.78rem; gap: 4px; }
+            .fill-row input, .quiz-row input { width: 44px; height: 30px; font-size: 0.92rem; }
+            .controls { gap: 6px; }
+            mjx-container[jax="CHTML"] { font-size: 90% !important; max-width: 100% !important; }
+            body.panel-collapsed #canvas-container { width: calc(100% - 88px); }
+        }
+        @media (max-width: 767px) {
+            body.panel-collapsed #ui-panel { height: 74px; padding-bottom: 8px; }
+            body.panel-collapsed #main-title,
+            body.panel-collapsed #progress-bar,
+            body.panel-collapsed #step-desc { display: none; }
+            body.panel-collapsed #panel-toggle { margin-bottom: 0; }
+        }
+        #progress-bar {
+            height: 3px; background: #1e2540; border-radius: 2px; margin-bottom: 8px; flex-shrink: 0;
+        }
+        #progress-fill { height: 100%; border-radius: 2px; background: var(--primary); transition: width .4s; }
+        .label {
+            position: absolute; pointer-events: none; font-weight: bold;
+            padding: 2px 5px; border-radius: 4px; background: rgba(0,0,0,0.8);
+            white-space: nowrap; transform: translate(-50%, -50%); font-size: 11px;
+            z-index: 50; border: 1px solid transparent;
+        }
+        #lbl-p  { color: #fff; border-color: var(--primary); font-size: 13px; box-shadow: 0 0 10px rgba(0,210,255,.3); }
+        #lbl-pp { color: #fff; border-color: #f97316; font-size: 13px; box-shadow: 0 0 10px rgba(249,115,22,.3); display:none; }
+        #lbl-r  { color: #ffd166; font-size: 11px; display:none; }
+        #lbl-alpha { color: #fbbe24; font-size: 11px; display:none; }
+        #lbl-theta { color: #c084fc; font-size: 11px; display:none; }
+        .axis-name { color: #aaa; background: none; font-size: 18px; }
+        #origin-lbl { background: none; color: white; font-size: 14px; }
+        #theme-toggle {
+            position: fixed; top: 10px; right: 10px; z-index: 4600;
+            width: auto; height: 36px; padding: 0 11px;
+            background: #2e3552; color: #eef3ff; border: 1px solid #3a4468;
+            border-radius: 8px; font-size: 0.8rem; font-weight: 700;
+        }
+        #home-btn {
+            position: fixed; top: 10px; left: 10px; z-index: 4600;
+            width: auto; height: 36px; padding: 0 11px;
+            background: #2e3552; color: #eef3ff; border: 1px solid #3a4468;
+            border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            #theme-toggle, #home-btn { height: 28px; padding: 0 8px; font-size: 0.62rem; border-radius: 6px; }
+        }
+        #intro-modal {
+            position: fixed; inset: 0; z-index: 4500;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(5,5,8,0.9); padding: 20px; box-sizing: border-box; overflow-y: auto;
+        }
+        #intro-modal .intro-box {
+            width: min(620px, 94vw); background: #0f1220;
+            border: 1px solid #2a2f4a; border-radius: 14px;
+            box-shadow: 0 14px 32px rgba(0,0,0,0.45); padding: 18px;
+            color: #eef3ff; max-height: calc(100vh - 40px); overflow-y: auto;
+        }
+        #intro-modal .intro-hero {
+            margin: 0 0 6px 0;
+            color: #00d2ff;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: .02em;
+        }
+        #intro-modal .intro-subtitle {
+            text-align: center;
+            color: #c7d1e8;
+            font-size: 0.87rem;
+            margin: 0 0 12px 0;
+        }
+        #intro-modal .intro-title { margin: 0 0 8px 0; color: var(--primary); font-size: 1.1rem; }
+        #intro-modal .intro-text  { margin: 0 0 10px 0; color: #d4ddf3; line-height: 1.45; }
+        #intro-modal .intro-list  { margin: 0 0 14px 18px; padding: 0; color: #c7d1e8; line-height: 1.5; }
+        #summary-overlay {
+            position: fixed; inset: 0; z-index: 3500; display: none;
+            align-items: center; justify-content: center;
+            background: rgba(5,5,8,0.92); padding: 20px; box-sizing: border-box; overflow-y: auto;
+        }
+        #summary-overlay .summary-box {
+            width: min(560px, 92vw); background: #0f1220;
+            border: 1px solid #2a2f4a; border-radius: 14px;
+            box-shadow: 0 14px 32px rgba(0,0,0,.45); padding: 18px; color: #eef3ff;
+            max-height: calc(100vh - 40px); overflow-y: auto;
+        }
+        #summary-overlay .summary-title { margin: 0 0 10px 0; color: var(--primary); font-size: 1.1rem; }
+        #summary-overlay .summary-text  { color: #d4ddf3; line-height: 1.45; margin-bottom: 8px; }
+        #summary-overlay .summary-list  { margin: 0 0 14px 18px; color: #c7d1e8; line-height: 1.5; }
+        #rotate-mobile-overlay {
+            display: none; position: fixed; inset: 0; z-index: 4000;
+            background: rgba(5,5,8,0.94); color: #eef3ff;
+            align-items: center; justify-content: center; text-align: center; padding: 24px; box-sizing: border-box;
+        }
+        #rotate-mobile-overlay .rotate-box {
+            max-width: 420px; border: 1px solid #2a2f4a; border-radius: 12px; padding: 18px; background: #0f1220;
+        }
+        #rotate-mobile-overlay .rotate-title {
+            margin: 0 0 8px;
+            color: #00d2ff;
+            font-size: 1rem;
+        }
+        #rotate-mobile-overlay .rotate-text {
+            margin: 0;
+            color: #c7d1e8;
+            line-height: 1.45;
+            font-size: .9rem;
+        }
+        /* Light theme */
+        body.light-theme { background: #e8eef7; }
+        body.light-theme #canvas-container { background: #050508; }
+        body.light-theme #ui-panel { background: linear-gradient(180deg, rgba(248,251,255,.99), rgba(239,246,255,.99)); border-color: #bfd0e6; color: #1f2a3d; }
+        body.light-theme #step-desc { background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%); border-color: #cad8eb; color: #1f2a3d; box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 6px 18px rgba(150,172,201,.16); }
+        body.light-theme h2 { color: #0369a1; }
+        body.light-theme #desc-text { color: #344764; }
+        body.light-theme .desc-intro, body.light-theme .quiz-row { color: #1f2a3d; }
+        body.light-theme .desc-remark  { color: #34506f; }
+        body.light-theme .desc-success { color: #166534; }
+        body.light-theme .desc-error   { color: #b91c1c; }
+        body.light-theme .desc-hint    { color: #92400e; }
+        body.light-theme .desc-formula { color: #92400e; }
+        body.light-theme .derivation-line { color: #334155; }
+        body.light-theme .derivation-line.highlight { color: #92400e; }
+        body.light-theme .formula-box { background: rgba(2,132,199,.10); border-color: #0284c7; color: #8a4b08; }
+        body.light-theme input { background: #fff; color: #0f172a; border-color: #7aa7d8; }
+        body.light-theme button { background: #0ea5e9; color: #fff; border: 1px solid #0284c7; }
+        body.light-theme .btn-back, body.light-theme #theme-toggle, body.light-theme #home-btn, body.light-theme #panel-toggle { background: linear-gradient(180deg, #edf4fd 0%, #dbe8f8 100%); color: #1f2d45; border-color: #b8cbe5; box-shadow: 0 4px 12px rgba(126,151,182,.18); }
+        body.light-theme .btn-check { background: #16a34a; border-color: #15803d; }
+        body.light-theme #intro-modal .intro-box,
+        body.light-theme #summary-overlay .summary-box,
+        body.light-theme #rotate-mobile-overlay .rotate-box { background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%); border-color: #c6d6ea; color: #1f2a3d; box-shadow: 0 18px 38px rgba(94,120,153,.24); }
+        body.light-theme #intro-modal, body.light-theme #summary-overlay, body.light-theme #rotate-mobile-overlay { background: rgba(143,166,196,.42); }
+        body.light-theme #intro-modal .intro-text, body.light-theme #intro-modal .intro-list,
+        body.light-theme #summary-overlay .summary-text, body.light-theme #summary-overlay .summary-list,
+        body.light-theme #rotate-mobile-overlay .rotate-text { color: #24364f; }
+        body.light-theme #intro-modal .intro-title, body.light-theme #summary-overlay .summary-title,
+        body.light-theme #rotate-mobile-overlay .rotate-title { color: #0a6bb0; }
+        body.light-theme #intro-modal .intro-hero { color: #0a6bb0; }
+        body.light-theme #intro-modal .intro-subtitle { color: #3b5675; }
+        body.light-theme .intro-prompt {
+            background: rgba(14,165,233,.10);
+            border-color: rgba(14,165,233,.42);
+            color: #1f2a3d;
+        }
+        body.light-theme .intro-prompt b { color: #0a6bb0; }
+        body.light-theme #step-desc b,
+        body.light-theme #intro-modal b,
+        body.light-theme #summary-overlay b,
+        body.light-theme #rotate-mobile-overlay b { color: #0f3d67; }
+        body.light-theme .fill-row { color: #1f2a3d; }
+        body.light-theme .fill-row span,
+        body.light-theme .quiz-row span { color: #1f2a3d; }
+        @media (max-width: 900px) and (orientation: portrait) { #rotate-mobile-overlay { display: flex; } }
+        @media (max-width: 768px) {
+            #intro-modal, #summary-overlay { align-items: flex-start; padding: 12px; }
+            #intro-modal .intro-box, #summary-overlay .summary-box { width: 100%; max-height: calc(100vh - 24px); padding: 14px; border-radius: 10px; }
+            #intro-modal .intro-title, #summary-overlay .summary-title { font-size: 1rem; }
+            #intro-modal .intro-text, #intro-modal .intro-list,
+            #summary-overlay .summary-text, #summary-overlay .summary-list { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+<button id="home-btn" onclick="location.href='index.html'">🏠 Ana Sayfa</button>
+<button id="theme-toggle" type="button">🌙 Gece Modu</button>
+
+<!-- Intro Modal -->
+<div id="intro-modal" aria-hidden="false">
+    <div class="intro-box" role="dialog" aria-modal="true" aria-labelledby="intro-title">
+        <h2 class="intro-hero">Dönme Formülünün İncelenmesi</h2>
+        <p class="intro-subtitle">Koordinatlı düzlemde dönme dönüşümünün genel formülü adım adım incelenir.</p>
+        <h3 id="intro-title" class="intro-title">Etkinlik İçeriği</h3>
+        <p class="intro-text">Bir noktayı orijin etrafında döndürdüğümüzde yeni koordinatları nasıl hesaplayabiliriz?
+        Bu etkinlik, cevabı adım adım kendiniz keşfetmeniz için tasarlandı.</p>
+        <div class="intro-prompt">
+            <b>Düşünme sorusu:</b> Bir nokta orijin etrafında <b>90°</b> döndüğünde sizce
+            \(\mathrm{x}\) ve \(\mathrm{y}\) koordinatları nasıl değişir? Etkinliğe başlamadan önce kısa bir tahminde bulunun.
+        </div>
+        <ul class="intro-list">
+            <li>Her adımda formülün nasıl oluştuğunu görerek ilerleyeceksiniz.</li>
+            <li>Bazı adımlarda boşluk doldurarak öğrendiklerinizi hemen kontrol edeceksiniz.</li>
+            <li>Son üç soruda formülü 90°, 180° ve 270° dönme durumlarına uygulayacaksınız.</li>
+            <li>Etkinlik sonunda genel dönme formülünü ezberlemeden, mantığını anlayarak kullanabileceksiniz.</li>
+        </ul>
+        <button id="intro-start" type="button" style="width:100%;height:44px;font-size:1rem;">Etkinliği Başlat →</button>
+    </div>
+</div>
+
+<!-- Portrait uyarısı -->
+<div id="rotate-mobile-overlay" aria-hidden="true">
+    <div class="rotate-box">
+        <h3 class="rotate-title">Yatay moda geçin</h3>
+        <p class="rotate-text">Bu etkinlik yatay (landscape) kullanım için tasarlandı. Lütfen cihazınızı yatay konuma çeviriniz.</p>
+    </div>
+</div>
+
+<!-- Canvas -->
+<div id="canvas-container">
+    <div id="lbl-p"     class="label">P(3, 4)</div>
+    <div id="lbl-pp"    class="label">P'</div>
+    <div id="lbl-r"     class="label">r</div>
+    <div id="lbl-alpha" class="label">α</div>
+    <div id="lbl-theta" class="label">θ</div>
+    <div id="x-axis-lbl" class="label axis-name">x</div>
+    <div id="y-axis-lbl" class="label axis-name">y</div>
+    <div id="origin-lbl" class="label">O</div>
+</div>
+
+<!-- UI Panel -->
+<div id="ui-panel">
+    <button id="panel-toggle" type="button">Paneli Daralt</button>
+    <h2 id="main-title">Dönme Formülünü Keşfet</h2>
+    <div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
+    <div id="step-desc">
+        <div id="desc-text">Yükleniyor...</div>
+
+        <!-- Sayısal boşluk doldurma alanı -->
+        <div id="fill-area">
+            <div id="fill-rows"></div>
+            <button class="btn-check" id="btn-fill-check" type="button">Kontrol Et</button>
+        </div>
+
+        <!-- Keşif quiz alanı -->
+        <div id="quiz-area">
+            <div class="quiz-row">
+                <span>P' = (</span>
+                <input type="number" id="inputX" placeholder="x'" step="any">
+                <span>,</span>
+                <input type="number" id="inputY" placeholder="y'" step="any">
+                <span>)</span>
+            </div>
+            <button class="btn-check" id="btn-quiz-check" type="button">Cevabı Kontrol Et</button>
+        </div>
+
+        <!-- Kontrol butonları -->
+        <div class="controls" style="margin-top:8px;">
+            <button class="btn-back" id="prevBtn" type="button">← Geri</button>
+            <button id="nextBtn" type="button">İleri →</button>
+        </div>
+    </div>
+</div>
+
+<!-- Özet overlay -->
+<div id="summary-overlay" aria-hidden="true">
+    <div class="summary-box" role="dialog" aria-modal="true">
+        <h3 class="summary-title">🎉 Formülü Keşfettiniz!</h3>
+        <p id="summary-stats" class="summary-text"></p>
+        <div class="formula-box" id="summary-formula" style="margin-bottom:12px;font-size:1rem;"></div>
+        <p class="summary-text"><b>Bu etkinlikte kazandıklarınız:</b></p>
+        <ul class="summary-list">
+            <li>Kutupsal koordinat gösterimini dönme dönüşümüne uygulama.</li>
+            <li>Toplam açı trigonometri kimliklerini formül türetmede kullanma.</li>
+            <li>Genel dönme formülünü: \(\mathrm{P}'(\mathrm{x}\cos(\text{θ}) - \mathrm{y}\sin(\text{θ}),\; \mathrm{x}\sin(\text{θ}) + \mathrm{y}\cos(\text{θ}))\) ezberleme değil anlayarak elde etme.</li>
+            <li>Formülü 90°, 180°, 270° özel durumlarıyla doğrulama.</li>
+        </ul>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+            <button id="summary-restart" type="button" style="background:#2e3552;color:#eef3ff;border:1px solid #3a4468;">Yeniden Başlat</button>
+            <button onclick="location.href='index.html'" type="button">🏠 Ana Sayfa</button>
+        </div>
+    </div>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
+</script>
+<script>
+    window.MathJax = { tex: { inlineMath: [['\\(','\\)']] }, chtml: { matchFontHeight: false } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* ─── DOM refs ─────────────────────────────────────────────────── */
+const container  = document.getElementById('canvas-container');
+const descText   = document.getElementById('desc-text');
+const fillArea   = document.getElementById('fill-area');
+const fillRows   = document.getElementById('fill-rows');
+const btnFill    = document.getElementById('btn-fill-check');
+const quizArea   = document.getElementById('quiz-area');
+const inputX     = document.getElementById('inputX');
+const inputY     = document.getElementById('inputY');
+const btnQuiz    = document.getElementById('btn-quiz-check');
+const nextBtn    = document.getElementById('nextBtn');
+const prevBtn    = document.getElementById('prevBtn');
+const mainTitle  = document.getElementById('main-title');
+const progFill   = document.getElementById('progress-fill');
+const summary    = { root: document.getElementById('summary-overlay'), stats: document.getElementById('summary-stats'), formula: document.getElementById('summary-formula'), restart: document.getElementById('summary-restart') };
+const lblP    = document.getElementById('lbl-p');
+const lblPP   = document.getElementById('lbl-pp');
+const lblR    = document.getElementById('lbl-r');
+const lblA    = document.getElementById('lbl-alpha');
+const lblT    = document.getElementById('lbl-theta');
+const xAxisL  = document.getElementById('x-axis-lbl');
+const yAxisL  = document.getElementById('y-axis-lbl');
+const origL   = document.getElementById('origin-lbl');
+const themeBtn = document.getElementById('theme-toggle');
+const panelToggleBtn = document.getElementById('panel-toggle');
+
+/* ─── SFX ──────────────────────────────────────────────────────── */
+function mkAudio(src){ const a=new Audio(src); a.preload='auto'; return a; }
+const SFX = { click: mkAudio('click.mp3'), correct: mkAudio('correct.mp3'), wrong: mkAudio('wrong.mp3'), finish: mkAudio('finish.mp3') };
+function snd(k){ try{ const s=SFX[k]; if(!s)return; s.currentTime=0; s.play().catch(()=>{}); }catch(e){} }
+
+/* ─── Three.js state ───────────────────────────────────────────── */
+let scene, camera, renderer, controls;
+let gridMesh;
+let axVis = { xShaft:null, yShaft:null, xArrows:[], yArrows:[] };
+let triGroup, ghostGroup, arcAlpha, arcTheta, ptP, ptPP;
+let currentRotZ = 0, targetRotZ = 0;
+let hasPlayedStepRotation = false;
+
+const P0    = { x: 3, y: 4 };          // derivation point
+const R0    = 5;                        // r for P(3,4)
+const ALPHA0 = Math.atan2(4, 3);        // ≈ 53.13°
+let   activeP = { ...P0 };              // mutable — updates for quiz
+
+/* ─── Step definitions ─────────────────────────────────────────── */
+// visual: 0=triangle, 1=+alpha arc, 2=+theta arc+Pprime, 3=+Pprime label
+// fillDef: null | { labels:[], answers:[], hint:'' }
+// quizDef: null | after derivation - applied questions
+const STEPS = [
+  {
+    title: 'Adım 1 / 7',
+    visual: 0,
+    html: `
+<p class="desc-intro">Koordinatlı düzlemde <b>P(3, 4)</b> noktası verilsin.
+Bu noktanın <b>orijine olan uzaklığı \\(\\mathrm{r}\\)</b> nedir?</p>
+<p>Pisagor teoremini kullanınız: <span class="desc-formula">\\(\\mathrm{r} = \\sqrt{\\mathrm{x}^2 + \\mathrm{y}^2}\\)</span></p>`,
+    fillDef: {
+        rows: [ { pre: '\\(\\mathrm{r} = \\sqrt{3^2 + 4^2} =\\)', suf: '', id:'r0' } ],
+        answers: ['5'],
+        hint: '\\(\\sqrt{9+16} = \\sqrt{25} = ?\\)'
+    }
+  },
+  {
+    title: 'Adım 2 / 7',
+    visual: 1,
+    html: `
+<p class="desc-intro">Orijin ile P arasındaki doğru
+pozitif \\(\\mathrm{x}\\) ekseniyle <span class="desc-formula">\\(\\text{α}\\)</span> açısını yapar.
+O zaman:</p>
+<div class="formula-box">
+    \\( \\cos(\\text{α}) = \\dfrac{\\mathrm{x}}{\\mathrm{r}} = \\dfrac{3}{5}, \\quad \\sin(\\text{α}) = \\dfrac{\\mathrm{y}}{\\mathrm{r}} = \\dfrac{4}{5} \\)
+</div>
+<p class="desc-remark">Buradaki sayısal örnek, ilişkiyi somutlaştırmak içindir. Bir sonraki adımlarda aynı fikri herhangi bir \\(\\mathrm{P}(\\mathrm{x},\\mathrm{y})\\) noktası için genelleyeceğiz.</p>
+<p class="desc-intro">Buna göre P noktası kutupsal gösterimle şöyle yazılır:</p>
+<div class="formula-box">
+    \\( \\mathrm{P} = (\\mathrm{r}\\cos(\\text{α}),\\; \\mathrm{r}\\sin(\\text{α})) \\)
+</div>
+<p class="desc-remark">Bu kısımda <b>\\(\\mathrm{r} \\cdot \\cos(\\text{α})\\)</b> ve <b>\\(\\mathrm{r} \\cdot \\sin(\\text{α})\\)</b> değerlerini yazın.</p>`,
+    fillDef: {
+        rows: [
+                        { pre: '\\(\\mathrm{r}\\cos(\\text{α}) = 5\\cdot\\dfrac{3}{5} =\\)', suf:'', id:'rca' },
+                        { pre: '\\(\\mathrm{r}\\sin(\\text{α}) = 5\\cdot\\dfrac{4}{5} =\\)', suf:'', id:'rsa' }
+        ],
+        answers: ['3','4'],
+        hint: '\\(5 \\times \\tfrac{3}{5} = 3\\) ve \\(5 \\times \\tfrac{4}{5} = 4\\)'
+    }
+  },
+  {
+    title: 'Adım 3 / 7',
+    visual: 2,
+    html: `
+<p class="desc-intro">P noktasını orijin etrafında <span class="desc-formula">\\(\\text{θ}\\)</span> kadar döndürdüğümüzde,
+orijine olan uzaklık <b>değişmez</b> — yeni açı <span class="desc-formula">\\(\\text{α} + \\text{θ}\\)</span> olur.</p>
+<div class="formula-box">
+    \\( \\mathrm{P}' = \\bigl(\\mathrm{r}\\cos(\\text{α}+\\text{θ}),\\; \\mathrm{r}\\sin(\\text{α}+\\text{θ})\\bigr) \\)
+</div>
+<p class="desc-remark">Sağdaki canlandırmada P'nin çemberi takip ettiğini gözlemleyiniz.</p>`,
+    fillDef: null
+  },
+  {
+    title: 'Adım 4 / 7',
+    visual: 2,
+    html: `
+<p class="desc-intro">Trigonometriden toplamın cosinüsü ve sinüsü:</p>
+<div class="derivation-line">\\( \\cos(\\text{α}+\\text{θ}) = \\cos(\\text{α})\\cos(\\text{θ}) - \\sin(\\text{α})\\sin(\\text{θ}) \\)</div>
+<div class="derivation-line">\\( \\sin(\\text{α}+\\text{θ}) = \\sin(\\text{α})\\cos(\\text{θ}) + \\cos(\\text{α})\\sin(\\text{θ}) \\)</div>
+<p class="desc-intro" style="margin-top:8px;">Bu eşitlikler P' ifadesinde kullanıldığında:</p>
+<div class="derivation-line">
+    \\( \\mathrm{x}' = \\mathrm{r}(\\cos(\\text{α})\\cos(\\text{θ}) - \\sin(\\text{α})\\sin(\\text{θ})) \\)
+</div>
+<div class="derivation-line">
+    \\( \\mathrm{x}' = \\underbrace{\\mathrm{r}\\cos(\\text{α})}_{=\\,\\mathrm{x}}\\cos(\\text{θ}) - \\underbrace{\\mathrm{r}\\sin(\\text{α})}_{=\\,\\mathrm{y}}\\sin(\\text{θ}) \\)
+</div>
+<div class="derivation-line highlight">
+    \\( \\boxed{\\mathrm{x}' = \\mathrm{x}\\cos(\\text{θ}) - \\mathrm{y}\\sin(\\text{θ})} \\)
+</div>`,
+    fillDef: null
+  },
+  {
+    title: 'Adım 5 / 7',
+    visual: 2,
+    html: `
+<p class="desc-intro">Aynı şekilde \\(\\mathrm{y}'\\) için:</p>
+<div class="derivation-line">
+    \\( \\mathrm{y}' = \\mathrm{r}(\\sin(\\text{α})\\cos(\\text{θ}) + \\cos(\\text{α})\\sin(\\text{θ})) \\)
+</div>
+<div class="derivation-line">
+    \\( \\mathrm{y}' = \\underbrace{\\mathrm{r}\\sin(\\text{α})}_{=\\,\\mathrm{y}}\\cos(\\text{θ}) + \\underbrace{\\mathrm{r}\\cos(\\text{α})}_{=\\,\\mathrm{x}}\\sin(\\text{θ}) \\)
+</div>
+<div class="derivation-line highlight">
+    \\( \\boxed{\\mathrm{y}' = \\mathrm{x}\\sin(\\text{θ}) + \\mathrm{y}\\cos(\\text{θ})} \\)
+</div>
+<p class="desc-remark" style="margin-top:8px;">İki sonucu birleştirince genel formül elde edilir.</p>`,
+    fillDef: null
+  },
+  {
+    title: 'Adım 6 / 7',
+    visual: 2,
+    html: `
+<div class="formula-box">
+    \\( \\mathrm{P}(\\mathrm{x}, \\mathrm{y}) \\xrightarrow{\\;\\text{θ}\\;} \\mathrm{P}'(\\mathrm{x}', \\mathrm{y}') \\)
+  <br><br>
+    \\( \\mathrm{x}' = \\mathrm{x}\\cos(\\text{θ}) - \\mathrm{y}\\sin(\\text{θ}) \\)
+  <br>
+    \\( \\mathrm{y}' = \\mathrm{x}\\sin(\\text{θ}) + \\mathrm{y}\\cos(\\text{θ}) \\)
+</div>
+<p class="desc-remark">Formülü doğrulamak için <b>\\(\\text{θ} = 90^\\circ\\)</b> durumu incelenir.</p>`,
+    fillDef: null
+  },
+  {
+    title: 'Adım 7 / 7',
+    visual: 3,
+    html: `
+<p class="desc-intro">\\(\\text{θ} = 90^\\circ\\) için:
+<span class="desc-formula">\\(\\cos 90^\\circ = 0,\\quad \\sin 90^\\circ = 1\\)</span></p>
+<div class="derivation-line">\\( \\mathrm{x}' = \\mathrm{x} \\cdot 0 - \\mathrm{y} \\cdot 1 = -\\mathrm{y} \\)</div>
+<div class="derivation-line">\\( \\mathrm{y}' = \\mathrm{x} \\cdot 1 + \\mathrm{y} \\cdot 0 = \\mathrm{x} \\)</div>
+<div class="derivation-line highlight">\\( \\mathrm{P}(\\mathrm{x},\\mathrm{y}) \\xrightarrow{90^\\circ} \\mathrm{P}'(-\\mathrm{y},\\; \\mathrm{x}) \\)</div>
+<p class="desc-intro" style="margin-top:8px;">P(3, 4) için <b>P'(-4, ?)</b> ifadesindeki eksik değeri bulunuz.</p>`,
+    fillDef: {
+        rows: [
+            { pre:"\\(\\mathrm{P}'(-\\mathrm{y},\\;\\mathrm{x}) = \\mathrm{P}'(-4,\\;\\)", suf:')', id:'vfx' },
+        ],
+        answers: ['3'],
+        hint: '\\(-\\mathrm{y} = -4\\) ve \\(\\mathrm{x} = ?\\)'
+    }
+  },
+  /* Quiz questions — handled separately */
+  {
+    title: 'Soru 1 / 3',
+    visual: 4,
+    quiz: { px: 2, py: 3, theta: 90,  dir: 'pozitif yönde (saat yönünün tersine)' }
+  },
+  {
+        title: 'Soru 2 / 3',
+    visual: 4,
+    quiz: { px: 4, py: -2, theta: 180, dir: 'pozitif yönde (saat yönünün tersine)' }
+  },
+  {
+        title: 'Soru 3 / 3',
+    visual: 4,
+    quiz: { px: -1, py: 3, theta: 270, dir: 'pozitif yönde (saat yönünün tersine)' }
+  }
+];
+const TOTAL = STEPS.length;
+
+let stepIdx    = 0;
+let quizSolved = 0;
+let quizWrong  = 0;
+let fillPending = 0;  // 0 = not yet answered, 1 = correct, -1 = wrong
+
+/* ─── Three.js init ─────────────────────────────────────────────── */
+function fitCamera(){
+    if(!camera||!container.clientWidth) return;
+    const asp = container.clientWidth / container.clientHeight;
+    const ext = 11;
+    camera.left   = -ext * Math.max(1, asp);
+    camera.right  =  ext * Math.max(1, asp);
+    camera.top    =  ext * Math.max(1, 1/asp);
+    camera.bottom = -ext * Math.max(1, 1/asp);
+    camera.updateProjectionMatrix();
+}
+
+function createGrid(){
+    const pts = [];
+    for(let i=-10;i<=10;i++){
+        if(i===0) continue;
+        pts.push(i,-10,0, i,10,0, -10,i,0, 10,i,0);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+    const mat = new THREE.LineBasicMaterial({ color:0x5f708a, transparent:true, opacity:0.95 });
+    const g = new THREE.LineSegments(geo, mat);
+    g.position.z = -0.02;
+    return g;
+}
+
+function createAxes(){
+    const t=0.13, cm=new THREE.ConeGeometry(0.22,0.6,16);
+    const xm = new THREE.MeshBasicMaterial({color:0xff4d4d});
+    const ym = new THREE.MeshBasicMaterial({color:0x4dff88});
+    axVis.xShaft = new THREE.Mesh(new THREE.BoxGeometry(22,t,0.02), xm);
+    axVis.yShaft = new THREE.Mesh(new THREE.BoxGeometry(t,22,0.02), ym);
+    const mk=(mat,pos,rz)=>{ const m=new THREE.Mesh(cm,mat.clone()); m.position.set(...pos); m.rotation.z=rz; return m; };
+    const xP=mk(xm,[10.9,0,0],-Math.PI/2), xN=mk(xm,[-10.9,0,0],Math.PI/2);
+    const yP=mk(ym,[0,10.9,0],0),           yN=mk(ym,[0,-10.9,0],Math.PI);
+    axVis.xArrows=[xP,xN]; axVis.yArrows=[yP,yN];
+    scene.add(axVis.xShaft,axVis.yShaft,xP,xN,yP,yN);
+}
+
+function buildTriangle(px,py,color,opacity){
+    const ax=Math.abs(px), ay=Math.abs(py);
+    const grp = new THREE.Group();
+    const mk=(pts,col,op=1)=>{
+        const g=new THREE.BufferGeometry().setFromPoints(pts.map(([x,y])=>new THREE.Vector3(x,y,0.01)));
+        return new THREE.Line(g, new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op}));
+    };
+    grp.add(
+        mk([[0,0],[ax,ay]],         color, opacity),   // hypotenuse
+        mk([[0,0],[ax,0]],          0xff4d4d, opacity), // x leg
+        mk([[ax,0],[ax,ay]],        0x4dff88, opacity)  // y leg
+    );
+    // Right-angle marker
+    const s=0.28;
+    const sq=new THREE.Shape(); sq.moveTo(ax,0); sq.lineTo(ax-s,0); sq.lineTo(ax-s,s); sq.lineTo(ax,s);
+    grp.add(new THREE.Mesh(new THREE.ShapeGeometry(sq), new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:opacity*0.8})));
+    grp.scale.set(Math.sign(px)||1, Math.sign(py)||1, 1);
+    return grp;
+}
+
+function makePoint(color, z=0.04){
+    const m = new THREE.Mesh(
+        new THREE.SphereGeometry(0.2,24,24),
+        new THREE.MeshBasicMaterial({color})
+    );
+    m.position.z = z;
+    return m;
+}
+
+function makeArcLine(r, a0, a1, color){
+    const pts=[];
+    const segs=80;
+    for(let i=0;i<=segs;i++){
+        const t = a0 + (a1-a0)*i/segs;
+        pts.push(new THREE.Vector3(Math.cos(t)*r, Math.sin(t)*r, 0.03));
+    }
+    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+    const mat = new THREE.LineBasicMaterial({color, transparent:true, opacity:0.85, linewidth:1});
+    return new THREE.Line(geo,mat);
+}
+
+function init(){
+    scene = new THREE.Scene();
+    camera = new THREE.OrthographicCamera(-11,11,11,-11,0.1,1000);
+    camera.position.set(0,0,20); camera.lookAt(0,0,0);
+    renderer = new THREE.WebGLRenderer({antialias:true, alpha:false});
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    renderer.setClearColor(0x050508,1);
+    container.appendChild(renderer.domElement);
+    fitCamera();
+    controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping=false; controls.enablePan=false;
+    controls.enableRotate=false;  controls.enableZoom=false;
+    gridMesh = createGrid();
+    scene.add(gridMesh);
+    createAxes();
+    scene.add(new THREE.AmbientLight(0xffffff,1.5));
+
+    // Base point P(3,4) triangle
+    triGroup = buildTriangle(P0.x, P0.y, 0x00d2ff, 1.0);
+    scene.add(triGroup);
+
+    ptP = makePoint(0xff2d2d);
+    ptP.position.set(P0.x, P0.y, 0.04);
+    scene.add(ptP);
+
+    // P' point (hidden initially)
+    ptPP = makePoint(0xf97316);
+    ptPP.visible = false;
+    scene.add(ptPP);
+
+    arcAlpha = new THREE.Line(
+        new THREE.BufferGeometry(),
+        new THREE.LineBasicMaterial({color:0xfbbf24, transparent:true, opacity:0.9})
+    );
+    arcAlpha.visible = false;
+    scene.add(arcAlpha);
+
+    arcTheta = new THREE.Line(
+        new THREE.BufferGeometry(),
+        new THREE.LineBasicMaterial({color:0xc084fc, transparent:true, opacity:0.85})
+    );
+    arcTheta.visible = false;
+    scene.add(arcTheta);
+
+    window.addEventListener('resize', () => {
+        if(!container.clientWidth) return;
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        fitCamera();
+    });
+    window.addEventListener('orientationchange', ()=>setTimeout(()=>{renderer.setSize(container.clientWidth,container.clientHeight);fitCamera();},200));
+
+    animate();
+}
+
+function animate(){
+    requestAnimationFrame(animate);
+    // Smooth rotation of triGroup toward target
+    currentRotZ += (targetRotZ - currentRotZ)*0.07;
+    triGroup.rotation.z = currentRotZ;
+
+    // Update P position (rotated, using activeP)
+    const rad = currentRotZ;
+    const aR   = Math.sqrt(activeP.x**2 + activeP.y**2) || 1;
+    const aAlpha = Math.atan2(activeP.y, activeP.x);
+    const cx = aR*(Math.cos(aAlpha)*Math.cos(rad) - Math.sin(aAlpha)*Math.sin(rad));
+    const cy = aR*(Math.cos(aAlpha)*Math.sin(rad) + Math.sin(aAlpha)*Math.cos(rad));
+    ptP.position.set(cx, cy, 0.04);
+
+    // Update P' (quiz target)
+    if(ptPP.visible && ptPP.userData.tx !== undefined){
+        ptPP.position.set(ptPP.userData.tx, ptPP.userData.ty, 0.04);
+    }
+
+    if(arcAlpha.visible){
+        const alphaStart = Math.atan2(activeP.y, activeP.x);
+        const newAlphaArc = makeArcLine(1.2, 0, alphaStart, 0xfbbf24);
+        arcAlpha.geometry.dispose();
+        arcAlpha.geometry = newAlphaArc.geometry;
+    }
+
+    // theta arc update — rebuild geometry each frame while rotating
+    if(arcTheta.visible){
+        const th = currentRotZ;
+        const a0 = Math.atan2(activeP.y, activeP.x);
+        const arcR = Math.sqrt(activeP.x**2 + activeP.y**2) || R0;
+        if(Math.abs(th) > 0.005){
+            const newArc = makeArcLine(arcR, a0, a0 + th, 0xc084fc);
+            arcTheta.geometry.dispose();
+            arcTheta.geometry = newArc.geometry;
+        } else {
+            arcTheta.geometry.dispose();
+            arcTheta.geometry = new THREE.BufferGeometry();
+        }
+    }
+
+    updateLabels(cx, cy);
+    renderer.render(scene, camera);
+}
+
+/* ─── Screen projection helper ──────────────────────────────────── */
+function toScr(wx, wy){
+    const v = new THREE.Vector3(wx,wy,0).project(camera);
+    return {
+        x: (v.x*0.5+0.5)*container.clientWidth,
+        y: -(v.y*0.5-0.5)*container.clientHeight
+    };
+}
+
+function placeLabel(el, wx, wy, offX=0, offY=0){
+    const s = toScr(wx,wy);
+    el.style.left = (s.x+offX)+'px';
+    el.style.top  = (s.y+offY)+'px';
+}
+
+function formatCoord(v){
+    return Number.isInteger(v) ? String(v) : v.toFixed(2);
+}
+
+function formatRadiusValue(v){
+    return Math.abs(v - Math.round(v)) < 0.01 ? String(Math.round(v)) : v.toFixed(2);
+}
+
+function getThetaLabelText(){
+    const step = STEPS[stepIdx];
+    if(!step) return 'θ';
+    if(step.quiz && typeof step.quiz.theta === 'number') return `${step.quiz.theta}°`;
+    if(step.visual === 3) return '90°';
+    return 'θ';
+}
+
+function updateLabels(cx, cy){
+    const vis = STEPS[stepIdx] ? STEPS[stepIdx].visual : 0;
+    const rVal = Math.sqrt(activeP.x**2 + activeP.y**2) || 0;
+    const isRotatedView = vis >= 2 && Math.abs(currentRotZ) > 0.04;
+
+    if(ptPP.visible){
+        lblP.style.display='none';
+    } else {
+        lblP.style.display='block';
+        placeLabel(lblP, cx, cy, 28, -18);
+        lblP.textContent = isRotatedView ? "P'" : `P(${formatCoord(activeP.x)}, ${formatCoord(activeP.y)})`;
+    }
+    placeLabel(xAxisL, 10.3, 0.5);
+    placeLabel(yAxisL, 0.5, 10.3);
+    placeLabel(origL, -0.4, -0.5);
+
+    // r label: always on midpoint of O→P segment (follows P)
+    const midX = cx/2, midY = cy/2;
+    // perpendicular offset for readability
+    const len = Math.sqrt(cx*cx+cy*cy)||1;
+    const perpX = -cy/len*0.7, perpY = cx/len*0.7;
+    if(vis >= 1 && vis < 4){
+        lblR.style.display='block';
+        placeLabel(lblR, midX+perpX, midY+perpY);
+        lblR.textContent = `r=${formatRadiusValue(rVal)}`;
+    } else { lblR.style.display='none'; }
+
+    // alpha label: always at base angle of activeP (not rotated)
+    if(vis >= 1 && vis < 3){
+        lblA.style.display='block';
+        const a0 = Math.atan2(activeP.y, activeP.x);
+        const aMid = a0 / 2;
+        placeLabel(lblA, Math.cos(aMid)*2.2, Math.sin(aMid)*2.2-0.2);
+        lblA.textContent = 'α';
+    } else { lblA.style.display='none'; }
+
+    // theta arc label: midpoint of arc
+    if(vis >= 2 && Math.abs(currentRotZ)>0.04){
+        lblT.style.display='block';
+        const a0 = Math.atan2(activeP.y, activeP.x);
+        const arcR = Math.sqrt(activeP.x**2+activeP.y**2)||R0;
+        const th = currentRotZ;
+        const tMid = a0 + th/2;
+        const thetaLabelRadius = vis < 3 ? arcR + 0.45 : arcR + 0.8;
+        const thetaOffsetY = vis < 3 ? -2 : 0;
+        placeLabel(lblT, Math.cos(tMid)*thetaLabelRadius, Math.sin(tMid)*thetaLabelRadius, 0, thetaOffsetY);
+        lblT.textContent = getThetaLabelText();
+    } else { lblT.style.display='none'; }
+
+    // P' label (quiz or step 3+)
+    if(ptPP.visible){
+        lblPP.style.display='block';
+        placeLabel(lblPP, ptPP.position.x, ptPP.position.y, 28, -18);
+    } else { lblPP.style.display='none'; }
+}
+
+/* ─── Visual stage control ──────────────────────────────────────── */
+function applyVisual(vis, opt={}){
+    const snapRotation = (angle) => {
+        currentRotZ = angle;
+        targetRotZ = angle;
+        triGroup.rotation.z = angle;
+    };
+
+    // Reset rotation first, then set per-stage
+    targetRotZ = 0;
+    arcAlpha.visible = vis >= 1 && vis < 3;
+    arcTheta.visible = vis >= 2;
+    ptPP.visible     = false;
+
+    if(vis === 3){
+        // Step 7: show P'(-4,3) after 90° rotation
+        ptPP.visible = true;
+        ptPP.userData = { tx:-4, ty:3 };
+        lblPP.textContent = fillPending === 1 ? "P'(-4, 3)" : "P'(-4, ?)";
+        activeP = { ...P0 };
+        snapRotation(Math.PI / 2);   // exactly 90°
+    } else if(vis === 4 && opt.quiz){
+        // Quiz: rebuild triangle for quiz point
+        const q = opt.quiz;
+        activeP = { x: q.px, y: q.py };
+        scene.remove(triGroup);
+        triGroup = buildTriangle(q.px, q.py, 0x00d2ff, 1.0);
+        scene.add(triGroup);
+        currentRotZ = 0;
+        ptPP.visible = false;
+    } else if(vis === 2){
+        // Steps 3-5: show a gentle rotation (~50°) to illustrate P’
+        activeP = { ...P0 };
+        if(hasPlayedStepRotation){
+            snapRotation(Math.PI * 0.28);  // ≈50°, stays inside 1st quadrant
+        } else {
+            targetRotZ = Math.PI * 0.28;
+            hasPlayedStepRotation = true;
+        }
+    } else {
+        // vis 0 or 1: static, no rotation
+        activeP = { ...P0 };
+        snapRotation(0);
+    }
+}
+
+/* ─── Step rendering ─────────────────────────────────────────────── */
+function renderMath(el){ if(window.MathJax&&window.MathJax.typesetPromise){ window.MathJax.typesetClear([el]); window.MathJax.typesetPromise([el]).catch(()=>{}); } }
+
+function setStep(idx){
+    stepIdx = Math.max(0, Math.min(TOTAL-1, idx));
+    const s = STEPS[stepIdx];
+    mainTitle.textContent = s.title;
+    progFill.style.width  = ((stepIdx+1)/TOTAL*100)+'%';
+    fillArea.style.display  = 'none';
+    quizArea.style.display  = 'none';
+    fillPending = 0;
+
+    // Always snap rotation to 0 on step change; applyVisual will set the target
+    currentRotZ = 0;
+    targetRotZ  = 0;
+    triGroup.rotation.z = 0;
+
+    // Reset to base point P0 when leaving quiz steps
+    if(s.visual < 4){
+        activeP = { ...P0 };
+        scene.remove(triGroup);
+        triGroup = buildTriangle(P0.x, P0.y, 0x00d2ff, 1.0);
+        scene.add(triGroup);
+        currentRotZ = 0;
+    }
+
+    if(s.quiz){
+        // Quiz question
+        descText.innerHTML = `
+<div class="formula-box">
+    \\( \\mathrm{x}' = \\mathrm{x}\\cos(\\text{θ}) - \\mathrm{y}\\sin(\\text{θ}) \\)<br>\\( \\mathrm{y}' = \\mathrm{x}\\sin(\\text{θ}) + \\mathrm{y}\\cos(\\text{θ}) \\)
+</div>
+<p class="desc-intro">
+  <b>P(${s.quiz.px}, ${s.quiz.py})</b> noktasını ${s.quiz.dir}
+        \\(${s.quiz.theta}^\\circ\\) döndürürseniz \\(\\mathrm{P}'(\\mathrm{x}', \\mathrm{y}')\\) nedir?
+    </p>
+    ${getQuizPromptNote(s.quiz)}`;
+        quizArea.style.display = 'block';
+        inputX.value=''; inputY.value='';
+        applyVisual(4, {quiz: s.quiz});
+        nextBtn.disabled = true;
+        nextBtn.style.opacity = '0.4';
+    } else {
+        descText.innerHTML = s.html || '';
+        if(s.fillDef){
+            buildFillInputs(s.fillDef);
+            fillArea.style.display='block';
+            nextBtn.disabled = true;
+            nextBtn.style.opacity='0.4';
+        } else {
+            nextBtn.disabled = false;
+            nextBtn.style.opacity='1';
+        }
+        applyVisual(s.visual, {});
+    }
+
+    nextBtn.textContent = stepIdx >= TOTAL-1 ? 'Tamamla ✓' : 'İleri →';
+    prevBtn.disabled = stepIdx === 0;
+    prevBtn.style.opacity = stepIdx === 0 ? '0.4' : '1';
+    renderMath(document.getElementById('step-desc'));
+    renderMath(document.getElementById('desc-text'));
+}
+
+function buildFillInputs(def){
+    fillRows.innerHTML = '';
+    def.rows.forEach((row,i)=>{
+        const d = document.createElement('div');
+        d.className = 'fill-row';
+        d.innerHTML = `<span>${row.pre}</span><input type="number" id="fi_${i}" placeholder="?"><span>${row.suf||''}</span>`;
+        fillRows.appendChild(d);
+    });
+}
+
+btnFill.addEventListener('click', ()=>{
+    const s = STEPS[stepIdx];
+    if(!s || !s.fillDef) return;
+    const def = s.fillDef;
+    let allOk = true;
+    def.answers.forEach((ans,i)=>{
+        const inp = document.getElementById('fi_'+i);
+        if(!inp) return;
+        const v = inp.value.trim();
+        if(v !== String(ans)) allOk=false;
+    });
+    if(allOk){
+        snd('correct');
+        descText.innerHTML = s.html;
+        descText.innerHTML += `<p class="desc-success">✓ Doğru! Hazırsanız bir sonraki adıma geçebilirsiniz.</p>`;
+        fillArea.style.display='none';
+        nextBtn.disabled=false;
+        nextBtn.style.opacity='1';
+        fillPending=1;
+        if(stepIdx === 6){
+            lblPP.textContent = "P'(-4, 3)";
+        }
+        renderMath(document.getElementById('step-desc'));
+    } else {
+        snd('wrong');
+        const hint = s.fillDef.hint || 'Tekrar deneyin.';
+        const oldErr = document.getElementById('fill-err');
+        if(oldErr) oldErr.remove();
+        fillRows.insertAdjacentHTML('beforebegin', `<p class="desc-error" id="fill-err">Henüz doğru değil. <span class="desc-hint">${hint}</span></p>`);
+        renderMath(document.getElementById('fill-area'));
+        setTimeout(()=>{ const e=document.getElementById('fill-err'); if(e)e.remove(); },3000);
+    }
+});
+
+/* ─── Quiz logic ─────────────────────────────────────────────────── */
+function normalizeRotationValue(v){
+    const rounded = Number(v.toFixed(2));
+    return Math.abs(rounded - Math.round(rounded)) < 0.01 ? Math.round(rounded) : rounded;
+}
+
+function rotatePoint(px,py,deg){
+    const r=deg*Math.PI/180;
+    return {
+        x: normalizeRotationValue(px*Math.cos(r)-py*Math.sin(r)),
+        y: normalizeRotationValue(px*Math.sin(r)+py*Math.cos(r))
+    };
+}
+
+function isQuizAnswerCorrect(ax, ay, expected){
+    if(Number.isNaN(ax) || Number.isNaN(ay)) return false;
+    if(Math.abs(ax - expected.x) >= 0.03 || Math.abs(ay - expected.y) >= 0.03) return false;
+    return true;
+}
+
+function getQuizPromptNote(quiz){
+    return quiz.note ? `<p class="desc-remark">${quiz.note}</p>` : '';
+}
+
+btnQuiz.addEventListener('click', ()=>{
+    const s = STEPS[stepIdx];
+    if(!s||!s.quiz) return;
+    const expected = rotatePoint(s.quiz.px, s.quiz.py, s.quiz.theta);
+    const ax=parseFloat(inputX.value), ay=parseFloat(inputY.value);
+    if(isQuizAnswerCorrect(ax, ay, expected)){
+        snd('correct');
+        quizSolved++;
+        descText.innerHTML = `
+<p class="desc-success">✓ Harika! Doğru cevap.</p>
+<div class="formula-box">
+\\( \\mathrm{P}(${s.quiz.px},${s.quiz.py}) \\xrightarrow{${s.quiz.theta}^\\circ} \\mathrm{P}'(${expected.x},${expected.y}) \\)
+    </div>`;
+        descText.innerHTML += `<p class="desc-remark">${getQuizRuleText(s.quiz.theta)}</p>`;
+        // Show P' point
+        ptPP.visible=true;
+        ptPP.userData = {tx:expected.x, ty:expected.y};
+        lblPP.textContent = `P'(${expected.x}, ${expected.y})`;
+        arcTheta.visible=true;
+        targetRotZ = s.quiz.theta*Math.PI/180;
+        quizArea.style.display='none';
+        nextBtn.disabled=false;
+        nextBtn.style.opacity='1';
+        renderMath(descText);
+    } else {
+        snd('wrong');
+        quizWrong++;
+        const hint = getQuizHint(s.quiz.theta);
+        const analysis = getQuizMistakeFeedback(s.quiz, ax, ay, expected);
+        descText.innerHTML = `
+<div class="formula-box">
+    \\( \\mathrm{x}' = \\mathrm{x}\\cos(\\text{θ}) - \\mathrm{y}\\sin(\\text{θ}) \\)<br>\\( \\mathrm{y}' = \\mathrm{x}\\sin(\\text{θ}) + \\mathrm{y}\\cos(\\text{θ}) \\)
+</div>
+<p class="desc-error">Henüz doğru değil.</p>
+<p class="desc-hint">${hint}</p>
+<p class="desc-remark">${getQuizMistakeFeedback(s.quiz, ax, ay, expected)}</p>
+<p class="desc-intro"><b>P(${s.quiz.px}, ${s.quiz.py})</b>, \\(\\text{θ} = ${s.quiz.theta}^\\circ\\) için tekrar deneyin. Gerekirse bir önceki adımı yeniden inceleyin.</p>
+${getQuizPromptNote(s.quiz)}`;
+        renderMath(descText);
+    }
+});
+
+function getQuizHint(deg){
+    if(deg===90)  return 'İpucu: \\(\\cos 90^\\circ=0,\\;\\sin 90^\\circ=1\\) → \\(\\mathrm{x}\'=-\\mathrm{y},\\;\\mathrm{y}\'=\\mathrm{x}\\)';
+    if(deg===180) return 'İpucu: \\(\\cos 180^\\circ=-1,\\;\\sin 180^\\circ=0\\) → \\(\\mathrm{x}\'=-\\mathrm{x},\\;\\mathrm{y}\'=-\\mathrm{y}\\)';
+    if(deg===270) return 'İpucu: \\(\\cos 270^\\circ=0,\\;\\sin 270^\\circ=-1\\) → \\(\\mathrm{x}\'=\\mathrm{y},\\;\\mathrm{y}\'=-\\mathrm{x}\\)';
+    return 'Formülü uygulayınız.';
+}
+
+function getQuizRuleText(deg){
+    if(deg===90)  return 'Bu durumda kural, noktanın \\((-\\mathrm{y},\\;\\mathrm{x})\\) biçimine dönüşmesidir.';
+    if(deg===180) return 'Bu durumda her iki koordinatın da işareti değişir: \\((-\\mathrm{x},\\;-\\mathrm{y})\\).';
+    if(deg===270) return 'Bu durumda kural, noktanın \\((\\mathrm{y},\\;-\\mathrm{x})\\) biçimine dönüşmesidir.';
+    return 'Sonucu genel dönme formülünden elde ettiniz.';
+}
+
+function getQuizMistakeFeedback(quiz, ax, ay, expected){
+    if(Number.isNaN(ax) || Number.isNaN(ay)){
+        return 'Önce \\(\\mathrm{x}\'\\) ve \\(\\mathrm{y}\'\\) için birer değer giriniz.';
+    }
+    if(ax === quiz.px && ay === quiz.py){
+        return 'Noktayı hiç döndürmeden yazmış olabilirsiniz. Dönüşten sonra koordinatlar değişmelidir.';
+    }
+    if(quiz.theta === 90 && ax === quiz.py && ay === -quiz.px){
+        return 'Saat yönünü karıştırmış olabilirsiniz. Bu cevap, saat yönündeki 90° dönüşe karşılık gelir.';
+    }
+    if(quiz.theta === 270 && ax === -quiz.py && ay === quiz.px){
+        return 'Saat yönü ile saat yönünün tersini karıştırmış olabilirsiniz. 270° pozitif dönüş, 90° saat yönüyle aynı etkiyi verir.';
+    }
+    if(Math.abs(ax) === Math.abs(expected.x) && Math.abs(ay) === Math.abs(expected.y)){
+        return 'Sayılar yakın görünüyor; işaret değişimlerini yeniden kontrol ediniz.';
+    }
+    if(quiz.theta !== 180 && ax === -quiz.px && ay === -quiz.py){
+        return '180° dönüş kuralını kullanmış olabilirsiniz. Bu soruda farklı bir açı uygulanıyor.';
+    }
+    return 'Sinüs ve kosinüsün hangi koordinatı etkilediğini ve dönüş yönünü yeniden inceleyiniz.';
+}
+
+/* ─── Navigation ─────────────────────────────────────────────────── */
+nextBtn.addEventListener('click', ()=>{
+    snd('click');
+    if(stepIdx >= TOTAL-1){ openSummary(); return; }
+    setStep(stepIdx+1);
+});
+prevBtn.addEventListener('click', ()=>{
+    snd('click');
+    setStep(stepIdx-1);
+});
+
+/* ─── Summary ────────────────────────────────────────────────────── */
+function openSummary(){
+    snd('finish');
+    summary.stats.innerHTML = `Uygulama soruları doğru: <b>${quizSolved} / 3</b>&nbsp;&nbsp; Yanlış deneme: <b>${quizWrong}</b>`;
+    summary.formula.innerHTML = `\\( \\mathrm{x}' = \\mathrm{x}\\cos(\\text{θ}) - \\mathrm{y}\\sin(\\text{θ}) \\)<br>\\( \\mathrm{y}' = \\mathrm{x}\\sin(\\text{θ}) + \\mathrm{y}\\cos(\\text{θ}) \\)`;
+    summary.root.style.display='flex';
+    summary.root.setAttribute('aria-hidden','false');
+    renderMath(summary.root);
+}
+summary.restart.addEventListener('click',()=>location.reload());
+
+/* ─── Theme ──────────────────────────────────────────────────────── */
+function applyTheme(t){
+    if(t==='light'){ document.body.classList.add('light-theme'); themeBtn.textContent='☀️ Gündüz Modu'; }
+    else            { document.body.classList.remove('light-theme'); themeBtn.textContent='🌙 Gece Modu'; }
+    renderer && renderer.setClearColor(0x050508,1);
+    localStorage.setItem('donusum-theme-formul', t);
+}
+themeBtn.addEventListener('click',()=>{
+    applyTheme(document.body.classList.contains('light-theme')?'dark':'light');
+});
+
+function applyPanelState(collapsed){
+    document.body.classList.toggle('panel-collapsed', collapsed);
+    panelToggleBtn.textContent = collapsed ? 'Paneli Aç' : 'Paneli Daralt';
+    localStorage.setItem('donusum-formul-panel', collapsed ? 'collapsed' : 'open');
+    setTimeout(()=>{
+        if(renderer && container.clientWidth){
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            fitCamera();
+        }
+    }, 180);
+}
+
+panelToggleBtn.addEventListener('click', ()=>{
+    applyPanelState(!document.body.classList.contains('panel-collapsed'));
+});
+
+/* ─── Intro ──────────────────────────────────────────────────────── */
+document.getElementById('intro-start').addEventListener('click',()=>{
+    document.getElementById('intro-modal').style.display='none';
+});
+
+/* ─── Boot ───────────────────────────────────────────────────────── */
+function boot(){
+    init();
+    applyTheme(localStorage.getItem('donusum-theme-formul')||'dark');
+    applyPanelState(localStorage.getItem('donusum-formul-panel') === 'collapsed');
+    setStep(0);
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();
+</script>
+</body>
+</html>
