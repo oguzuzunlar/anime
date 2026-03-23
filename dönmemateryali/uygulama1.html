@@ -12,7 +12,7 @@
             width: 100%; height: 30%; flex-shrink: 0;
             background: rgba(15, 15, 30, 0.95); backdrop-filter: blur(10px);
             border-top: 1px solid #333; display: flex; flex-direction: column;
-            padding: 58px 15px 15px; box-sizing: border-box; z-index: 1000; position: relative;
+            padding: 15px; box-sizing: border-box; z-index: 1000; position: relative;
         }
         @media (min-width: 768px) {
             body { flex-direction: row; }
@@ -21,7 +21,7 @@
         }
         @media (max-width: 900px) and (orientation: landscape) {
             body { flex-direction: row; }
-            #ui-panel { width: 42%; height: 100%; border-top: none; border-right: 1px solid #333; order: -1; padding: 58px 12px 12px; }
+            #ui-panel { width: 42%; height: 100%; border-top: none; border-right: 1px solid #333; order: -1; padding: 12px; }
             #canvas-container { width: 58%; height: 100%; }
             h2 { font-size: 1rem; }
             #step-desc { font-size: 0.8rem; }
@@ -74,11 +74,17 @@
         @media (max-width: 900px) { #x-val, #y-val { font-size: 11px; } }
         .axis-name { color: #aaa; background: none; font-size: 18px; font-style: normal; }
         .mode-toggle { margin-top: 8px; background: #2e3552; color: #eef3ff; }
-        #home-btn {
-            position: fixed; top: 10px; left: 10px; z-index: 4600;
-            width: auto; height: 36px; padding: 0 11px;
+        #page-nav {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+            align-self: center; margin-bottom: 8px; flex-shrink: 0;
+        }
+        #page-nav button {
+            height: 30px; padding: 0 10px;
             background: #2e3552; color: #eef3ff; border: 1px solid #3a4468;
-            border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+            border-radius: 6px; font-size: 0.72rem; font-weight: 700; cursor: pointer; white-space: nowrap;
+        }
+        #page-nav button.active {
+            background: var(--primary); color: #000; border-color: var(--primary);
         }
         #intro-modal {
             position: fixed;
@@ -193,7 +199,6 @@
             font-size: 0.92rem;
         }
         body.light-theme { background: #e8eef7; }
-        body.light-theme #canvas-container { background: #050508; }
         body.light-theme #ui-panel {
             background: linear-gradient(180deg, rgba(248, 251, 255, 0.99), rgba(239, 246, 255, 0.99));
             border-top: 1px solid #bfd0e6;
@@ -227,10 +232,10 @@
         body.light-theme .quiz-inputs span {
             color: #1f2a3d;
         }
-        body.light-theme .label { background: rgba(0,0,0,0.8); border-color: transparent; box-shadow: none; }
-        body.light-theme #p-coord { color: #fff; border-color: var(--primary); box-shadow: 0 0 10px rgba(0,210,255,0.3); }
-        body.light-theme .axis-name { color: #aaa; background: none; }
-        body.light-theme #origin-lbl { color: white !important; }
+        body.light-theme .label { background: rgba(10,30,60,0.82); border-color: rgba(0,80,160,0.35); box-shadow: none; }
+        body.light-theme #p-coord { color: #fff; border-color: #3399dd; box-shadow: 0 0 8px rgba(0,130,220,0.35); }
+        body.light-theme .axis-name { color: #1a3050; background: none; font-weight: 800; }
+        body.light-theme #origin-lbl { color: #1a3050 !important; font-weight: 800; }
         body.light-theme input {
             background: #ffffff;
             color: #0f172a;
@@ -282,7 +287,7 @@
         }
         body.light-theme .mode-toggle,
         body.light-theme #theme-toggle,
-        body.light-theme #home-btn,
+        body.light-theme #page-nav button,
         body.light-theme #custom-modal .btn-cancel {
             background: linear-gradient(180deg, #edf4fd 0%, #dbe8f8 100%);
             color: #1f2d45;
@@ -290,14 +295,18 @@
         }
         body.light-theme .mode-toggle,
         body.light-theme #theme-toggle,
-        body.light-theme #home-btn {
+        body.light-theme #page-nav button {
             box-shadow: 0 4px 12px rgba(126, 151, 182, 0.18);
+        }
+        body.light-theme #page-nav button.active {
+            background: #0070cc; color: #fff; border-color: #0070cc;
+            box-shadow: 0 4px 12px rgba(0,112,204,.25);
         }
         @media (max-width: 900px) and (orientation: portrait) {
             #rotate-mobile-overlay { display: flex; }
         }
         @media (max-width: 768px) {
-            #theme-toggle, #home-btn { height: 28px; padding: 0 8px; font-size: 0.62rem; border-radius: 6px; }
+            #theme-toggle, #page-nav button { height: 24px; padding: 0 7px; font-size: 0.60rem; border-radius: 5px; }
             #intro-modal,
             #custom-modal,
             #summary-overlay {
@@ -330,13 +339,13 @@
         @media (max-width: 768px) {
             .guide-mobile { display: inline; }
             .guide-desktop { display: none; }
+            .axis-name, #origin-lbl { border: none; }
         }
     </style>
 </head>
 <body>
 
-    <button id="home-btn" onclick="location.href='index.html'">🏠 Ana Sayfa</button>
-    <button id="theme-toggle" type="button">🌙 Gece Modu</button>
+    <button id="theme-toggle" type="button">Gündüz Modu</button>
 
     <div id="intro-modal" aria-hidden="false">
         <div class="intro-box" role="dialog" aria-modal="true" aria-labelledby="intro-title">
@@ -374,6 +383,12 @@
     </div>
 
     <div id="ui-panel">
+        <nav id="page-nav">
+            <button onclick="location.href='index.html'">Ana Sayfa</button>
+            <button class="active">Uygulama-1</button>
+            <button onclick="location.href='formul_kesfi_meb_revizeli.html'">Uygulama-2</button>
+            <button onclick="location.href='serbest.html'">Serbest Mod</button>
+        </nav>
         <h2 id="main-title">Dönme Dönüşümü Keşfi</h2>
         <div id="step-desc">
             <div id="desc-text">Yükleniyor...</div>
@@ -539,14 +554,17 @@
         }
 
         function updateSceneTheme() {
-            const gridColor = 0x5f708a;
-            const xAxisColor = 0xff4d4d;
-            const yAxisColor = 0x4dff88;
+            const isLight = document.body.classList.contains('light-theme');
+            const gridColor  = isLight ? 0x8aaac8 : 0x5f708a;
+            const xAxisColor = isLight ? 0xcc1100 : 0xff4d4d;
+            const yAxisColor = isLight ? 0x0a7a3c : 0x4dff88;
+
+            if (renderer) renderer.setClearColor(isLight ? 0xf0f6ff : 0x050508, 1);
 
             if (gridHelper) {
                 gridHelper.material.color.setHex(gridColor);
                 gridHelper.material.transparent = true;
-                gridHelper.material.opacity = 0.95;
+                gridHelper.material.opacity = isLight ? 0.65 : 0.95;
                 gridHelper.material.depthTest = true;
                 gridHelper.material.depthWrite = false;
                 gridHelper.renderOrder = 0;
@@ -580,10 +598,10 @@
         function applyTheme(theme) {
             if (theme === 'light') {
                 document.body.classList.add('light-theme');
-                themeToggle.innerText = '☀️ Gündüz Modu';
+                themeToggle.innerText = 'Gece Modu';
             } else {
                 document.body.classList.remove('light-theme');
-                themeToggle.innerText = '🌙 Gece Modu';
+                themeToggle.innerText = 'Gündüz Modu';
             }
             localStorage.setItem('donusum-theme', theme);
             updateSceneTheme();
@@ -709,7 +727,8 @@
 
             const s = 0.3;
             const rS = new THREE.Shape(); rS.moveTo(ax, 0); rS.lineTo(ax-s, 0); rS.lineTo(ax-s, s); rS.lineTo(ax, s);
-            const rM = new THREE.Mesh(new THREE.ShapeGeometry(rS), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: opacity * 0.8 }));
+            const raColor = document.body.classList.contains('light-theme') ? 0x1a4a9a : 0xffffff;
+            const rM = new THREE.Mesh(new THREE.ShapeGeometry(rS), new THREE.MeshBasicMaterial({ color: raColor, transparent: true, opacity: opacity * 0.8 }));
 
             group.add(mesh, hL, xL, yL, aS, bS, rM);
             // Aynalama: Bölgeye göre ölçeklendir
@@ -907,7 +926,7 @@
         }
         window.addEventListener('orientationchange', () => setTimeout(onWindowResize, 200));
         themeToggle.addEventListener('click', toggleTheme);
-        applyTheme(localStorage.getItem('donusum-theme') || 'dark');
+        applyTheme('dark');
         intro.start.addEventListener('click', () => {
             intro.root.style.display = 'none';
             intro.root.setAttribute('aria-hidden', 'true');

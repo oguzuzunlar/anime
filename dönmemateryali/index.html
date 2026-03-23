@@ -311,8 +311,151 @@
             border-bottom-color: var(--primary);
         }
         .tab-nav a .tab-icon { font-size: 1rem; }
-        @media (max-width: 480px) {
-            .tab-nav a { padding: 12px 12px; font-size: 0.78rem; }
+        @media (max-width: 600px) {
+            .tab-nav {
+                justify-content: space-around;
+                padding: 0 4px;
+                overflow-x: visible;
+            }
+            .tab-nav a {
+                padding: 10px 6px;
+                font-size: 0.72rem;
+                white-space: normal;
+                text-align: center;
+                flex: 1 1 0;
+                min-width: 0;
+                justify-content: center;
+            }
+        }
+
+        /* ── MOD TOGGLE BUTONU ──────────────────────────── */
+        .mode-toggle {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: rgba(0,210,255,0.10);
+            border: 1px solid rgba(0,210,255,0.30);
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.05em;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+            z-index: 10;
+        }
+        .mode-toggle:hover {
+            background: rgba(0,210,255,0.20);
+        }
+
+        /* ── APP CARD ICON METİN STILI ──────────────────── */
+        .app-card-icon {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 0.03em;
+        }
+        .icon-kesif   .icon-label { color: #33a4ff; }
+        .icon-uygulama .icon-label { color: #34d399; }
+        .icon-serbest  .icon-label { color: #a78bfa; }
+        .icon-formul   .icon-label { color: #fbbf24; }
+
+        /* ── GÜNDÜZ MODU ─────────────────────────────────── */
+        body.day-mode {
+            --bg: #f0f4fb;
+            --bg-card: #ffffff;
+            --bg-card2: #f5f8fc;
+            --border: #c4d0e6;
+            --text-main: #0d1a33;
+            --text-soft: #253450;
+            --text-muted: #5a6a8a;
+            --primary: #0070bb;
+            --primary-dark: #005599;
+            --accent1: #0070bb;
+            --accent2: #6d28d9;
+            --accent3: #047857;
+        }
+        body.day-mode header {
+            background: linear-gradient(135deg, #dce8f5 0%, #ccd8ee 60%, #d4e4f0 100%);
+        }
+        body.day-mode header::before {
+            background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0,112,187,0.12) 0%, transparent 70%);
+        }
+        body.day-mode .header-badge {
+            background: rgba(0,112,187,0.10);
+            border-color: rgba(0,112,187,0.30);
+            color: var(--primary);
+        }
+        body.day-mode .tab-nav {
+            background: rgba(240,244,251,0.96);
+        }
+        body.day-mode .topic-chip {
+            background: rgba(0,112,187,0.07);
+            border-color: rgba(0,112,187,0.20);
+        }
+        body.day-mode .topic-chip b { color: var(--accent1); }
+        body.day-mode .notice-box {
+            background: rgba(109,40,217,0.06);
+            border-color: rgba(109,40,217,0.22);
+        }
+        body.day-mode .spec-chip {
+            background: rgba(0,112,187,0.07);
+            border-color: rgba(0,112,187,0.18);
+        }
+        body.day-mode .spec-chip span { color: var(--primary); }
+        body.day-mode .tag-blue   { background: rgba(0,112,187,0.10);  color: var(--primary); }
+        body.day-mode .tag-green  { background: rgba(4,120,87,0.10);   color: var(--accent3); }
+        body.day-mode .tag-purple { background: rgba(109,40,217,0.10); color: var(--accent2); }
+        body.day-mode .tag-yellow { background: rgba(161,100,0,0.10);  color: #8a5a00; }
+        body.day-mode .app-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 24px rgba(0,112,187,0.14);
+        }
+        body.day-mode .icon-kesif   { background: rgba(0,112,187,0.10); }
+        body.day-mode .icon-uygulama { background: rgba(4,120,87,0.10); }
+        body.day-mode .icon-serbest  { background: rgba(109,40,217,0.10); }
+        body.day-mode .icon-formul   { background: rgba(161,100,0,0.10); }
+        body.day-mode .icon-kesif   .icon-label { color: var(--primary); }
+        body.day-mode .icon-uygulama .icon-label { color: var(--accent3); }
+        body.day-mode .icon-serbest  .icon-label { color: var(--accent2); }
+        body.day-mode .icon-formul   .icon-label { color: #8a5a00; }
+        body.day-mode .mode-toggle {
+            background: rgba(0,112,187,0.10);
+            border-color: rgba(0,112,187,0.30);
+        }
+        body.day-mode .mode-toggle:hover {
+            background: rgba(0,112,187,0.20);
+        }
+
+        /* ── SAYFA NAVİGASYONU ────────────────────────────── */
+        #page-nav {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+            padding: 10px 16px;
+            background: rgba(6,8,20,0.7);
+            border-bottom: 1px solid var(--border);
+        }
+        #page-nav button {
+            height: 34px; padding: 0 18px;
+            background: rgba(13,19,42,0.9); color: #eef3ff; border: 1px solid #2a3555;
+            border-radius: 8px; font-size: 0.80rem; font-weight: 700; cursor: pointer; white-space: nowrap;
+        }
+        #page-nav button.active {
+            background: var(--primary); color: #000; border-color: var(--primary);
+        }
+        body.day-mode #page-nav {
+            background: rgba(235,243,255,0.85);
+            border-bottom-color: #c5d8ee;
+        }
+        body.day-mode #page-nav button {
+            background: linear-gradient(180deg, #edf4fd 0%, #dbe8f8 100%);
+            color: #1f2d45; border-color: #b8cbe5;
+        }
+        body.day-mode #page-nav button.active {
+            background: var(--primary); color: #fff; border-color: var(--primary);
+        }
+        @media (max-width: 768px) {
+            #page-nav button { height: 28px; padding: 0 12px; font-size: 0.68rem; border-radius: 6px; }
         }
     </style>
 </head>
@@ -320,17 +463,24 @@
 
     <!-- HEADER -->
     <header>
-     
+        <button class="mode-toggle" id="modeToggle">Gündüz Modu</button>
         <h1>Dönme Dönüşümü Materyali</h1>
         <p class="subtitle">Koordinat düzleminde dönme dönüşümlerini keşfetmeye yönelik dijital etkinlik materyali</p>
     </header>
 
     <!-- SEKMELİ NAVİGASYON -->
     <nav class="tab-nav" id="tab-nav" aria-label="Bölüm gezintisi">
-        <a href="#sec-konular" class="tab-nav-link"><span class="tab-icon">📚</span> Konular</a>
-        <a href="#sec-kazanimlar" class="tab-nav-link"><span class="tab-icon">🎯</span> Kazanımlar</a>
-        <a href="#sec-dikkat" class="tab-nav-link"><span class="tab-icon">⚠️</span> Dikkat Unsurları</a>
-        <a href="#sec-etkinlikler" class="tab-nav-link"><span class="tab-icon">🚀</span> Dijital Etkinlikler</a>
+        <a href="#sec-konular" class="tab-nav-link">Konular</a>
+        <a href="#sec-kazanimlar" class="tab-nav-link">Kazanımlar</a>
+        <a href="#sec-dikkat" class="tab-nav-link">Dikkat Unsurları</a>
+        <a href="#sec-etkinlikler" class="tab-nav-link">Dijital Etkinlikler</a>
+    </nav>
+
+    <nav id="page-nav">
+        <button class="active">Ana Sayfa</button>
+        <button onclick="location.href='uygulama1.html'">Uygulama-1</button>
+        <button onclick="location.href='formul_kesfi_meb_revizeli.html'">Uygulama-2</button>
+        <button onclick="location.href='serbest.html'">Serbest Mod</button>
     </nav>
 
     <main>
@@ -376,9 +526,8 @@
 
                 <!-- Uygulama 2 -->
                 <a class="app-card" href="uygulama1.html">
-                    <div class="app-card-icon icon-kesif">🔍</div>
                     <div>
-                        <div class="app-card-title">Uygulama 1</div>
+                        <div class="app-card-title">Uygulama-1</div>
                         <div class="app-card-desc">
                             Adım adım rehberli turlarla 90°, 180° ve 270° dönüşleri keşfedin. Her adımda koordinatların nasıl değiştiğini gözlemleyip sıra sende bölümünde kendinizi sınayın.
                         </div>
@@ -389,7 +538,6 @@
 
                 <!-- Uygulama-2 -->
                 <a class="app-card" href="formul_kesfi_meb_revizeli.html">
-                    <div class="app-card-icon icon-formul">🧮</div>
                     <div>
                         <div class="app-card-title">Uygulama-2</div>
                         <div class="app-card-desc">
@@ -402,7 +550,6 @@
 
                 <!-- Serbest Mod -->
                 <a class="app-card" href="serbest.html">
-                    <div class="app-card-icon icon-serbest">🎨</div>
                     <div>
                         <div class="app-card-title">Serbest Keşif Modu</div>
                         <div class="app-card-desc">
@@ -419,6 +566,15 @@
     </main>
 
     <script>
+        // Gündüz / Gece modu
+        const modeToggle = document.getElementById('modeToggle');
+        // Varsayılan mod: gece modu
+        modeToggle.addEventListener('click', function () {
+            const isDay = document.body.classList.toggle('day-mode');
+            modeToggle.textContent = isDay ? 'Gece Modu' : 'Gündüz Modu';
+            localStorage.setItem('colorMode', isDay ? 'day' : 'night');
+        });
+
         // Aktif sekmeyi scroll pozisyonuna göre vurgula
         const sections = [
             { id: 'sec-konular',     link: 'a[href="#sec-konular"]' },

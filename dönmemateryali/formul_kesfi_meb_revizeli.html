@@ -25,12 +25,12 @@
         }
         @media (min-width: 768px) {
             body { flex-direction: row; }
-            #ui-panel { width: 360px; height: 100%; border-top: none; border-right: 1px solid #2a3055; order: -1; padding-top: 58px; }
+            #ui-panel { width: 360px; height: 100%; border-top: none; border-right: 1px solid #2a3055; order: -1; padding-top: 14px; }
             #canvas-container { height: 100%; width: calc(100% - 360px); }
         }
         @media (max-width: 900px) and (orientation: landscape) {
             body { flex-direction: row; }
-            #ui-panel { width: 50%; height: 100%; border-top: none; border-right: 1px solid #2a3055; order: -1; padding: 58px 8px 8px; }
+            #ui-panel { width: 50%; height: 100%; border-top: none; border-right: 1px solid #2a3055; order: -1; padding: 8px; }
             #canvas-container { width: 50%; height: 100%; }
             h2 { font-size: 0.9rem; }
             #step-desc { font-size: 0.72rem; padding: 8px; }
@@ -41,7 +41,7 @@
             .fill-row input, .quiz-row input { width: 42px; height: 28px; font-size: 0.9rem; }
             .controls { gap: 6px; }
             button { height: 36px; font-size: 0.78rem; }
-            #panel-toggle { height: 28px; font-size: 0.68rem; padding: 0 8px; margin-bottom: 6px; }
+
             mjx-container[jax="CHTML"] { font-size: 88% !important; max-width: 100% !important; }
         }
         h2 { color: var(--primary); margin: 0 0 8px 0; font-size: 1.05rem; text-align: center; line-height: 1.2; }
@@ -86,11 +86,7 @@
             display: grid; grid-template-columns: 1fr 2fr; gap: 8px;
             margin-top: 8px; flex-shrink: 0;
         }
-        #panel-toggle {
-            align-self: flex-end; width: auto; height: 30px; padding: 0 10px;
-            margin-bottom: 8px; background: rgba(46,53,82,0.92); color: #eef3ff;
-            border: 1px solid #3a4468; border-radius: 999px; font-size: 0.74rem;
-        }
+
         .intro-prompt {
             margin: 0 0 12px 0; padding: 10px 12px; border-radius: 10px;
             border: 1px solid rgba(0,210,255,0.35); background: rgba(0,210,255,0.08);
@@ -128,7 +124,7 @@
             background: rgba(10,12,24,0.72);
         }
         @media (min-width: 768px) {
-            body.panel-collapsed #ui-panel { width: 88px; padding: 58px 8px 8px; }
+            body.panel-collapsed #ui-panel { width: 88px; padding: 8px; }
             body.panel-collapsed #main-title,
             body.panel-collapsed #progress-bar,
             body.panel-collapsed #step-desc { display: none; }
@@ -173,14 +169,20 @@
             background: #2e3552; color: #eef3ff; border: 1px solid #3a4468;
             border-radius: 8px; font-size: 0.8rem; font-weight: 700;
         }
-        #home-btn {
-            position: fixed; top: 10px; left: 10px; z-index: 4600;
-            width: auto; height: 36px; padding: 0 11px;
+        #page-nav {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
+            align-self: center; margin-bottom: 8px; flex-shrink: 0;
+        }
+        #page-nav button {
+            height: 30px; padding: 0 10px;
             background: #2e3552; color: #eef3ff; border: 1px solid #3a4468;
-            border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+            border-radius: 6px; font-size: 0.72rem; font-weight: 700; cursor: pointer; white-space: nowrap;
+        }
+        #page-nav button.active {
+            background: var(--primary); color: #000; border-color: var(--primary);
         }
         @media (max-width: 768px) {
-            #theme-toggle, #home-btn { height: 28px; padding: 0 8px; font-size: 0.62rem; border-radius: 6px; }
+            #theme-toggle, #page-nav button { height: 24px; padding: 0 7px; font-size: 0.60rem; border-radius: 5px; }
         }
         #intro-modal {
             position: fixed; inset: 0; z-index: 4500;
@@ -244,7 +246,6 @@
         }
         /* Light theme */
         body.light-theme { background: #e8eef7; }
-        body.light-theme #canvas-container { background: #050508; }
         body.light-theme #ui-panel { background: linear-gradient(180deg, rgba(248,251,255,.99), rgba(239,246,255,.99)); border-color: #bfd0e6; color: #1f2a3d; }
         body.light-theme #step-desc { background: linear-gradient(180deg, #ffffff 0%, #f5f9ff 100%); border-color: #cad8eb; color: #1f2a3d; box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 6px 18px rgba(150,172,201,.16); }
         body.light-theme h2 { color: #0369a1; }
@@ -253,14 +254,32 @@
         body.light-theme .desc-remark  { color: #34506f; }
         body.light-theme .desc-success { color: #166534; }
         body.light-theme .desc-error   { color: #b91c1c; }
-        body.light-theme .desc-hint    { color: #92400e; }
-        body.light-theme .desc-formula { color: #92400e; }
-        body.light-theme .derivation-line { color: #334155; }
-        body.light-theme .derivation-line.highlight { color: #92400e; }
-        body.light-theme .formula-box { background: rgba(2,132,199,.10); border-color: #0284c7; color: #8a4b08; }
+        body.light-theme .desc-hint    { color: #7c2d00; }
+        body.light-theme .desc-formula { color: #7c2d00; }
+        body.light-theme .derivation-line { color: #1a3050; }
+        body.light-theme .derivation-line.highlight { color: #7c2d00; font-weight: 700; }
+        body.light-theme .formula-box { background: rgba(2,132,199,.10); border-color: #0284c7; color: #1a3050; }
+        body.light-theme mjx-container, body.light-theme mjx-container * { color: #1a3050 !important; }
+        body.light-theme .label { background: rgba(10,30,60,0.82); border-color: rgba(0,80,160,0.35); box-shadow: none; }
+        body.light-theme #lbl-p  { color: #fff; border-color: #3399dd; box-shadow: 0 0 8px rgba(0,130,220,0.35); }
+        body.light-theme #lbl-pp { color: #fff; border-color: #e06010; box-shadow: 0 0 8px rgba(220,100,10,0.35); }
+        body.light-theme #lbl-r, body.light-theme #lbl-alpha, body.light-theme #lbl-theta { background: rgba(10,30,60,0.75); color: #f0f8ff; }
+        body.light-theme .axis-name { color: #1a3050 !important; background: none; font-weight: 800; }
+        body.light-theme #origin-lbl { color: #1a3050 !important; font-weight: 800; background: none; }
+        body.light-theme mjx-container, body.light-theme mjx-container * { color: #1a3050 !important; }
+        body.light-theme .derivation-line { color: #1a3050; }
+        body.light-theme .derivation-line.highlight { color: #7c2d00; }
+        body.light-theme .desc-formula { color: #7c2d00; }
+        body.light-theme .label { background: rgba(10,30,60,0.82); border-color: rgba(0,80,160,0.35); box-shadow: none; }
+        body.light-theme #lbl-p  { color: #fff; border-color: #3399dd; box-shadow: 0 0 8px rgba(0,130,220,0.35); }
+        body.light-theme #lbl-pp { color: #fff; border-color: #e06010; box-shadow: 0 0 8px rgba(220,100,10,0.35); }
+        body.light-theme #lbl-r, body.light-theme #lbl-alpha, body.light-theme #lbl-theta { background: rgba(10,30,60,0.75); color: #f0f8ff; }
+        body.light-theme .axis-name { color: #1a3050; background: none; font-weight: 800; }
+        body.light-theme #origin-lbl { color: #1a3050 !important; font-weight: 800; background: none; }
         body.light-theme input { background: #fff; color: #0f172a; border-color: #7aa7d8; }
         body.light-theme button { background: #0ea5e9; color: #fff; border: 1px solid #0284c7; }
-        body.light-theme .btn-back, body.light-theme #theme-toggle, body.light-theme #home-btn, body.light-theme #panel-toggle { background: linear-gradient(180deg, #edf4fd 0%, #dbe8f8 100%); color: #1f2d45; border-color: #b8cbe5; box-shadow: 0 4px 12px rgba(126,151,182,.18); }
+        body.light-theme .btn-back, body.light-theme #theme-toggle, body.light-theme #page-nav button { background: linear-gradient(180deg, #edf4fd 0%, #dbe8f8 100%); color: #1f2d45; border-color: #b8cbe5; box-shadow: 0 4px 12px rgba(126,151,182,.18); }
+        body.light-theme #page-nav button.active { background: #0070cc; color: #fff; border-color: #0070cc; box-shadow: 0 4px 12px rgba(0,112,204,.25); }
         body.light-theme .btn-check { background: #16a34a; border-color: #15803d; }
         body.light-theme #intro-modal .intro-box,
         body.light-theme #summary-overlay .summary-box,
@@ -293,13 +312,13 @@
             #intro-modal .intro-title, #summary-overlay .summary-title { font-size: 1rem; }
             #intro-modal .intro-text, #intro-modal .intro-list,
             #summary-overlay .summary-text, #summary-overlay .summary-list { font-size: 0.9rem; }
+            .axis-name, #origin-lbl { border: none; }
         }
     </style>
 </head>
 <body>
 
-<button id="home-btn" onclick="location.href='index.html'">🏠 Ana Sayfa</button>
-<button id="theme-toggle" type="button">🌙 Gece Modu</button>
+<button id="theme-toggle" type="button">Gündüz Modu</button>
 
 <!-- Intro Modal -->
 <div id="intro-modal" aria-hidden="false">
@@ -319,7 +338,7 @@
             <li>Son üç soruda formülü 90°, 180° ve 270° dönme durumlarına uygulayacaksınız.</li>
             <li>Etkinlik sonunda genel dönme formülünü ezberlemeden, mantığını anlayarak kullanabileceksiniz.</li>
         </ul>
-        <button id="intro-start" type="button" style="width:100%;height:44px;font-size:1rem;">Etkinliği Başlat →</button>
+        <button id="intro-start" type="button" style="width:100%;height:44px;font-size:1rem;">Etkinliği Başlatınız →</button>
     </div>
 </div>
 
@@ -345,7 +364,12 @@
 
 <!-- UI Panel -->
 <div id="ui-panel">
-    <button id="panel-toggle" type="button">Paneli Daralt</button>
+    <nav id="page-nav">
+        <button onclick="location.href='index.html'">Ana Sayfa</button>
+        <button onclick="location.href='uygulama1.html'">Uygulama-1</button>
+        <button class="active">Uygulama-2</button>
+        <button onclick="location.href='serbest.html'">Serbest Mod</button>
+    </nav>
     <h2 id="main-title">Dönme Formülünü Keşfet</h2>
     <div id="progress-bar"><div id="progress-fill" style="width:0%"></div></div>
     <div id="step-desc">
@@ -354,7 +378,7 @@
         <!-- Sayısal boşluk doldurma alanı -->
         <div id="fill-area">
             <div id="fill-rows"></div>
-            <button class="btn-check" id="btn-fill-check" type="button">Kontrol Et</button>
+            <button class="btn-check" id="btn-fill-check" type="button">Kontrol Ediniz</button>
         </div>
 
         <!-- Keşif quiz alanı -->
@@ -366,7 +390,7 @@
                 <input type="number" id="inputY" placeholder="y'" step="any">
                 <span>)</span>
             </div>
-            <button class="btn-check" id="btn-quiz-check" type="button">Cevabı Kontrol Et</button>
+            <button class="btn-check" id="btn-quiz-check" type="button">Cevabı Kontrol Ediniz</button>
         </div>
 
         <!-- Kontrol butonları -->
@@ -391,7 +415,7 @@
             <li>Formülü 90°, 180°, 270° özel durumlarıyla doğrulama.</li>
         </ul>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
-            <button id="summary-restart" type="button" style="background:#2e3552;color:#eef3ff;border:1px solid #3a4468;">Yeniden Başlat</button>
+            <button id="summary-restart" type="button" style="background:#2e3552;color:#eef3ff;border:1px solid #3a4468;">Yeniden Başlatınız</button>
             <button onclick="location.href='index.html'" type="button">🏠 Ana Sayfa</button>
         </div>
     </div>
@@ -408,6 +432,9 @@
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 
 /* ─── DOM refs ─────────────────────────────────────────────────── */
 const container  = document.getElementById('canvas-container');
@@ -433,7 +460,7 @@ const xAxisL  = document.getElementById('x-axis-lbl');
 const yAxisL  = document.getElementById('y-axis-lbl');
 const origL   = document.getElementById('origin-lbl');
 const themeBtn = document.getElementById('theme-toggle');
-const panelToggleBtn = document.getElementById('panel-toggle');
+
 
 /* ─── SFX ──────────────────────────────────────────────────────── */
 function mkAudio(src){ const a=new Audio(src); a.preload='auto'; return a; }
@@ -463,7 +490,7 @@ const STEPS = [
     visual: 0,
     html: `
 <p class="desc-intro">Koordinatlı düzlemde <b>P(3, 4)</b> noktası verilsin.
-Bu noktanın <b>orijine olan uzaklığı \\(\\mathrm{r}\\)</b> nedir?</p>
+Bu noktanın orijine olan uzaklığını <b>r</b> ile gösterirsek, <b>r</b> kaç birimdir?</p>
 <p>Pisagor teoremini kullanınız: <span class="desc-formula">\\(\\mathrm{r} = \\sqrt{\\mathrm{x}^2 + \\mathrm{y}^2}\\)</span></p>`,
     fillDef: {
         rows: [ { pre: '\\(\\mathrm{r} = \\sqrt{3^2 + 4^2} =\\)', suf: '', id:'r0' } ],
@@ -475,8 +502,8 @@ Bu noktanın <b>orijine olan uzaklığı \\(\\mathrm{r}\\)</b> nedir?</p>
     title: 'Adım 2 / 7',
     visual: 1,
     html: `
-<p class="desc-intro">Orijin ile P arasındaki doğru
-pozitif \\(\\mathrm{x}\\) ekseniyle <span class="desc-formula">\\(\\text{α}\\)</span> açısını yapar.
+<p class="desc-intro">Orijin ile P noktası arasındaki doğru parçası
+\\(\\mathrm{x}\\) ekseninin pozitif yönüyle <span class="desc-formula">\\(\\text{α}\\)</span> açısını yapar.
 O zaman:</p>
 <div class="formula-box">
     \\( \\cos(\\text{α}) = \\dfrac{\\mathrm{x}}{\\mathrm{r}} = \\dfrac{3}{5}, \\quad \\sin(\\text{α}) = \\dfrac{\\mathrm{y}}{\\mathrm{r}} = \\dfrac{4}{5} \\)
@@ -501,7 +528,7 @@ O zaman:</p>
     visual: 2,
     html: `
 <p class="desc-intro">P noktasını orijin etrafında <span class="desc-formula">\\(\\text{θ}\\)</span> kadar döndürdüğümüzde,
-orijine olan uzaklık <b>değişmez</b> — yeni açı <span class="desc-formula">\\(\\text{α} + \\text{θ}\\)</span> olur.</p>
+orijine olan uzaklık <b>değişmez</b> ve yeni açı <span class="desc-formula">\\(\\text{α} + \\text{θ}\\)</span> olur.</p>
 <div class="formula-box">
     \\( \\mathrm{P}' = \\bigl(\\mathrm{r}\\cos(\\text{α}+\\text{θ}),\\; \\mathrm{r}\\sin(\\text{α}+\\text{θ})\\bigr) \\)
 </div>
@@ -541,7 +568,7 @@ orijine olan uzaklık <b>değişmez</b> — yeni açı <span class="desc-formula
 <div class="derivation-line highlight">
     \\( \\boxed{\\mathrm{y}' = \\mathrm{x}\\sin(\\text{θ}) + \\mathrm{y}\\cos(\\text{θ})} \\)
 </div>
-<p class="desc-remark" style="margin-top:8px;">İki sonucu birleştirince genel formül elde edilir.</p>`,
+<p class="desc-remark" style="margin-top:8px;">İki sonucu birleştirince genel bağıntı elde edilir.</p>`,
     fillDef: null
   },
   {
@@ -642,9 +669,12 @@ function createAxes(){
 function buildTriangle(px,py,color,opacity){
     const ax=Math.abs(px), ay=Math.abs(py);
     const grp = new THREE.Group();
+    const res = new THREE.Vector2(renderer.domElement.width, renderer.domElement.height);
     const mk=(pts,col,op=1)=>{
-        const g=new THREE.BufferGeometry().setFromPoints(pts.map(([x,y])=>new THREE.Vector3(x,y,0.01)));
-        return new THREE.Line(g, new THREE.LineBasicMaterial({color:col,transparent:true,opacity:op}));
+        const geo = new LineGeometry();
+        geo.setPositions(pts.flatMap(([x,y])=>[x,y,0.01]));
+        const mat = new LineMaterial({color:col, transparent:true, opacity:op, linewidth:3, resolution:res});
+        return new Line2(geo, mat);
     };
     grp.add(
         mk([[0,0],[ax,ay]],         color, opacity),   // hypotenuse
@@ -654,7 +684,8 @@ function buildTriangle(px,py,color,opacity){
     // Right-angle marker
     const s=0.28;
     const sq=new THREE.Shape(); sq.moveTo(ax,0); sq.lineTo(ax-s,0); sq.lineTo(ax-s,s); sq.lineTo(ax,s);
-    grp.add(new THREE.Mesh(new THREE.ShapeGeometry(sq), new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:opacity*0.8})));
+    const raColor = document.body.classList.contains('light-theme') ? 0x1a4a9a : 0xffffff;
+    grp.add(new THREE.Mesh(new THREE.ShapeGeometry(sq), new THREE.MeshBasicMaterial({color:raColor,transparent:true,opacity:opacity*0.8})));
     grp.scale.set(Math.sign(px)||1, Math.sign(py)||1, 1);
     return grp;
 }
@@ -1011,7 +1042,7 @@ btnFill.addEventListener('click', ()=>{
         renderMath(document.getElementById('step-desc'));
     } else {
         snd('wrong');
-        const hint = s.fillDef.hint || 'Tekrar deneyin.';
+        const hint = s.fillDef.hint || 'Tekrar deneyiniz.';
         const oldErr = document.getElementById('fill-err');
         if(oldErr) oldErr.remove();
         fillRows.insertAdjacentHTML('beforebegin', `<p class="desc-error" id="fill-err">Henüz doğru değil. <span class="desc-hint">${hint}</span></p>`);
@@ -1080,7 +1111,7 @@ btnQuiz.addEventListener('click', ()=>{
 <p class="desc-error">Henüz doğru değil.</p>
 <p class="desc-hint">${hint}</p>
 <p class="desc-remark">${getQuizMistakeFeedback(s.quiz, ax, ay, expected)}</p>
-<p class="desc-intro"><b>P(${s.quiz.px}, ${s.quiz.py})</b>, \\(\\text{θ} = ${s.quiz.theta}^\\circ\\) için tekrar deneyin. Gerekirse bir önceki adımı yeniden inceleyin.</p>
+<p class="desc-intro"><b>P(${s.quiz.px}, ${s.quiz.py})</b>, \\(\\text{θ} = ${s.quiz.theta}^\\circ\\) için tekrar deneyiniz. Gerekirse bir önceki adımı yeniden inceleyiniz.</p>
 ${getQuizPromptNote(s.quiz)}`;
         renderMath(descText);
     }
@@ -1145,10 +1176,23 @@ function openSummary(){
 summary.restart.addEventListener('click',()=>location.reload());
 
 /* ─── Theme ──────────────────────────────────────────────────────── */
+function updateCanvasTheme(){
+    const isLight = document.body.classList.contains('light-theme');
+    const gridColor  = isLight ? 0x8aaac8 : 0x5f708a;
+    const xAxisColor = isLight ? 0xcc1100 : 0xff4d4d;
+    const yAxisColor = isLight ? 0x0a7a3c : 0x4dff88;
+    if(renderer) renderer.setClearColor(isLight ? 0xf0f6ff : 0x050508, 1);
+    if(gridMesh){ gridMesh.material.color.setHex(gridColor); gridMesh.material.opacity = isLight ? 0.65 : 0.95; }
+    if(axVis.xShaft) axVis.xShaft.material.color.setHex(xAxisColor);
+    if(axVis.yShaft) axVis.yShaft.material.color.setHex(yAxisColor);
+    axVis.xArrows.forEach(a => a.material.color.setHex(xAxisColor));
+    axVis.yArrows.forEach(a => a.material.color.setHex(yAxisColor));
+}
+
 function applyTheme(t){
-    if(t==='light'){ document.body.classList.add('light-theme'); themeBtn.textContent='☀️ Gündüz Modu'; }
-    else            { document.body.classList.remove('light-theme'); themeBtn.textContent='🌙 Gece Modu'; }
-    renderer && renderer.setClearColor(0x050508,1);
+    if(t==='light'){ document.body.classList.add('light-theme'); themeBtn.textContent='Gece Modu'; }
+    else            { document.body.classList.remove('light-theme'); themeBtn.textContent='Gündüz Modu'; }
+    updateCanvasTheme();
     localStorage.setItem('donusum-theme-formul', t);
 }
 themeBtn.addEventListener('click',()=>{
@@ -1156,9 +1200,7 @@ themeBtn.addEventListener('click',()=>{
 });
 
 function applyPanelState(collapsed){
-    document.body.classList.toggle('panel-collapsed', collapsed);
-    panelToggleBtn.textContent = collapsed ? 'Paneli Aç' : 'Paneli Daralt';
-    localStorage.setItem('donusum-formul-panel', collapsed ? 'collapsed' : 'open');
+    // panel-toggle kaldırıldı; state sabit
     setTimeout(()=>{
         if(renderer && container.clientWidth){
             renderer.setSize(container.clientWidth, container.clientHeight);
@@ -1166,10 +1208,6 @@ function applyPanelState(collapsed){
         }
     }, 180);
 }
-
-panelToggleBtn.addEventListener('click', ()=>{
-    applyPanelState(!document.body.classList.contains('panel-collapsed'));
-});
 
 /* ─── Intro ──────────────────────────────────────────────────────── */
 document.getElementById('intro-start').addEventListener('click',()=>{
@@ -1179,7 +1217,7 @@ document.getElementById('intro-start').addEventListener('click',()=>{
 /* ─── Boot ───────────────────────────────────────────────────────── */
 function boot(){
     init();
-    applyTheme(localStorage.getItem('donusum-theme-formul')||'dark');
+    applyTheme('dark');
     applyPanelState(localStorage.getItem('donusum-formul-panel') === 'collapsed');
     setStep(0);
 }

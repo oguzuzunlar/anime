@@ -78,7 +78,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    padding: 58px 18px 10px;
+    padding: 10px 18px 10px;
     gap: 10px;
     transition: background .3s;
   }
@@ -373,50 +373,36 @@
   .vtx-table td.arrow { color: #d32f2f; font-size: 13px; }
   .vtx-table td.result { color: #15803d; font-weight: 700; }
 
-  /* ── ANA SAYFA BUTONU ── */
-  .home-btn {
-    position: fixed;
-    top: 10px;
-    left: 12px;
-    z-index: 4600;
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    min-height: 64px;
-    padding: 0 24px;
-    background: linear-gradient(180deg, #394467 0%, #2f395d 100%);
-    border: 2px solid rgba(255,255,255,0.1);
-    border-radius: 26px;
-    color: #ffffff;
-    font-size: 1.05rem;
-    font-weight: 800;
-    text-decoration: none;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.08);
-    cursor: pointer;
-    letter-spacing: 0.2px;
-    transition: transform .18s, box-shadow .18s, filter .18s;
+  /* ── SAYFA NAVİGASYONU ── */
+  #page-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    align-self: center;
+    margin-bottom: 8px;
+    flex-shrink: 0;
   }
-  .home-btn::before {
-    content: '🏠';
-    font-size: 2rem;
-    line-height: 1;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.28));
+  #page-nav button {
+    height: 30px; padding: 0 10px;
+    background: var(--home-bg);
+    color: var(--home-color);
+    border: 1.5px solid var(--home-border);
+    border-radius: 6px;
+    font-size: 0.72rem; font-weight: 700;
+    cursor: pointer; white-space: nowrap;
   }
-  .home-btn:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.05);
-    box-shadow: 0 14px 34px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.1);
+  #page-nav button.active {
+    background: #0a7ecf;
+    color: #fff;
+    border-color: #0a7ecf;
+  }
+  body.dark-theme #page-nav button.active {
+    background: #00a8e8;
+    color: #000;
+    border-color: #00a8e8;
   }
   @media (max-width: 768px) {
-    .home-btn {
-      gap: 8px;
-      min-height: 42px;
-      padding: 0 14px;
-      border-radius: 18px;
-      font-size: 0.82rem;
-      font-weight: 800;
-    }
-    .home-btn::before { font-size: 1.35rem; }
+    #page-nav button { height: 24px; padding: 0 7px; font-size: 0.60rem; border-radius: 5px; }
   }
 
   /* ── TEMA BUTONU ── */
@@ -529,7 +515,7 @@
 
   /* ── MOBİL: dikey düzen, kaydırmalı ── */
   @media (max-width: 768px) {
-    body { height: auto; overflow-y: auto; overflow-x: hidden; padding: 52px 10px 12px; gap: 12px; }
+    body { height: auto; overflow-y: auto; overflow-x: hidden; padding: 66px 10px 12px; gap: 12px; }
     .main-area { flex-direction: column; align-items: stretch; }
     .canvas-card { height: clamp(300px, 85vw, 520px); order: -1; }
     .info-panel { width: 100%; order: 0; }
@@ -596,8 +582,7 @@
   </div>
 </div>
 
-<!-- ANA SAYFA -->
-<a class="home-btn" href="index.html">Ana Sayfa</a>
+
 
 <!-- TEMA BUTONU -->
 <button id="theme-toggle" type="button" onclick="toggleTheme()">🌙 Gece Modu</button>
@@ -618,6 +603,13 @@
 
   <!-- INFO PANEL -->
   <div class="info-panel">
+
+    <nav id="page-nav">
+      <button onclick="location.href='index.html'">Ana Sayfa</button>
+      <button onclick="location.href='uygulama1.html'">Uygulama-1</button>
+      <button onclick="location.href='formul_kesfi_meb_revizeli.html'">Uygulama-2</button>
+      <button class="active">Serbest Mod</button>
+    </nav>
 
     <div class="angle-card">
       <h3>Dönme Açısı</h3>
@@ -1261,8 +1253,12 @@ function drawLabel(lbl, coordStr, ptSX, ptSY, centSX, centSY, labelColor, coordC
   dx /= len; dy /= len;
 
   // Köşe noktasından dışarıya itmek için mesafe = nokta yarıçapı + boşluk
-  const push = Math.max(14, CELL * 0.55);
-  const bx   = ptSX + dx * push;  // temel öteleme merkezi
+  // Nokta merkezinden vektör yönünde etiket kutusu kenarını yerleştir:
+  // "push" = noktadan etiket kenarına olan mesafe (nokta görsel yarıçapı + boşluk)
+  const dotVisualR = Math.max(3, CELL * 0.18);
+  const clearance  = 8;
+  const push = dotVisualR + clearance;
+  const bx   = ptSX + dx * push;  // temel öteleme — kutu KENARININ başlangıcı
   const by   = ptSY + dy * push;
 
   ctx.save();
@@ -1276,14 +1272,18 @@ function drawLabel(lbl, coordStr, ptSX, ptSY, centSX, centSY, labelColor, coordC
   const totalW = Math.max(wLbl, wCoord) + pad * 2;
   const totalH = fs + fsc + gap + pad * 2;
 
+  // Kutuyu dx/dy yönünde ortala ama push kenarı olacak şekilde itmek yerine
+  // merkezini push + yarı-boyut mesafesine koy (kenar noktada değil, outside)
+  const halfAlong = Math.abs(dx) > Math.abs(dy) ? totalW / 2 : totalH / 2;
+
   // Arka plan kutusu (beyaz, hafif gölge)
   ctx.shadowColor   = 'rgba(0,0,0,0.22)';
   ctx.shadowBlur    = 5;
   ctx.fillStyle     = 'rgba(255,255,255,0.93)';
   // Canvas sınırları içinde kal (etiket hiçbir zaman kesilmesin)
   const margin = 4;
-  let bx0 = bx - totalW / 2;
-  let by0 = by - totalH / 2;
+  let bx0 = bx + dx * halfAlong - totalW / 2;
+  let by0 = by + dy * halfAlong - totalH / 2;
   bx0 = Math.max(margin, Math.min(W - totalW - margin, bx0));
   by0 = Math.max(margin, Math.min(H - totalH - margin, by0));
   const radius = 4;
@@ -1297,12 +1297,12 @@ function drawLabel(lbl, coordStr, ptSX, ptSY, centSX, centSY, labelColor, coordC
   ctx.fillStyle    = labelColor;
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'top';
-  ctx.fillText(lbl, bx, by0 + pad);
+  ctx.fillText(lbl, bx0 + totalW / 2, by0 + pad);
 
   // Koordinat
   ctx.font         = `${fsc}px Segoe UI,sans-serif`;
   ctx.fillStyle    = coordColor;
-  ctx.fillText(coordStr, bx, by0 + pad + fs + gap);
+  ctx.fillText(coordStr, bx0 + totalW / 2, by0 + pad + fs + gap);
 
   ctx.restore();
 }
@@ -1423,7 +1423,20 @@ function drawShapeBody() {
 function drawShapeLabels() {
   const { S, rad, pts, centSX, centSY, toScreen } = _shapeTransform();
 
-  // Köşe etiketleri + koordinat (beyaz kutucuklu)
+  // ── Kilit noktası önce çizilir, etiketler üstüne gelir ──
+  ctx.save();
+  const lk = toScreen(S.lock);
+  const pulse = isSnapped ? 3 : 2;
+  ctx.beginPath();
+  ctx.arc(lk.sx, lk.sy, pulse, 0, Math.PI*2);
+  ctx.fillStyle   = isSnapped ? '#16a34a' : '#d32f2f';
+  ctx.shadowColor = isSnapped ? 'rgba(22,163,74,.5)' : 'rgba(211,47,47,.5)';
+  ctx.shadowBlur  = 6;
+  ctx.fill();
+  ctx.shadowBlur  = 0;
+  ctx.restore();
+
+  // Köşe etiketleri + koordinat (beyaz kutucuklu) — kilit noktasının üstünde
   // Tek noktada centroid == nokta: etiketin daima üstte çıkması için sahte merkez aşağıya
   const effCentSX = pts.length === 1 ? pts[0].sx              : centSX;
   const effCentSY = pts.length === 1 ? pts[0].sy + CELL * 1.8 : centSY;
@@ -1436,20 +1449,6 @@ function drawShapeLabels() {
       S.stroke, '#334155'
     );
   });
-
-  // Kilit noktası
-  ctx.save();
-  const lk = toScreen(S.lock);
-  const lockPointScale = window.innerWidth <= 768 ? (1 / 3) : 1;
-  const pulse = (isSnapped ? 9 : 6) * lockPointScale;
-  ctx.beginPath();
-  ctx.arc(lk.sx, lk.sy, pulse, 0, Math.PI*2);
-  ctx.fillStyle   = isSnapped ? '#16a34a' : '#d32f2f';
-  ctx.shadowColor = isSnapped ? 'rgba(22,163,74,.5)' : 'rgba(211,47,47,.5)';
-  ctx.shadowBlur  = 10;
-  ctx.fill();
-  ctx.shadowBlur  = 0;
-  ctx.restore();
 }
 
 /* ── Çokgen çizim önizlemesi ── */
@@ -2056,7 +2055,7 @@ function applyTheme(theme) {
 function toggleTheme() {
   applyTheme(document.body.classList.contains('dark-theme') ? 'light' : 'dark');
 }
-applyTheme(localStorage.getItem('serbest-theme') || 'dark');
+applyTheme('dark');
 
 /* ─── ResizeObserver: kapsayıcı boyutu değişince canvas'ı güncelle ─── */
 const ro = new ResizeObserver(() => resizeCanvas());
