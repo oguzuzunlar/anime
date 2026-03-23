@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Konikler Materyali – 3D İnteraktif</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #0d1b2a;
+  overflow: hidden;
+  width: 100vw; height: 100vh;
+  display: flex; flex-direction: column;
+}
+
+/* ── Başlık ─────────────────────────────────────── */
+.page-title {
+  flex-shrink: 0;
+  text-align: center;
+  padding: 10px 20px 6px;
+  font-size: 20px; font-weight: 800;
+  color: #e0f2fe; letter-spacing: 0.5px;
+  text-shadow: 0 0 20px rgba(56,189,248,0.5);
+  background: linear-gradient(180deg, rgba(13,27,42,0.95) 0%, transparent 100%);
+  z-index: 10; pointer-events: none;
+}
+
+#three-canvas {
+  flex: 1; display: block; width: 100%;
+}
+
+/* ── Sol Bilgi Paneli ────────────────────────────── */
+#info-panel {
+  position: fixed; top: 56px; left: 14px;
+  width: 240px; z-index: 20;
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.info-card {
+  background: rgba(15,30,50,0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 14px;
+  padding: 13px 15px;
+  color: #e2e8f0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+.info-card h3 {
+  font-size: 13px; font-weight: 700;
+  color: #38bdf8; text-transform: uppercase;
+  letter-spacing: 0.7px; margin-bottom: 7px;
+}
+
+.info-card p {
+  font-size: 12.5px; line-height: 1.6; color: #cbd5e1;
+}
+
+.formula-box {
+  background: rgba(56,189,248,0.1);
+  border: 1px solid rgba(56,189,248,0.3);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-family: 'Consolas', monospace;
+  font-size: 13px; color: #7dd3fc;
+  text-align: center; margin-top: 8px;
+}
+
+/* ── Kesit Bilgi Kartı ──────────────────────────── */
+#conic-display {
+  position: fixed; bottom: 24px; left: 14px;
+  width: 240px; z-index: 20;
+  background: rgba(15,30,50,0.92);
+  backdrop-filter: blur(12px);
+  border: 2px solid #38bdf8;
+  border-radius: 16px;
+  padding: 14px 16px;
+  color: #e2e8f0;
+  box-shadow: 0 4px 30px rgba(56,189,248,0.2);
+  transition: border-color 0.3s;
+}
+
+#conic-display.circle  { border-color: #00e5ff; }
+#conic-display.ellipse { border-color: #a78bfa; }
+#conic-display.parabola { border-color: #fb923c; }
+#conic-display.hyperbola { border-color: #f87171; }
+
+#conic-name {
+  font-size: 17px; font-weight: 800; margin-bottom: 5px;
+  transition: color 0.3s;
+}
+
+.circle  #conic-name { color: #00e5ff; }
+.ellipse #conic-name { color: #a78bfa; }
+.parabola #conic-name { color: #fb923c; }
+.hyperbola #conic-name { color: #f87171; }
+
+#conic-desc { font-size: 12px; line-height: 1.6; color: #94a3b8; }
+
+#conic-formula {
+  margin-top: 9px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-family: 'Consolas', monospace;
+  font-size: 13px; text-align: center;
+  transition: background 0.3s, color 0.3s;
+}
+
+.circle  #conic-formula { background: rgba(0,229,255,0.13); color: #00e5ff; }
+.ellipse #conic-formula { background: rgba(167,139,250,0.12); color: #a78bfa; }
+.parabola #conic-formula { background: rgba(251,146,60,0.12); color: #fb923c; }
+.hyperbola #conic-formula { background: rgba(248,113,113,0.12); color: #f87171; }
+
+/* ── Sağ Kontrol Paneli ─────────────────────────── */
+#side-panel {
+  position: fixed; top: 56px; right: 14px;
+  width: 210px; z-index: 20;
+  display: flex; flex-direction: column; gap: 8px;
+}
+
+.section-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.8px;
+  color: #64748b; padding: 0 4px;
+}
+
+.ctrl-btn {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 11px; border: 1.5px solid transparent;
+  font-weight: 700; font-size: 13px;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s, border-color .2s, background .2s;
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(15,30,50,0.85);
+  backdrop-filter: blur(8px);
+  color: #e2e8f0;
+  text-align: left;
+}
+
+.ctrl-btn:hover { transform: translateX(-3px); }
+
+.ctrl-btn.active {
+  box-shadow: 0 0 18px rgba(56,189,248,0.3);
+}
+
+.ctrl-btn.circle { border-color: #00e5ff; }
+.ctrl-btn.circle.active { background: rgba(0,229,255,0.18); box-shadow: 0 0 18px rgba(0,229,255,0.45); }
+
+.ctrl-btn.ellipse { border-color: #a78bfa; }
+.ctrl-btn.ellipse.active { background: rgba(167,139,250,0.2); box-shadow: 0 0 18px rgba(167,139,250,0.35); }
+
+.ctrl-btn.parabola { border-color: #fb923c; }
+.ctrl-btn.parabola.active { background: rgba(251,146,60,0.2); box-shadow: 0 0 18px rgba(251,146,60,0.35); }
+
+.ctrl-btn.hyperbola { border-color: #f87171; }
+.ctrl-btn.hyperbola.active { background: rgba(248,113,113,0.2); box-shadow: 0 0 18px rgba(248,113,113,0.35); }
+
+.btn-icon { font-size: 18px; flex-shrink: 0; }
+
+.ctrl-sep {
+  height: 1px; background: rgba(255,255,255,0.07); margin: 3px 0;
+}
+
+.angle-badge {
+  font-size: 10px; font-weight: 600;
+  background: rgba(255,255,255,0.08);
+  border-radius: 100px;
+  padding: 2px 7px; margin-left: auto;
+  color: #94a3b8; white-space: nowrap;
+}
+
+/* ── Koni Parça Göstergesi ──────────────────────── */
+#parts-panel {
+  position: fixed; bottom: 24px; right: 14px;
+  z-index: 20; width: 200px;
+  background: rgba(15,30,50,0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(56,189,248,0.2);
+  border-radius: 14px; padding: 13px 15px;
+  color: #e2e8f0;
+}
+
+#parts-panel h4 {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.7px;
+  color: #64748b; margin-bottom: 10px;
+}
+
+.part-item {
+  display: flex; align-items: center;
+  gap: 8px; font-size: 12px;
+  color: #cbd5e1; padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.part-item:last-child { border-bottom: none; }
+
+.part-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Yardım Notu ─────────────────────────────────── */
+#hint {
+  position: fixed; bottom: 10px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px; color: rgba(148,163,184,0.7);
+  z-index: 20; pointer-events: none;
+  text-align: center;
+}
+
+/* ── Giriş Modalı ───────────────────────────────── */
+#intro {
+  position: fixed; inset: 0;
+  background: rgba(5, 10, 20, 0.92);
+  z-index: 100;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(6px);
+}
+
+#intro .modal-box {
+  width: min(680px, 96vw);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: #0d1e36;
+  border: 1px solid rgba(56,189,248,0.35);
+  border-radius: 18px;
+  padding: 28px 30px 24px;
+  box-shadow: 0 8px 60px rgba(0,0,0,0.7);
+}
+
+#intro .modal-box h1 {
+  margin: 0 0 6px;
+  font-size: 22px; font-weight: 800;
+  color: #38bdf8;
+  line-height: 1.2;
+}
+
+#intro .modal-box .subtitle {
+  font-size: 13px; color: #64748b;
+  margin-bottom: 18px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.6px;
+}
+
+#intro .modal-box .section-title {
+  font-size: 13px; font-weight: 700;
+  color: #7dd3fc;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  margin: 16px 0 7px;
+}
+
+#intro .modal-box p {
+  font-size: 13.5px; color: #94a3b8;
+  line-height: 1.7; margin: 0 0 8px;
+}
+
+#intro .modal-box ul {
+  margin: 0 0 6px 18px; padding: 0;
+}
+
+#intro .modal-box li {
+  font-size: 13px; color: #94a3b8;
+  line-height: 1.7; margin-bottom: 3px;
+}
+
+#intro .modal-box li b { color: #cbd5e1; }
+
+.modal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.modal-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(56,189,248,0.15);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.modal-card .card-title {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.7px;
+  margin-bottom: 6px;
+}
+
+.modal-card ul {
+  margin: 0 0 0 14px; padding: 0;
+}
+
+.modal-card li {
+  font-size: 12px; color: #94a3b8;
+  line-height: 1.6; margin-bottom: 2px;
+}
+
+.modal-warning {
+  background: rgba(251,146,60,0.08);
+  border: 1px solid rgba(251,146,60,0.3);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12.5px; color: #fdba74;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+#startBtn {
+  width: 100%;
+  padding: 13px;
+  border: none; border-radius: 12px;
+  background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+  color: #001824; font-size: 15px; font-weight: 800;
+  cursor: pointer; letter-spacing: 0.3px;
+  transition: transform .15s, box-shadow .15s;
+  margin-top: 4px;
+}
+
+#startBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(56,189,248,0.4);
+}
+
+#startBtn:active { transform: translateY(0); }
+
+/* ── Portal Navigasyon Butonları ───────────────────────── */
+.portal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 4px;
+}
+.portal-btn {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 14px 8px; border: 1.5px solid transparent; border-radius: 14px;
+  cursor: pointer; font-weight: 800; font-size: 13px; gap: 5px;
+  text-align: center; line-height: 1.25;
+  transition: transform .15s, box-shadow .15s;
+}
+.portal-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.35); }
+.portal-btn:active { transform: scale(0.97); }
+.portal-btn .p-icon { font-size: 22px; }
+.portal-btn .p-sub  { font-size: 10px; font-weight: 600; opacity: 0.8; }
+.portal-btn-free { background: linear-gradient(135deg,#0ea5e9,#38bdf8); color:#001824; border-color:#38bdf8; }
+.portal-btn-u1   { background: rgba(167,139,250,0.12); color:#a78bfa; border-color:rgba(167,139,250,0.38); }
+.portal-btn-u2   { background: rgba(251,146,60,0.10);  color:#fb923c; border-color:rgba(251,146,60,0.32); }
+/* Fix inherited #startBtn styles when used inside portal-grid */
+.portal-grid #startBtn { margin-top:0; font-size:13px; padding:14px 8px; }
+
+/* ── Sol Panel Sayfa Navigasyonu ───────────────────────── */
+.nav-link-btn {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px; border-radius: 9px;
+  background: rgba(56,189,248,0.06); border: 1px solid rgba(56,189,248,0.15);
+  color: #94a3b8; font-size: 12px; font-weight: 600;
+  text-decoration: none; margin-top: 6px;
+  transition: background .15s, color .15s;
+}
+.nav-link-btn:hover { background: rgba(56,189,248,0.14); color: #e2e8f0; }
+.nav-link-btn .nl-icon { font-size: 15px; flex-shrink: 0; }
+.nav-link-btn small { display: block; font-size: 10px; font-weight: 500; color: #64748b; margin-top: 1px; }
+
+.hidden { display: none !important; }
+
+@media (max-width: 768px) {
+  #intro .modal-box { padding: 20px 16px 18px; }
+  .modal-row { grid-template-columns: 1fr; }
+}
+
+/* ── Animasyon Geçiş ─────────────────────────────── */
+@keyframes pulse-ring {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.ctrl-btn.active .btn-icon {
+  animation: pulse-ring 2s infinite;
+}
+
+/* ── Serbest Açı Paneli ───────────────────────────── */
+#free-panel {
+  position: fixed; bottom: 72px; left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  display: none;
+  background: rgba(10,20,38,0.96);
+  backdrop-filter: blur(14px);
+  border: 1.5px solid rgba(251,191,36,0.45);
+  border-radius: 18px;
+  padding: 14px 20px 12px;
+  width: min(380px, calc(100vw - 28px));
+  box-shadow: 0 6px 32px rgba(0,0,0,0.55);
+}
+
+#free-panel.visible { display: block; }
+
+#free-panel .fp-header {
+  display: flex; justify-content: space-between;
+  font-size: 12.5px; font-weight: 700;
+  color: #fbbf24; margin-bottom: 10px;
+}
+
+#angle-slider {
+  width: 100%; cursor: pointer;
+  accent-color: #fbbf24;
+  height: 5px;
+  border-radius: 4px;
+}
+
+#free-stats {
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px;
+  margin-top: 9px; font-size: 10.5px; color: #4e6280;
+  font-weight: 600;
+}
+
+/* ── Büyük Dinamik Kesit Adı ──────────────────────── */
+#free-conic-label {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 22; display: none;
+  pointer-events: none; text-align: center;
+}
+
+#free-conic-label.visible { display: block; }
+
+#free-conic-text {
+  font-size: 72px; font-weight: 900;
+  letter-spacing: -2px; line-height: 1;
+  text-shadow: 0 0 50px currentColor;
+  opacity: 0.16;
+  transition: color 0.25s;
+}
+
+#free-angle-text {
+  font-size: 20px; font-weight: 700;
+  color: #fbbf24;
+  margin-top: 6px; opacity: 0.55;
+  letter-spacing: 0.5px;
+}
+
+/* ── Mobil sadece / masaüstü sadece ─────────────────── */
+.mobile-hint  { display: none; }
+.desktop-hint { display: block; }
+
+@media (max-width: 768px) {
+  .mobile-hint  { display: block; }
+  .desktop-hint { display: none; }
+  #free-panel   { bottom: 84px; }
+  #free-conic-text { font-size: 48px; }
+}
+
+/* ── Mobil Uyum (≤768px) ───────────────────────── */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 14px; padding: 7px 10px 4px;
+  }
+
+  /* Bilgi ve parça panelleri gizle */
+  #info-panel  { display: none; }
+  #parts-panel { display: none; }
+  #hint        { display: none; }
+
+  /* Kesit bilgisi: başlığın hemen altı, tam genişlik kompakt şerit */
+  #conic-display {
+    bottom: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 40px;
+    width: calc(100vw - 16px);
+    max-width: none;
+    padding: 7px 12px;
+    border-radius: 12px;
+    border-width: 1.5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+  #conic-name   { font-size: 14px; margin-bottom: 0; white-space: nowrap; }
+  #conic-desc   { display: none; }
+  #conic-formula {
+    margin-top: 0; margin-left: auto;
+    font-size: 12px; padding: 4px 9px;
+    white-space: nowrap;
+  }
+
+  /* Kontrol butonu şeridi: altta, yatay kaydırmalı */
+  #side-panel {
+    top: auto; right: 0; bottom: 0; left: 0;
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 5px;
+    padding: 6px 8px 8px;
+    background: rgba(8,18,32,0.97);
+    border-top: 1px solid rgba(56,189,248,0.18);
+    border-radius: 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  #side-panel::-webkit-scrollbar { display: none; }
+
+  .section-label { display: none; }
+  .ctrl-sep      { display: none; }
+
+  .ctrl-btn {
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 3px;
+    padding: 7px 14px;
+    min-width: 66px;
+    text-align: center;
+    justify-content: center;
+    font-size: 11px;
+    border-radius: 10px;
+  }
+  .ctrl-btn:hover  { transform: none; }
+  .ctrl-btn:active { transform: scale(0.93); }
+  .angle-badge { display: none; }
+  .btn-icon    { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Giriş Modalı -->
+<div id="intro">
+  <div class="modal-box">
+    <h1><span style="color:#f87171">▲</span> Konikler Materyali</h1>
+
+    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#64748b;margin:0 0 8px;">Başlamak İstediğiniz Bölümü Seçin</p>
+    <div class="portal-grid" style="margin-bottom:16px;">
+      <button id="startBtn" class="portal-btn portal-btn-free">
+        <span class="p-icon">🔬</span>
+        Serbest Mod
+        <span class="p-sub">3B Konik Keşfi</span>
+      </button>
+      <button onclick="location.href='konikler_uygulama1_3D.html'" class="portal-btn portal-btn-u1">
+        <span class="p-icon">📐</span>
+        Uygulama 1
+        <span class="p-sub">Çember &amp; Elips</span>
+      </button>
+      <button onclick="location.href='konikler_uygulama2_3D.html'" class="portal-btn portal-btn-u2">
+        <span class="p-icon">📊</span>
+        Uygulama 2
+        <span class="p-sub">Parabol &amp; Hiperbol</span>
+      </button>
+    </div>
+
+    <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin-bottom:14px;">
+      Bir dik koni, farklı açılarda kesildiğinde sırasıyla <b style="color:#cbd5e1">çember, elips, parabol</b> ve <b style="color:#cbd5e1">hiperbol</b> eğrileri oluşur. Bu materyal seti, <b style="color:#cbd5e1">3B görselleştirme</b> ve <b style="color:#cbd5e1">adım adım etkinliklerle</b> bu dört konik kesiti keşfetmenizi sağlar.
+    </p>
+
+    <div class="section-title">Bölümler</div>
+    <div class="modal-row" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:14px;">
+      <div class="modal-card">
+        <div class="card-title" style="color:#38bdf8">🔬 Serbest Mod</div>
+        <p style="font-size:12px;color:#94a3b8;line-height:1.6;margin:0;">Kesit türünü ve açısını özgürce ayarla; koniyi 3B olarak döndürerek dört eğriyi gözlemle.</p>
+      </div>
+      <div class="modal-card">
+        <div class="card-title" style="color:#a78bfa">📐 Uygulama 1</div>
+        <p style="font-size:12px;color:#94a3b8;line-height:1.6;margin:0;"><b style="color:#c4b5fd">Çember ve Elips</b> — Kesim açısının eğri üzerindeki etkisini adım adım, sorularla keşfet.</p>
+      </div>
+      <div class="modal-card">
+        <div class="card-title" style="color:#fb923c">📊 Uygulama 2</div>
+        <p style="font-size:12px;color:#94a3b8;line-height:1.6;margin:0;"><b style="color:#fdba74">Parabol ve Hiperbol</b> — Düzlemin koninin hangi kısmını kestiğine göre değişen eğrileri araştır.</p>
+      </div>
+    </div>
+
+    <div class="section-title">Kazanımlar</div>
+    <div class="modal-row">
+      <div class="modal-card">
+        <ul>
+          <li>Kesit düzleminin açısı ile oluşan eğri türü arasındaki ilişkiyi <b>keşfeder</b>.</li>
+          <li>Çemberin elipsin özel bir hali olduğunu <b>yorumlar</b>.</li>
+        </ul>
+      </div>
+      <div class="modal-card">
+        <ul>
+          <li>Parabol ve hiperbolü oluşturan kesit koşullarını <b>açıklar</b>.</li>
+          <li>Konik kesitlerin gerçek yaşamdaki uygulamalarını <b>ilişkilendirir</b>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="modal-warning">
+      ⚠️ <b>Dikkat:</b> Çember, elips, parabol ve hiperbol birer <em>eğridir</em> — kapalı bir bölge değil. Hiperbolün iki kolu ayrı kesit düzlemleriyle elde edilir.
+    </div>
+  </div>
+</div>
+
+<div class="page-title">🔺 Konikler Materyali – 3D İnteraktif Keşif</div>
+
+<canvas id="three-canvas"></canvas>
+
+<!-- Sol Bilgi Paneli -->
+<div id="info-panel">
+  <div class="info-card">
+    <h3>📚 Bölümler</h3>
+    <a href="konikler_uygulama1_3D.html" class="nav-link-btn">
+      <span class="nl-icon">📐</span>
+      <span>Uygulama 1<small>Çember &amp; Elips</small></span>
+    </a>
+    <a href="konikler_uygulama2_3D.html" class="nav-link-btn">
+      <span class="nl-icon">📊</span>
+      <span>Uygulama 2<small>Parabol &amp; Hiperbol</small></span>
+    </a>
+  </div>
+  <div class="info-card">
+    <h3>Konikler Materyali</h3>
+    <p>Dik koni, bir kesme düzlemi ile kesildiğinde oluşan eğriler <strong>konik kesitler</strong> olarak adlandırılır.</p>
+  </div>
+  <div class="info-card">
+    <h3>Koni Denklemi</h3>
+    <p>Yarı açısı 45° olan çift koni yüzeyi:</p>
+    <div class="formula-box">x² + z² = y²</div>
+  </div>
+  <div class="info-card">
+    <h3>Nasıl Kullanılır?</h3>
+    <p>Sağdaki butonlarla farklı konik kesitleri seçin. Fareyle 3B modeli döndürebilirsiniz.</p>
+  </div>
+</div>
+
+<!-- Aktif Kesit Bilgisi -->
+<div id="conic-display" class="circle">
+  <div id="conic-name">Çember</div>
+  <div id="conic-desc">Düzlem tabana paralel (0°) konumuyla kesiyor. Oluşan eğri bir çemberdir.</div>
+  <div id="conic-formula">x² + z² = r²</div>
+</div>
+
+<!-- Sağ Kontrol Paneli -->
+<div id="side-panel">
+  <div class="section-label">Kesit Türü Seçin</div>
+
+  <button class="ctrl-btn circle active" onclick="setMode('circle')">
+    <span class="btn-icon">⭕</span>
+    <span>Çember</span>
+    <span class="angle-badge">0°</span>
+  </button>
+
+  <button class="ctrl-btn ellipse" onclick="setMode('ellipse')">
+    <span class="btn-icon">🥚</span>
+    <span>Elips</span>
+    <span class="angle-badge">30°</span>
+  </button>
+
+  <button class="ctrl-btn parabola" onclick="setMode('parabola')">
+    <span class="btn-icon">〜</span>
+    <span>Parabol</span>
+    <span class="angle-badge">45°</span>
+  </button>
+
+  <button class="ctrl-btn hyperbola" onclick="setMode('hyperbola')">
+    <span class="btn-icon">⟨ ⟩</span>
+    <span>Hiperbol</span>
+    <span class="angle-badge">60°</span>
+  </button>
+
+  <div class="ctrl-sep"></div>
+  <div class="section-label">Koni Görünümü</div>
+
+  <button class="ctrl-btn" style="border-color:rgba(148,163,184,0.3)" id="wireframe-btn" onclick="toggleWireframe()">
+    <span class="btn-icon">🔲</span>
+    <span>Tel Kafes</span>
+  </button>
+
+  <button class="ctrl-btn" style="border-color:rgba(148,163,184,0.3)" id="section-btn" onclick="toggleSection()">
+    <span class="btn-icon">✂️</span>
+    <span>Düzlemi Gizle</span>
+  </button>
+
+</div>
+
+<!-- Parça Bilgisi -->
+<div id="parts-panel">
+  <h4>Materyal Bileşenleri</h4>
+  <div class="part-item">
+    <div class="part-dot" style="background:#c4a257"></div>
+    <span>Üst koni (tepesi)</span>
+  </div>
+  <div class="part-item">
+    <div class="part-dot" style="background:#d4b26a"></div>
+    <span>Orta parça 1</span>
+  </div>
+  <div class="part-item">
+    <div class="part-dot" style="background:#c4a257"></div>
+    <span>Orta parça 2</span>
+  </div>
+  <div class="part-item">
+    <div class="part-dot" style="background:#d4b26a"></div>
+    <span>Alt koni tabanı</span>
+  </div>
+  <div class="part-item">
+    <div class="part-dot" style="background:#8b7355"></div>
+    <span>Taban diski</span>
+  </div>
+  <div class="part-item">
+    <div class="part-dot" style="background:#9ca3af"></div>
+    <span>Metal eksen (demir)</span>
+  </div>
+</div>
+
+<!-- Serbest Açı Kaydırıcı Paneli (pasif) -->
+<div id="free-panel" style="display:none !important;">
+  <div class="fp-header">
+    <span>🎚️ Kesim Düzlemi Açısı</span>
+    <span id="free-angle-val">α = 0°</span>
+  </div>
+  <input type="range" id="angle-slider" min="0" max="89" value="0" step="1">
+  <div id="free-stats">
+    <span style="color:#00e5ff">0° → Çember</span>
+    <span style="color:#a78bfa">1–44° → Elips</span>
+    <span style="color:#fb923c">45° → Parabol</span>
+    <span style="color:#f87171">46–89° → Hiperbol</span>
+  </div>
+</div>
+
+<!-- Büyük Dinamik Eğri Adı (pasif) -->
+<div id="free-conic-label" style="display:none !important;">
+  <div id="free-conic-text">Çember</div>
+  <div id="free-angle-text">α = 0°</div>
+</div>
+
+<div id="hint" class="desktop-hint">🖱️ Sol tık: döndür &nbsp;|&nbsp; Sağ tık: kaydır &nbsp;|&nbsp; Tekerlek: yakınlaştır</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+/* ═══════════════════════════════════════════════════
+   SAHNE KURULUMU
+═══════════════════════════════════════════════════ */
+const canvas = document.getElementById('three-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0d1b2a);
+scene.fog = new THREE.Fog(0x0d1b2a, 18, 35);
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+camera.position.set(4.5, 3.5, 5.5);
+camera.lookAt(0, 0, 0);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.minDistance = 2.5;
+controls.maxDistance = 18;
+controls.target.set(0, 0, 0);
+
+/* ═══════════════════════════════════════════════════
+   IŞIKLANDIRMA
+═══════════════════════════════════════════════════ */
+const ambientLight = new THREE.AmbientLight(0x203050, 1.5);
+scene.add(ambientLight);
+
+const dirLight = new THREE.DirectionalLight(0xfff8e7, 2.2);
+dirLight.position.set(5, 8, 5);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.set(2048, 2048);
+dirLight.shadow.camera.near = 0.1;
+dirLight.shadow.camera.far = 30;
+dirLight.shadow.camera.left = -8;
+dirLight.shadow.camera.right = 8;
+dirLight.shadow.camera.top = 8;
+dirLight.shadow.camera.bottom = -8;
+scene.add(dirLight);
+
+const fillLight = new THREE.DirectionalLight(0x4080ff, 0.4);
+fillLight.position.set(-5, 2, -4);
+scene.add(fillLight);
+
+const rimLight = new THREE.PointLight(0x38bdf8, 1.2, 15);
+rimLight.position.set(-3, 4, -2);
+scene.add(rimLight);
+
+const bottomLight = new THREE.PointLight(0xfb923c, 0.5, 10);
+bottomLight.position.set(0, -4, 3);
+scene.add(bottomLight);
+
+/* ═══════════════════════════════════════════════════
+   AHŞAP DOKU (Canvas ile Prosedürel)
+═══════════════════════════════════════════════════ */
+function makeWoodTexture(w = 512, h = 512, seed = 1) {
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  const ctx = cv.getContext('2d');
+
+  // Arka plan
+  ctx.fillStyle = '#c49a45';
+  ctx.fillRect(0, 0, w, h);
+
+  // Yıllık halkalar
+  const cx = w * 0.5 + (seed * 37 % 60) - 30;
+  const cy = h * 0.5 + (seed * 53 % 60) - 30;
+  const rings = 22;
+  for (let i = rings; i >= 0; i--) {
+    const r = (i / rings) * (w * 0.65) + 8;
+    const light = i % 2 === 0;
+    const alpha = 0.06 + (i / rings) * 0.06;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, r * 1.25, r, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = light
+      ? `rgba(200,160,60,${alpha})`
+      : `rgba(120,75,20,${alpha + 0.05})`;
+    ctx.lineWidth = 3 + (i / rings) * 4;
+    ctx.stroke();
+  }
+
+  // Ahşap lif çizgileri
+  for (let x = 0; x < w; x += 4) {
+    const noise = Math.sin(x * 0.04 + seed) * 12 + Math.cos(x * 0.015) * 8;
+    ctx.beginPath();
+    ctx.moveTo(x + noise, 0);
+    ctx.lineTo(x + noise * 0.7, h);
+    ctx.strokeStyle = `rgba(140,95,30,0.055)`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Hafif parlaklık
+  const grad = ctx.createRadialGradient(w * 0.35, h * 0.3, 0, w * 0.5, h * 0.5, w * 0.65);
+  grad.addColorStop(0, 'rgba(255,240,180,0.18)');
+  grad.addColorStop(1, 'rgba(80,40,0,0.12)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+
+  const tex = new THREE.CanvasTexture(cv);
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  return tex;
+}
+
+const woodTex1 = makeWoodTexture(512, 512, 1);
+const woodTex2 = makeWoodTexture(512, 512, 3);
+
+/* Koni parçalar için farklı tonlar */
+const woodColors = [0xd4a840, 0xc49535, 0xd4a840, 0xbf9030, 0x8b6520];
+const woodMaterials = woodColors.map((col, i) => (
+  new THREE.MeshStandardMaterial({
+    map: i % 2 === 0 ? woodTex1 : woodTex2,
+    color: col,
+    roughness: 0.72,
+    metalness: 0.04,
+  })
+));
+
+/* ═══════════════════════════════════════════════════
+   ÇİFT KONİ GEOMETRİSİ (5 Parça)
+   Çift koni toplam yükseklik: -2 → +2, tepe: 0
+   Yarı açı 45°  →  r = |y|
+═══════════════════════════════════════════════════ */
+const coneGroup = new THREE.Group();
+scene.add(coneGroup);
+
+// Parça sınırları (y ekseni): 5 eşit dilim
+// Her dilim için ConeGeometry kullanamayız (delik olur)
+// Bunun yerine frustum (truncated cone) segment kullanıyoruz
+// Üst koni: y=0..2 (tepede başlar)  →  THREE.ConeGeometry(2, 2)
+// Alt koni: y=-2..0 (ters çevrilmiş) →  THREE.ConeGeometry(2, 2) flipY
+
+// Koni segment yardımcısı
+function makeConeSegment(rBottom, rTop, height, radSegs = 64) {
+  return new THREE.CylinderGeometry(rTop, rBottom, height, radSegs, 1, false);
+}
+
+// üst koni 5 eşit yükseklik parçası (y: 0→2)
+// Parça i: y_bottom = (i/5)*2, y_top = ((i+1)/5)*2
+// r = |y|, her parçanın y_bottom dan y_top a kadar olan kısmı
+const partHeight = 2 / 5; // her parça 0.4 birim yüksek
+
+for (let half = 0; half < 2; half++) {
+  const sign = half === 0 ? 1 : -1; // üst: +1, alt: -1
+  for (let p = 0; p < 5; p++) {
+    const yB = p * partHeight;        // alt kenar (tepe'den uzaklık)
+    const yT = (p + 1) * partHeight;  // üst kenar
+    const rB = yB;  // yarıçap = y (45° açı)
+    const rT = yT;
+    const geo = makeConeSegment(rB, rT, partHeight);
+
+    const mat = woodMaterials[p % woodMaterials.length];
+    const mesh = new THREE.Mesh(geo, mat);
+
+    // Frustum'un merkezi yB+(partHeight/2)
+    const centerY = yB + partHeight * 0.5;
+    mesh.position.y = sign * centerY;
+    if (half === 1) mesh.rotation.z = Math.PI; // ters çevir
+
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    coneGroup.add(mesh);
+
+    // Parça sınır halkası: ince disk
+    if (p > 0) {
+      const ringGeo = new THREE.TorusGeometry(yB, 0.012, 8, 64);
+      const ringMat = new THREE.MeshStandardMaterial({ color: 0x4a3010, roughness: 0.6, metalness: 0.1 });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.position.y = sign * yB;
+      ring.rotation.x = Math.PI / 2;
+      coneGroup.add(ring);
+    }
+  }
+}
+
+// Taban diski (alt): y = -2
+const baseGeo = new THREE.CylinderGeometry(2, 2, 0.06, 64);
+const baseMat = new THREE.MeshStandardMaterial({ color: 0x6b4c18, roughness: 0.75, metalness: 0.05, map: woodTex2 });
+const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+baseMesh.position.y = -2.03;
+baseMesh.castShadow = true;
+coneGroup.add(baseMesh);
+
+// Metal eksen
+const axisGeo = new THREE.CylinderGeometry(0.045, 0.045, 4.5, 24);
+const axisMat = new THREE.MeshStandardMaterial({ color: 0xb0b8c0, roughness: 0.35, metalness: 0.9 });
+const axisMesh = new THREE.Mesh(axisGeo, axisMat);
+axisMesh.position.y = -0.15;
+coneGroup.add(axisMesh);
+
+// Axis başlık vidaları
+for (const yPos of [-2.25, 2.25]) {
+  const boltGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.12, 16);
+  const boltMesh = new THREE.Mesh(boltGeo, axisMat);
+  boltMesh.position.y = yPos;
+  coneGroup.add(boltMesh);
+}
+
+/* ═══════════════════════════════════════════════════
+   KESİM DÜZLEMİ (Yarı Saydam)
+═══════════════════════════════════════════════════ */
+const planeGroup = new THREE.Group();
+scene.add(planeGroup);
+
+const planeMeshGeo = new THREE.PlaneGeometry(5, 5);
+let planeMesh = null;
+let curveObj  = null;
+let cutDiscObj = null;
+
+/* ═══════════════════════════════════════════════════
+   KONİK KESİT EĞRİLERİ
+   Koni: x² + z² = y²  (yarı açı 45°)
+═══════════════════════════════════════════════════ */
+
+// Her mod için renk + isim + formül + açıklama
+const MODES = {
+  circle: {
+    color: 0x00e5ff, name: 'Çember',
+    formula: 'x² + z² = r²',
+    desc: 'Düzlem tabana paralel olduğunda (0° açı) çember oluşur. Tüm noktalar merkeze eşit uzaklıktadır.',
+    planeColor: 0x00e5ff, planeOpacity: 0.13,
+  },
+  ellipse: {
+    color: 0xa78bfa, name: 'Elips',
+    formula: 'x²/a² + z²/b² = 1',
+    desc: 'Düzlem tabana paralel olmayan ancak her iki kolu da kesmeden tek bir kol ile kesiştiğinde elips oluşur (0° < α < 45°).',
+    planeColor: 0xa78bfa, planeOpacity: 0.12,
+  },
+  parabola: {
+    color: 0xfb923c, name: 'Parabol',
+    formula: 'z² = 4px',
+    desc: 'Düzlem koni yüzeyinin bir oluşturucusuna paralel olduğunda (α = 45°) parabol oluşur.',
+    planeColor: 0xfb923c, planeOpacity: 0.12,
+  },
+  hyperbola: {
+    color: 0xf87171, name: 'Hiperbol',
+    formula: 'y²/a² - x²/b² = 1',
+    desc: 'Düzlem koninin her iki kolunu da kestiğinde (α > 45°) hiperbol oluşur. İki ayrı kol meydana gelir.',
+    planeColor: 0xf87171, planeOpacity: 0.12,
+  },
+};
+
+// Düzlem + eğri üretici fonksiyonlar
+function buildCircle() {
+  // Düzlem: y = 0.8  (yatay)
+  const pts = [];
+  const N = 200;
+  for (let i = 0; i <= N; i++) {
+    const t = (i / N) * Math.PI * 2;
+    pts.push(new THREE.Vector3(0.8 * Math.cos(t), 0.8, 0.8 * Math.sin(t)));
+  }
+  return {
+    pts,
+    planePos: new THREE.Vector3(0, 0.8, 0),
+    planeNormal: new THREE.Vector3(0, 1, 0),   // yatay düzlem: y = 0.8
+    planeEq: [0, 1, 0, -0.8],
+  };
+}
+
+function buildEllipse() {
+  // Düzlem: y = m·x + c  (α = 22°, m = tan(22°) ≈ 0.4040, c = 0.9)
+  // K = 1−m² ≈ 0.8368  →  xc = mc/K,  a = c/K,  b = c/√K
+  const m  = Math.tan(22 * Math.PI / 180);
+  const c  = 0.9;
+  const K  = 1 - m * m;
+  const xc = (m * c) / K;
+  const a  = c / K;
+  const b  = c / Math.sqrt(K);
+  const pts = [];
+  const N = 240;
+  for (let i = 0; i <= N; i++) {
+    const t = (i / N) * Math.PI * 2;
+    const x = xc + a * Math.cos(t);
+    const z = b * Math.sin(t);
+    const y = m * x + c;
+    pts.push(new THREE.Vector3(x, y, z));
+  }
+  return {
+    pts,
+    planePos: new THREE.Vector3(xc, m * xc + c, 0),
+    planeNormal: new THREE.Vector3(-m, 1, 0),
+    planeEq: [-m, 1, 0, c],
+  };
+}
+
+function buildParabola() {
+  // Düzlem: y = x + 0.5  (45° = oluşturucu açısı)
+  // Kesiştirme: x²+z²=(x+0.5)²  →  z² = x + 0.25
+  // Parametrik: z=t, x=t²-0.25, y=t²+0.25  (köşe: (-0.25, 0.25, 0))
+  const pts = [];
+  const N = 300;
+  const tMax = 1.32; // y_max = tMax²+0.25 ≈ 1.99 ≤ 2
+  for (let i = 0; i <= N; i++) {
+    const t = -tMax + (i / N) * 2 * tMax;
+    const x = t * t - 0.25;
+    const y = t * t + 0.25;
+    const z = t;
+    pts.push(new THREE.Vector3(x, y, z));
+  }
+  return {
+    pts,
+    planePos: new THREE.Vector3(0.5, 1.0, 0),
+    planeNormal: new THREE.Vector3(-1, 1, 0),  // y = x + 0.5 → normal (-1, 1, 0)
+    planeEq: [-1, 1, 0, 0.5],
+  };
+}
+
+function buildHyperbola() {
+  // Düzlem: y = m·x + c  (α = 70°, m = tan(70°) ≈ 2.747, c = 0.8)
+  // A = m²−1 > 0  →  x = (−mc ± √(c²+Az²)) / A  (iki kol)
+  const m    = Math.tan(70 * Math.PI / 180);
+  const c    = 0.8;
+  const A    = m * m - 1;
+  const N    = 240;
+  const zMax = 1.65;
+  const pts  = [];
+  // Kol 1  (+)
+  for (let i = 0; i <= N; i++) {
+    const z = -zMax + (i / N) * 2 * zMax;
+    const x = (-m * c + Math.sqrt(c * c + A * z * z)) / A;
+    const y = m * x + c;
+    pts.push(new THREE.Vector3(x, y, z));
+  }
+  pts.push(new THREE.Vector3(NaN, NaN, NaN));
+  // Kol 2  (−)
+  for (let i = 0; i <= N; i++) {
+    const z = -zMax + (i / N) * 2 * zMax;
+    const x = (-m * c - Math.sqrt(c * c + A * z * z)) / A;
+    const y = m * x + c;
+    pts.push(new THREE.Vector3(x, y, z));
+  }
+  return {
+    pts,
+    planePos: new THREE.Vector3(0, c, 0),
+    planeNormal: new THREE.Vector3(-m, 1, 0),
+    planeEq: [-m, 1, 0, c],
+  };
+}
+
+const builders = { circle: buildCircle, ellipse: buildEllipse, parabola: buildParabola, hyperbola: buildHyperbola };
+
+/* ── TubeGeometry ile kalın ve belirgin kesit çizgileri ── */
+function makeCurveLine(pts, color) {
+  const groups = [];
+  let cur = [];
+  for (const p of pts) {
+    if (isNaN(p.x)) {
+      if (cur.length > 1) groups.push([...cur]);
+      cur = [];
+    } else {
+      cur.push(p);
+    }
+  }
+  if (cur.length > 1) groups.push(cur);
+
+  const objs = [];
+  for (const g of groups) {
+    const curve = new THREE.CatmullRomCurve3(g, false, 'chordal');
+    // Tüp yarıçapı 0.032 → kalın, belirgin eğri
+    const tubeGeo = new THREE.TubeGeometry(curve, g.length * 3, 0.032, 10, false);
+    const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 1.0 });
+    const tube = new THREE.Mesh(tubeGeo, mat);
+    objs.push(tube);
+  }
+  return objs;
+}
+
+/* Kesitin kesik disk yüzeyi (düzlem içinde dolu kırpma değil; sadece düzlemi gösterelim) */
+function makePlaneVisual(planePos, planeNormal, color, opacity) {
+  const geo = new THREE.PlaneGeometry(5.2, 5.2, 1, 1);
+  const mat = new THREE.MeshStandardMaterial({
+    color, transparent: true, opacity,
+    side: THREE.DoubleSide, depthWrite: false,
+    roughness: 1, metalness: 0,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.copy(planePos);
+  // PlaneGeometry varsayılan normali (0,0,1); hedef normale döndür
+  mesh.quaternion.setFromUnitVectors(
+    new THREE.Vector3(0, 0, 1),
+    planeNormal.clone().normalize()
+  );
+  return mesh;
+}
+
+/* ═══════════════════════════════════════════════════
+   MOD DEĞİŞTİRME (global)
+═══════════════════════════════════════════════════ */
+let currentMode = 'circle';
+let showPlane = true;
+let wireframeOn = false;
+let freeModeActive = false;
+let animProgress = 0;   // 0→1 geçiş animasyonu
+let animFrom = null;
+let animTo   = null;
+let lineObjs = [];
+
+// Geçiş için düzlem ve eğri hedefleri
+let targetPlanePos = new THREE.Vector3();
+let targetPlaneRot = new THREE.Euler();
+let currentPlanePos = new THREE.Vector3();
+let currentPlaneRot = new THREE.Euler();
+
+function clearScene() {
+  lineObjs.forEach(o => { planeGroup.remove(o); o.geometry?.dispose(); });
+  lineObjs = [];
+  if (planeMesh) { planeGroup.remove(planeMesh); planeMesh = null; }
+}
+
+function applyMode(mode, animate = true) {
+  clearScene();
+  const modeData = MODES[mode];
+  const builder  = builders[mode];
+  const { pts, planePos, planeNormal, planeEq } = builder();
+
+  // Düzlem
+  if (showPlane) {
+    planeMesh = makePlaneVisual(planePos, planeNormal, modeData.planeColor, modeData.planeOpacity);
+    planeGroup.add(planeMesh);
+  }
+
+  // Eğri çizgisi
+  const lines = makeCurveLine(pts, modeData.color);
+  lines.forEach(l => planeGroup.add(l));
+  lineObjs = lines;
+
+  // Eğriyi biraz büyük göster (mikro pulse)
+  lines.forEach(l => {
+    l.material.opacity = 0;
+    animateLine(l, 0, 1, 600);
+  });
+
+  // UI güncelle
+  document.getElementById('conic-display').className = mode;
+  document.getElementById('conic-name').textContent   = modeData.name;
+  document.getElementById('conic-desc').textContent   = modeData.desc;
+  document.getElementById('conic-formula').textContent = modeData.formula;
+  document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.querySelector(`.ctrl-btn.${mode}`);
+  if (activeBtn) activeBtn.classList.add('active');
+}
+
+function animateLine(line, from, to, duration) {
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / duration, 1);
+    line.material.opacity = from + (to - from) * easeOut(t);
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+// Global setMode
+window.setMode = function(mode) {
+  // Serbest modu kapat (elemanlar pasifse null kontrolü yap)
+  freeModeActive = false;
+  document.getElementById('free-panel')?.classList.remove('visible');
+  document.getElementById('free-conic-label')?.classList.remove('visible');
+  const fb = document.getElementById('free-btn');
+  if (fb) { fb.classList.remove('active'); fb.style.borderColor = '#fbbf24'; }
+  if (mode === currentMode) return;
+  currentMode = mode;
+  applyMode(mode);
+};
+
+window.toggleWireframe = function() {
+  wireframeOn = !wireframeOn;
+  coneGroup.children.forEach(c => {
+    if (c.material) c.material.wireframe = wireframeOn;
+  });
+  const btn = document.getElementById('wireframe-btn');
+  btn.classList.toggle('active', wireframeOn);
+  btn.style.borderColor = wireframeOn ? '#38bdf8' : 'rgba(148,163,184,0.3)';
+};
+
+window.toggleSection = function() {
+  showPlane = !showPlane;
+  const btn = document.getElementById('section-btn');
+  btn.querySelector('span:last-of-type').textContent = showPlane ? 'Düzlemi Gizle' : 'Düzlemi Göster';
+  btn.classList.toggle('active', !showPlane);
+  btn.style.borderColor = !showPlane ? '#38bdf8' : 'rgba(148,163,184,0.3)';
+  if (planeMesh) planeMesh.visible = showPlane;
+};
+
+/* ═══════════════════════════════════════════════════
+   SERBEST AÇI MODU
+   Koni: x²+z²=y², kesme düzlemi: y = m·x + c (c=1)
+═══════════════════════════════════════════════════ */
+const FREE_NAMES  = { circle:'Çember', ellipse:'Elips', parabola:'Parabol', hyperbola:'Hiperbol' };
+const FREE_COLORS = { circle:'#00e5ff', ellipse:'#a78bfa', parabola:'#fb923c', hyperbola:'#f87171' };
+const FREE_HEX    = { circle:0x00e5ff,  ellipse:0xa78bfa,  parabola:0xfb923c,  hyperbola:0xf87171 };
+
+function buildFreeMode(angleDeg) {
+  // Koni: x² + z² = y²  (yarı açı 45°, tepe orijinde)
+  // Düzlem: y = m·x + c  (c=1 sabit, m = tan(α))
+  // Kesiştirme: x²+z² = (mx+c)²  →  (1-m²)x² - 2mc·x + z² = c²
+  const a   = Math.max(0, Math.min(89, angleDeg));
+  const rad = a * Math.PI / 180;
+  const m   = Math.tan(rad);
+  const c   = 1.0;
+  let pts = [], type;
+
+  /* ── ÇEMBER  α ≈ 0° ─────────────────────────── */
+  if (a < 1.5) {
+    type = 'circle';
+    const N = 280;
+    for (let i = 0; i <= N; i++) {
+      const t = (i / N) * Math.PI * 2;
+      pts.push(new THREE.Vector3(c * Math.cos(t), c, c * Math.sin(t)));
+    }
+
+  /* ── ELİPS  0° < α < 45° ────────────────────── */
+  } else if (a < 44.5) {
+    // K = 1-m² > 0
+    // Merkez: xc = mc/K,  ra = c/K,  rb = c/√K
+    type = 'ellipse';
+    const K  = 1 - m * m;
+    const xc = (m * c) / K;
+    const ra = c / K;
+    const rb = c / Math.sqrt(K);
+    const N  = 360;
+    // Döngüden filtre kaldırıldı – tam elips
+    for (let i = 0; i <= N; i++) {
+      const t = (i / N) * Math.PI * 2;
+      pts.push(new THREE.Vector3(
+        xc + ra * Math.cos(t),
+        m * (xc + ra * Math.cos(t)) + c,
+        rb * Math.sin(t)
+      ));
+    }
+
+  /* ── PARABOL  α ≈ 45° ───────────────────────── */
+  } else if (a < 45.5) {
+    // m ≈ 1  →  z² = 2c(x + c/2)
+    // Parametrik: z=t, x=(t²-c²)/(2c), y=(t²+c²)/(2c)
+    type = 'parabola';
+    const N = 420, tMax = 2.2;
+    for (let i = 0; i <= N; i++) {
+      const t = -tMax + (i / N) * 2 * tMax;
+      pts.push(new THREE.Vector3(
+        (t * t - c * c) / (2 * c),
+        (t * t + c * c) / (2 * c),
+        t
+      ));
+    }
+
+  /* ── HİPERBOL  α > 45° ──────────────────────── */
+  } else {
+    // A = m²-1 > 0
+    // x = ( -mc ± √(c² + A·z²) ) / A
+    type = 'hyperbola';
+    const A = m * m - 1;
+    const N = 320, zMax = 2.0;
+    // Kol 1  (+)
+    for (let i = 0; i <= N; i++) {
+      const z = -zMax + (i / N) * 2 * zMax;
+      const x = (-m * c + Math.sqrt(c * c + A * z * z)) / A;
+      pts.push(new THREE.Vector3(x, m * x + c, z));
+    }
+    pts.push(new THREE.Vector3(NaN, NaN, NaN)); // kol ayırıcı
+    // Kol 2  (-)
+    for (let i = 0; i <= N; i++) {
+      const z = -zMax + (i / N) * 2 * zMax;
+      const x = (-m * c - Math.sqrt(c * c + A * z * z)) / A;
+      pts.push(new THREE.Vector3(x, m * x + c, z));
+    }
+  }
+
+  // Düzlem görsel: y = m·x + c düzlemi; normal = (-m, 1, 0)
+  // Orijine en yakın nokta: (-mc/(1+m²), c/(1+m²), 0)
+  const denom = 1 + m * m;
+  const planePos = new THREE.Vector3(-m * c / denom, c / denom, 0);
+  const planeNormal = new THREE.Vector3(-m, 1, 0);
+
+  return {
+    pts, type,
+    color: FREE_HEX[type],
+    planeColor: FREE_HEX[type], planeOpacity: 0.10,
+    planePos, planeNormal,
+    formula: {
+      circle:    'x² + z² = r²',
+      ellipse:   'x²/a² + z²/b² = 1',
+      parabola:  'z² = 4px',
+      hyperbola: 'y²/a² − x²/b² = 1',
+    }[type],
+  };
+}
+
+function updateFreeMode(angleDeg) {
+  const data = buildFreeMode(angleDeg);
+  clearScene();
+
+  if (showPlane) {
+    planeMesh = makePlaneVisual(data.planePos, data.planeNormal, data.planeColor, data.planeOpacity);
+    planeGroup.add(planeMesh);
+  }
+  const lines = makeCurveLine(data.pts, data.color);
+  lines.forEach(l => { planeGroup.add(l); l.material.opacity = 1; });
+  lineObjs = lines;
+
+  // UI – bilgi şeridi
+  document.getElementById('conic-display').className = data.type;
+  document.getElementById('conic-name').textContent   = FREE_NAMES[data.type];
+  document.getElementById('conic-desc').textContent   = '';
+  document.getElementById('conic-formula').textContent = data.formula;
+
+  // Büyük etiket
+  const txt = document.getElementById('free-conic-text');
+  txt.textContent  = FREE_NAMES[data.type];
+  txt.style.color  = FREE_COLORS[data.type];
+  document.getElementById('free-angle-text').textContent = `α = ${angleDeg}°`;
+  document.getElementById('free-angle-val').textContent  = `α = ${angleDeg}°`;
+}
+
+window.setFreeAngleMode = function() {
+  freeModeActive = true;
+  currentMode = '__free__';
+  document.querySelectorAll('.ctrl-btn').forEach(b => b.classList.remove('active'));
+  const fb = document.getElementById('free-btn');
+  fb.classList.add('active');
+  fb.style.background  = 'rgba(251,191,36,0.18)';
+  fb.style.borderColor = '#fbbf24';
+  fb.style.boxShadow   = '0 0 18px rgba(251,191,36,0.4)';
+  document.getElementById('free-panel').classList.add('visible');
+  document.getElementById('free-conic-label').classList.add('visible');
+  const sliderVal = parseInt(document.getElementById('angle-slider').value);
+  updateFreeMode(sliderVal);
+};
+
+document.getElementById('angle-slider').addEventListener('input', function() {
+  if (!freeModeActive) return;
+  updateFreeMode(parseInt(this.value));
+});
+
+/* ═══════════════════════════════════════════════════
+   IZGARA / ZEMİN
+═══════════════════════════════════════════════════ */
+const gridHelper = new THREE.GridHelper(14, 20, 0x1e3a5f, 0x132030);
+gridHelper.position.y = -2.4;
+scene.add(gridHelper);
+
+// Zemin yansıma diski
+const floorGeo = new THREE.CircleGeometry(7, 64);
+const floorMat = new THREE.MeshStandardMaterial({
+  color: 0x0a1828, roughness: 0.92, metalness: 0.1,
+  transparent: true, opacity: 0.7,
+});
+const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+floorMesh.rotation.x = -Math.PI / 2;
+floorMesh.position.y = -2.42;
+floorMesh.receiveShadow = true;
+scene.add(floorMesh);
+
+/* ═══════════════════════════════════════════════════
+   RESIZE
+═══════════════════════════════════════════════════ */
+function resize() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(canvas);
+resize();
+
+/* ═══════════════════════════════════════════════════
+   GİRİŞ MODALI
+═══════════════════════════════════════════════════ */
+document.getElementById('startBtn').addEventListener('click', () => {
+  const intro = document.getElementById('intro');
+  intro.style.transition = 'opacity 0.4s';
+  intro.style.opacity = '0';
+  setTimeout(() => intro.classList.add('hidden'), 420);
+});
+
+/* ═══════════════════════════════════════════════════
+   İLK MOD YÜKLE
+═══════════════════════════════════════════════════ */
+applyMode('circle', false);
+
+/* ═══════════════════════════════════════════════════
+   RENDER DÖNGÜSÜ
+═══════════════════════════════════════════════════ */
+let t0 = performance.now();
+function animate(now) {
+  requestAnimationFrame(animate);
+  const dt = (now - t0) * 0.001; t0 = now;
+
+  // Yavaş koni dönüşü (sadece Y etrafında, OrbitControls çalışmadığında)
+  if (!controls.autoRotate) {
+    coneGroup.rotation.y += 0.003;
+    planeGroup.rotation.y += 0.003;
+  }
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
