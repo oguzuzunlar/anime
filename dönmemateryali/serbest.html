@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -427,7 +427,20 @@
     transition: background .18s, box-shadow .18s;
   }
   #theme-toggle:hover { background: var(--home-hover); }
-  @media (max-width: 768px) { #theme-toggle { height: 28px; font-size: 0.68rem; padding: 0 9px; } }
+  @media (max-width: 768px) {
+    #theme-toggle {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 42px;
+      border-radius: 0 0 0 10px;
+      border-top: none;
+      border-right: none;
+      font-size: 0.72rem;
+      padding: 0 10px;
+      z-index: 4600;
+    }
+  }
 
   /* ── YÖNERGe MODAL ── */
   .guide-overlay {
@@ -513,17 +526,29 @@
     .guide-desktop { display: none; }
   }
 
-  /* ── MOBİL: dikey düzen, kaydırmalı ── */
+  /* ── MOBİL: yan yana düzen, kanvas maksimum ── */
   @media (max-width: 768px) {
-    body { height: auto; overflow-y: auto; overflow-x: hidden; padding: 66px 10px 12px; gap: 12px; }
-    .main-area { flex-direction: column; align-items: stretch; }
-    .canvas-card { height: clamp(300px, 85vw, 520px); order: -1; }
-    .info-panel { width: 100%; order: 0; }
-    .knob-row { gap: 12px; }
-    #knob-canvas { width: clamp(108px, 34vw, 138px); height: clamp(108px, 34vw, 138px); }
-    .knob-readout { flex-basis: 110px; }
-    .angle-value { font-size: 42px; }
-    .page-title  { font-size: 18px; }
+    body { height: 100dvh; overflow: hidden; padding: 0 4px 4px; gap: 4px; }
+    .page-title { display: none; }
+    .main-area { gap: 5px; height: 100dvh; }
+    .info-panel { width: 160px; min-width: 140px; overflow-y: auto; }
+    .canvas-card { padding: 6px; border-radius: 12px; }
+    .card-label { font-size: 10px; }
+    .canvas-hint { font-size: 9px; }
+    .knob-row { flex-direction: column; gap: 4px; align-items: center; }
+    #knob-canvas { width: 100px; height: 100px; }
+    .knob-readout { flex-basis: auto; width: 100%; }
+    .angle-value { font-size: 28px; }
+    .angle-card { padding: 8px 8px 8px 10px; }
+    .angle-card h3 { font-size: 9px; margin-bottom: 4px; }
+    .btn { font-size: 9px; padding: 5px 2px; }
+    .controls-row { flex-wrap: wrap; gap: 3px; }
+    .step-card, .shapes-card, .vertices-card { padding: 8px 8px; }
+    .step-card h3, .shapes-card h3, .vertices-card h3 { font-size: 9px; }
+    .btn-step-cw, .btn-step-ccw { font-size: 9px; padding: 5px 2px; }
+    .shapes-row { gap: 3px; }
+    .shape-btn { font-size: 8px; padding: 5px 3px; }
+    .vtx-table { font-size: 10px; }
   }
 </style>
 </head>
@@ -578,7 +603,7 @@
         </div>
       </div>
     </div>
-    <button class="guide-start-btn" onclick="document.getElementById('guide-overlay').style.display='none'">✓ Anladım, Başlayalım!</button>
+    <button class="guide-start-btn" onclick="snd('click');document.getElementById('guide-overlay').style.display='none'">✓ Anladım, Başlayalım!</button>
   </div>
 </div>
 
@@ -603,13 +628,6 @@
 
   <!-- INFO PANEL -->
   <div class="info-panel">
-
-    <nav id="page-nav">
-      <button onclick="location.href='index.html'">Ana Sayfa</button>
-      <button onclick="location.href='uygulama1.html'">Uygulama-1</button>
-      <button onclick="location.href='formul_kesfi_meb_revizeli.html'">Uygulama-2</button>
-      <button class="active">Serbest Mod</button>
-    </nav>
 
     <div class="angle-card">
       <h3>Dönme Açısı</h3>
@@ -738,6 +756,11 @@ const MAX_RADIUS = 9.5;
 const ALPHA      = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 let barRadius = 4;
+
+/* ─── SFX ─── */
+function mkAudio(src){ const a=new Audio(src); a.preload='auto'; return a; }
+const SFX = { click: mkAudio('click.mp3') };
+function snd(k){ try{ const s=SFX[k]; if(!s)return; s.currentTime=0; s.play().catch(()=>{}); }catch(e){} }
 
 /* ─── Şekil durumu ─── */
 const SHAPES = {
@@ -980,6 +1003,7 @@ function polyCanvasClick(e) {
 
 /* ─── Şekli aç/kapat ─── */
 function toggleShape(name) {
+  snd('click');
   // Çokgen çizim modundaysa önce iptal et
   if (polyDrawMode) cancelPolyDraw();
   if (pointMode)    cancelPointMode();
@@ -1851,6 +1875,7 @@ function updateInfo(tipX_math, tipY_math) {
 
 /* ─────────────────────────────── CONTROLS ─────────────────────────── */
 function rotate(delta) {
+  snd('click');
   angleDeg += delta;
   knobRawAngle = angleDeg;
   updateVertexTable();
@@ -1858,6 +1883,7 @@ function rotate(delta) {
 }
 
 function resetToInitial() {
+  snd('click');
   if (!activeShape) return;
   // Rotasyon delta'sını sıfırla: şeklel başlangıç konumuna dön
   angleDeg = snapAngle0;
@@ -1867,6 +1893,7 @@ function resetToInitial() {
 }
 
 function resetBar() {
+  snd('click');
   if (activeShape) {
     // Şekil aktifken çubuğu sıfırla → şekli başlangıç konumuna geri getir
     const S   = SHAPES[activeShape];

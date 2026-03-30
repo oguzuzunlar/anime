@@ -1,620 +1,820 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dönme Dönüşümü Materyali – Portal</title>
-    <style>
-        :root {
-            --primary: #00d2ff;
-            --primary-dark: #0099cc;
-            --success: #27ae60;
-            --bg: #050508;
-            --bg-card: #0d0f1e;
-            --bg-card2: #10132a;
-            --border: #1e2340;
-            --text-main: #eef3ff;
-            --text-soft: #c7d1e8;
-            --text-muted: #7a8db0;
-            --accent1: #33a4ff;
-            --accent2: #a78bfa;
-            --accent3: #34d399;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dönme Dönüşümü Materyali — İnteraktif Materyal</title>
+<script>
+window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}};
+</script>
+<script id="MathJax-script" defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+/* ─── Renk Değişkenleri: Kahve Teması (yansimaAynasi_kahve.html ile aynı) ─── */
+:root[data-theme="dark"]{
+--bg-primary:#1a0f08;--bg-secondary:#2b1a0e;--bg-tertiary:#3a2213;
+--border-color:#c8824a;--border-glow:rgba(200,130,74,.55);
+--text-primary:#f0e0cc;--text-secondary:#c4a882;--text-accent:#e8955a;
+--button-bg:#6b3a1f;--button-hover:#8b4f2a;--button-text:#fff;
+--panel-border:#c8824a;
+--dialog-bg:rgba(42,25,12,.98);--dialog-overlay:rgba(0,0,0,.85);
+--scrollbar-track:#3a2213;--scrollbar-thumb:#c8824a;
+--instruction-bg:rgba(107,58,31,.28);--instruction-border:#a06030;
+--input-bg:#3a2213;--input-border:#8b5a32;
+--success-bg:#10b981;--error-bg:#ef4444;
+--toolbar-bg:rgba(26,15,8,.92);
+--grid-color:rgba(200,130,74,.12);--grid-major:rgba(200,130,74,.28);
+--axis-color:#00d4ff;--axis-label:#c4a882;
+}
+:root[data-theme="light"]{
+--bg-primary:#fdf5ee;--bg-secondary:#fff8f2;--bg-tertiary:#f0e0cc;
+--border-color:#a05a2c;--border-glow:rgba(160,90,44,.3);
+--text-primary:#3b1f0a;--text-secondary:#7a4f2e;--text-accent:#8b4513;
+--button-bg:#a05a2c;--button-hover:#7a3f18;--button-text:#fff;
+--panel-border:#a05a2c;
+--dialog-bg:rgba(255,248,242,.98);--dialog-overlay:rgba(0,0,0,.55);
+--scrollbar-track:#f0e0cc;--scrollbar-thumb:#a05a2c;
+--instruction-bg:rgba(160,90,44,.1);--instruction-border:#a05a2c;
+--input-bg:#fff8f2;--input-border:#c4946a;
+--success-bg:#10b981;--error-bg:#ef4444;
+--toolbar-bg:rgba(255,248,242,.96);
+--grid-color:rgba(120,70,20,.12);--grid-major:rgba(120,70,20,.25);
+--axis-color:#0e7490;--axis-label:#7a4f2e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',sans-serif;background:var(--bg-primary);color:var(--text-primary);overflow-x:hidden;transition:background .3s,color .3s;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--scrollbar-track);border-radius:10px;}
+::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:10px;}
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ─── Arka Plan Animasyonu ─── */
+.background-animation{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;overflow:hidden;opacity:.05;}
+.bg-shape{position:absolute;animation:bgFloat 22s ease-in-out infinite;}
+.bg-shape:nth-child(1){top:10%;left:8%;animation-delay:0s;}
+.bg-shape:nth-child(2){top:55%;right:12%;animation-delay:7s;}
+.bg-shape:nth-child(3){bottom:18%;left:18%;animation-delay:14s;}
+@keyframes bgFloat{0%,100%{transform:translateY(0)rotate(0deg)}50%{transform:translateY(-28px)rotate(12deg)}}
 
-        body {
-            background: var(--bg);
-            color: var(--text-main);
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            min-height: 100vh;
-            line-height: 1.6;
-        }
+/* ─── Üst Kontroller ─── */
+.floating-controls{position:fixed;top:14px;right:14px;display:flex;gap:8px;z-index:600;}
+.icon-button{width:42px;height:42px;border-radius:50%;background:var(--button-bg);border:2px solid var(--border-color);color:var(--button-text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;transition:all .3s;box-shadow:0 0 12px var(--border-glow);}
+.icon-button:hover{background:var(--button-hover);transform:scale(1.1);box-shadow:0 0 20px var(--border-glow);}
 
-        /* ── HEADER ─────────────────────────────────────── */
-        header {
-            background: linear-gradient(135deg, #07091a 0%, #0d1233 60%, #071623 100%);
-            border-bottom: 1px solid var(--border);
-            padding: 36px 24px 32px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        header::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0,210,255,0.10) 0%, transparent 70%);
-            pointer-events: none;
-        }
-        .header-badge {
-            display: inline-block;
-            background: rgba(0,210,255,0.12);
-            border: 1px solid rgba(0,210,255,0.3);
-            color: var(--primary);
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            padding: 4px 14px;
-            border-radius: 20px;
-            margin-bottom: 14px;
-        }
-        header h1 {
-            font-size: clamp(1.6rem, 4vw, 2.6rem);
-            font-weight: 800;
-            color: var(--text-main);
-            letter-spacing: -0.01em;
-            margin-bottom: 10px;
-        }
-        header h1 span { color: var(--primary); }
-        header p.subtitle {
-            color: var(--text-soft);
-            font-size: clamp(0.88rem, 2vw, 1rem);
-            max-width: 560px;
-            margin: 0 auto;
-        }
+/* ─── Ana Yerleşim ─── */
+.app-container{width:100%;height:100vh;display:flex;flex-direction:column;padding:10px;gap:10px;overflow:hidden;}
+.app-header{text-align:center;padding:8px 0 4px;font-size:1.1em;font-weight:700;color:var(--text-accent);letter-spacing:.5px;flex-shrink:0;word-break:break-word;overflow-wrap:anywhere;}
+.main-content{display:flex;gap:10px;flex:1;min-height:0;padding-right:0;}
 
-        /* ── MAIN LAYOUT ─────────────────────────────────── */
-        main {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 40px 20px 60px;
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-        }
+/* ─── Sol Panel ─── */
+.left-panel{width:360px;min-width:280px;max-width:380px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;overflow-x:hidden;border-radius:14px;border:2px solid var(--panel-border);box-shadow:0 0 18px var(--border-glow);padding:14px;background:var(--bg-secondary);flex-shrink:0;}
 
-        /* ── SECTION CARDS ───────────────────────────────── */
-        .section-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 28px;
-        }
-        .section-card h2 {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .section-card h2::before {
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 1.15em;
-            background: var(--primary);
-            border-radius: 3px;
-            flex-shrink: 0;
-        }
-        .section-card p {
-            color: var(--text-soft);
-            font-size: 0.95rem;
-            line-height: 1.65;
-        }
+/* ─── Sağ Panel ─── */
+.right-panel{flex:1;display:flex;flex-direction:column;border-radius:14px;border:2px solid var(--panel-border);box-shadow:0 0 18px var(--border-glow);background:var(--bg-secondary);overflow:hidden;position:relative;}
 
-        /* ── KAZANIMLAR LİSTESİ ──────────────────────────── */
-        .outcome-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .outcome-list li {
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-            color: var(--text-soft);
-            font-size: 0.93rem;
-            line-height: 1.55;
-        }
-        .outcome-list li::before {
-            content: '✦';
-            color: var(--accent1);
-            font-size: 0.7rem;
-            margin-top: 4px;
-            flex-shrink: 0;
-        }
+/* ─── Sekmeler ─── */
+.tab-container{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.tab-button{padding:8px 6px;background:var(--bg-tertiary);border:2px solid var(--border-color);border-radius:9px;color:var(--text-primary);cursor:pointer;font-size:11.5px;font-weight:600;transition:all .3s;text-align:center;white-space:normal;line-height:1.3;min-width:0;word-break:break-word;}
+.tab-button:hover{background:var(--button-hover);color:#fff;transform:translateY(-2px);}
+.tab-button.active{background:var(--button-bg);box-shadow:0 0 14px var(--border-glow);}
 
-        /* ── KONULAR 2-SÜTUN ─────────────────────────────── */
-        .topics-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        @media (max-width: 600px) {
-            .topics-grid { grid-template-columns: 1fr; }
-        }
-        .topic-chip {
-            background: rgba(51,164,255,0.08);
-            border: 1px solid rgba(51,164,255,0.2);
-            border-radius: 8px;
-            padding: 10px 14px;
-            color: var(--text-soft);
-            font-size: 0.88rem;
-            line-height: 1.45;
-        }
-        .topic-chip b { color: var(--accent1); font-weight: 600; }
+/* ─── Bilgi Kutuları ─── */
+.instruction-box{background:var(--instruction-bg);border:2px solid var(--instruction-border);border-radius:11px;padding:14px;animation:slideIn .35s ease;}
+@keyframes slideIn{from{transform:translateX(-30px);opacity:0}to{transform:translateX(0);opacity:1}}
+.instruction-box h3{color:var(--text-accent);margin-bottom:10px;font-size:1.05em;}
+.instruction-box p,.instruction-box ul{color:var(--text-primary);line-height:1.75;margin-bottom:8px;font-size:.9em;}
+.instruction-box ul{padding-left:18px;}
+.instruction-box li{margin-bottom:5px;}
+.instruction-box strong{color:var(--text-accent);}
+.formula-box{background:rgba(0,212,255,.08);border:1.5px solid var(--text-accent);border-radius:8px;padding:10px 14px;text-align:center;font-size:.9em;margin:10px 0;color:var(--text-primary);overflow:hidden;word-break:break-word;}
 
-        /* ── DİKKAT UNSURI ───────────────────────────────── */
-        .notice-box {
-            background: rgba(167,139,250,0.07);
-            border: 1px solid rgba(167,139,250,0.22);
-            border-radius: 10px;
-            padding: 14px 18px;
-            color: var(--text-soft);
-            font-size: 0.93rem;
-            line-height: 1.6;
-        }
-        .notice-box strong { color: var(--accent2); }
+/* ─── Butonlar ─── */
+.action-button{display:inline-block;padding:10px 20px;background:var(--button-bg);border:2px solid var(--border-color);border-radius:9px;color:var(--button-text);font-size:13px;font-weight:600;cursor:pointer;transition:all .3s;margin-top:8px;box-shadow:0 0 10px var(--border-glow);white-space:nowrap;}
+.action-button:hover{background:var(--button-hover);transform:translateY(-2px);}
+.action-button.full-width{display:block;width:100%;text-align:center;}
+.action-button.launch-btn{background:linear-gradient(135deg,var(--button-bg),var(--button-hover));font-size:1em;padding:14px 20px;border-radius:12px;width:100%;text-align:center;box-shadow:0 0 18px var(--border-glow);}
+.action-button.launch-btn:hover{transform:translateY(-3px);box-shadow:0 0 28px var(--border-glow);}
 
-        /* ── UYGULAMA KARTLARI ───────────────────────────── */
-        .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
-        }
-        .app-card {
-            background: var(--bg-card2);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 26px 24px 22px;
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
-            text-decoration: none;
-        }
-        .app-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 0 24px rgba(0,210,255,0.10);
-            transform: translateY(-3px);
-        }
-        .app-card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-        .icon-kesif  { background: rgba(0,210,255,0.12); }
-        .icon-uygulama { background: rgba(52,211,153,0.12); }
-        .icon-serbest  { background: rgba(167,139,250,0.12); }
-        .icon-formul   { background: rgba(251,191,36,0.12); }
+/* ─── App Kartları (Portal) ─── */
+.app-grid{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+.app-card-inner{background:var(--bg-tertiary);border:2px solid var(--border-color);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .25s;display:flex;flex-direction:column;gap:8px;}
+.app-card-inner:hover{background:var(--button-bg);border-color:var(--text-accent);transform:translateX(4px);box-shadow:0 0 16px var(--border-glow);}
+.app-card-inner .card-title{font-size:.95em;font-weight:700;color:var(--text-accent);}
+.app-card-inner .card-desc{font-size:.82em;color:var(--text-secondary);line-height:1.55;}
+.app-card-inner .card-cta{font-size:.8em;font-weight:700;color:var(--border-color);}
 
-        .app-card-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-        .app-card-desc {
-            font-size: 0.87rem;
-            color: var(--text-soft);
-            line-height: 1.5;
-            flex-grow: 1;
-        }
-        .app-card-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .tag {
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 3px 8px;
-            border-radius: 20px;
-            letter-spacing: 0.03em;
-        }
-        .tag-blue   { background: rgba(0,210,255,0.12);   color: var(--primary); }
-        .tag-green  { background: rgba(52,211,153,0.12);  color: var(--accent3); }
-        .tag-purple { background: rgba(167,139,250,0.12); color: var(--accent2); }
-        .tag-yellow { background: rgba(251,191,36,0.12);  color: #fbbf24; }
+/* ─── Bölüm başlığı ─── */
+.section-heading{display:flex;align-items:center;gap:8px;font-size:.95em;font-weight:700;color:var(--text-accent);margin:4px 0 8px;border-bottom:1.5px solid var(--border-color);padding-bottom:6px;}
+.section-heading::before{content:'';display:inline-block;width:4px;height:1em;background:var(--text-accent);border-radius:2px;flex-shrink:0;}
 
-        .app-card-cta {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-top: 2px;
-        }
-        .app-card:hover .app-card-cta { text-decoration: underline; }
+/* ─── Konu Chip'leri ─── */
+.topic-chip{background:rgba(200,130,74,.1);border:1.5px solid rgba(200,130,74,.3);border-radius:9px;padding:10px 12px;color:var(--text-secondary);font-size:.85em;line-height:1.5;margin-bottom:8px;}
+.topic-chip b{color:var(--text-accent);}
+.notice-box{background:rgba(200,130,74,.08);border:1.5px solid rgba(200,130,74,.28);border-radius:10px;padding:12px 15px;font-size:.87em;color:var(--text-secondary);line-height:1.6;}
+.notice-box strong{color:var(--text-accent);}
 
-        /* ── FOOTER ──────────────────────────────────────── */
-        footer {
-            text-align: center;
-            padding: 24px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            border-top: 1px solid var(--border);
-        }
+/* ─── Uygulama Tanım Kutusu ─── */
+.app-desc-box{background:var(--instruction-bg);border:2px solid var(--instruction-border);border-radius:12px;padding:16px;margin-bottom:12px;animation:slideIn .35s ease;}
+.app-desc-box .app-tag{display:inline-block;background:rgba(200,130,74,.2);border:1px solid var(--border-color);border-radius:20px;padding:3px 10px;font-size:.75em;font-weight:700;color:var(--text-accent);margin-bottom:10px;}
+.app-desc-box h3{font-size:1.1em;font-weight:700;color:var(--text-accent);margin-bottom:8px;}
+.app-desc-box p{font-size:.88em;color:var(--text-primary);line-height:1.7;margin-bottom:8px;}
+.app-desc-box ul{padding-left:18px;font-size:.87em;color:var(--text-secondary);line-height:1.7;}
+.app-desc-box ul li{margin-bottom:4px;}
+.app-desc-box .highlight-note{background:rgba(0,212,255,.07);border-left:3px solid var(--text-accent);padding:8px 12px;border-radius:0 7px 7px 0;font-size:.85em;color:var(--text-primary);margin-top:10px;line-height:1.55;}
 
-        /* ── MATERyal özellikleri FLEX ────────────────────── */
-        .specs-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 16px;
-        }
-        .spec-chip {
-            background: rgba(0,210,255,0.07);
-            border: 1px solid rgba(0,210,255,0.15);
-            border-radius: 8px;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            color: var(--text-soft);
-        }
-        .spec-chip span { color: var(--primary); font-weight: 700; }
+/* ─── Koordinat Düzlemi (Sağ Panel) ─── */
+#coordContainer{flex:1;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 50%,#231208 0%,#130a04 100%);}
+:root[data-theme="light"] #coordContainer{background:radial-gradient(ellipse at 50% 50%,#fdf0e3 0%,#f0dcc6 100%);}
+#rotSVG{width:100%;height:100%;display:block;}
+#coordHint{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;font-size:11px;padding:4px 14px;border-radius:16px;pointer-events:none;white-space:nowrap;z-index:20;backdrop-filter:blur(3px);}
 
-        /* ── SEKMELİ NAVİGASYON ─────────────────────────── */
-        .tab-nav {
-            position: sticky;
-            top: 0;
-            z-index: 900;
-            background: rgba(5,5,8,0.92);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: center;
-            padding: 0 16px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .tab-nav::-webkit-scrollbar { display: none; }
-        .tab-nav a {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 14px 18px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-decoration: none;
-            white-space: nowrap;
-            border-bottom: 2px solid transparent;
-            transition: color 0.18s, border-color 0.18s;
-        }
-        .tab-nav a:hover {
-            color: var(--text-main);
-            border-bottom-color: rgba(0,210,255,0.4);
-        }
-        .tab-nav a.active,
-        .tab-nav a:focus-visible {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-        .tab-nav a .tab-icon { font-size: 1rem; }
-        @media (max-width: 600px) {
-            .tab-nav {
-                justify-content: space-around;
-                padding: 0 4px;
-                overflow-x: visible;
-            }
-            .tab-nav a {
-                padding: 10px 6px;
-                font-size: 0.72rem;
-                white-space: normal;
-                text-align: center;
-                flex: 1 1 0;
-                min-width: 0;
-                justify-content: center;
-            }
-        }
+/* ─── Tam Ekran Uygulama Kaplama ─── */
+#appOverlay{position:fixed;inset:0;z-index:2000;display:none;flex-direction:column;background:var(--bg-primary);}
+#overlayHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 14px;background:var(--bg-secondary);border-bottom:2px solid var(--border-color);flex-shrink:0;}
+#overlayTitle{font-size:.98em;font-weight:700;color:var(--text-accent);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#overlayNav{display:grid;grid-template-columns:repeat(4,auto);gap:5px;flex-shrink:0;}
+.overlay-nav-btn{padding:6px 12px;background:var(--bg-tertiary);border:2px solid var(--border-color);border-radius:8px;color:var(--text-primary);cursor:pointer;font-size:11px;font-weight:700;transition:all .25s;white-space:nowrap;}
+.overlay-nav-btn:hover{background:var(--button-hover);color:#fff;transform:translateY(-1px);}
+.overlay-nav-btn.active{background:var(--button-bg);color:#fff;box-shadow:0 0 10px var(--border-glow);}
+@media(max-width:600px){#overlayNav{grid-template-columns:repeat(2,1fr);}.overlay-nav-btn{font-size:9.5px;padding:5px 7px;}}
+#appFrame{flex:1;border:none;width:100%;min-height:0;}
 
-        /* ── MOD TOGGLE BUTONU ──────────────────────────── */
-        .mode-toggle {
-            position: absolute;
-            top: 16px;
-            right: 20px;
-            background: rgba(0,210,255,0.10);
-            border: 1px solid rgba(0,210,255,0.30);
-            color: var(--primary);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            cursor: pointer;
-            letter-spacing: 0.05em;
-            transition: background 0.2s, border-color 0.2s, color 0.2s;
-            z-index: 10;
-        }
-        .mode-toggle:hover {
-            background: rgba(0,210,255,0.20);
-        }
+/* ─── Diyalog ─── */
+.dialog-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--dialog-overlay);display:flex;align-items:center;justify-content:center;z-index:2000;padding:14px;}
+.dialog-content{background:var(--dialog-bg);border:3px solid var(--border-color);border-radius:18px;padding:24px;max-width:560px;width:100%;max-height:82vh;overflow-y:auto;box-shadow:0 0 36px var(--border-glow);animation:scaleIn .3s ease;}
+@keyframes scaleIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.dialog-content h2{color:var(--text-accent);margin-bottom:14px;font-size:1.5em;text-align:center;}
+.dialog-content p{color:var(--text-primary);line-height:1.8;margin-bottom:10px;font-size:.93em;}
+.dialog-content ul{color:var(--text-primary);padding-left:18px;margin-bottom:14px;}
+.dialog-content li{margin-bottom:7px;line-height:1.6;font-size:.93em;}
+.dialog-content strong{color:var(--text-accent);}
+.dialog-btn-row{display:flex;justify-content:center;gap:10px;margin-top:10px;flex-wrap:wrap;}
 
-        /* ── APP CARD ICON METİN STILI ──────────────────── */
-        .app-card-icon {
-            font-size: 1rem;
-            font-weight: 800;
-            color: var(--primary);
-            letter-spacing: 0.03em;
-        }
-        .icon-kesif   .icon-label { color: #33a4ff; }
-        .icon-uygulama .icon-label { color: #34d399; }
-        .icon-serbest  .icon-label { color: #a78bfa; }
-        .icon-formul   .icon-label { color: #fbbf24; }
+/* ─── Döndürme Overlay (Mobil Dikike) ─── */
+#rotateOverlay{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg-primary);flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:30px;text-align:center;border:3px solid var(--border-color);}
+#rotateOverlay .ro-icon{font-size:60px;animation:rotateHint 2s ease-in-out infinite;display:block;}
+@keyframes rotateHint{0%,100%{transform:rotate(0deg) scale(1)}40%{transform:rotate(90deg) scale(1.08)}60%{transform:rotate(90deg) scale(1.08)}}
+#rotateOverlay .ro-title{color:var(--text-accent);font-size:1.25em;font-weight:700;}
+#rotateOverlay .ro-desc{color:var(--text-secondary);font-size:.93em;line-height:1.7;}
+#rotateOverlay .ro-desc strong{color:var(--text-primary);}
+@media (pointer:coarse) and (orientation:portrait) and (max-width:767px){
+  #rotateOverlay{display:flex;}
+  .app-container,.floating-controls{visibility:hidden;pointer-events:none;}
+}
 
-        /* ── GÜNDÜZ MODU ─────────────────────────────────── */
-        body.day-mode {
-            --bg: #f0f4fb;
-            --bg-card: #ffffff;
-            --bg-card2: #f5f8fc;
-            --border: #c4d0e6;
-            --text-main: #0d1a33;
-            --text-soft: #253450;
-            --text-muted: #5a6a8a;
-            --primary: #0070bb;
-            --primary-dark: #005599;
-            --accent1: #0070bb;
-            --accent2: #6d28d9;
-            --accent3: #047857;
-        }
-        body.day-mode header {
-            background: linear-gradient(135deg, #dce8f5 0%, #ccd8ee 60%, #d4e4f0 100%);
-        }
-        body.day-mode header::before {
-            background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0,112,187,0.12) 0%, transparent 70%);
-        }
-        body.day-mode .header-badge {
-            background: rgba(0,112,187,0.10);
-            border-color: rgba(0,112,187,0.30);
-            color: var(--primary);
-        }
-        body.day-mode .tab-nav {
-            background: rgba(240,244,251,0.96);
-        }
-        body.day-mode .topic-chip {
-            background: rgba(0,112,187,0.07);
-            border-color: rgba(0,112,187,0.20);
-        }
-        body.day-mode .topic-chip b { color: var(--accent1); }
-        body.day-mode .notice-box {
-            background: rgba(109,40,217,0.06);
-            border-color: rgba(109,40,217,0.22);
-        }
-        body.day-mode .spec-chip {
-            background: rgba(0,112,187,0.07);
-            border-color: rgba(0,112,187,0.18);
-        }
-        body.day-mode .spec-chip span { color: var(--primary); }
-        body.day-mode .tag-blue   { background: rgba(0,112,187,0.10);  color: var(--primary); }
-        body.day-mode .tag-green  { background: rgba(4,120,87,0.10);   color: var(--accent3); }
-        body.day-mode .tag-purple { background: rgba(109,40,217,0.10); color: var(--accent2); }
-        body.day-mode .tag-yellow { background: rgba(161,100,0,0.10);  color: #8a5a00; }
-        body.day-mode .app-card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 0 24px rgba(0,112,187,0.14);
-        }
-        body.day-mode .icon-kesif   { background: rgba(0,112,187,0.10); }
-        body.day-mode .icon-uygulama { background: rgba(4,120,87,0.10); }
-        body.day-mode .icon-serbest  { background: rgba(109,40,217,0.10); }
-        body.day-mode .icon-formul   { background: rgba(161,100,0,0.10); }
-        body.day-mode .icon-kesif   .icon-label { color: var(--primary); }
-        body.day-mode .icon-uygulama .icon-label { color: var(--accent3); }
-        body.day-mode .icon-serbest  .icon-label { color: var(--accent2); }
-        body.day-mode .icon-formul   .icon-label { color: #8a5a00; }
-        body.day-mode .mode-toggle {
-            background: rgba(0,112,187,0.10);
-            border-color: rgba(0,112,187,0.30);
-        }
-        body.day-mode .mode-toggle:hover {
-            background: rgba(0,112,187,0.20);
-        }
-
-        /* ── SAYFA NAVİGASYONU ────────────────────────────── */
-        #page-nav {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
-            padding: 10px 16px;
-            background: rgba(6,8,20,0.7);
-            border-bottom: 1px solid var(--border);
-        }
-        #page-nav button {
-            height: 34px; padding: 0 18px;
-            background: rgba(13,19,42,0.9); color: #eef3ff; border: 1px solid #2a3555;
-            border-radius: 8px; font-size: 0.80rem; font-weight: 700; cursor: pointer; white-space: nowrap;
-        }
-        #page-nav button.active {
-            background: var(--primary); color: #000; border-color: var(--primary);
-        }
-        body.day-mode #page-nav {
-            background: rgba(235,243,255,0.85);
-            border-bottom-color: #c5d8ee;
-        }
-        body.day-mode #page-nav button {
-            background: linear-gradient(180deg, #edf4fd 0%, #dbe8f8 100%);
-            color: #1f2d45; border-color: #b8cbe5;
-        }
-        body.day-mode #page-nav button.active {
-            background: var(--primary); color: #fff; border-color: var(--primary);
-        }
-        @media (max-width: 768px) {
-            #page-nav button { height: 28px; padding: 0 12px; font-size: 0.68rem; border-radius: 6px; }
-        }
-    </style>
+/* ─── Responsive ─── */
+@media(max-width:900px){.left-panel{width:270px;min-width:230px;}#overlayTitle{display:none;}}
+@media(max-width:640px){
+  .app-container{overflow:visible;height:auto;min-height:100vh;}
+  .main-content{flex-direction:column;overflow:visible;}
+  .left-panel{width:100%;max-width:100%;min-width:0;max-height:54vh;overflow-x:hidden;}
+  .left-panel *{word-break:break-word;overflow-wrap:anywhere;min-width:0;}
+  .right-panel{min-height:55vw;flex:1;}
+  .tab-container{gap:4px;}
+  .tab-button{font-size:10.5px;padding:7px 4px;}
+  .app-header{font-size:.82em;padding-right:92px;line-height:1.4;text-align:left;padding-left:6px;}
+  .floating-controls{top:7px;right:7px;gap:5px;}
+  .icon-button{width:34px;height:34px;font-size:15px;}
+  #overlayTitle{display:none;}
+  #overlayTitle{display:none;}
+  .app-card-inner{overflow:hidden;}
+  .app-card-inner .card-title{font-size:.87em;}
+  .app-card-inner .card-desc{font-size:.8em;}
+  .section-heading{font-size:.87em;}
+  .topic-chip,.notice-box{font-size:.82em;padding:8px 10px;}
+  .app-desc-box{padding:12px 13px;}
+  .app-desc-box h3{font-size:.95em;}
+  .app-desc-box p,.app-desc-box ul{font-size:.83em;}
+  .action-button.launch-btn{font-size:.9em;padding:11px 16px;}
+}
+@media (pointer:coarse) and (orientation:landscape) and (max-height:500px){
+  .app-container{padding:3px;gap:3px;height:100vh;overflow:hidden;}
+  .app-header{font-size:.7em;padding:1px 0 2px;}
+  .main-content{gap:5px;}
+  .left-panel{width:185px;min-width:150px;padding:6px 8px;gap:4px;border-radius:9px;}
+  .tab-button{padding:3px 4px;font-size:9.5px;min-width:36px;border-radius:6px;border-width:1.5px;}
+  .right-panel{border-radius:9px;}
+  .instruction-box{padding:5px 7px;border-radius:8px;}
+  .instruction-box h3{font-size:.76em;margin-bottom:3px;}
+  .instruction-box p,.instruction-box ul{font-size:.72em;line-height:1.3;margin-bottom:3px;}
+  .action-button{padding:5px 8px;font-size:10.5px;margin-top:3px;border-radius:7px;}
+  .app-desc-box{padding:9px 10px;margin-bottom:8px;}
+  .app-desc-box h3{font-size:.85em;margin-bottom:5px;}
+  .app-desc-box p,.app-desc-box ul{font-size:.72em;line-height:1.35;}
+  .app-card-inner{padding:9px 10px;}
+  .app-card-inner .card-title{font-size:.8em;}
+  .app-card-inner .card-desc{font-size:.72em;}
+  .topic-chip,.notice-box{font-size:.72em;padding:7px 9px;}
+  .section-heading{font-size:.82em;}
+}
+.MathJax{color:var(--text-primary)!important;}
+mjx-container{color:var(--text-primary)!important;}
+</style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header>
-        <button class="mode-toggle" id="modeToggle">Gündüz Modu</button>
-        <h1>Dönme Dönüşümü Materyali</h1>
-        <p class="subtitle">Koordinat düzleminde dönme dönüşümlerini keşfetmeye yönelik dijital etkinlik materyali</p>
-    </header>
+<!-- Döndürme Uyarısı -->
+<div id="rotateOverlay">
+  <span class="ro-icon">&#x1F4F1;</span>
+  <div class="ro-title">Cihazınızı Döndürün</div>
+  <div class="ro-desc">Bu materyal <strong>yatay ekran</strong> modunda çok daha iyi çalışır.<br>Lütfen cihazınızı <strong>90° döndürün</strong>.</div>
+</div>
 
-    <!-- SEKMELİ NAVİGASYON -->
-    <nav class="tab-nav" id="tab-nav" aria-label="Bölüm gezintisi">
-        <a href="#sec-konular" class="tab-nav-link">Konular</a>
-        <a href="#sec-kazanimlar" class="tab-nav-link">Kazanımlar</a>
-        <a href="#sec-dikkat" class="tab-nav-link">Dikkat Unsurları</a>
-        <a href="#sec-etkinlikler" class="tab-nav-link">Dijital Etkinlikler</a>
-    </nav>
+<!-- Arka Plan Dekorasyonu -->
+<div class="background-animation">
+<svg class="bg-shape" width="90" height="90" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--border-color)"/>
+  <line x1="50" y1="50" x2="80" y2="50" stroke="currentColor" stroke-width="2" style="color:var(--border-color)"/>
+  <path d="M65,35 A20,20 0 0,1 80,50" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--border-color)"/>
+</svg>
+<svg class="bg-shape" width="80" height="80" viewBox="0 0 100 100">
+  <polygon points="50,15 85,75 15,75" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--border-color)"/>
+</svg>
+<svg class="bg-shape" width="80" height="80" viewBox="0 0 100 100">
+  <line x1="10" y1="50" x2="90" y2="50" stroke="currentColor" stroke-width="3" style="color:var(--border-color)"/>
+  <line x1="50" y1="10" x2="50" y2="90" stroke="currentColor" stroke-width="3" style="color:var(--border-color)"/>
+</svg>
+</div>
 
-    <nav id="page-nav">
-        <button class="active">Ana Sayfa</button>
-        <button onclick="location.href='uygulama1.html'">Uygulama-1</button>
-        <button onclick="location.href='formul_kesfi_meb_revizeli.html'">Uygulama-2</button>
-        <button onclick="location.href='serbest.html'">Serbest Mod</button>
-    </nav>
+<!-- Üst Kontrol Düğmeleri -->
+<div class="floating-controls">
+  <button class="icon-button" id="themeToggle" title="Tema Değiştir"><span id="themeIcon">☀</span></button>
+  <button class="icon-button" id="helpBtn" title="Yardım" style="font-size:16px;">?</button>
+</div>
 
-    <main>
+<!-- Ana Uygulama Çerçevesi -->
+<div class="app-container">
+  <div class="app-header">&#x21BB; Dönme Dönüşümü Materyali — İnteraktif Materyal</div>
+  <div class="main-content">
+
+    <!-- SOL PANEL -->
+    <div class="left-panel" id="leftPanel">
+      <div class="tab-container">
+        <button class="tab-button active" data-tab="portal">&#x1F3E0; Ana Sayfa</button>
+        <button class="tab-button" data-tab="app1">Uygulama&#160;1</button>
+        <button class="tab-button" data-tab="app2">Uygulama&#160;2</button>
+        <button class="tab-button" data-tab="free">Serbest</button>
+      </div>
+      <div id="contentArea"></div>
+    </div>
+
+    <!-- SAĞ PANEL: Animasyonlu Koordinat Düzlemi -->
+    <div class="right-panel">
+      <div id="coordContainer">
+        <svg id="rotSVG" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="pt-glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <marker id="ax" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+              <polygon points="0 0,7 3.5,0 7" fill="var(--axis-color)" opacity=".9"/>
+            </marker>
+            <marker id="ay" markerWidth="7" markerHeight="7" refX="3.5" refY="5" orient="auto">
+              <polygon points="0 7,3.5 0,7 7" fill="var(--axis-color)" opacity=".9"/>
+            </marker>
+          </defs>
+          <!-- Grid ve Eksenler JS ile çizilecek -->
+          <g id="sv-grid"></g>
+          <g id="sv-axes"></g>
+          <!-- Dönme Animasyonu Katmanları -->
+          <g id="sv-rot-arc"></g>
+          <g id="sv-rot-shape"></g>
+          <g id="sv-rot-labels"></g>
+        </svg>
+        <div id="coordHint">Dönme dönüşümü animasyonu</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TAM EKRAN UYGULAMA KATMANI -->
+<div id="appOverlay">
+  <div id="overlayHeader">
+    <div id="overlayNav">
+      <button class="overlay-nav-btn" data-nav="home">&#x1F3E0; Ana Sayfa</button>
+      <button class="overlay-nav-btn" data-nav="app1">Uygulama&#160;1</button>
+      <button class="overlay-nav-btn" data-nav="app2">Uygulama&#160;2</button>
+      <button class="overlay-nav-btn" data-nav="free">Serbest</button>
+    </div>
+    <span id="overlayTitle">Uygulama</span>
+  </div>
+  <iframe id="appFrame" src="" allowfullscreen></iframe>
+</div>
+
+<!-- GİRİŞ DİYALOĞU -->
+<div class="dialog-overlay" id="introDialog">
+  <div class="dialog-content">
+    <h2>&#x21BB; Dönme Dönüşümü Materyali</h2>
+    <p>Bu materyal ile <strong>koordinat düzleminde dönme dönüşümlerini</strong> adım adım keşfedeceksiniz.</p>
+    <ul>
+      <li><strong>Uygulama 1:</strong> 90°, 180° ve 270° dönüşlerde koordinat değişimini gözlem ve soru-cevap ile keşfediniz.</li>
+      <li><strong>Uygulama 2:</strong> Dönme dönüşümünün genel formülünü kutupsal koordinatlardan adım adım türetiniz.</li>
+      <li><strong>Serbest:</strong> İstediğiniz noktayı ya da şekli istediğiniz açıyla döndürünüz; kurallar yok, sınır yok.</li>
+    </ul>
+    <p>Sağdaki koordinat düzleminde dönme animasyonu sürekli oynar. Uygulamaları başlatmak için soldaki sekmelere tıklayınız.</p>
+    <div class="dialog-btn-row">
+      <button class="action-button" id="introContinueBtn">✦ Keşfetmeye Başla</button>
+    </div>
+  </div>
+</div>
+
+<!-- YARDIM DİYALOĞU -->
+<div class="dialog-overlay" id="helpDialog" style="display:none;">
+  <div class="dialog-content">
+    <h2>&#x1F4D6; Kullanım Kılavuzu</h2>
+    <ul>
+      <li><strong>Ana Sayfa sekmesi:</strong> Konular, kazanımlar ve etkinlik kartları.</li>
+      <li><strong>Etkinlik kartları:</strong> Herhangi bir karta tıklayarak ya da "Başlat" butonuyla uygulamayı açınız.</li>
+      <li><strong>Sağ panel:</strong> Dönme animasyonunu sürekli gösterir — noktanın koordinatları nasıl dönüşüyor izleyiniz.</li>
+      <li><strong>Tema:</strong> Sağ üstteki ☀/🌙 düğmesiyle aydınlık/karanlık mod arasında geçiş yapabilirsiniz.</li>
+      <li><strong>Geri dön:</strong> Tam ekran uygulama içindeyken "🏠 Ana Sayfa" tuşuyla bu sayfaya dönebilirsiniz.</li>
+    </ul>
+    <div class="dialog-btn-row">
+      <button class="action-button" id="helpCloseBtn">Tamam</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── SFX ─── */
+function mkAudio(src){ const a=new Audio(src); a.preload='auto'; return a; }
+const SFX = { click: mkAudio('click.mp3') };
+function snd(k){ try{ const s=SFX[k]; if(!s)return; s.currentTime=0; s.play().catch(()=>{}); }catch(e){} }
+
+// ═══════════════════════════════════════════════
+//  TEMA
+// ═══════════════════════════════════════════════
+let theme = 'dark';
+function applyTheme(t) {
+  theme = t;
+  document.documentElement.setAttribute('data-theme', theme);
+  const icon = document.getElementById('themeIcon');
+  if (icon) icon.textContent = theme === 'dark' ? '☀' : '🌙';
+  // Koordinat düzlemi yalnızca DOM yüklendikten sonra çizilir
+  if (typeof CS !== 'undefined') {
+    buildGrid();
+    startRotationAnim();
+  }
+}
+// Tema CSS değişkenlerini erken uygula (grid çizimi window.load'a bırakıldı)
+document.documentElement.setAttribute('data-theme', theme);
+
+document.getElementById('themeToggle').addEventListener('click', () => {
+  applyTheme(theme === 'dark' ? 'light' : 'dark');
+});
+
+// ═══════════════════════════════════════════════
+//  YARDIM & GİRİŞ
+// ═══════════════════════════════════════════════
+document.getElementById('helpBtn').addEventListener('click', () => {
+  snd('click');
+  document.getElementById('helpDialog').style.display = 'flex';
+});
+document.getElementById('helpCloseBtn').addEventListener('click', () => {
+  snd('click');
+  document.getElementById('helpDialog').style.display = 'none';
+});
+document.getElementById('introContinueBtn').addEventListener('click', () => {
+  snd('click');
+  document.getElementById('introDialog').style.display = 'none';
+  loadTab('portal');
+});
+
+// ═══════════════════════════════════════════════
+//  SEKME BAĞLANTISI
+// ═══════════════════════════════════════════════
+document.querySelectorAll('.tab-button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    if (tab !== 'portal') {
+      launchApp(tab);
+      return;
+    }
+    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadTab(tab);
+  });
+});
+
+function loadTab(name) {
+  snd('click');
+  const area = document.getElementById('contentArea');
+  if (name === 'portal') renderPortal(area);
+  else if (name === 'app1') renderAppDesc(area, 'app1');
+  else if (name === 'app2') renderAppDesc(area, 'app2');
+  else if (name === 'free') renderAppDesc(area, 'free');
+  typeset();
+}
+
+// ═══════════════════════════════════════════════
+//  PORTAL İÇERİĞİ
+// ═══════════════════════════════════════════════
+function renderPortal(area) {
+  area.innerHTML = `
+    <!-- KONULAR -->
+    <div class="section-heading">Konular</div>
+    <div class="topic-chip">
+      Analitik düzlemde koordinatları verilen bir noktanın dönme dönüşümleri altındaki görüntüsünün koordinatlarının bulunması
+    </div>
 
 
 
-        <!-- KONULAR -->
-        <div class="section-card" id="sec-konular">
-            <h2>Konular</h2>
-            <p style="margin-bottom:16px;">Dönme dönüşümü materyali aşağıdaki konularda kullanılabilir:</p>
-            <div class="topics-grid">
-                <div class="topic-chip">
-                    Analitik düzlemde koordinatları verilen bir noktanın  dönme dönüşümleri altındaki görüntüsünün koordinatlarının bulunması
-                </div>
+    <!-- DİKKAT UNSURLARI -->
+    <div class="section-heading">Dikkat Unsurları</div>
+    <div class="notice-box">
+      Bu etkinliklere başlamadan önce aşağıdaki konularda <strong>ön bilgiye</strong> sahip olunması önerilir:<br><br>
+      Açı &middot; Yönlü açı &middot; Eşlik &middot; İki nokta arasındaki uzaklık &middot; Trigonometrik Özdeşlikler
+    </div>
 
-            </div>
-        </div>
+    <!-- ETKİNLİKLER -->
+    <div class="section-heading">Dijital Etkinlikler</div>
+    <div class="app-grid">
+      <div class="app-card-inner" onclick="launchApp('app1')">
+        <div class="card-title">&#x1F4CA; Uygulama 1 — Dönme Keşfi</div>
+        <div class="card-desc">Rehberli turlarla 90°, 180° ve 270° dönüşleri keşfedin; koordinatların nasıl değiştiğini adım adım gözlemleyin.</div>
+        <div class="card-cta">Etkinliği Aç →</div>
+      </div>
+      <div class="app-card-inner" onclick="launchApp('app2')">
+        <div class="card-title">&#x1F9EE; Uygulama 2 — Formül Keşfi</div>
+        <div class="card-desc">Kutupsal gösterimden yola çıkarak dönme dönüşümünün genel formülünü adım adım türetin; 90°, 180°, 270° özel durumlarını doğrulayın.</div>
+        <div class="card-cta">Etkinliği Aç →</div>
+      </div>
+      <div class="app-card-inner" onclick="launchApp('free')">
+        <div class="card-title">&#x1F3A8; Serbest Mod</div>
+        <div class="card-desc">İstediğiniz noktayı ya da şekli istediğiniz açıyla döndürün. Sürükle-bırak ve döndürme topuzu ile özgürce keşfedin.</div>
+        <div class="card-cta">Etkinliği Aç →</div>
+      </div>
+    </div>
+  `;
+}
 
-        <!-- KAZANIMLAR -->
-        <div class="section-card" id="sec-kazanimlar">
-            <h2>Kazanımlar</h2>
-            <ul class="outcome-list">
-                <li>Analitik düzlemde koordinatları verilen bir noktanın  dönme dönüşümleri altındaki görüntüsünün koordinatlarını bulur.</li>
-                <li>Geometrik şekil ile şeklin dönme sonucu oluşan görüntüsünün eş olduğunu kavrar.</li>
-                <li>Dönme açısı kavramını açıklar.</li>
+// ═══════════════════════════════════════════════
+//  UYGULAMA TANIMI (Sekme İçeri)
+// ═══════════════════════════════════════════════
+const appMeta = {
+  app1: {
+    tag: 'Uygulama 1',
+    title: 'Dönme Dönüşümü Keşfi',
+    icon: '&#x1F4CA;',
+    file: 'uygulama1.html',
+    desc: 'Bu etkinlikte bir noktanın orijin etrafındaki dönme dönüşümünde koordinatların nasıl değiştiği incelenir.',
+    items: [
+      '<strong>Rehberli inceleme:</strong> P(4,3) ve P(-3,5) noktaları başlangıç örnekleri olarak sunulur.',
+      '<strong>İleri</strong> düğmesiyle 90°, 180°, 270° ve 360° dönüşleri adım adım izleyiniz.',
+      '<strong>Uygulama soruları</strong> bölümünde rastgele bir nokta verilir; istenen açı ve yönde döndürülmüş koordinatı bulunuz.',
+      'Hem pozitif (saat yönünün tersi) hem negatif (saat yönü) dönüşler sorulur.'
+    ],
+    note: 'Bu uygulama Three.js tabanlı 3B koordinat sistemi kullanır. Tam ekran açıldığında en iyi performansı sunar.'
+  },
+  app2: {
+    tag: 'Uygulama 2',
+    title: 'Formülü Keşfet',
+    icon: '&#x1F9EE;',
+    file: 'formul_kesfi_meb_revizeli.html',
+    desc: 'Bir noktayı orijin etrafında döndürdüğümüzde yeni koordinatları nasıl hesaplayabiliriz? Bu etkinlik cevabı adım adım kendiniz keşfetmeniz için tasarlandı.',
+    items: [
+      '<strong>7 adımlı türetme süreci:</strong> Kutupsal koordinatlar → toplam açı formülleri → genel formül.',
+      'Her adımda <strong>boşluk doldurma</strong> soruları ile öğrendiklerinizi hemen test ediniz.',
+      'Son üç soruda formülü 90°, 180° ve 270° özel durumlarına uygulayınız.',
+      'Etkinlik sonunda formülü ezberlemeden, mantığını anlayarak kullanabileceksiniz.'
+    ],
+    note: '$$P\'(x\',y\') = (x\\cos\\theta - y\\sin\\theta,\\; x\\sin\\theta + y\\cos\\theta)$$'
+  },
+  free: {
+    tag: 'Serbest Mod',
+    title: 'Serbest Keşif',
+    icon: '&#x1F3A8;',
+    file: 'serbest.html',
+    desc: 'İstediğiniz noktayı ya da şekli serbestçe döndürün. Kural yok, sınır yok. Döndürme topuzu ile açıyı hassas biçimde ayarlayın.',
+    items: [
+      '<strong>Döndürme topuzu:</strong> Sürükleyerek açıyı sürekli olarak ayarlayınız.',
+      '<strong>Hızlı adım butonları:</strong> 30°, 45°, 60° ve 90° adımlarla hızlıca döndürünüz.',
+      '<strong>Şekil seçici:</strong> Nokta, üçgen, kare veya özel poligon seçerek isteğiniz şekli oluşturunuz.',
+      '<strong>Koordinat tablosu:</strong> Her köşenin orijinal ve döndürülmüş koordinatları anlık olarak güncellenir.'
+    ],
+    note: 'Serbest modda izin, onay gerektirmez — sadece keşfedin!'
+  }
+};
 
-            </ul>
-        </div>
+function renderAppDesc(area, id) {
+  const m = appMeta[id];
+  area.innerHTML = `
+    <div class="app-desc-box">
+      <div class="app-tag">${m.tag}</div>
+      <h3>${m.icon} ${m.title}</h3>
+      <p>${m.desc}</p>
+      <ul>${m.items.map(i => `<li>${i}</li>`).join('')}</ul>
+      ${m.note ? `<div class="highlight-note">${m.note}</div>` : ''}
+    </div>
+    <button class="action-button launch-btn" onclick="launchApp('${id}')">
+      &#x25B6; Etkinliği Başlat
+    </button>
+    <button class="action-button full-width" style="margin-top:8px;background:var(--bg-tertiary);" onclick="loadTab('portal')">
+      &#x2190; Portale Dön
+    </button>
+  `;
+}
 
-        <!-- DİKKAT UNSURLARI -->
-        <div class="section-card" id="sec-dikkat">
-            <h2>Dikkat Unsurları</h2>
-            <div class="notice-box">
-                Bu etkinliklere başlamadan önce aşağıdaki konularda <strong>ön bilgiye</strong> sahip olunması önerilir:<br><br>
-                Açı · Yönlü açı · Eşlik · İki nokta arasındaki uzaklık · Trigonometrik Özdeşlikler
-            </div>
-        </div>
+// ═══════════════════════════════════════════════
+//  UYGULAMA BAŞLATMA (Tam Ekran Overlay)
+// ═══════════════════════════════════════════════
+function launchApp(id) {
+  snd('click');
+  const m = appMeta[id];
+  const overlay = document.getElementById('appOverlay');
+  const frame = document.getElementById('appFrame');
+  const title = document.getElementById('overlayTitle');
+  title.textContent = m.tag + ' — ' + m.title;
+  frame.src = m.file;
+  overlay.style.display = 'flex';
+  // Aktif nav butonunu işaretle
+  document.querySelectorAll('.overlay-nav-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.nav === id);
+  });
+}
 
-        <!-- ETKİNLİKLER -->
-        <div class="section-card" id="sec-etkinlikler">
-            <h2>Dijital Etkinlikler</h2>
-            <div class="apps-grid">
+document.getElementById('overlayNav').addEventListener('click', e => {
+  const btn = e.target.closest('.overlay-nav-btn');
+  if (!btn) return;
+  snd('click');
+  const nav = btn.dataset.nav;
+  const overlay = document.getElementById('appOverlay');
+  const frame = document.getElementById('appFrame');
+  if (nav === 'home') {
+    overlay.style.display = 'none';
+    frame.src = '';
+    document.querySelectorAll('.overlay-nav-btn').forEach(b => b.classList.remove('active'));
+  } else {
+    launchApp(nav);
+  }
+});
 
-                <!-- Uygulama 2 -->
-                <a class="app-card" href="uygulama1.html">
-                    <div>
-                        <div class="app-card-title">Uygulama-1</div>
-                        <div class="app-card-desc">
-                            Adım adım rehberli turlarla 90°, 180° ve 270° dönüşleri keşfedin. Her adımda koordinatların nasıl değiştiğini gözlemleyip sıra sende bölümünde kendinizi sınayın.
-                        </div>
-                    </div>
+// ═══════════════════════════════════════════════
+//  MATHJax
+// ═══════════════════════════════════════════════
+function typeset() {
+  if (window.MathJax && window.MathJax.typesetPromise) {
+    window.MathJax.typesetPromise().catch(() => {});
+  }
+}
 
-                    <div class="app-card-cta">Etkinliği Aç →</div>
-                </a>
+// ═══════════════════════════════════════════════
+//  KOORDİNAT DÜZLEMİ (SVG Sabiti)
+// ═══════════════════════════════════════════════
+const ns = 'http://www.w3.org/2000/svg';
+let CS = { ox: 300, oy: 300, scale: 28 };
 
-                <!-- Uygulama-2 -->
-                <a class="app-card" href="formul_kesfi_meb_revizeli.html">
-                    <div>
-                        <div class="app-card-title">Uygulama-2</div>
-                        <div class="app-card-desc">
-                            Bu uygulamada dönme dönüşümünün genel formülü adım adım keşfedilir. Kutupsal gösterimden toplam açı ilişkilerine uzanan rehberli süreçte formülün nasıl oluştuğu incelenir.
-                        </div>
-                    </div>
+function m2s(mx, my) { return { x: CS.ox + mx * CS.scale, y: CS.oy - my * CS.scale }; }
+function s2m(sx, sy) { return { x: (sx - CS.ox) / CS.scale, y: -(sy - CS.oy) / CS.scale }; }
 
-                    <div class="app-card-cta">Etkinliği Aç →</div>
-                </a>
+function buildGrid() {
+  const svgEl = document.getElementById('rotSVG');
+  const W = svgEl.clientWidth || 600, H = svgEl.clientHeight || 600;
+  CS.ox = W / 2; CS.oy = H / 2;
+  const gEl = document.getElementById('sv-grid');
+  const aEl = document.getElementById('sv-axes');
+  gEl.innerHTML = ''; aEl.innerHTML = '';
 
-                <!-- Serbest Mod -->
-                <a class="app-card" href="serbest.html">
-                    <div>
-                        <div class="app-card-title">Serbest Keşif Modu</div>
-                        <div class="app-card-desc">
-                            İstediğiniz noktayı istediğiniz açıyla döndürün; kural yok, sınır yok. Sürükle-bırak araçlarıyla koordinat düzlemini özgürce keşfedin.
-                        </div>
-                    </div>
+  const isDark = theme === 'dark';
+  const gridC = isDark ? 'rgba(200,130,74,.13)' : 'rgba(120,70,20,.2)';
+  const gridM = isDark ? 'rgba(200,130,74,.3)' : 'rgba(120,70,20,.45)';
+  const axC = isDark ? '#00d4ff' : '#0e7490';
+  const lblC = isDark ? '#7090b8' : '#64748b';
 
-                    <div class="app-card-cta">Etkinliği Aç →</div>
-                </a>
+  const xRange = Math.ceil(Math.max(CS.ox, W - CS.ox) / CS.scale) + 1;
+  const yRange = Math.ceil(Math.max(CS.oy, H - CS.oy) / CS.scale) + 1;
+  const gridMax = Math.max(xRange, yRange);
 
-            </div>
-        </div>
+  for (let i = -gridMax; i <= gridMax; i++) {
+    const isMaj = (i % 5 === 0);
+    const sw = isMaj ? '1.2' : '0.65';
+    const sc = isMaj ? gridM : gridC;
+    const sp = m2s(i, 0);
+    const vl = document.createElementNS(ns, 'line');
+    vl.setAttribute('x1', sp.x); vl.setAttribute('y1', 0); vl.setAttribute('x2', sp.x); vl.setAttribute('y2', H);
+    vl.setAttribute('stroke', sc); vl.setAttribute('stroke-width', sw); gEl.appendChild(vl);
+    const sp2 = m2s(0, i);
+    const hl = document.createElementNS(ns, 'line');
+    hl.setAttribute('x1', 0); hl.setAttribute('y1', sp2.y); hl.setAttribute('x2', W); hl.setAttribute('y2', sp2.y);
+    hl.setAttribute('stroke', sc); hl.setAttribute('stroke-width', sw); gEl.appendChild(hl);
+    if (i !== 0 && i % 2 === 0) {
+      const tx = document.createElementNS(ns, 'text');
+      tx.setAttribute('x', CS.ox + 4); tx.setAttribute('y', m2s(0, i).y + 4);
+      tx.setAttribute('font-size', '9'); tx.setAttribute('fill', lblC); tx.setAttribute('font-family', 'Segoe UI,sans-serif');
+      tx.textContent = i; aEl.appendChild(tx);
+      const ty = document.createElementNS(ns, 'text');
+      ty.setAttribute('x', m2s(i, 0).x - 4); ty.setAttribute('y', CS.oy + 12);
+      ty.setAttribute('font-size', '9'); ty.setAttribute('fill', lblC);
+      ty.setAttribute('text-anchor', 'middle'); ty.setAttribute('font-family', 'Segoe UI,sans-serif');
+      ty.textContent = i; aEl.appendChild(ty);
+    }
+  }
+  // Eksenler
+  function mkLine(x1, y1, x2, y2, m) {
+    const l = document.createElementNS(ns, 'line');
+    l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2);
+    l.setAttribute('stroke', axC); l.setAttribute('stroke-width', '1.8');
+    if (m) l.setAttribute('marker-end', 'url(#ax)'); return l;
+  }
+  aEl.appendChild(mkLine(CS.ox, CS.oy, W - 8, CS.oy, true));
+  aEl.appendChild(mkLine(CS.ox, CS.oy, 4, CS.oy, true));
+  aEl.appendChild(mkLine(CS.ox, CS.oy, CS.ox, 8, true));
+  aEl.appendChild(mkLine(CS.ox, CS.oy, CS.ox, H - 4, true));
+  function mkText(x, y, txt, anc) {
+    const t = document.createElementNS(ns, 'text');
+    t.setAttribute('x', x); t.setAttribute('y', y); t.setAttribute('font-size', '13');
+    t.setAttribute('font-weight', '700'); t.setAttribute('fill', axC);
+    t.setAttribute('font-family', 'Segoe UI,sans-serif'); t.setAttribute('text-anchor', anc || 'middle');
+    t.textContent = txt; return t;
+  }
+  aEl.appendChild(mkText(W - 6, CS.oy - 6, 'x', 'end'));
+  aEl.appendChild(mkText(CS.ox + 7, 14, 'y', 'start'));
+  const orig = document.createElementNS(ns, 'text');
+  orig.setAttribute('x', CS.ox + 4); orig.setAttribute('y', CS.oy + 12);
+  orig.setAttribute('font-size', '10'); orig.setAttribute('fill', lblC);
+  orig.setAttribute('font-family', 'Segoe UI,sans-serif'); orig.setAttribute('font-weight', '600');
+  orig.textContent = 'O'; aEl.appendChild(orig);
+}
 
-    </main>
+// ═══════════════════════════════════════════════
+//  DÖNME ANİMASYONU (SVG tabanlı)
+// ═══════════════════════════════════════════════
+let animRAF = null;
+let animStart = null;
 
-    <script>
-        // Gündüz / Gece modu
-        const modeToggle = document.getElementById('modeToggle');
-        // Varsayılan mod: gece modu
-        modeToggle.addEventListener('click', function () {
-            const isDay = document.body.classList.toggle('day-mode');
-            modeToggle.textContent = isDay ? 'Gece Modu' : 'Gündüz Modu';
-            localStorage.setItem('colorMode', isDay ? 'day' : 'night');
-        });
+// Nokta dizisi: P ve üçgenin köşeleri (orijin & x-ayak da dahil)
+const P0 = { x: 4, y: 3 }; // başlangıç noktası
 
-        // Aktif sekmeyi scroll pozisyonuna göre vurgula
-        const sections = [
-            { id: 'sec-konular',     link: 'a[href="#sec-konular"]' },
-            { id: 'sec-kazanimlar',  link: 'a[href="#sec-kazanimlar"]' },
-            { id: 'sec-dikkat',      link: 'a[href="#sec-dikkat"]' },
-            { id: 'sec-etkinlikler', link: 'a[href="#sec-etkinlikler"]' }
-        ];
-        const navLinks = document.querySelectorAll('.tab-nav-link');
+// Dönüş turları: hedef açılar
+const ANGLES = [0, 90, 180, 270, 360];
+const ANIM_STEP = 3500; // ms per step
+const PAUSE = 2000;     // ms at each angle
 
-        function setActive(id) {
-            navLinks.forEach(l => l.classList.remove('active'));
-            const active = document.querySelector(`a[href="#${id}"]`);
-            if (active) {
-                active.classList.add('active');
-                // Sticky nav içinde görünür yap (yatay scroll)
-                active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-            }
-        }
+function easeInOut(t) {
+  return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+}
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
-        }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+function rotateXY(x, y, deg) {
+  const r = deg * Math.PI / 180;
+  return {
+    x: parseFloat((x * Math.cos(r) - y * Math.sin(r)).toFixed(2)),
+    y: parseFloat((x * Math.sin(r) + y * Math.cos(r)).toFixed(2))
+  };
+}
 
-        sections.forEach(s => {
-            const el = document.getElementById(s.id);
-            if (el) observer.observe(el);
-        });
+// Yay (arc) path
+function arcPath(cx, cy, r, startDeg, endDeg) {
+  const s = { x: cx + r * Math.cos(startDeg * Math.PI / 180), y: cy - r * Math.sin(startDeg * Math.PI / 180) };
+  const e = { x: cx + r * Math.cos(endDeg * Math.PI / 180), y: cy - r * Math.sin(endDeg * Math.PI / 180) };
+  const large = Math.abs(endDeg - startDeg) > 180 ? 1 : 0;
+  // sweep=0: SVG CCW → ekranda üst yayı çizer (Y ekseni ters, CCW = üstten geçer)
+  const sweep = 0;
+  return `M ${s.x} ${s.y} A ${r} ${r} 0 ${large} ${sweep} ${e.x} ${e.y}`;
+}
 
-        // Smooth scroll + scroll-margin-top için nav yüksekliğini hesapla
-        document.querySelectorAll('.tab-nav-link').forEach(a => {
-            a.addEventListener('click', e => {
-                const target = document.querySelector(a.getAttribute('href'));
-                if (!target) return;
-                e.preventDefault();
-                const navH = document.getElementById('tab-nav').offsetHeight;
-                const top = target.getBoundingClientRect().top + window.scrollY - navH - 16;
-                window.scrollTo({ top, behavior: 'smooth' });
-            });
-        });
-    </script>
+function makeSVGEl2(tag, attrs) {
+  const e = document.createElementNS(ns, tag);
+  Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v));
+  return e;
+}
 
+function drawRotation(angleDeg) {
+  const arcG = document.getElementById('sv-rot-arc');
+  const shapeG = document.getElementById('sv-rot-shape');
+  const lblG = document.getElementById('sv-rot-labels');
+  arcG.innerHTML = ''; shapeG.innerHTML = ''; lblG.innerHTML = '';
+
+  const isDark = theme === 'dark';
+  const pColor = isDark ? '#00d4ff' : '#0e7490';
+  const ppColor = '#f97316';
+  const arcColor = '#a855f7';
+  const lineColor = isDark ? 'rgba(255,255,255,.25)' : 'rgba(0,0,0,.2)';
+  const labelBg = isDark ? 'rgba(0,0,0,.6)' : 'rgba(255,255,255,.85)';
+  const labelFg = isDark ? '#f0e0cc' : '#3b1f0a';
+
+  const orig = P0;
+  const rot = rotateXY(orig.x, orig.y, angleDeg);
+  const r = Math.sqrt(orig.x ** 2 + orig.y ** 2);
+
+  const o = m2s(0, 0);
+  const p = m2s(orig.x, orig.y);
+  const pp = m2s(rot.x, rot.y);
+
+  // Daire yay
+  const svgR = r * CS.scale;
+  if (angleDeg !== 0) {
+    const aP = arcPath(o.x, o.y, svgR, Math.atan2(orig.y, orig.x) * 180 / Math.PI, Math.atan2(orig.y, orig.x) * 180 / Math.PI + angleDeg);
+    const arcEl = makeSVGEl2('path', { d: aP, fill: 'none', stroke: arcColor, 'stroke-width': '2', 'stroke-dasharray': angleDeg >= 360 ? 'none' : '6,4', opacity: '.85' });
+    arcG.appendChild(arcEl);
+
+    // Açı etiketi
+    const midAngle = (Math.atan2(orig.y, orig.x) * 180 / Math.PI) + angleDeg / 2;
+    const lblR = svgR + 14;
+    const lx = o.x + lblR * Math.cos(midAngle * Math.PI / 180);
+    const ly = o.y - lblR * Math.sin(midAngle * Math.PI / 180);
+    const arcLbl = makeSVGEl2('text', { x: lx, y: ly, 'font-size': '11', 'font-weight': '700', fill: arcColor, 'font-family': 'Segoe UI,sans-serif', 'text-anchor': 'middle', 'dominant-baseline': 'middle' });
+    arcLbl.textContent = angleDeg + '°';
+    lblG.appendChild(arcLbl);
+  }
+
+  // Orijine çizgiler
+  const linePOrig = makeSVGEl2('line', { x1: o.x, y1: o.y, x2: p.x, y2: p.y, stroke: lineColor, 'stroke-width': '1.5', 'stroke-dasharray': '5,4' });
+  shapeG.appendChild(linePOrig);
+  if (angleDeg !== 0) {
+    const linePPOrig = makeSVGEl2('line', { x1: o.x, y1: o.y, x2: pp.x, y2: pp.y, stroke: ppColor, 'stroke-width': '1.5', 'stroke-dasharray': '5,4', opacity: '.7' });
+    shapeG.appendChild(linePPOrig);
+  }
+
+  // Dik açı işareti (P — yatay kesişme — orijin)
+  const xFoot = m2s(orig.x, 0);
+  const s2 = CS.scale * 0.25;
+  const ra = makeSVGEl2('polyline', { points: `${xFoot.x},${xFoot.y} ${xFoot.x},${xFoot.y - s2} ${xFoot.x - s2},${xFoot.y - s2} ${xFoot.x - s2},${xFoot.y}`, fill: 'none', stroke: lineColor, 'stroke-width': '1' });
+  shapeG.appendChild(ra);
+
+  // Orijinal P noktası (soluk)
+  if (angleDeg !== 0) {
+    const pGhost = makeSVGEl2('circle', { cx: p.x, cy: p.y, r: '5', fill: pColor, opacity: '.35' });
+    shapeG.appendChild(pGhost);
+  }
+
+  // Döndürülmüş P' noktası
+  const ppCircle = makeSVGEl2('circle', { cx: pp.x, cy: pp.y, r: '7', fill: ppColor, filter: 'url(#pt-glow)', opacity: angleDeg === 0 ? '0' : '1' });
+  shapeG.appendChild(ppCircle);
+
+  // P noktası (aktif)
+  const pCircle = makeSVGEl2('circle', { cx: p.x, cy: p.y, r: '7', fill: pColor, filter: 'url(#pt-glow)' });
+  shapeG.appendChild(pCircle);
+
+  // P etiketi
+  function drawLabel(sx, sy, txt, offX, offY, color) {
+    const bg = makeSVGEl2('rect', { x: sx + offX - 2, y: sy + offY - 11, width: txt.length * 6.5 + 6, height: 16, rx: '4', fill: labelBg, opacity: '.88' });
+    lblG.appendChild(bg);
+    const t = makeSVGEl2('text', { x: sx + offX + 1, y: sy + offY, 'font-size': '11.5', 'font-weight': '700', fill: color || labelFg, 'font-family': 'Segoe UI,sans-serif' });
+    t.textContent = txt; lblG.appendChild(t);
+  }
+
+  drawLabel(p.x, p.y, 'P(' + orig.x + ',' + orig.y + ')', 10, -10, pColor);
+  if (angleDeg !== 0) {
+    const ppLabel = 'P\'(' + rot.x + ',' + rot.y + ')';
+    drawLabel(pp.x, pp.y, ppLabel, 10, -10, ppColor);
+  }
+}
+
+function startRotationAnim() {
+  if (animRAF) cancelAnimationFrame(animRAF);
+  animStart = null;
+
+  // Toplam süre: duraklama + 4 geçiş * (animasyon + duraklama)
+  const stepDur = ANIM_STEP + PAUSE;
+  // İlk adım 0°'de duraklama, sonra 4 geçiş
+  const totalCycle = PAUSE + (ANGLES.length - 1) * stepDur;
+
+  function frame(ts) {
+    if (!animStart) animStart = ts;
+    const elapsed = (ts - animStart) % totalCycle;
+
+    let displayAngle;
+    if (elapsed < PAUSE) {
+      displayAngle = 0;
+    } else {
+      const after = elapsed - PAUSE;
+      const stepIdx = Math.min(Math.floor(after / stepDur), ANGLES.length - 2);
+      const stepElapsed = after - stepIdx * stepDur;
+      if (stepElapsed < ANIM_STEP) {
+        const t = easeInOut(stepElapsed / ANIM_STEP);
+        displayAngle = ANGLES[stepIdx] + (ANGLES[stepIdx + 1] - ANGLES[stepIdx]) * t;
+      } else {
+        displayAngle = ANGLES[stepIdx + 1];
+      }
+    }
+
+    drawRotation(displayAngle);
+    animRAF = requestAnimationFrame(frame);
+  }
+
+  animRAF = requestAnimationFrame(frame);
+}
+
+// ═══════════════════════════════════════════════
+//  BOYUT DEĞİŞİKLİĞİ
+// ═══════════════════════════════════════════════
+function onResize() {
+  buildGrid();
+}
+window.addEventListener('resize', onResize);
+
+// ═══════════════════════════════════════════════
+//  BAŞLANGIÇ
+// ═══════════════════════════════════════════════
+window.addEventListener('load', () => {
+  buildGrid();
+  startRotationAnim();
+  loadTab('portal');
+  // Kısa gecikme ile giriş dialogunu göster
+  setTimeout(() => {
+    document.getElementById('introDialog').style.display = 'flex';
+  }, 400);
+});
+</script>
 </body>
 </html>

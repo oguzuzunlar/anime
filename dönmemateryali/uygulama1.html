@@ -383,12 +383,6 @@
     </div>
 
     <div id="ui-panel">
-        <nav id="page-nav">
-            <button onclick="location.href='index.html'">Ana Sayfa</button>
-            <button class="active">Uygulama-1</button>
-            <button onclick="location.href='formul_kesfi_meb_revizeli.html'">Uygulama-2</button>
-            <button onclick="location.href='serbest.html'">Serbest Mod</button>
-        </nav>
         <h2 id="main-title">Dönme Dönüşümü Keşfi</h2>
         <div id="step-desc">
             <div id="desc-text">Yükleniyor...</div>
@@ -494,6 +488,11 @@
         let pActive = { x: 4, y: 3 }, quizTarget = { x: 0, y: 0 };
         let currentQuizType = null, lastQuizTypeIdx = -1;
         let solvedCount = 0, wrongCount = 0, isActivityEnded = false;
+
+        /* ─── SFX ─── */
+        function mkAudio(src){ const a=new Audio(src); a.preload='auto'; return a; }
+        const SFX = { click: mkAudio('click.mp3'), correct: mkAudio('correct.mp3'), wrong: mkAudio('wrong.mp3'), finish: mkAudio('finish.mp3') };
+        function snd(k){ try{ const s=SFX[k]; if(!s)return; s.currentTime=0; s.play().catch(()=>{}); }catch(e){} }
 
         const tours = [
             { x: 4, y: 3, msg: "<span class='desc-tour-title'>İnceleme 1:</span> Düzlemde verilen bir noktanın orijin etrafında, pozitif yönde (saat yönünün tersine) \\(90^\\circ\\)'nin katları kadar döndürüldüğünde koordinatlarının nasıl değiştiği incelenir." },
@@ -811,6 +810,7 @@
         }
 
         window.changeStep = (dir) => {
+            snd('click');
             currentStep += dir;
             if (currentStep > 4) {
                 if (currentTourIdx < tours.length - 1) {
@@ -864,6 +864,7 @@
             const ax = parseInt(ui.inX.value), ay = parseInt(ui.inY.value);
             if (ax === quizTarget.x && ay === quizTarget.y) {
                 solvedCount += 1;
+                snd('correct');
                 ui.desc.innerHTML = `<span class="desc-success">Doğru cevap.</span> <span class="desc-question">Dönüş sonucu ekranda gösteriliyor.</span>`;
                 targetAngle = currentQuizType ? currentQuizType.signedAngle : 90;
                 renderMath([ui.desc]);
@@ -875,6 +876,7 @@
                 }
             } else {
                 wrongCount += 1;
+                snd('wrong');
                 const hintText = currentQuizType ? currentQuizType.hint : "İpucu: Dönüş yönüne göre koordinat dönüşümünü yeniden inceleyiniz.";
                 ui.desc.innerHTML = `<span class="desc-error">Henüz doğru değil.</span> <span class="desc-hint">${hintText} Koordinatların yer değiştirip değiştirmediğini ve yeni bölgedeki işaret düzenini adım adım kontrol ederek yeniden deneyiniz.</span>`;
                 renderMath([ui.desc]);
@@ -906,6 +908,7 @@
 
         function endActivityWithSummary() {
             isActivityEnded = true;
+            snd('finish');
             ui.title.innerText = "ETKİNLİK TAMAMLANDI";
             ui.quiz.style.display = 'none';
             summary.stats.innerHTML = `Toplam doğru cevap: <b>${solvedCount}</b><br>Yanlış deneme: <b>${wrongCount}</b>`;
