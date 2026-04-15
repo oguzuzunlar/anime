@@ -941,7 +941,7 @@
     canvasArea.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0c0809); // gece modu varsayılanı
+    scene.background = null; // şeffaf başlangıç — tema kodu yönetir
 
     // ── environment.glb ortam haritası ──────────────────────────────────
     let envTexGlobal = null; // yüklenen PMREM texture (toggleTheme’de kullanılır)
@@ -984,10 +984,10 @@
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.07;
-    controls.minPolarAngle = 0;            // tam 360° — tabandan tavana her açı
-    controls.maxPolarAngle = Math.PI;      // tam 360° düşey
+    controls.minPolarAngle = Math.PI / 8;       // ~22° — kuşbakışı sınırı
+    controls.maxPolarAngle = Math.PI * 17 / 36; // ~85° — tavan görünür, zeminin altına inmez
     controls.minDistance  = 4;
-    controls.maxDistance  = 55;            // uzaktaştırılarak tüm oda görülebilir
+    controls.maxDistance  = 24;            // oda duvarlarının içinde kalır (duvarlar ±27.5)
     controls.target.set(0, 0, 0);
 
     let userMovedCamera = false;
