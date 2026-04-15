@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="data:,">
+    <title>Türk Daması – 2B</title>
+    <style>
+        :root {
+            --sidebar-bg: rgba(41,27,16,0.92);
+            --text-color: #f5e6d3;
+            --board-bg:   #c59830;
+            --btn-bg:     #5d4037;
+            --btn-outline-color:  var(--board-bg);
+            --btn-outline-border: var(--board-bg);
+        }
+        body[data-theme='light'] {
+            --sidebar-bg: rgba(224,195,145,0.96);
+            --text-color: #1a0e05;
+            --board-bg:   #b8860b;
+            --btn-bg:     #5d3a1a;
+            --btn-outline-color:  #5d3a1a;
+            --btn-outline-border: #5d3a1a;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--text-color);
+            background: #1a0e05;
+            display: flex;
+            height: 100dvh;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ── Sidebar ── */
+        #sidebar {
+            position: relative; z-index: 10;
+            width: 270px; flex-shrink: 0;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 20px 18px;
+            box-shadow: 2px 0 18px rgba(0,0,0,0.55);
+            display: flex; flex-direction: column; gap: 11px;
+            overflow-y: auto;
+        }
+
+        h1 {
+            margin: 0; color: var(--board-bg);
+            font-size: 16px; text-transform: uppercase; letter-spacing: 2px;
+            text-align: center; border-bottom: 2px solid #5d4037; padding-bottom: 10px;
+        }
+        body[data-theme='light'] h1 { color: #5d3a1a; }
+
+        .panel {
+            background: rgba(0,0,0,0.22); padding: 11px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        body[data-theme='light'] .panel {
+            background: rgba(255,248,235,0.88);
+            border: 1px solid rgba(120,75,30,0.25);
+        }
+
+        .status-bar {
+            display: flex; align-items: center; justify-content: center; gap: 9px;
+            font-size: 0.95rem; font-weight: bold;
+            padding: 9px; border-radius: 6px;
+        }
+        .stone-dot {
+            width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+            transition: background 0.3s;
+        }
+
+        select, button {
+            padding: 9px 10px; border-radius: 6px; border: none;
+            background: var(--btn-bg); color: white; cursor: pointer;
+            font-weight: bold; font-family: inherit; font-size: 0.88rem;
+            width: 100%;
+        }
+        button.primary  { background: #e53935; color: white; }
+        button.outline  {
+            background: transparent;
+            border: 2px solid var(--btn-outline-border);
+            color: var(--btn-outline-color);
+        }
+        body[data-theme='light'] button.outline { border-color: #5d3a1a; color: #5d3a1a; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 8px; }
+
+        #score-text { text-align: center; font-weight: bold; font-size: 0.9rem; }
+        body[data-theme='light'] #score-text { color: #3b1f05; }
+
+        #combo-msg {
+            color: #ffeb3b; font-size: 0.78rem; text-align: center;
+            display: none; font-weight: bold; margin-top: 2px;
+        }
+        body[data-theme='light'] #combo-msg { color: #b45309; }
+
+        /* ── Canvas Area ── */
+        #game-area {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            background: #100a04;
+            position: relative; overflow: hidden;
+        }
+        body[data-theme='light'] #game-area { background: #e8d5b0; }
+
+        #board-canvas {
+            touch-action: none;
+            display: block;
+            border-radius: 4px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.7);
+        }
+
+        /* ── Mobil üst bar ── */
+        #mobile-top-bar {
+            display: none;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            align-items: center; gap: 8px; padding: 8px 14px;
+            background: rgba(0,0,0,0.72); backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255,255,255,0.10);
+            font-size: 0.9rem; font-weight: bold; color: #f5e6d3;
+        }
+        body[data-theme='light'] #mobile-top-bar {
+            background: rgba(255,255,255,0.80);
+            color: #1a1a2e;
+            border-bottom: 1px solid rgba(0,0,0,0.12);
+        }
+        #mob-stone-dot {
+            width: 16px; height: 16px; border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* ── Mobil alt menü ── */
+        #menu-toggle-bar {
+            display: none;
+            position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+            align-items: center; justify-content: space-between;
+            padding: 10px 16px; cursor: pointer; user-select: none;
+            background: var(--sidebar-bg); backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255,255,255,0.10); min-height: 48px;
+        }
+        #menu-toggle-bar span {
+            font-size: 0.8rem; font-weight: bold; letter-spacing: 1.5px;
+            text-transform: uppercase; opacity: 0.85;
+        }
+        #menu-toggle-btn {
+            width: auto !important; padding: 5px 13px; font-size: 0.78rem;
+            background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.22);
+            border-radius: 20px; color: inherit; cursor: pointer; font-weight: bold;
+        }
+
+        /* ── Toast ── */
+        #game-toast {
+            position: fixed; top: 60px; left: 50%;
+            transform: translateX(-50%) translateY(-80px);
+            z-index: 3500;
+            background: linear-gradient(135deg, #ffd740, #ff9800);
+            color: #1a0800; font-size: 1rem; font-weight: 800;
+            padding: 10px 24px; border-radius: 28px;
+            box-shadow: 0 4px 22px rgba(0,0,0,0.5);
+            pointer-events: none; letter-spacing: 0.5px;
+            opacity: 0; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s;
+        }
+        #game-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* ── Intro Ekranı ── */
+        #howto-screen {
+            position: fixed; inset: 0; z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+            padding: 16px; background: rgba(200,165,100,0.55); color: #3a2008;
+        }
+        .howto-card {
+            width: min(640px, 100%); max-height: 92dvh; overflow: auto;
+            border-radius: 16px; padding: 24px 22px;
+            background: rgba(255,248,232,0.97);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(180,120,30,0.40);
+            box-shadow: 0 24px 64px rgba(100,60,0,0.22);
+            color: #3a2008;
+        }
+        .intro-main-title {
+            font-size: 2.4rem; font-weight: 900; letter-spacing: 5px;
+            text-align: center; margin: 0 0 6px;
+            background: linear-gradient(180deg,#a04000 0%,#c05800 30%,#8b3000 65%,#5a1e00 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 8px rgba(120,60,0,0.30));
+        }
+        .intro-title-line {
+            display: block; height: 2px; border: none; width: 80%; margin: 4px auto 14px;
+            background: linear-gradient(90deg,transparent 0%,rgba(160,100,20,0.20) 15%,rgba(180,110,10,0.60) 50%,rgba(160,100,20,0.20) 85%,transparent 100%);
+        }
+        .intro-section-label {
+            text-align: center; font-size: 0.74rem; letter-spacing: 2px;
+            text-transform: uppercase; margin: 14px 0 8px;
+            color: rgba(140,80,10,0.92); font-weight: 600;
+        }
+        .intro-mode-btns, .intro-diff-btns {
+            display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 6px;
+        }
+        .mode-btn {
+            padding: 10px 22px; border-radius: 8px; border: 2px solid rgba(140,80,10,0.30);
+            background: rgba(255,235,190,0.55); color: #5d3a1a; font-size: 0.95rem;
+            font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: inherit;
+        }
+        .mode-btn.active { background: #8b1a1a; border-color: #8b1a1a; color: #fff; box-shadow: 0 0 14px rgba(139,26,26,0.35); }
+        .diff-btn {
+            padding: 7px 18px; border-radius: 6px; border: 2px solid rgba(140,80,10,0.25);
+            background: rgba(255,240,200,0.50); color: #5d3a1a; font-size: 0.88rem;
+            font-weight: bold; cursor: pointer; transition: all 0.2s; font-family: inherit;
+        }
+        .diff-btn.active { background: #7a2a0a; border-color: #7a2a0a; color: #fff; }
+        .intro-divider { border: none; border-top: 1px solid rgba(160,100,20,0.25); margin: 12px 0; }
+        .intro-color-row { display: flex; gap: 9px; justify-content: center; flex-wrap: wrap; margin-bottom: 4px; }
+        .color-swatch {
+            width: 30px; height: 30px; border-radius: 50%;
+            border: 3px solid transparent; cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.30), 0 0 0 2px rgba(80,40,0,0.25);
+        }
+        .color-swatch:hover { transform: scale(1.2); }
+        .color-swatch.active { border-color: #8b4a00; transform: scale(1.25); box-shadow: 0 0 0 2px rgba(139,74,0,0.55), 0 3px 10px rgba(0,0,0,0.25); }
+        .color-player-label { font-size: 0.74rem; color: #7a4a18; text-align: center; margin: 0 0 5px; }
+        .howto-sub {
+            margin: 0 0 10px; text-align: center; font-size: 0.86rem;
+            font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+            color: rgba(160,90,10,0.95);
+        }
+        .howto-list {
+            margin: 0; padding-left: 18px;
+            display: flex; flex-direction: column; gap: 8px;
+            line-height: 1.50; font-size: 0.9rem; color: rgba(58,32,8,0.90);
+        }
+        .howto-list li::marker { color: rgba(180,110,10,0.85); }
+        .howto-list strong { color: #8b4a00; }
+
+        /* ── Winner Modal ── */
+        #winner-modal {
+            position: fixed; inset: 0; display: none;
+            justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.78); z-index: 4000; padding: 20px;
+        }
+        #winner-modal.show { display: flex; }
+        .winner-dialog {
+            width: min(440px, 100%);
+            background: rgba(14,9,3,0.97);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(196,144,24,0.45);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.92);
+            border-radius: 18px; padding: 34px 26px 26px;
+            text-align: center; color: #f5e6d3;
+        }
+        .winner-trophy { font-size: 3.6rem; margin-bottom: 8px; animation: trophyBounce 0.7s ease; }
+        @keyframes trophyBounce {
+            0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+            60%  { transform: scale(1.25) rotate(5deg);  opacity: 1; }
+            100% { transform: scale(1)   rotate(0); }
+        }
+        .winner-headline {
+            margin: 0 0 4px; font-size: 2rem; font-weight: 900; letter-spacing: 4px;
+            background: linear-gradient(180deg,#fffbe0 0%,#f7d040 22%,#e6960a 55%,#b06000 82%,#7a3a00 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 8px rgba(220,150,0,0.6));
+        }
+        .winner-sub { margin: 0 0 6px; font-size: 1rem; color: #f5e6d3; opacity: 0.9; }
+        .winner-divider-line {
+            display: block; height: 1px; width: 70%; margin: 10px auto 20px;
+            background: linear-gradient(90deg,transparent,rgba(196,144,24,0.55),transparent);
+        }
+        .winner-actions { display: flex; gap: 12px; justify-content: center; }
+        .winner-actions button { flex: 1; max-width: 180px; padding: 12px; font-size: 0.92rem; }
+
+        /* ── Havai Fişek Canvas ── */
+        #fw-canvas {
+            position: fixed; inset: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 3999; display: none;
+        }
+
+        /* ── Mobil Responsive ── */
+        @media (max-width: 860px) {
+            body { overflow-y: auto; height: auto; flex-direction: column; }
+            #sidebar { display: none; }
+            #mobile-top-bar { display: flex; }
+            #menu-toggle-bar { display: flex; }
+            #game-area {
+                min-height: calc(100dvh - 96px);
+                margin-top: 44px;
+                margin-bottom: 48px;
+            }
+            #sidebar.mob-open {
+                display: flex;
+                position: fixed; bottom: 48px; left: 0; right: 0;
+                width: 100%; max-height: 75dvh; overflow-y: auto;
+                border-top: 1px solid rgba(255,255,255,0.10);
+                box-shadow: 0 -8px 28px rgba(0,0,0,0.6);
+                border-radius: 0;
+                z-index: 150;
+            }
+        }
+        /* ── Yatay mod uyarısı ── */
+        #landscape-warning {
+            display: none;
+            position: fixed; inset: 0; z-index: 9999;
+            background: #1a0e05;
+            flex-direction: column; align-items: center; justify-content: center;
+            gap: 20px; text-align: center; padding: 32px;
+            color: #f5e6d3;
+        }
+        #landscape-warning .lw-icon { font-size: 4rem; animation: lwRotate 1.5s ease-in-out infinite alternate; }
+        @keyframes lwRotate {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(-90deg); }
+        }
+        #landscape-warning h2 { font-size: 1.3rem; font-weight: 900; letter-spacing: 2px; margin: 0; color: #f0c040; }
+        #landscape-warning p  { font-size: 0.95rem; opacity: 0.80; margin: 0; }
+    </style>
+</head>
+<body data-theme="light">
+
+<!-- Yatay mod uyarısı -->
+<div id="landscape-warning">
+    <div class="lw-icon">📱</div>
+    <h2>LÜTFEN TELEFONu DÖNDÜRÜN</h2>
+    <p>Bu oyun yalnızca dikey (portre) modda çalışır.</p>
+</div>
+
+<!-- Mobil üst bar -->
+<div id="mobile-top-bar">
+    <div id="mob-stone-dot" style="background:radial-gradient(circle at 30% 30%,#ff8a80,#e53935 60%,#8e0000);"></div>
+    <span>Sıra: <strong id="mob-turn-txt">Kırmızı</strong></span>
+    <button id="mobLastMoveBtn" onclick="showLastMove()" style="margin-left:auto;padding:5px 12px;font-size:0.78rem;font-weight:700;border-radius:6px;border:1px solid rgba(255,255,255,0.7);background:rgba(0,0,0,0.55);color:#fff;cursor:pointer;min-height:unset;width:auto;">👁 Son Hamleyi Gör</button>
+</div>
+
+<!-- Sidebar -->
+<div id="sidebar">
+    <h1>TÜRK DAMASI 2B</h1>
+    <div id="status" class="status-bar" style="background:#e53935;color:#fff;">
+        <span id="turn-stone" class="stone-dot" style="background:radial-gradient(circle at 30% 30%,#ff8a80,#e53935 60%,#8e0000);"></span>
+        Sıra: <span id="turn-txt">Kırmızı</span>
+    </div>
+    <div id="combo-msg">⚡ ZİNCİR YEME DEVAM!</div>
+    <div class="panel">
+        <div id="score-text">Kırmızı: 16 | Yeşil: 16</div>
+    </div>
+    <div class="panel btn-group">
+        <button class="primary" onclick="openIntroScreen()">🔄 YENİ OYUN</button>
+        <button class="outline" id="lastMoveBtn" onclick="showLastMove()">👁 SON HAMLEYİ GÖR</button>
+        <button class="outline" onclick="toggleTheme()" id="themeBtn">🌙 GECE MODU</button>
+        <button class="outline" onclick="toggleMusic()" id="musicBtn">🎵 SESİ AÇ</button>
+        <button class="outline" onclick="openHowtoModal()">❓ NASIL OYNANIR</button>
+    </div>
+</div>
+
+<!-- Oyun Alanı -->
+<div id="game-area">
+    <canvas id="board-canvas"></canvas>
+</div>
+
+<!-- Mobil alt menü çubuğu -->
+<div id="menu-toggle-bar" onclick="toggleSidebar()">
+    <span>TÜRK DAMASI 2B</span>
+    <button id="menu-toggle-btn">▲ MENÜ</button>
+</div>
+
+<!-- Toast -->
+<div id="game-toast"></div>
+
+<!-- Havai Fişek -->
+<canvas id="fw-canvas"></canvas>
+
+<!-- Giriş Ekranı -->
+<div id="howto-screen">
+    <div class="howto-card">
+        <h2 class="intro-main-title">TÜRK DAMASI</h2>
+        <hr class="intro-title-line">
+
+        <p class="intro-section-label">Oyun Modu</p>
+        <div class="intro-mode-btns">
+            <button class="mode-btn" data-mode="pvp" onclick="selectIntroMode('pvp')">👥 İki Kişi</button>
+            <button class="mode-btn active" data-mode="pve" onclick="selectIntroMode('pve')">⚔ Bilgisayara Karşı</button>
+        </div>
+        <div id="intro-diff-wrap" style="display:none;text-align:center;">
+            <p class="intro-section-label" style="margin-top:8px;">Zorluk Seviyesi</p>
+            <div class="intro-diff-btns">
+                <button class="diff-btn" data-level="easy"   onclick="selectIntroDiff('easy')">Kolay</button>
+                <button class="diff-btn active" data-level="medium" onclick="selectIntroDiff('medium')">Orta</button>
+                <button class="diff-btn" data-level="hard"   onclick="selectIntroDiff('hard')">Zor</button>
+            </div>
+        </div>
+
+        <hr class="intro-divider" style="margin:12px 0 8px;">
+        <p class="intro-section-label">Taş Renkleri</p>
+        <div id="intro-color-wrap">
+            <p class="color-player-label">1. Oyuncu</p>
+            <div class="intro-color-row" id="color-row-red">
+                <div class="color-swatch active" data-col="red"    title="Kırmızı"    style="background:#e53935;" onclick="selectIntroColor('red','red')"></div>
+                <div class="color-swatch"        data-col="blue"   title="Mavi"       style="background:#1e88e5;" onclick="selectIntroColor('red','blue')"></div>
+                <div class="color-swatch"        data-col="purple" title="Mor"        style="background:#8e24aa;" onclick="selectIntroColor('red','purple')"></div>
+                <div class="color-swatch"        data-col="orange" title="Turuncu"    style="background:#f4511e;" onclick="selectIntroColor('red','orange')"></div>
+                <div class="color-swatch"        data-col="brown"  title="Kahverengi" style="background:#6d4c41;" onclick="selectIntroColor('red','brown')"></div>
+                <div class="color-swatch"        data-col="pink"   title="Pembe"      style="background:#e91e63;" onclick="selectIntroColor('red','pink')"></div>
+            </div>
+            <p class="color-player-label" style="margin-top:9px;">2. Oyuncu</p>
+            <div class="intro-color-row" id="color-row-green">
+                <div class="color-swatch active" data-col="black"  title="Siyah"      style="background:#111111;" onclick="selectIntroColor('green','black')"></div>
+                <div class="color-swatch"        data-col="green"  title="Yeşil"      style="background:#4caf50;" onclick="selectIntroColor('green','green')"></div>
+                <div class="color-swatch"        data-col="teal"   title="Firuze"     style="background:#00897b;" onclick="selectIntroColor('green','teal')"></div>
+                <div class="color-swatch"        data-col="yellow" title="Sarı"       style="background:#fbc02d;" onclick="selectIntroColor('green','yellow')"></div>
+                <div class="color-swatch"        data-col="silver" title="Gümüş"      style="background:#9e9e9e;" onclick="selectIntroColor('green','silver')"></div>
+                <div class="color-swatch"        data-col="navy"   title="Lacivert"   style="background:#283593;" onclick="selectIntroColor('green','navy')"></div>
+                <div class="color-swatch"        data-col="white"  title="Beyaz"      style="background:#f5f5f5;" onclick="selectIntroColor('green','white')"></div>
+            </div>
+        </div>
+
+        <div style="margin-top:16px;">
+            <button class="primary" style="width:100%;padding:13px;font-size:1rem;letter-spacing:1px;" onclick="closeHowToScreen()">▶ OYUNA BAŞLA</button>
+        </div>
+
+        <hr class="intro-divider">
+        <p class="howto-sub" style="margin-bottom:10px;">Nasıl Oynanır?</p>
+        <ul class="howto-list">
+            <li><strong>Normal hamle:</strong> Taşınıza tıklayın, ardından gitmek istediğiniz boş kareye tıklayın. Taşlar ileri, sola veya sağa bir kare hareket eder; geriye gidemez.</li>
+            <li><strong>Yeme hamlesi:</strong> Bitişik rakip taşın hemen ötesi boşsa üzerinden atlayarak o taşı alırsınız. <strong>Yeme fırsatı varsa zorunludur.</strong></li>
+            <li><strong>Zincir yeme:</strong> Birden fazla yeme yapılabilecekse her adımı siz onaylarsınız. <strong>En fazla taşı yiyen zinciri tamamlamak zorunludur.</strong></li>
+            <li><strong>Dama:</strong> Rakip son sıraya ulaşan taş dama olur. Dama 4 yönde istediği kadar kare gidebilir.</li>
+            <li><strong>Kazanma:</strong> Rakibin tüm taşlarını alan ya da rakibi hamlesiz bırakan oyuncu kazanır.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Oyun içi kurallar modali -->
+<div id="howto-modal-bg" style="position:fixed;inset:0;z-index:3000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);padding:16px;" onclick="closeHowtoModal(event)">
+    <div style="width:min(620px,100%);max-height:88dvh;overflow-y:auto;border-radius:14px;padding:22px 20px;background:rgba(14,9,3,0.96);backdrop-filter:blur(20px);border:1px solid rgba(196,144,24,0.36);color:#f5e6d3;" onclick="event.stopPropagation()">
+        <h2 class="intro-main-title" style="font-size:1.7rem !important;letter-spacing:4px !important;">Türk Daması</h2>
+        <hr class="intro-title-line">
+        <p class="howto-sub" style="margin-bottom:10px;color:rgba(245,220,150,0.82);">Kural Özeti</p>
+        <ul class="howto-list">
+            <li><strong>Normal hamle:</strong> Taşlar yalnızca ileri, sola veya sağa doğru bir kare hareket edebilir; geri gidemez.</li>
+            <li><strong>Yeme:</strong> Bitişik bir rakip taşın hemen karşısındaki kare boşsa o taşın üzerinden atlayarak onu yiyebilirsiniz. Yeme fırsatı varsa zorunludur ve en fazla taşı yiyen zincir seçilmelidir.</li>
+            <li><strong>Zincir yeme:</strong> Birden fazla taş yeme fırsatı doğduğunda her atlama için sıradaki kareye tıklayarak zinciri tamamlarsınız.</li>
+            <li><strong>Dama:</strong> Rakibin son sırasına ulaşan taş dama olur. Dama taşı dört yönde istediği kadar kare ilerleyebilir.</li>
+            <li><strong>Kazanma:</strong> Rakibin tüm taşlarını alan ya da rakibi hamlesiz bırakan oyuncu kazanır.</li>
+        </ul>
+        <div style="margin-top:16px;">
+            <button class="primary" style="width:100%;padding:11px;" onclick="closeHowtoModal()">KAPAT</button>
+        </div>
+    </div>
+</div>
+
+<!-- Kazanan Modali -->
+<div id="winner-modal" role="dialog" aria-modal="true">
+    <div class="winner-dialog">
+        <div class="winner-trophy">🏆</div>
+        <h2 id="winner-title" class="winner-headline">KAZANDINIZ!</h2>
+        <span class="winner-divider-line"></span>
+        <p id="winner-sub" class="winner-sub">Tebrikler!</p>
+        <div class="winner-actions">
+            <button class="primary" onclick="closeWinnerAndGoIntro()">↺ TEKRAR OYNA</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════════
+//  SABİTLER & DURUM
+// ════════════════════════════════════════════════════════════════════════
+const ROWS = 8, COLS = 8;
+
+const STONE_PALETTES = {
+    red:    { main: '#e53935', dark: '#8e0000', light: '#ff8a80' },
+    blue:   { main: '#1e88e5', dark: '#0d47a1', light: '#64b5f6' },
+    purple: { main: '#8e24aa', dark: '#4a148c', light: '#ce93d8' },
+    orange: { main: '#f4511e', dark: '#bf360c', light: '#ff7043' },
+    brown:  { main: '#6d4c41', dark: '#3e2723', light: '#a1887f' },
+    pink:   { main: '#e91e63', dark: '#880e4f', light: '#f48fb1' },
+    green:  { main: '#4caf50', dark: '#1b5e20', light: '#a5d6a7' },
+    teal:   { main: '#00897b', dark: '#004d40', light: '#4db6ac' },
+    yellow: { main: '#fbc02d', dark: '#f57f17', light: '#ffee58' },
+    silver: { main: '#9e9e9e', dark: '#424242', light: '#eeeeee' },
+    navy:   { main: '#283593', dark: '#1a237e', light: '#5c6bc0' },
+    white:  { main: '#f0f0f0', dark: '#9e9e9e', light: '#ffffff' },
+    black:  { main: '#1a1a1a', dark: '#000000', light: '#555555' },
+};
+const PAL_NAMES = {
+    red:'Kırmızı', blue:'Mavi', purple:'Mor', orange:'Turuncu', brown:'Kahverengi',
+    pink:'Pembe', green:'Yeşil', teal:'Firuze', yellow:'Sarı', silver:'Gümüş',
+    navy:'Lacivert', white:'Beyaz', black:'Siyah'
+};
+
+let introMode  = 'pve';
+let introDiff  = 'medium';
+let introColorRed   = 'red';
+let introColorGreen = 'black';
+
+function palCss(who) {
+    const k = who === 'red' ? introColorRed : introColorGreen;
+    return (STONE_PALETTES[k] || STONE_PALETTES['red']).main;
+}
+function palDark(who) {
+    const k = who === 'red' ? introColorRed : introColorGreen;
+    return (STONE_PALETTES[k] || STONE_PALETTES['red']).dark;
+}
+function palLight(who) {
+    const k = who === 'red' ? introColorRed : introColorGreen;
+    return (STONE_PALETTES[k] || STONE_PALETTES['red']).light;
+}
+function palName(who) {
+    return PAL_NAMES[who === 'red' ? introColorRed : introColorGreen] || (who === 'red' ? 'Kırmızı' : 'Yeşil');
+}
+
+let state = {
+    board: {}, turn: 'red', selected: null,
+    isCombo: false, comboChains: null, comboFrom: null, comboSquares: [], comboCaps: [],
+    score: { red: 16, green: 16 }, mode: 'pvp', aiLevel: 'medium', gameOver: false,
+    aiMoveHistory: []
+};
+let lastMove = null, lastMoveBoard = null, comboBoardBefore = null;
+let animating = false;
+let showingLastMove = false;
+
+// ════════════════════════════════════════════════════════════════════════
+//  KURAL MOTORU (3B ile aynı)
+// ════════════════════════════════════════════════════════════════════════
+function rowOf(id) { return Math.floor(id / COLS); }
+function colOf(id) { return id % COLS; }
+function cellId(r, c) { return r * COLS + c; }
+function colorOf(id) { const v = state.board[id]; return v ? v.split('-')[0] : null; }
+function isKing(id) { return state.board[id] && state.board[id].endsWith('king'); }
+function pieceColor(v) { return v ? v.split('-')[0] : null; }
+function enemy(col) { return col === 'red' ? 'green' : 'red'; }
+function forwardDir(col) { return col === 'red' ? -1 : 1; }
+function promotionRow(col) { return col === 'red' ? 0 : ROWS - 1; }
+
+function findCapChains(board, startId) {
+    const startColor = pieceColor(board[startId]);
+    const king = board[startId] && board[startId].endsWith('king');
+    const chains = [];
+    function dfs(pos, seq, caps, visitedCaps) {
+        let found = false;
+        const row = Math.floor(pos / COLS), col = pos % COLS;
+        const fwd = forwardDir(startColor);
+        const capDirs = king ? [[-1,0],[1,0],[0,-1],[0,1]] : [[fwd,0],[0,-1],[0,1]];
+        for (const [dr, dc] of capDirs) {
+            if (king) {
+                for (let dist = 1; dist < ROWS; dist++) {
+                    const mr = row + dr * dist, mc = col + dc * dist;
+                    if (mr < 0 || mr >= ROWS || mc < 0 || mc >= COLS) break;
+                    const mid = cellId(mr, mc);
+                    if (!board[mid]) continue;
+                    if (pieceColor(board[mid]) !== enemy(startColor)) break;
+                    if (visitedCaps.has(mid)) break;
+                    for (let land = dist + 1; ; land++) {
+                        const lr = row + dr * land, lc = col + dc * land;
+                        if (lr < 0 || lr >= ROWS || lc < 0 || lc >= COLS) break;
+                        const landId = cellId(lr, lc);
+                        if (board[landId]) break;
+                        found = true;
+                        const nb = Object.assign({}, board);
+                        nb[landId] = nb[pos]; nb[pos] = null; nb[mid] = null;
+                        const vc2 = new Set(visitedCaps); vc2.add(mid);
+                        dfs(landId, [...seq, landId], [...caps, mid], vc2);
+                    }
+                    break;
+                }
+            } else {
+                const mr = row + dr, mc = col + dc;
+                if (mr < 0 || mr >= ROWS || mc < 0 || mc >= COLS) continue;
+                const mid = cellId(mr, mc);
+                if (pieceColor(board[mid]) !== enemy(startColor)) continue;
+                if (visitedCaps.has(mid)) continue;
+                const lr = row + dr * 2, lc = col + dc * 2;
+                if (lr < 0 || lr >= ROWS || lc < 0 || lc >= COLS) continue;
+                const landId = cellId(lr, lc);
+                if (board[landId]) continue;
+                found = true;
+                const nb = Object.assign({}, board);
+                nb[landId] = nb[pos]; nb[pos] = null; nb[mid] = null;
+                const vc2 = new Set(visitedCaps); vc2.add(mid);
+                dfs(landId, [...seq, landId], [...caps, mid], vc2);
+            }
+        }
+        if (!found && caps.length > 0) chains.push({ squares: seq, caps });
+    }
+    dfs(startId, [], [], new Set());
+    return chains;
+}
+
+function allCapChains(board, col) {
+    const result = [];
+    for (let id = 0; id < ROWS * COLS; id++) {
+        if (pieceColor(board[id]) !== col) continue;
+        findCapChains(board, id).forEach(ch => result.push({ from: id, ...ch }));
+    }
+    return result;
+}
+function maxCapChains(board, col) {
+    const all = allCapChains(board, col);
+    if (!all.length) return [];
+    const maxLen = Math.max(...all.map(c => c.caps.length));
+    return all.filter(c => c.caps.length === maxLen);
+}
+
+function normalMoves(board, col) {
+    const moves = [];
+    const fwd = forwardDir(col);
+    for (let id = 0; id < ROWS * COLS; id++) {
+        if (pieceColor(board[id]) !== col) continue;
+        const king = board[id].endsWith('king');
+        const row = Math.floor(id / COLS), col2 = id % COLS;
+        const dirs = king ? [[-1,0],[1,0],[0,-1],[0,1]] : [[fwd,0],[0,-1],[0,1]];
+        for (const [dr, dc] of dirs) {
+            if (king) {
+                for (let d = 1; d < ROWS; d++) {
+                    const nr = row + dr * d, nc = col2 + dc * d;
+                    if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) break;
+                    const nid = cellId(nr, nc);
+                    if (board[nid]) break;
+                    moves.push({ from: id, to: nid, caps: [] });
+                }
+            } else {
+                const nr = row + dr, nc = col2 + dc;
+                if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) continue;
+                const nid = cellId(nr, nc);
+                if (board[nid]) continue;
+                moves.push({ from: id, to: nid, caps: [] });
+            }
+        }
+    }
+    return moves;
+}
+
+function legalMoves(board, col) {
+    const caps = maxCapChains(board, col);
+    if (caps.length) return caps.map(c => ({ from: c.from, to: c.squares[c.squares.length-1], caps: c.caps, squares: c.squares }));
+    return normalMoves(board, col);
+}
+
+function applyMove(board, mv) {
+    const nb = Object.assign({}, board);
+    const piece = nb[mv.from];
+    nb[mv.to] = piece; nb[mv.from] = null;
+    (mv.caps || []).forEach(c => { nb[c] = null; });
+    const col = pieceColor(piece);
+    if (!piece.endsWith('king') && rowOf(mv.to) === promotionRow(col)) nb[mv.to] = col + '-king';
+    return nb;
+}
+
+function movesForSelected(id) {
+    if (state.isCombo && state.comboChains) {
+        const result = [], seen = new Set();
+        state.comboChains.forEach(ch => {
+            if (!ch.squares.length) return;
+            const nextTo = ch.squares[0];
+            if (!seen.has(nextTo)) { seen.add(nextTo); result.push({ from: id, to: nextTo, caps: [ch.caps[0]], squares: [nextTo] }); }
+        });
+        return result;
+    }
+    const caps = maxCapChains(state.board, state.turn);
+    if (caps.length) {
+        const myCaps = caps.filter(c => c.from === id), result = [], seen = new Set();
+        myCaps.forEach(ch => {
+            const fd = ch.squares[0];
+            if (!seen.has(fd)) { seen.add(fd); result.push({ from: id, to: fd, caps: [ch.caps[0]], squares: [fd] }); }
+        });
+        return result;
+    }
+    return normalMoves(state.board, state.turn).filter(m => m.from === id);
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  2B CANVAS ÇİZİMİ
+// ════════════════════════════════════════════════════════════════════════
+const canvas = document.getElementById('board-canvas');
+const ctx = canvas.getContext('2d');
+let CELL = 60;  // piksel başına kare boyutu — resize ile hesaplanır
+
+// Animasyon parçacıkları
+let particles = [];      // {id, fromX, fromY, toX, toY, t, dur, onDone}
+let deathParticles = []; // {x, y, vx, vy, alpha, color, r}
+let dyingIds = new Set(); // ölüm animasyonu süresince board'da gizlenecek kareler
+
+function resize() {
+    const area = document.getElementById('game-area');
+    const maxW = area.clientWidth  - 20;
+    const maxH = area.clientHeight - 20;
+    CELL = Math.floor(Math.min(maxW, maxH) / ROWS);
+    const sz = CELL * ROWS;
+    canvas.width  = sz;
+    canvas.height = sz;
+    drawBoard();
+}
+
+function drawBoard() {
+    const sz = CELL * ROWS;
+    const isDark = document.body.getAttribute('data-theme') !== 'light';
+
+    // Tahta arka planı
+    ctx.fillStyle = isDark ? '#1a0e05' : '#c8a060';
+    ctx.fillRect(0, 0, sz, sz);
+
+    // Kareler
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            const isLight = (r + c) % 2 === 0;
+            const id = cellId(r, c);
+            const x = c * CELL, y = r * CELL;
+
+            // Temel renk
+            let fill;
+            if (isLight) { fill = isDark ? '#d4a45a' : '#f0d08a'; }
+            else          { fill = isDark ? '#8b4513' : '#a05820'; }
+
+            ctx.fillStyle = fill;
+            ctx.fillRect(x, y, CELL, CELL);
+
+            // Seçili kare vurgusu
+            if (id === state.selected) {
+                ctx.fillStyle = 'rgba(255,230,80,0.45)';
+                ctx.fillRect(x, y, CELL, CELL);
+            }
+
+            // Son hamle vurgusu
+            if (lastMove && showingLastMove) {
+                if (id === lastMove.from) {
+                    ctx.fillStyle = 'rgba(255,230,80,0.35)';
+                    ctx.fillRect(x, y, CELL, CELL);
+                } else if (id === lastMove.to) {
+                    ctx.fillStyle = 'rgba(100,255,120,0.30)';
+                    ctx.fillRect(x, y, CELL, CELL);
+                } else if (lastMove.caps.includes(id)) {
+                    ctx.fillStyle = 'rgba(255,100,30,0.35)';
+                    ctx.fillRect(x, y, CELL, CELL);
+                }
+            }
+
+
+        }
+    }
+
+    // Taşlar
+    for (let id = 0; id < ROWS * COLS; id++) {
+        if (!state.board[id]) continue;
+        const val = state.board[id];
+        const col = pieceColor(val);
+        const king = val.endsWith('king');
+        const isSel = state.selected === id;
+
+        // Animasyonda veya ölüm animasyonunda olan taşı atla
+        if (particles.some(p => p.id === id) || dyingIds.has(id)) continue;
+
+        const r = rowOf(id), c2 = colOf(id);
+        const cx = c2 * CELL + CELL / 2;
+        const cy = r  * CELL + CELL / 2;
+        drawPiece(ctx, cx, cy, col, king, isSel, CELL * 0.38);
+    }
+
+    // Animasyon parçacıklarını çiz
+    particles.forEach(p => {
+        const x = p.fromX + (p.toX - p.fromX) * p.t;
+        const y = p.fromY + (p.toY - p.fromY) * p.t - Math.sin(p.t * Math.PI) * CELL * 0.6;
+        drawPiece(ctx, x, y, p.col, p.king, false, CELL * 0.38);
+    });
+
+    // Yok olma parçacıkları
+    deathParticles.forEach(dp => {
+        ctx.globalAlpha = dp.alpha;
+        ctx.fillStyle = dp.color;
+        ctx.beginPath();
+        ctx.arc(dp.x, dp.y, dp.r, 0, Math.PI*2);
+        ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    // Izgara çizgisi
+    ctx.strokeStyle = isDark ? 'rgba(0,0,0,0.35)' : 'rgba(80,40,0,0.20)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= ROWS; i++) {
+        ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, ROWS * CELL); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(ROWS * CELL, i * CELL); ctx.stroke();
+    }
+}
+
+function drawPiece(ctx, cx, cy, col, king, selected, radius) {
+    const main  = palCss(col);
+    const dark  = palDark(col);
+    const light = palLight(col);
+
+    // Gölge
+    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur  = selected ? 14 : 6;
+    ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 3;
+
+    // Ana daire — radyal gradyan (parlak top efekti)
+    const grad = ctx.createRadialGradient(cx - radius*0.3, cy - radius*0.3, radius*0.05, cx, cy, radius);
+    grad.addColorStop(0, light);
+    grad.addColorStop(0.45, main);
+    grad.addColorStop(1, dark);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+
+    // Seçim halkası
+    if (selected) {
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius + 4, 0, Math.PI*2);
+        ctx.stroke();
+    }
+
+    // Dama işareti — altın taç
+    if (king) {
+        ctx.strokeStyle = '#ffd740';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius * 0.52, 0, Math.PI*2);
+        ctx.stroke();
+
+        // Taç dişleri
+        ctx.fillStyle = '#ffd740';
+        const spikes = 5;
+        for (let i = 0; i < spikes; i++) {
+            const angle = (i / spikes) * Math.PI * 2 - Math.PI / 2;
+            const innerR = radius * 0.30;
+            const outerR = radius * 0.54;
+            const ix = cx + Math.cos(angle + Math.PI / spikes) * innerR;
+            const iy = cy + Math.sin(angle + Math.PI / spikes) * innerR;
+            const ox = cx + Math.cos(angle) * outerR;
+            const oy = cy + Math.sin(angle) * outerR;
+            const ix2 = cx + Math.cos(angle - Math.PI / spikes) * innerR;
+            const iy2 = cy + Math.sin(angle - Math.PI / spikes) * innerR;
+            ctx.beginPath();
+            ctx.moveTo(ix, iy); ctx.lineTo(ox, oy); ctx.lineTo(ix2, iy2);
+            ctx.closePath(); ctx.fill();
+        }
+    }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  ANİMASYON DÖNGÜSÜ
+// ════════════════════════════════════════════════════════════════════════
+let lastFrame = null;
+
+function animLoop(ts) {
+    requestAnimationFrame(animLoop);
+    const dt = lastFrame ? ts - lastFrame : 16;
+    lastFrame = ts;
+
+    // Taş animasyonları: t>=1 olunca loop içinden onDone çağır (setTimeout race condition yok)
+    const completedParticles = [];
+    particles.forEach(p => {
+        p.t += dt / p.dur;
+        if (p.t >= 1) { p.t = 1; completedParticles.push(p); }
+    });
+    particles = particles.filter(p => p.t < 1);
+    completedParticles.forEach(p => { if (p.onDone) p.onDone(); });
+
+    // Yok olma parçacıkları
+    deathParticles.forEach(dp => {
+        dp.x += dp.vx; dp.y += dp.vy;
+        dp.vy += 0.15; dp.alpha -= 0.025;
+    });
+    deathParticles = deathParticles.filter(dp => dp.alpha > 0);
+
+    drawBoard();
+}
+requestAnimationFrame(animLoop);
+
+// ════════════════════════════════════════════════════════════════════════
+//  TIKLAMA YÖNETİMİ
+// ════════════════════════════════════════════════════════════════════════
+let pointerDownX = 0, pointerDownY = 0, pointerMoved = false;
+
+canvas.addEventListener('pointerdown', e => {
+    pointerMoved = false; pointerDownX = e.clientX; pointerDownY = e.clientY;
+});
+canvas.addEventListener('pointermove', e => {
+    const dx = e.clientX - pointerDownX, dy = e.clientY - pointerDownY;
+    if (Math.sqrt(dx*dx + dy*dy) > 5) pointerMoved = true;
+});
+canvas.addEventListener('pointerup', e => {
+    if (pointerMoved) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width  / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const px = (e.clientX - rect.left) * scaleX;
+    const py = (e.clientY - rect.top)  * scaleY;
+    const c = Math.floor(px / CELL);
+    const r = Math.floor(py / CELL);
+    if (r >= 0 && r < ROWS && c >= 0 && c < COLS) handleCellClick(cellId(r, c));
+});
+
+// ════════════════════════════════════════════════════════════════════════
+//  OYUN MANTIĞI
+// ════════════════════════════════════════════════════════════════════════
+function handleCellClick(id) {
+    if (state.gameOver || animating || (state.mode === 'pve' && state.turn === 'green')) return;
+
+    if (state.isCombo) {
+        const nextMoves = movesForSelected(state.selected);
+        const mv = nextMoves.find(m => m.to === id);
+        if (!mv) return;
+        const advancing = state.comboChains.filter(ch => ch.squares[0] === id);
+        const trimmed = advancing.map(ch => ({ squares: ch.squares.slice(1), caps: ch.caps.slice(1) }));
+        state.comboSquares.push(id); state.comboCaps.push(mv.caps[0]);
+        performSingleCapStep(state.selected, id, mv.caps[0], trimmed);
+        return;
+    }
+
+    if (colorOf(id) === state.turn) {
+        const caps = maxCapChains(state.board, state.turn);
+        if (caps.length > 0 && !caps.some(c => c.from === id)) {
+            showToast('⚠️ Yemek zorunlu! Yeme yapabilen taşınızı seçin.', 'linear-gradient(135deg,#ef5350,#b71c1c)', '#fff');
+            state.selected = null;
+            return;
+        }
+        state.selected = id;
+        playSfx('select');
+    } else if (state.selected !== null) {
+        const legal = movesForSelected(state.selected);
+        const mv    = legal.find(m => m.to === id);
+        if (mv) {
+            if (mv.caps && mv.caps.length > 0) {
+                const allCaps = maxCapChains(state.board, state.turn);
+                const advancing = allCaps.filter(c => c.from === state.selected && c.squares[0] === id);
+                const trimmed = advancing.map(ch => ({ squares: ch.squares.slice(1), caps: ch.caps.slice(1) }));
+                state.comboFrom = state.selected;
+                state.comboSquares = [id]; state.comboCaps = [mv.caps[0]];
+                comboBoardBefore = Object.assign({}, state.board);
+                performSingleCapStep(state.selected, id, mv.caps[0], trimmed);
+            } else {
+                performMove(mv);
+            }
+            return;
+        }
+        if (colorOf(id) === null && legal.length === 0 && maxCapChains(state.board, state.turn).length > 0) {
+            showToast('⚠️ Bu taşla yeme yapılamaz, yeme zorunlu!', 'linear-gradient(135deg,#ef5350,#b71c1c)', '#fff');
+        }
+    }
+}
+
+function performSingleCapStep(fromId, toId, capId, remainingChains) {
+    animating = true;
+    if (!state.comboFrom) state.comboFrom = fromId;
+    if (!comboBoardBefore) comboBoardBefore = Object.assign({}, state.board);
+    state.selected = null;
+
+    const piece = state.board[fromId];
+    const col = pieceColor(piece);
+    const king = piece.endsWith('king');
+
+    animatePieceMove(fromId, toId, col, king, () => {
+        // Taş hareketi bitti: board'u HEMEN güncelle (fromId→toId)
+        // capId henüz board'da kalıyor — animatePieceDeath için renk okumak gerekli
+        const nb = Object.assign({}, state.board);
+        nb[toId] = nb[fromId];
+        nb[fromId] = null;
+        const promoted = !nb[toId].endsWith('king') && rowOf(toId) === promotionRow(pieceColor(nb[toId]));
+        if (promoted) nb[toId] = pieceColor(nb[toId]) + '-king';
+        state.board = nb;
+        state.score[enemy(state.turn)] -= 1;
+
+        animatePieceDeath(capId, () => {
+            // Ölüm animasyonu bitti: capId'yi temizle
+            const nb2 = Object.assign({}, state.board);
+            nb2[capId] = null;
+            state.board = nb2;
+            animating = false;
+
+            const hasMore = !promoted && remainingChains.some(ch => ch.caps.length > 0);
+            if (hasMore) {
+                state.isCombo = true;
+                state.comboChains = remainingChains.filter(ch => ch.caps.length > 0);
+                state.selected = toId;
+                updateUI();
+            } else {
+                lastMove = { from: state.comboFrom, to: toId, caps: state.comboCaps, squares: state.comboSquares };
+                lastMoveBoard = comboBoardBefore || {};
+                comboBoardBefore = null;
+                state.isCombo = false; state.comboChains = null; state.selected = null;
+                detectPromotion(lastMoveBoard, state.board, { from: lastMove.from, to: lastMove.to });
+                finishTurn();
+            }
+        });
+    });
+}
+
+function performMove(mv) {
+    lastMove = { from: mv.from, to: mv.to, caps: mv.caps || [], squares: mv.squares || [] };
+    lastMoveBoard = Object.assign({}, state.board);
+    animating = true;
+    state.selected = null;
+    const boardBefore = lastMoveBoard;
+
+    if (mv.caps && mv.caps.length > 0) {
+        // Zincir yeme: her adımı tek tek animasyonla göster
+        animateCapChain(mv.from, mv.squares, mv.caps, 0, boardBefore, mv);
+    } else {
+        const col = pieceColor(state.board[mv.from]);
+        const king = state.board[mv.from].endsWith('king');
+        animatePieceMove(mv.from, mv.to, col, king, () => {
+            const nb = Object.assign({}, state.board);
+            nb[mv.to] = nb[mv.from]; nb[mv.from] = null;
+            const movCol = pieceColor(nb[mv.to]);
+            if (!nb[mv.to].endsWith('king') && rowOf(mv.to) === promotionRow(movCol)) nb[mv.to] = movCol + '-king';
+            state.board = nb;
+            state.isCombo = false;
+            playSfx('move');
+            detectPromotion(boardBefore, state.board, mv);
+            animating = false;
+            finishTurn();
+        });
+    }
+}
+
+// Zincir yeme animasyonu: her atlama ayrı ayrı gösterilir
+function animateCapChain(fromId, squares, caps, step, boardBefore, fullMv) {
+    const toId  = squares[step];
+    const capId = caps[step];
+    const piece = state.board[fromId];
+    const col   = pieceColor(piece);
+    const king  = piece.endsWith('king');
+
+    animatePieceMove(fromId, toId, col, king, () => {
+        // Taş hareketi bitti: board'u hemen güncelle
+        const nb = Object.assign({}, state.board);
+        nb[toId] = nb[fromId]; nb[fromId] = null;
+        const promoted = !nb[toId].endsWith('king') && rowOf(toId) === promotionRow(pieceColor(nb[toId]));
+        if (promoted) nb[toId] = pieceColor(nb[toId]) + '-king';
+        state.board = nb;
+
+        animatePieceDeath(capId, () => {
+            // Ölüm animasyonu bitti: yakalanan taşı sil
+            const nb2 = Object.assign({}, state.board);
+            nb2[capId] = null;
+            state.board = nb2;
+            state.score[enemy(state.turn)] -= 1;
+
+            if (!promoted && step + 1 < squares.length) {
+                // Sonraki atlama
+                animateCapChain(toId, squares, caps, step + 1, boardBefore, fullMv);
+            } else {
+                // Zincir tamamlandı
+                detectPromotion(boardBefore, state.board, fullMv);
+                state.isCombo = false;
+                animating = false;
+                finishTurn();
+            }
+        });
+    });
+}
+
+function animatePieceMove(fromId, toId, col, king, onDone) {
+    const r1 = rowOf(fromId), c1 = colOf(fromId);
+    const r2 = rowOf(toId),   c2 = colOf(toId);
+    particles.push({
+        id: fromId, col, king,
+        fromX: c1 * CELL + CELL/2, fromY: r1 * CELL + CELL/2,
+        toX:   c2 * CELL + CELL/2, toY:   r2 * CELL + CELL/2,
+        t: 0, dur: 320, onDone
+    });
+}
+
+function animatePieceDeath(capId, onDone) {
+    const r = rowOf(capId), c = colOf(capId);
+    const cx = c * CELL + CELL/2, cy = r * CELL + CELL/2;
+    const col = pieceColor(state.board[capId]);
+    const mainColor = palCss(col);
+    dyingIds.add(capId); // tahtada tekrar çizilmesin
+    playSfx('capture');
+    for (let i = 0; i < 12; i++) {
+        const angle = Math.random() * Math.PI * 2, sp = 1.5 + Math.random() * 3;
+        deathParticles.push({
+            x: cx, y: cy, vx: Math.cos(angle)*sp, vy: Math.sin(angle)*sp - 1,
+            alpha: 1, color: mainColor, r: 3 + Math.random() * 4
+        });
+    }
+    setTimeout(() => { dyingIds.delete(capId); if (onDone) onDone(); }, 380);
+}
+
+function finishTurn() {
+    updateUI(); checkWinner();
+    if (state.gameOver) return;
+    state.turn = enemy(state.turn);
+    state.selected = null;
+    updateUI();
+    if (state.mode === 'pve' && state.turn === 'green') setTimeout(aiPlay, 800);
+}
+
+function detectPromotion(oldBoard, newBoard, mv) {
+    const before = oldBoard[mv.from], after = newBoard[mv.to];
+    if (before && !before.endsWith('king') && after && after.endsWith('king')) {
+        const col = pieceColor(after);
+        playSfx('king');
+        const label = col === 'red' ? '1. Oyuncu' : '2. Oyuncu';
+        showToast(`👑 ${label} DAMA ÇIKTI!`, `linear-gradient(135deg,${palCss(col)},${palDark(col)})`);
+    }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  YAPAY ZEKA (3B ile aynı)
+// ════════════════════════════════════════════════════════════════════════
+function cntPieces(board, col) {
+    let n = 0;
+    for (let id = 0; id < ROWS*COLS; id++) if (pieceColor(board[id]) === col) n++;
+    return n;
+}
+function cntKings(board, col) {
+    let n = 0;
+    for (let id = 0; id < ROWS*COLS; id++) if (board[id] === col+'-king') n++;
+    return n;
+}
+function evalBoard(board) {
+    const g = cntPieces(board,'green'), r = cntPieces(board,'red');
+    if (r === 0) return 100000; if (g === 0) return -100000;
+    const gk = cntKings(board,'green'), rk = cntKings(board,'red');
+    let s = (g-r)*100 + (gk-rk)*60;
+    for (let id = 0; id < ROWS*COLS; id++) {
+        const v = board[id]; if (!v) continue;
+        const row = Math.floor(id/COLS);
+        if (v==='green') s += (7-row)*3; else if (v==='red') s -= row*3;
+    }
+    return s;
+}
+function mmAI(board, depth, alpha, beta, maximize) {
+    const col = maximize ? 'green' : 'red';
+    const mvs = legalMoves(board, col);
+    if (depth === 0 || !mvs.length) return evalBoard(board);
+    if (maximize) {
+        let best = -Infinity;
+        for (const mv of mvs) {
+            const nb = applyMove(board, mv);
+            best = Math.max(best, mmAI(nb, depth-1, alpha, beta, false));
+            alpha = Math.max(alpha, best); if (beta <= alpha) break;
+        }
+        return best;
+    } else {
+        let best = Infinity;
+        for (const mv of mvs) {
+            const nb = applyMove(board, mv);
+            best = Math.min(best, mmAI(nb, depth-1, alpha, beta, true));
+            beta = Math.min(beta, best); if (beta <= alpha) break;
+        }
+        return best;
+    }
+}
+function aiPlay() {
+    if (state.gameOver || animating) return;
+    const board = Object.assign({}, state.board);
+    const moveList = legalMoves(board, 'green');
+    if (!moveList.length) { checkWinner(true); return; }
+    const rnd = arr => arr[Math.floor(Math.random()*arr.length)];
+    let chosen;
+    if (state.aiLevel === 'easy') {
+        chosen = rnd(moveList);
+    } else if (state.aiLevel === 'medium') {
+        let best = -Infinity, bestMvs = [];
+        for (const mv of moveList) {
+            const sc = mmAI(applyMove(board,mv), 2, -Infinity, Infinity, false);
+            if (sc > best) { best=sc; bestMvs=[mv]; } else if (sc===best) bestMvs.push(mv);
+        }
+        chosen = rnd(bestMvs);
+    } else {
+        let best = -Infinity, bestMvs = [];
+        const hist = state.aiMoveHistory;
+        for (const mv of moveList) {
+            let sc = mmAI(applyMove(board,mv), 4, -Infinity, Infinity, false);
+            sc -= hist.filter(k => k===`${mv.from}-${mv.to}`).length * 300;
+            if (sc > best) { best=sc; bestMvs=[mv]; } else if (sc===best) bestMvs.push(mv);
+        }
+        chosen = rnd(bestMvs);
+        state.aiMoveHistory.push(`${chosen.from}-${chosen.to}`);
+        if (state.aiMoveHistory.length > 8) state.aiMoveHistory.shift();
+    }
+    performMove(chosen);
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  KAZANMA KONTROLÜ
+// ════════════════════════════════════════════════════════════════════════
+function checkWinner(aiStuck = false) {
+    let r = 0, g = 0;
+    for (let id = 0; id < ROWS*COLS; id++) {
+        const c = pieceColor(state.board[id]);
+        if (c==='red') r++; else if (c==='green') g++;
+    }
+    if (r === 0) { endGame('green'); return; }
+    if (g === 0) { endGame('red');   return; }
+    if (aiStuck && state.turn==='green') { endGame('red'); return; }
+    const nextCol = enemy(state.turn);
+    if (!aiStuck && legalMoves(state.board, nextCol).length === 0) endGame(state.turn);
+}
+
+function endGame(winColor) {
+    state.gameOver = true;
+    let headline, sub, cssClass, doFw = false;
+    if (state.mode === 'pve') {
+        if (winColor === 'red') {
+            headline = 'KAZANDINIZ!'; sub = 'Tebrikler! Bilgisayarı yendiniz.'; cssClass = 'red-win'; doFw = true;
+            playSfx('win');
+        } else {
+            headline = 'BİLGİSAYAR KAZANDI'; sub = ''; cssClass = 'ai-win';
+            playSfx('lose');
+        }
+    } else {
+        const p1 = palName('red'), p2 = palName('green');
+        if (winColor === 'red') { headline = `${p1.toUpperCase()} KAZANDI!`; sub = `${p1} oyuncuyu tebrik ederiz!`; cssClass = 'red-win'; }
+        else { headline = `${p2.toUpperCase()} KAZANDI!`; sub = `${p2} oyuncuyu tebrik ederiz!`; cssClass = 'green-win'; }
+        playSfx('win'); doFw = true;
+    }
+    showWinnerModal(headline, sub, cssClass, doFw);
+}
+
+function showWinnerModal(headline, sub, cssClass, doFw) {
+    const title = document.getElementById('winner-title');
+    const subEl = document.getElementById('winner-sub');
+    if (title) {
+        title.innerText = headline;
+        title.className = 'winner-headline';
+        if      (cssClass === 'red-win')   title.style.color = palCss('red');
+        else if (cssClass === 'green-win') title.style.color = palCss('green');
+        else                               title.style.color = '';
+    }
+    if (subEl) { subEl.innerText = sub; subEl.style.display = sub ? '' : 'none'; }
+    document.getElementById('winner-modal').classList.add('show');
+    if (doFw) startFireworks();
+}
+
+function hideWinnerModal() {
+    document.getElementById('winner-modal').classList.remove('show');
+    stopFireworks();
+}
+function closeWinnerAndGoIntro() { hideWinnerModal(); openIntroScreen(); }
+
+// ════════════════════════════════════════════════════════════════════════
+//  HAVAİ FİŞEK
+// ════════════════════════════════════════════════════════════════════════
+let fwAnimId = null;
+function startFireworks() {
+    const cv = document.getElementById('fw-canvas'); if (!cv) return;
+    cv.width = window.innerWidth; cv.height = window.innerHeight;
+    cv.style.display = 'block';
+    const ctx2 = cv.getContext('2d'); const parts = [];
+    const COLORS = ['#ff4444','#ff9900','#ffee00','#44ff44','#44aaff','#cc44ff','#ff44cc','#fff'];
+    function burst(x, y) {
+        for (let i = 0; i < 80; i++) {
+            const a = (Math.PI*2/80)*i + Math.random()*0.3, sp = 3 + Math.random()*8;
+            parts.push({ x, y, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp, alpha: 1,
+                color: COLORS[Math.floor(Math.random()*COLORS.length)],
+                size: 2+Math.random()*4, decay: 0.015+Math.random()*0.012, gravity: 0.12+Math.random()*0.08 });
+        }
+    }
+    burst(cv.width*0.5, cv.height*0.35);
+    burst(cv.width*0.25, cv.height*0.45);
+    burst(cv.width*0.75, cv.height*0.40);
+    let elapsed = 0, idx = 0, last2 = null;
+    const times = Array.from({length:25},(_,i)=>300+i*280+Math.random()*180);
+    function frame(ts) {
+        if (!last2) last2 = ts; elapsed += ts - last2; last2 = ts;
+        while (idx < times.length && elapsed >= times[idx]) {
+            burst(cv.width*(0.12+Math.random()*0.76), cv.height*(0.08+Math.random()*0.5)); idx++;
+        }
+        ctx2.fillStyle = 'rgba(0,0,0,0.14)'; ctx2.fillRect(0, 0, cv.width, cv.height);
+        parts.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.vy += p.gravity;
+            p.alpha -= p.decay; p.vx *= 0.97; p.vy *= 0.97;
+            ctx2.globalAlpha = Math.max(0, p.alpha);
+            ctx2.fillStyle = p.color;
+            ctx2.beginPath(); ctx2.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx2.fill();
+        });
+        ctx2.globalAlpha = 1;
+        const dead = parts.filter(p => p.alpha <= 0).length;
+        if (dead < parts.length || idx < times.length) fwAnimId = requestAnimationFrame(frame);
+        else { cv.style.display = 'none'; fwAnimId = null; }
+    }
+    if (fwAnimId) cancelAnimationFrame(fwAnimId);
+    fwAnimId = requestAnimationFrame(frame);
+}
+function stopFireworks() {
+    if (fwAnimId) { cancelAnimationFrame(fwAnimId); fwAnimId = null; }
+    const cv = document.getElementById('fw-canvas');
+    if (cv) cv.style.display = 'none';
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  UI GÜNCELLEMESİ
+// ════════════════════════════════════════════════════════════════════════
+function updateUI() {
+    let r = 0, g = 0;
+    for (let id = 0; id < ROWS*COLS; id++) {
+        const c = pieceColor(state.board[id]);
+        if (c==='red') r++; else if (c==='green') g++;
+    }
+    state.score.red = r; state.score.green = g;
+
+    const sc = document.getElementById('score-text');
+    if (sc) sc.innerText = `${palName('red')}: ${state.score.red} | ${palName('green')}: ${state.score.green}`;
+
+    const turnLabel = state.turn === 'red' ? palName('red') : (state.mode === 'pvp' ? palName('green') : 'Bilgisayar');
+    const main = palCss(state.turn), dark = palDark(state.turn);
+    const dotBg = `radial-gradient(circle at 30% 30%, ${palLight(state.turn)}, ${main} 60%, ${dark})`;
+
+    const tTxt = document.getElementById('turn-txt');
+    const sStat = document.getElementById('status');
+    const ts = document.getElementById('turn-stone');
+    if (tTxt) tTxt.innerText = turnLabel;
+    if (sStat) { sStat.style.background = main; sStat.style.color = '#fff'; }
+    if (ts) ts.style.background = dotBg;
+
+    const mt = document.getElementById('mob-turn-txt');
+    const ms = document.getElementById('mob-stone-dot');
+    if (mt) mt.innerText = turnLabel;
+    if (ms) ms.style.background = dotBg;
+
+    const cm = document.getElementById('combo-msg');
+    if (cm) cm.style.display = state.isCombo ? 'block' : 'none';
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  SES
+// ════════════════════════════════════════════════════════════════════════
+let audioCtx = null, bgmEnabled = false;
+const bgmAudio = new Audio('bgm-1.mp3');
+bgmAudio.loop = true; bgmAudio.volume = 0.45;
+const sfxFiles = {
+    capture: new Audio('capture.mp3'), move: new Audio('move.mp3'),
+    select:  new Audio('click.mp3'),   win:  new Audio('win.mp3'),
+    applause:new Audio('applause.mp3'),
+};
+function playFile(key) {
+    const a = sfxFiles[key]; if (!a) return;
+    a.pause(); a.currentTime = 0; a.play().catch(()=>{});
+}
+function getAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+}
+function playSfx(type) {
+    if (type==='capture'){ playFile('capture'); return; }
+    if (type==='move')   { playFile('move');    return; }
+    if (type==='select') { playFile('select');  return; }
+    if (type==='win')    { playFile('win');     return; }
+    if (type==='applause'){ playFile('applause'); return; }
+    const ctx2 = getAudioCtx(), now = ctx2.currentTime;
+    function osc(type2, freq, gain, dur, t) {
+        const o = ctx2.createOscillator(), g = ctx2.createGain();
+        o.type=type2; o.frequency.value=freq;
+        o.connect(g); g.connect(ctx2.destination);
+        g.gain.setValueAtTime(gain, t);
+        g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+        o.start(t); o.stop(t+dur+0.05);
+    }
+    if (type==='king') [523,659,784,1047].forEach((f,i)=>osc('sine',f,0.13,0.22,now+i*0.10));
+    else if (type==='lose') [440,370,311,262].forEach((f,i)=>osc('sine',f,0.12,0.30,now+i*0.16));
+    else if (type==='hint') { osc('square',240,0.09,0.12,now); osc('square',200,0.07,0.10,now+0.08); }
+}
+function toggleMusic() {
+    bgmEnabled = !bgmEnabled;
+    if (bgmEnabled) { bgmAudio.currentTime=0; bgmAudio.play().catch(()=>{}); }
+    else { bgmAudio.pause(); bgmAudio.currentTime=0; }
+    const btn = document.getElementById('musicBtn');
+    if (btn) btn.innerText = bgmEnabled ? '🔇 SESİ KAPAT' : '🎵 SESİ AÇ';
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  TEMA
+// ════════════════════════════════════════════════════════════════════════
+function toggleTheme() {
+    const isDark = document.body.getAttribute('data-theme') !== 'light';
+    document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    const btn = document.getElementById('themeBtn');
+    if (btn) btn.innerText = isDark ? '🌙 GECE MODU' : '☀️ GÜNDÜZ MODU';
+    drawBoard();
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  SON HAMLEYİ GÖR
+// ════════════════════════════════════════════════════════════════════════
+function showLastMove() {
+    if (!lastMove || !lastMoveBoard || animating || showingLastMove) {
+        if (!lastMove) showToast('Henüz hamle yapılmadı.', 'linear-gradient(135deg,#607d8b,#37474f)', '#fff');
+        return;
+    }
+    const piece = lastMoveBoard[lastMove.from];
+    if (!piece) return;
+
+    showingLastMove = true;
+    animating = true;
+    const currentBoard = state.board;
+    // Tahtayı hamle öncesine al
+    state.board = Object.assign({}, lastMoveBoard);
+
+    const col  = pieceColor(piece);
+    const king = piece.endsWith('king');
+
+    animatePieceMove(lastMove.from, lastMove.to, col, king, () => {
+        // Taş hareketi bitti: board'u hemen güncelle (from→to), yoksa taş geri "zıplar"
+        const nb = Object.assign({}, state.board);
+        nb[lastMove.to] = nb[lastMove.from];
+        nb[lastMove.from] = null;
+        state.board = nb;
+
+        // Yenilen taşları patlat, sonra orijinal board'a dön
+        const caps = lastMove.caps || [];
+        if (caps.length > 0) {
+            let remaining = caps.length;
+            caps.forEach(c => animatePieceDeath(c, () => {
+                remaining--;
+                if (remaining === 0) {
+                    setTimeout(() => {
+                        state.board = currentBoard;
+                        showingLastMove = false;
+                        animating = false;
+                    }, 400);
+                }
+            }));
+        } else {
+            setTimeout(() => {
+                state.board = currentBoard;
+                showingLastMove = false;
+                animating = false;
+            }, 500);
+        }
+    });
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════════════════════════════════════
+let toastTimer = null;
+function showToast(msg, bg, color) {
+    const el = document.getElementById('game-toast'); if (!el) return;
+    clearTimeout(toastTimer);
+    el.textContent = msg;
+    el.style.background = bg || 'linear-gradient(135deg,#ffd740,#ff9800)';
+    el.style.color = color || '#1a0800';
+    el.classList.add('show');
+    toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  GİRİŞ EKRANI & MENÜ
+// ════════════════════════════════════════════════════════════════════════
+function openIntroScreen() {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === introMode));
+    document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.dataset.level === introDiff));
+    const wrap = document.getElementById('intro-diff-wrap');
+    if (wrap) wrap.style.display = introMode === 'pve' ? 'block' : 'none';
+    document.getElementById('howto-screen').style.display = 'flex';
+}
+
+function closeHowToScreen() {
+    document.getElementById('howto-screen').style.display = 'none';
+    hideWinnerModal();
+    initGame();
+}
+
+function selectIntroMode(mode) {
+    introMode = mode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+    const wrap = document.getElementById('intro-diff-wrap');
+    if (wrap) wrap.style.display = mode === 'pve' ? 'block' : 'none';
+}
+
+function selectIntroDiff(level) {
+    introDiff = level;
+    document.querySelectorAll('.diff-btn').forEach(b => b.classList.toggle('active', b.dataset.level === level));
+}
+
+function selectIntroColor(who, col) {
+    if (who === 'red') introColorRed = col;
+    else introColorGreen = col;
+    document.querySelectorAll(`#color-row-${who} .color-swatch`).forEach(el => {
+        el.classList.toggle('active', el.dataset.col === col);
+    });
+}
+
+function openHowtoModal() {
+    const m = document.getElementById('howto-modal-bg');
+    if (m) { m.style.display = 'flex'; }
+}
+function closeHowtoModal(e) {
+    const bg = document.getElementById('howto-modal-bg');
+    if (!e || e.target === bg || e.type === 'click' && !e.target.closest('[onclick]')) {
+        if (bg) bg.style.display = 'none';
+    }
+}
+
+function toggleSidebar() {
+    const sb  = document.getElementById('sidebar');
+    const btn = document.getElementById('menu-toggle-btn');
+    const isOpen = sb.classList.toggle('mob-open');
+    btn.textContent = isOpen ? '▼ KAPAT' : '▲ MENÜ';
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  OYUN BAŞLATMA
+// ════════════════════════════════════════════════════════════════════════
+function initGame() {
+    state.board = {};
+    state.gameOver = false; state.turn = 'red'; state.selected = null;
+    state.isCombo = false; state.comboChains = null; state.comboFrom = null;
+    state.comboSquares = []; state.comboCaps = [];
+    state.score = { red: 16, green: 16 };
+    state.mode = introMode; state.aiLevel = introDiff;
+    state.aiMoveHistory = [];
+    lastMove = null; lastMoveBoard = null; comboBoardBefore = null;
+    showingLastMove = false;
+    hideWinnerModal();
+
+    for (let id = 0; id < ROWS*COLS; id++) state.board[id] = null;
+    for (let id = 40; id < 56; id++) state.board[id] = 'red';
+    for (let id = 8;  id < 24; id++) state.board[id] = 'green';
+
+    updateUI();
+}
+
+// Pencere yeniden boyutlanınca canvas'ı güncelle
+window.addEventListener('resize', resize);
+
+// ════════════════════════════════════════════════════════════════════════
+//  YATAY MOD UYARISI
+// ════════════════════════════════════════════════════════════════════════
+const _lwEl = document.getElementById('landscape-warning');
+const _isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+function checkOrientation() {
+    const isLandscape = window.innerWidth > window.innerHeight;
+    const showWarning = _isTouchDevice && isLandscape;
+    if (_lwEl) _lwEl.style.display = showWarning ? 'flex' : 'none';
+    document.body.style.overflow = showWarning ? 'hidden' : '';
+}
+window.addEventListener('resize', checkOrientation);
+window.addEventListener('orientationchange', checkOrientation);
+checkOrientation();
+
+// Başlat
+document.body.setAttribute('data-theme', 'light');
+initGame();
+resize();
+openIntroScreen();
+</script>
+</body>
+</html>
