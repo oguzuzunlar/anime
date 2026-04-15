@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
@@ -973,12 +973,7 @@
             }
             pmremGenerator.dispose();
 
-            scene.environment = envTexGlobal; // tüm malzemelere yansır
-
-            // Gece modundaysa arka planı da ortam haritası yapsın
-            if ((document.body.getAttribute('data-theme') || 'dark') === 'dark') {
-                scene.background = envTexGlobal;
-            }
+            scene.environment = envTexGlobal; // tüm malzemelere yansır // arka plana uygulanmaz
         },
         undefined,
         (err) => console.warn('environment.glb yüklenemedi:', err)
@@ -3253,15 +3248,15 @@
         if (btn) btn.innerText = next === 'dark' ? '☀️ GÜNDÜZ MODU' : '🌙 GECE MODU';
         if (next === 'light') {
             stopNightGarden();
-            scene.background = null;          // Three.js kanvası şeffaf — bg-canvas görünür
-            renderer.setClearColor(0x000000, 0);
+            scene.background = new THREE.Color(0x4a2f10); // opak - bg-canvas 3D alana sizmaz
+            renderer.setClearColor(0x4a2f10, 1);
             if (stars) stars.visible = false;
             addPalaceLights();
             startDaySky();
         } else {
             stopDaySky();
-            scene.background = null;          // şeffaf — bg-canvas saray bahçesi görünür
-            renderer.setClearColor(0x000000, 0);
+            scene.background = new THREE.Color(0x02010a); // opak - bg-canvas 3D alana sizmaz
+            renderer.setClearColor(0x02010a, 1);
             if (stars) stars.visible = true;
             removePalaceLights();
             startNightGarden();
@@ -3429,8 +3424,8 @@
     setupAudio();
     createStarField();
     // Gündüz modunu hemen uygula
-    scene.background = null;
-    renderer.setClearColor(0x000000, 0);
+    scene.background = new THREE.Color(0x4a2f10); // opak - bg-canvas 3D alana sizmaz
+    renderer.setClearColor(0x4a2f10, 1);
     if (stars) stars.visible = false;
     addPalaceLights();
     startDaySky();
