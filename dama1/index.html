@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="icon" href="data:,">
-    <title>Türk Daması – 3D</title>
+    <title>Türk Daması – 3B</title>
     <script type="importmap">
     {
         "imports": {
@@ -427,7 +427,7 @@
 
             <hr class="intro-divider">
 
-            <p class="howto-sub" style="margin-bottom:10px;">3D Kamera Kontrolü</p>
+            <p class="howto-sub" style="margin-bottom:10px;">3B Kamera Kontrolü</p>
             <div class="menu-info-grid">
                 <div class="menu-info-item">🖱 <strong>Sol tık + sürükle</strong><br>Tahtayı döndür</div>
                 <div class="menu-info-item">🖱 <strong>Tekerlek</strong><br>Yaklaştır / uzaklaştır</div>
@@ -467,11 +467,11 @@
 
         <div id="sidebar">
             <div id="menu-toggle-bar" onclick="toggleSidebar()">
-                <span>TÜRK DAMASI 3D</span>
+                <span>TÜRK DAMASI 3B</span>
                 <button id="menu-toggle-btn">▲ MENÜ</button>
             </div>
             <div id="sidebar-inner">
-                <h1>TÜRK DAMASI 3D</h1>
+                <h1>TÜRK DAMASI 3B</h1>
                 <div id="status" class="status-bar">
                     <span id="turn-stone" class="turn-stone-dot red"></span>
                     Sıra: <span id="turn-txt">Kırmızı</span>
@@ -484,7 +484,7 @@
                     <button class="primary" onclick="openIntroScreen()">🔄 YENİ OYUN</button>
                     <button class="outline" id="lastMoveBtn" onclick="showLastMove()">👁 SON HAMLEYİ GÖR</button>
                     <button class="outline" onclick="toggleTheme()" id="themeBtn">☀️ GÜNDÜZ MODU</button>
-                    <button class="outline" onclick="toggleMusic()"  id="musicBtn">🎵 MÜZİK AÇ</button>
+                    <button class="outline" onclick="toggleMusic()"  id="musicBtn">🎵 SESİ AÇ</button>
                     <button class="outline" onclick="toggleHints()"  id="hintBtn">💡 İPUÇLARINI GÖSTER</button>
                     <button class="outline" onclick="openHowtoModal()">❓ NASIL OYNANIR</button>
                 </div>
@@ -925,7 +925,7 @@
         updateMusicUI();
     }
     function updateMusicUI() {
-        if (musicBtn) musicBtn.innerText = bgmEnabled ? '🔇 MÜZİK KAPAT' : '🎵 MÜZİK AÇ';
+        if (musicBtn) musicBtn.innerText = bgmEnabled ? '🔇 SESİ KAPAT' : '🎵 SESİ AÇ';
     }
 
     // ════════════════════════════════════════════════════════════════════════
