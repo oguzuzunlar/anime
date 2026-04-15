@@ -50,19 +50,20 @@
             z-index: 0; pointer-events: none;
         }
 
-        #main-wrapper { position: relative; z-index: 1; display: flex; width: 100%; height: 100%; }
+        #main-wrapper { position: relative; z-index: 1; width: 100%; height: 100%; }
 
         /* ── Sidebar ── */
         #sidebar {
+            position: fixed; left: 0; top: 0; height: 100%; overflow-y: auto;
             width: 280px;
-            background-color: rgba(41,27,16,0.60);
+            background-color: rgba(41,27,16,0.55);
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
             padding: 22px;
             box-shadow: 2px 0 18px rgba(0,0,0,0.6);
             display: flex; flex-direction: column; gap: 12px;
             z-index: 10; flex-shrink: 0;
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
-        body[data-theme='light'] #sidebar { background-color: rgba(224,195,145,0.58); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        body[data-theme='light'] #sidebar { background-color: rgba(224,195,145,0.55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 
         body[data-theme='light'] h1 { border-bottom-color: #8b5e2a; }
 
@@ -111,8 +112,8 @@
 
         .cam-hint { font-size: 0.75rem; opacity: 0.55; text-align: center; line-height: 1.7; }
 
-        #canvas-area { flex-grow: 1; position: relative; overflow: hidden; }
-        #canvas-area canvas { display: block; outline: none; }
+        #canvas-area { position: fixed; inset: 0; overflow: hidden; z-index: 0; }
+        #canvas-area canvas { display: block; outline: none; width: 100% !important; height: 100% !important; }
 
         /* ── Winner modal ── */
         #winner-modal {
@@ -238,7 +239,7 @@
         .diff-btn:hover:not(.active) { background: rgba(255,255,255,0.14); }
         .intro-divider { border: none; border-top: 1px solid rgba(255,255,255,0.12); margin: 14px 0; }
         .intro-color-row { display: flex; gap: 9px; justify-content: center; flex-wrap: wrap; margin-bottom: 4px; }
-        .color-swatch { width: 30px; height: 30px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s; box-shadow: 0 2px 6px rgba(0,0,0,0.45); }
+        .color-swatch { width: 30px; height: 30px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s; box-shadow: 0 2px 6px rgba(0,0,0,0.45), 0 0 0 2px rgba(255,255,255,0.45); }
         .color-swatch:hover { transform: scale(1.2); }
         .color-swatch.active { border-color: #fff; transform: scale(1.25); box-shadow: 0 0 0 2px rgba(255,255,255,0.55), 0 3px 10px rgba(0,0,0,0.5); }
         .color-player-label { font-size: 0.76rem; opacity: 0.62; text-align: center; margin: 0 0 6px; }
@@ -292,15 +293,16 @@
             select, button { width: 100%; min-height: 44px; }
             .menu-info-grid { grid-template-columns: 1fr; }
             #sidebar {
+                position: fixed; bottom: 0; top: auto; left: 0; right: 0; height: auto;
                 width: 100%; order: 2; padding: 0; gap: 0;
                 overflow: hidden; max-height: 52px;
                 transition: max-height 0.35s ease;
             }
-            #sidebar.open { max-height: 1200px; overflow-y: auto; }
+            #sidebar.open { max-height: 80dvh; overflow-y: auto; }
             #mobile-turn-bar {
                 display: flex; align-items: center; justify-content: center;
                 gap: 8px; padding: 9px 16px;
-                position: sticky; top: 0; z-index: 200;
+                position: fixed; top: 0; left: 0; right: 0; z-index: 200;
                 font-size: 0.95rem; font-weight: bold; letter-spacing: 1px;
                 background: rgba(0,0,0,0.60); backdrop-filter: blur(8px);
                 border-bottom: 1px solid rgba(255,255,255,0.10);
@@ -460,7 +462,7 @@
         <div id="mobile-turn-bar">
             <span id="mob-turn-stone" class="turn-stone-dot red" style="width:18px;height:18px;"></span>
             <span>Sıra: <strong id="mob-turn-txt">Kırmızı</strong></span>
-            <button id="mobLastMoveBtn" onclick="showLastMove()" style="display:none;margin-left:auto;padding:4px 10px;font-size:0.78rem;border-radius:6px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.12);color:#fff;cursor:pointer;min-height:unset;width:auto;">👁 Gör</button>
+            <button id="mobLastMoveBtn" onclick="showLastMove()" style="margin-left:auto;padding:5px 12px;font-size:0.78rem;font-weight:700;border-radius:6px;border:1px solid rgba(255,255,255,0.7);background:rgba(0,0,0,0.55);color:#fff;cursor:pointer;min-height:unset;width:auto;">👁 Son Hamleyi Gör</button>
         </div>
 
         <div id="sidebar">
@@ -480,7 +482,7 @@
                 </div>
                 <div class="panel" style="display:flex;flex-direction:column;gap:8px;">
                     <button class="primary" onclick="openIntroScreen()">🔄 YENİ OYUN</button>
-                    <button class="outline" id="lastMoveBtn" onclick="showLastMove()" style="display:none;">👁 SON HAMLEYİ GÖR</button>
+                    <button class="outline" id="lastMoveBtn" onclick="showLastMove()">👁 SON HAMLEYİ GÖR</button>
                     <button class="outline" onclick="toggleTheme()" id="themeBtn">☀️ GÜNDÜZ MODU</button>
                     <button class="outline" onclick="toggleMusic()"  id="musicBtn">🎵 MÜZİK AÇ</button>
                     <button class="outline" onclick="toggleHints()"  id="hintBtn">💡 İPUÇLARINI GÖSTER</button>
@@ -933,7 +935,7 @@
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(canvasArea.clientWidth, canvasArea.clientHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -979,7 +981,7 @@
         (err) => console.warn('environment.glb yüklenemedi:', err)
     );
 
-    const camera = new THREE.PerspectiveCamera(50, canvasArea.clientWidth / canvasArea.clientHeight, 0.1, 120);
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 120);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -1996,10 +1998,7 @@
                 const savedBoardBefore = comboBoardBefore || {};
                 lastMoveBoard = savedBoardBefore;
                 comboBoardBefore = null;
-                const lmBtn = document.getElementById('lastMoveBtn');
-                if (lmBtn) lmBtn.style.display = 'block';
-                const mobLmBtn = document.getElementById('mobLastMoveBtn');
-                if (mobLmBtn) mobLmBtn.style.display = 'block';
+                // lastMoveBtn her zaman görünür — showLastMove içinde lastMove kontrolü yapılıyor
 
                 const finalMv = { from: lastMove.from, to: lastMove.to };
                 state.isCombo = false;
@@ -2014,10 +2013,7 @@
     function performMove(mv) {
         lastMove = { from: mv.from, to: mv.to, caps: mv.caps || [], squares: mv.squares || [] };
         lastMoveBoard = Object.assign({}, state.board);
-        const lmBtn = document.getElementById('lastMoveBtn');
-        if (lmBtn) lmBtn.style.display = 'block';
-        const mobLmBtn2 = document.getElementById('mobLastMoveBtn');
-        if (mobLmBtn2) mobLmBtn2.style.display = 'block';
+        // lastMoveBtn her zaman görünür — showLastMove içinde lastMove kontrolü yapılıyor
 
         if (mv.caps && mv.caps.length > 0) {
             // Adım adım zincir yeme animasyonu
@@ -2376,17 +2372,17 @@
         let headline, sub, cssClass, doFw = false;
         if (state.mode === 'pve') {
             if (winColor === 'red') {
-                headline = '🏆 KAZANDINIZ!'; sub = 'Tebrikler! Bilgisayarı yendiniz.'; cssClass = 'red-win'; doFw = true;
+                headline = 'KAZANDINIZ!'; sub = 'Tebrikler! Bilgisayarı yendiniz.'; cssClass = 'red-win'; doFw = true;
                 playSfx('win');
                 setTimeout(() => playSfx('applause'), 600);
             } else {
-                headline = '🤖 BİLGİSAYAR KAZANDI'; sub = 'Bu sefer bilgisayar daha iyiydi. Tekrar dene!'; cssClass = 'ai-win';
+                headline = 'BİLGİSAYAR KAZANDI'; sub = ''; cssClass = 'ai-win';
                 playSfx('lose');
             }
         } else {
             const p1 = palName('red'), p2 = palName('green');
-            if (winColor === 'red')  { headline = `🏆 ${p1.toUpperCase()} KAZANDI!`; sub = `${p1} oyuncuyu tebrik ederiz!`; cssClass = 'red-win'; }
-            else                     { headline = `🏆 ${p2.toUpperCase()} KAZANDI!`; sub = `${p2} oyuncuyu tebrik ederiz!`; cssClass = 'green-win'; }
+            if (winColor === 'red')  { headline = `${p1.toUpperCase()} KAZANDI!`; sub = `${p1} oyuncuyu tebrik ederiz!`; cssClass = 'red-win'; }
+            else                     { headline = `${p2.toUpperCase()} KAZANDI!`; sub = `${p2} oyuncuyu tebrik ederiz!`; cssClass = 'green-win'; }
             playSfx('win');
             doFw = true;
         }
@@ -2405,8 +2401,8 @@
             else if (cssClass === 'green-win') title.style.color = palHexCss('green');
             else                               title.style.color = '';
         }
-        if (subEl)  subEl.innerText = sub;
-        if (trophy) trophy.innerText = cssClass === 'ai-win' ? '🤖' : '🏆';
+        if (subEl)  { subEl.innerText = sub; subEl.style.display = sub ? '' : 'none'; }
+        if (trophy) trophy.innerText = '🏆';
         document.getElementById('winner-modal').classList.add('show');
         if (doFw) startFireworks();
     }
@@ -3271,9 +3267,9 @@
     }
 
     window.addEventListener('resize', () => {
-        camera.aspect = canvasArea.clientWidth / canvasArea.clientHeight;
+        camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
-        renderer.setSize(canvasArea.clientWidth, canvasArea.clientHeight);
+        renderer.setSize(window.innerWidth, window.innerHeight);
         if (!userMovedCamera) setCameraDefault();
         checkOrientation();
     });
@@ -3302,10 +3298,7 @@
         comboBoardBefore = null;
         showingLastMove = false;
         clearTimeout(lastMoveHLTimer);
-        const lmBtn = document.getElementById('lastMoveBtn');
-        if (lmBtn) lmBtn.style.display = 'none';
-        const mobLmBtnReset = document.getElementById('mobLastMoveBtn');
-        if (mobLmBtnReset) mobLmBtnReset.style.display = 'none';
+        // lastMoveBtn her zaman görünür — yeni oyunda lastMove = null olduğu için showLastMove erken çıkar
         hideWinnerModal();
 
         // Başlangıç dizilişi
