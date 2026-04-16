@@ -431,11 +431,11 @@
 </div>
 
 <!-- Oyun içi kurallar modali -->
-<div id="howto-modal-bg" style="position:fixed;inset:0;z-index:3000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);padding:16px;" onclick="closeHowtoModal(event)">
-    <div style="width:min(620px,100%);max-height:88dvh;overflow-y:auto;border-radius:14px;padding:22px 20px;background:rgba(14,9,3,0.96);backdrop-filter:blur(20px);border:1px solid rgba(196,144,24,0.36);color:#f5e6d3;" onclick="event.stopPropagation()">
+<div id="howto-modal-bg" style="position:fixed;inset:0;z-index:3000;display:none;align-items:center;justify-content:center;background:rgba(200,165,100,0.55);padding:16px;" onclick="closeHowtoModal(event)">
+    <div class="howto-card" style="width:min(620px,100%);" onclick="event.stopPropagation()">
         <h2 class="intro-main-title" style="font-size:1.7rem !important;letter-spacing:4px !important;">Türk Daması</h2>
         <hr class="intro-title-line">
-        <p class="howto-sub" style="margin-bottom:10px;color:rgba(245,220,150,0.82);">Kural Özeti</p>
+        <p class="howto-sub" style="margin-bottom:10px;">Kural Özeti</p>
         <ul class="howto-list">
             <li><strong>Normal hamle:</strong> Taşlar yalnızca ileri, sola veya sağa doğru bir kare hareket edebilir; geri gidemez.</li>
             <li><strong>Yeme:</strong> Bitişik bir rakip taşın hemen karşısındaki kare boşsa o taşın üzerinden atlayarak onu yiyebilirsiniz. Yeme fırsatı varsa zorunludur ve en fazla taşı yiyen zincir seçilmelidir.</li>
@@ -1099,7 +1099,7 @@ function detectPromotion(oldBoard, newBoard, mv) {
         const col = pieceColor(after);
         playSfx('king');
         const label = col === 'red' ? '1. Oyuncu' : '2. Oyuncu';
-        showToast(`👑 ${label} DAMA ÇIKTI!`, `linear-gradient(135deg,${palCss(col)},${palDark(col)})`);
+        showToast(`👑 ${label} DAMA ÇIKTI!`, `linear-gradient(135deg,${palCss(col)},${palDark(col)})`, '#fff');
     }
 }
 
@@ -1120,21 +1120,39 @@ function evalBoard(board) {
     const g = cntPieces(board,'green'), r = cntPieces(board,'red');
     if (r === 0) return 100000; if (g === 0) return -100000;
     const gk = cntKings(board,'green'), rk = cntKings(board,'red');
-    let s = (g-r)*100 + (gk-rk)*60;
+    // Malzeme: kral çok daha değerli
+    let s = (g - r) * 100 + (gk - rk) * 180;
     for (let id = 0; id < ROWS*COLS; id++) {
         const v = board[id]; if (!v) continue;
-        const row = Math.floor(id/COLS);
-        if (v==='green') s += (7-row)*3; else if (v==='red') s -= row*3;
+        const row = Math.floor(id/COLS), col2 = id % COLS;
+        // Merkez sütun kontrolü
+        const ctr = (3.5 - Math.abs(col2 - 3.5)) * 3;
+        if      (v === 'green')      { s += (7-row)*5 + ctr; }
+        else if (v === 'red')        { s -= row*5 + ctr; }
+        else if (v === 'green-king') { s += ctr*2 + 10; }
+        else if (v === 'red-king')   { s -= ctr*2 + 10; }
     }
+    // Endgame: az taş kaldığında kral farkı kritik
+    if (g + r <= 8) s += (gk - rk) * 100;
     return s;
+}
+function orderMoves(mvs, board) {
+    return mvs.slice().sort((a, b) => {
+        const ca = a.caps ? a.caps.length : 0, cb = b.caps ? b.caps.length : 0;
+        if (cb !== ca) return cb - ca;
+        const ka = board[a.from] && board[a.from].endsWith('king') ? 1 : 0;
+        const kb = board[b.from] && board[b.from].endsWith('king') ? 1 : 0;
+        return kb - ka;
+    });
 }
 function mmAI(board, depth, alpha, beta, maximize) {
     const col = maximize ? 'green' : 'red';
     const mvs = legalMoves(board, col);
     if (depth === 0 || !mvs.length) return evalBoard(board);
+    const ordered = orderMoves(mvs, board);
     if (maximize) {
         let best = -Infinity;
-        for (const mv of mvs) {
+        for (const mv of ordered) {
             const nb = applyMove(board, mv);
             best = Math.max(best, mmAI(nb, depth-1, alpha, beta, false));
             alpha = Math.max(alpha, best); if (beta <= alpha) break;
@@ -1142,7 +1160,7 @@ function mmAI(board, depth, alpha, beta, maximize) {
         return best;
     } else {
         let best = Infinity;
-        for (const mv of mvs) {
+        for (const mv of ordered) {
             const nb = applyMove(board, mv);
             best = Math.min(best, mmAI(nb, depth-1, alpha, beta, true));
             beta = Math.min(beta, best); if (beta <= alpha) break;
@@ -1167,16 +1185,31 @@ function aiPlay() {
         }
         chosen = rnd(bestMvs);
     } else {
-        let best = -Infinity, bestMvs = [];
-        const hist = state.aiMoveHistory;
-        for (const mv of moveList) {
-            let sc = mmAI(applyMove(board,mv), 4, -Infinity, Infinity, false);
-            sc -= hist.filter(k => k===`${mv.from}-${mv.to}`).length * 300;
-            if (sc > best) { best=sc; bestMvs=[mv]; } else if (sc===best) bestMvs.push(mv);
+        // Hesaplama öncesi "düşünüyor" bildirimi göster
+        const toastEl = document.getElementById('game-toast');
+        if (toastEl) {
+            clearTimeout(toastTimer);
+            toastEl.textContent = 'Bilgisayar düşünüyor…';
+            toastEl.style.background = 'linear-gradient(135deg,#37474f,#263238)';
+            toastEl.style.color = '#fff';
+            toastEl.classList.add('show');
         }
-        chosen = rnd(bestMvs);
-        state.aiMoveHistory.push(`${chosen.from}-${chosen.to}`);
-        if (state.aiMoveHistory.length > 8) state.aiMoveHistory.shift();
+        setTimeout(() => {
+            let best = -Infinity, bestMvs = [];
+            const hist = state.aiMoveHistory;
+            const orderedList = orderMoves(moveList, board);
+            for (const mv of orderedList) {
+                let sc = mmAI(applyMove(board,mv), 6, -Infinity, Infinity, false);
+                sc -= hist.filter(k => k===`${mv.from}-${mv.to}`).length * 600;
+                if (sc > best) { best=sc; bestMvs=[mv]; } else if (sc===best) bestMvs.push(mv);
+            }
+            chosen = rnd(bestMvs);
+            state.aiMoveHistory.push(`${chosen.from}-${chosen.to}`);
+            if (state.aiMoveHistory.length > 12) state.aiMoveHistory.shift();
+            if (toastEl) toastEl.classList.remove('show');
+            performMove(chosen);
+        }, 50);
+        return;
     }
     performMove(chosen);
 }
