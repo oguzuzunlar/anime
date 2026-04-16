@@ -1198,8 +1198,10 @@ function aiPlay() {
             let best = -Infinity, bestMvs = [];
             const hist = state.aiMoveHistory;
             const orderedList = orderMoves(moveList, board);
+            const totalPieces = cntPieces(board,'green') + cntPieces(board,'red');
+            const depth = totalPieces <= 8 ? 7 : totalPieces <= 14 ? 5 : 4;
             for (const mv of orderedList) {
-                let sc = mmAI(applyMove(board,mv), 6, -Infinity, Infinity, false);
+                let sc = mmAI(applyMove(board,mv), depth, -Infinity, Infinity, false);
                 sc -= hist.filter(k => k===`${mv.from}-${mv.to}`).length * 600;
                 if (sc > best) { best=sc; bestMvs=[mv]; } else if (sc===best) bestMvs.push(mv);
             }
