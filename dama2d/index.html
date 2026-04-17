@@ -1104,7 +1104,7 @@ function detectPromotion(oldBoard, newBoard, mv) {
 }
 
 // ════════════════════════════════════════════════════════════════════════
-//  YAPAY ZEKA (3B ile aynı)
+//  YAPAY ZEKA
 // ════════════════════════════════════════════════════════════════════════
 function cntPieces(board, col) {
     let n = 0;
@@ -1117,42 +1117,27 @@ function cntKings(board, col) {
     return n;
 }
 function evalBoard(board) {
-    const g = cntPieces(board,'green'), r = cntPieces(board,'red');
-    if (r === 0) return 100000; if (g === 0) return -100000;
-    const gk = cntKings(board,'green'), rk = cntKings(board,'red');
-    // Malzeme: kral çok daha değerli
-    let s = (g - r) * 100 + (gk - rk) * 180;
+    const g = cntPieces(board, 'green'), r = cntPieces(board, 'red');
+    if (r === 0) return 100000;
+    if (g === 0) return -100000;
+    const gk = cntKings(board, 'green'), rk = cntKings(board, 'red');
+    let s = (g - r) * 100 + (gk - rk) * 60;
+    // Pozisyonel: ilerleyiş
     for (let id = 0; id < ROWS*COLS; id++) {
         const v = board[id]; if (!v) continue;
-        const row = Math.floor(id/COLS), col2 = id % COLS;
-        // Merkez sütun kontrolü
-        const ctr = (3.5 - Math.abs(col2 - 3.5)) * 3;
-        if      (v === 'green')      { s += (7-row)*5 + ctr; }
-        else if (v === 'red')        { s -= row*5 + ctr; }
-        else if (v === 'green-king') { s += ctr*2 + 10; }
-        else if (v === 'red-king')   { s -= ctr*2 + 10; }
+        const row = Math.floor(id / COLS);
+        if (v === 'green')     s += (7 - row) * 3;
+        else if (v === 'red')  s -= row * 3;
     }
-    // Endgame: az taş kaldığında kral farkı kritik
-    if (g + r <= 8) s += (gk - rk) * 100;
     return s;
-}
-function orderMoves(mvs, board) {
-    return mvs.slice().sort((a, b) => {
-        const ca = a.caps ? a.caps.length : 0, cb = b.caps ? b.caps.length : 0;
-        if (cb !== ca) return cb - ca;
-        const ka = board[a.from] && board[a.from].endsWith('king') ? 1 : 0;
-        const kb = board[b.from] && board[b.from].endsWith('king') ? 1 : 0;
-        return kb - ka;
-    });
 }
 function mmAI(board, depth, alpha, beta, maximize) {
     const col = maximize ? 'green' : 'red';
     const mvs = legalMoves(board, col);
-    if (depth === 0 || !mvs.length) return evalBoard(board);
-    const ordered = orderMoves(mvs, board);
+    if (depth === 0 || mvs.length === 0) return evalBoard(board);
     if (maximize) {
         let best = -Infinity;
-        for (const mv of ordered) {
+        for (const mv of mvs) {
             const nb = applyMove(board, mv);
             best = Math.max(best, mmAI(nb, depth-1, alpha, beta, false));
             alpha = Math.max(alpha, best); if (beta <= alpha) break;
@@ -1160,7 +1145,7 @@ function mmAI(board, depth, alpha, beta, maximize) {
         return best;
     } else {
         let best = Infinity;
-        for (const mv of ordered) {
+        for (const mv of mvs) {
             const nb = applyMove(board, mv);
             best = Math.min(best, mmAI(nb, depth-1, alpha, beta, true));
             beta = Math.min(beta, best); if (beta <= alpha) break;
@@ -1178,40 +1163,29 @@ function aiPlay() {
     if (state.aiLevel === 'easy') {
         chosen = rnd(moveList);
     } else if (state.aiLevel === 'medium') {
+        // Derinlik 3
         let best = -Infinity, bestMvs = [];
         for (const mv of moveList) {
-            const sc = mmAI(applyMove(board,mv), 2, -Infinity, Infinity, false);
-            if (sc > best) { best=sc; bestMvs=[mv]; } else if (sc===best) bestMvs.push(mv);
+            const nb = applyMove(board, mv);
+            const sc = mmAI(nb, 2, -Infinity, Infinity, false);
+            if (sc > best) { best = sc; bestMvs = [mv]; }
+            else if (sc === best) { bestMvs.push(mv); }
         }
         chosen = rnd(bestMvs);
     } else {
-        // Hesaplama öncesi "düşünüyor" bildirimi göster
-        const toastEl = document.getElementById('game-toast');
-        if (toastEl) {
-            clearTimeout(toastTimer);
-            toastEl.textContent = 'Bilgisayar düşünüyor…';
-            toastEl.style.background = 'linear-gradient(135deg,#37474f,#263238)';
-            toastEl.style.color = '#fff';
-            toastEl.classList.add('show');
+        // Hard — derinlik 5
+        let best = -Infinity, bestMvs = [];
+        const hist = state.aiMoveHistory;
+        for (const mv of moveList) {
+            const nb = applyMove(board, mv);
+            let sc = mmAI(nb, 4, -Infinity, Infinity, false);
+            sc -= hist.filter(k => k === `${mv.from}-${mv.to}`).length * 300;
+            if (sc > best) { best = sc; bestMvs = [mv]; }
+            else if (sc === best) { bestMvs.push(mv); }
         }
-        setTimeout(() => {
-            let best = -Infinity, bestMvs = [];
-            const hist = state.aiMoveHistory;
-            const orderedList = orderMoves(moveList, board);
-            const totalPieces = cntPieces(board,'green') + cntPieces(board,'red');
-            const depth = totalPieces <= 8 ? 7 : totalPieces <= 14 ? 5 : 4;
-            for (const mv of orderedList) {
-                let sc = mmAI(applyMove(board,mv), depth, -Infinity, Infinity, false);
-                sc -= hist.filter(k => k===`${mv.from}-${mv.to}`).length * 600;
-                if (sc > best) { best=sc; bestMvs=[mv]; } else if (sc===best) bestMvs.push(mv);
-            }
-            chosen = rnd(bestMvs);
-            state.aiMoveHistory.push(`${chosen.from}-${chosen.to}`);
-            if (state.aiMoveHistory.length > 12) state.aiMoveHistory.shift();
-            if (toastEl) toastEl.classList.remove('show');
-            performMove(chosen);
-        }, 50);
-        return;
+        chosen = rnd(bestMvs);
+        state.aiMoveHistory.push(`${chosen.from}-${chosen.to}`);
+        if (state.aiMoveHistory.length > 8) state.aiMoveHistory.shift();
     }
     performMove(chosen);
 }
