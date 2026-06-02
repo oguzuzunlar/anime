@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Canlı Sınıf Lab: Sosyal Ağ Paradoksu</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #1a73e8;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+        p.subtitle {
+            color: #5f6368;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        /* GİRİŞ EKRANI */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-top: 8px solid #1a73e8;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-content h2 { color: #1a73e8; margin-top: 0; font-size: 1.8em; }
+        .modal-content p { font-size: 1.1em; color: #3c4043; line-height: 1.6; margin-bottom: 25px; text-align: left; }
+        .modal-content .highlight-box {
+            background: #fef7e0; border-left: 5px solid #fbbc04; padding: 15px; margin-bottom: 25px; font-weight: bold; text-align: left; color: #b06000;
+        }
+        .btn-start {
+            background: #1a73e8; color: white; font-size: 1.2em; padding: 15px 30px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.2s; width: 100%;
+        }
+        .btn-start:hover { background: #1557b0; }
+
+        /* ANA KONTEYNER */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 100%;
+            box-sizing: border-box;
+            opacity: 0.5; pointer-events: none; transition: opacity 0.3s;
+        }
+        .container.active { opacity: 1; pointer-events: auto; }
+        
+        .canvas-container { display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        canvas {
+            background-color: #ffffff; border: 2px solid #dadce0; border-radius: 8px; touch-action: none; max-width: 100%; height: auto !important; aspect-ratio: 1 / 1;
+        }
+        
+        /* ARAÇ ÇUBUĞU */
+        .toolbar {
+            display: flex; gap: 15px; background: #f8f9fa; padding: 10px 20px; border-radius: 8px; border: 2px solid #dadce0; width: 100%; box-sizing: border-box; justify-content: center;
+        }
+        .tool-btn {
+            display: flex; align-items: center; gap: 8px; padding: 10px 15px; border: 3px solid transparent; border-radius: 8px; background: white; cursor: pointer; font-weight: bold; font-size: 1em; color: #3c4043; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: all 0.2s;
+        }
+        .tool-btn:hover { transform: translateY(-2px); }
+        .tool-btn.active { box-shadow: 0 4px 10px rgba(0,0,0,0.2); transform: scale(1.05); }
+        .tool-btn.red.active { border-color: #ea4335; background: #fce8e6; color: #d93025; }
+        .tool-btn.blue.active { border-color: #4285f4; background: #e8f0fe; color: #1a73e8; }
+        .tool-btn.eraser.active { border-color: #9aa0a6; background: #f1f3f4; }
+        .color-dot { width: 16px; height: 16px; border-radius: 50%; }
+
+        .panel { display: flex; flex-direction: column; gap: 15px; min-width: 320px; width: 100%; max-width: 380px; }
+        .info-box { background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 5px solid #3c4043; }
+        .info-box h3 { margin: 0 0 10px 0; font-size: 1.2em; color: #3c4043; }
+        .progress { font-size: 1.5em; font-weight: bold; color: #1a73e8; }
+        
+        /* METİN VE İSPAT PANELİ */
+        .calc-box {
+            background: #202124; color: #e8eaed; padding: 20px; border-radius: 8px; font-size: 1.05em; min-height: 160px; display: flex; flex-direction: column; justify-content: center; border: 2px solid transparent; transition: all 0.3s; line-height: 1.5;
+        }
+        .calc-box.error-red { border-color: #ea4335; background: #3c1e1c; }
+        .calc-box.error-blue { border-color: #4285f4; background: #1a233a; }
+        .calc-box.proof-mode { border-color: #fbbc04; background: #2d2a20; }
+        .calc-box span.highlight { color: #fbbc04; font-weight: bold; }
+        
+        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button.action-btn {
+            padding: 12px 15px; font-size: 1em; font-weight: bold; color: white; background-color: #1a73e8; border: none; border-radius: 6px; cursor: pointer; transition: background 0.2s; width: 100%;
+        }
+        button.action-btn:hover { background-color: #1557b0; }
+        button.btn-warning { background-color: #fbbc04; color: #202124; }
+        button.btn-warning:hover { background-color: #e3a800; }
+        button.btn-danger { background-color: #ea4335; }
+        button.btn-danger:hover { background-color: #c5221f; }
+        button.btn-success { background-color: #34a853; }
+        button.btn-success:hover { background-color: #1e8e3e; }
+        button:disabled { background-color: #dadce0 !important; color: #9aa0a6 !important; cursor: not-allowed; transform: none !important; }
+    </style>
+</head>
+<body>
+
+    <a href="PORTAL_OGRENCI.html" id="portalBack" style="position:fixed;top:12px;right:14px;z-index:9999;display:inline-block;background:#e8f0fe;color:#1a73e8;border:1.5px solid #c2d7f5;border-radius:8px;padding:8px 14px;font-size:0.82rem;font-weight:600;text-decoration:none;font-family:'Segoe UI',sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.1);transition:all .2s;" onmouseover="this.style.background='#c5d9f9'" onmouseout="this.style.background='#e8f0fe'">← Öğrenci Portalı</a>
+
+    <div class="modal-overlay" id="introModal">
+        <div class="modal-content">
+            <h2>İmkansız Boyama: Sosyal Ağ</h2>
+            <p>Ekranda birbirine 15 adet çizgiyle bağlı <strong>6 kişi</strong> var. Çizgileri boyayarak şu kuraldan kaçmaya çalışın:</p>
+            <ul style="text-align:left; color:#3c4043; font-size:1.1em; margin-bottom:20px;">
+                <li><strong style="color:#ea4335">KIRMIZI Çizgi:</strong> İki kişi birbirini tanıyor.</li>
+                <li><strong style="color:#4285f4">MAVİ Çizgi:</strong> İki kişi birbirine yabancı.</li>
+            </ul>
+            <div class="highlight-box">
+                GÖREVİNİZ:<br>
+                Hiçbir yerde tamamen <strong>Kıpkırmızı bir Üçgen</strong> veya tamamen <strong>Masmavi bir Üçgen</strong> OLUŞMASIN!
+            </div>
+            <p>Bunu başarmak matematiksel olarak mümkün mü? Hadi görelim.</p>
+            <button class="btn-start" onclick="startMission()">Meydan Okumayı Kabul Et</button>
+        </div>
+    </div>
+
+    <h1>Güvercin Yuvası: Sosyal Ağ Paradoksu</h1>
+    <p class="subtitle">Çizgileri boyayarak kuralı bozmayı deneyin veya alt taraftan adım adım matematiksel ispatı başlatın!</p>
+
+    <div class="container" id="mainContainer">
+        
+        <div class="canvas-container">
+            <div class="toolbar" id="gameToolbar">
+                <button class="tool-btn red active" id="btnTool1" onclick="setTool(1)">
+                    <div class="color-dot" style="background:#ea4335"></div> Kırmızı
+                </button>
+                <button class="tool-btn blue" id="btnTool2" onclick="setTool(2)">
+                    <div class="color-dot" style="background:#4285f4"></div> Mavi
+                </button>
+                <button class="tool-btn eraser" id="btnTool0" onclick="setTool(0)">
+                    <div class="color-dot" style="background:#e8eaed; border: 1px solid #9aa0a6;"></div> Silgi
+                </button>
+            </div>
+            
+            <canvas id="graphCanvas" width="500" height="500"></canvas>
+        </div>
+        
+        <div class="panel">
+            <div class="info-box" id="infoBox">
+                <h3>Oyun Durumu</h3>
+                <div>Boyanan Çizgi: <span class="progress" id="edgeCount">0 / 15</span></div>
+            </div>
+            
+            <div class="calc-box" id="statusBox">
+                <span style="color:#9aa0a6; text-align:center;">Oyun Başladı...<br>Kalemi seçip çizgileri boyayın.</span>
+            </div>
+            
+            <div class="button-group" id="gameButtons">
+                <button class="action-btn btn-warning" id="undoBtn" onclick="undoMove()" disabled>Geri Al</button>
+                <button class="action-btn" onclick="fillRandom()">Rastgele Boya</button>
+            </div>
+            <button class="action-btn btn-success" id="proofModeBtn" onclick="startProofMode()">Adım Adım İspatı Gör</button>
+            <button class="action-btn btn-danger" id="clearBtn" onclick="clearCanvas()">Baştan Başla</button>
+        </div>
+    </div>
+
+<script>
+    function startMission() {
+        document.getElementById('introModal').style.display = 'none';
+        document.getElementById('mainContainer').classList.add('active');
+    }
+
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    const cx = 250; const cy = 250; const R = 190; const HIT_RADIUS = 20; 
+    
+    let nodes = []; let edges = []; let historyStack = [];
+    let gameOver = false; let failedTriangle = null; let currentTool = 1;
+    
+    let appMode = 'GAME'; // 'GAME' veya 'PROOF'
+    let proofStep = 1;
+
+    function setTool(toolId) {
+        if(appMode === 'PROOF') return;
+        currentTool = toolId;
+        document.getElementById('btnTool1').classList.remove('active');
+        document.getElementById('btnTool2').classList.remove('active');
+        document.getElementById('btnTool0').classList.remove('active');
+        document.getElementById('btnTool' + toolId).classList.add('active');
+    }
+
+    // 6 Nokta Kurulumu
+    for(let i=0; i<6; i++) {
+        let angle = i * Math.PI / 3 - Math.PI / 2;
+        nodes.push({ id: i, x: cx + R * Math.cos(angle), y: cy + R * Math.sin(angle), label: String.fromCharCode(65 + i) });
+    }
+
+    // 15 Çizgi Kurulumu
+    for(let i=0; i<6; i++) {
+        for(let j=i+1; j<6; j++) { edges.push({ u: i, v: j, color: 0 }); }
+    }
+
+    function distToSegmentSquared(px, py, x1, y1, x2, y2) {
+        let l2 = (x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1);
+        if (l2 == 0) return (px - x1)*(px - x1) + (py - y1)*(py - y1);
+        let t = ((px - x1) * (x2 - x1) + (py - y1) * (y2 - y1)) / l2;
+        t = Math.max(0, Math.min(1, t));
+        return (px - (x1 + t * (x2 - x1)))*(px - (x1 + t * (x2 - x1))) + (py - (y1 + t * (y2 - y1)))*(py - (y1 + t * (y2 - y1)));
+    }
+
+    function handleInput(e) {
+        e.preventDefault();
+        if(appMode === 'PROOF' || gameOver && currentTool !== 0) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width; const scaleY = canvas.height / rect.height;
+        let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        let px = (clientX - rect.left) * scaleX; let py = (clientY - rect.top) * scaleY;
+
+        let closestEdge = null; let minDistSq = Infinity;
+        edges.forEach(edge => {
+            let n1 = nodes[edge.u]; let n2 = nodes[edge.v];
+            let d2 = distToSegmentSquared(px, py, n1.x, n1.y, n2.x, n2.y);
+            if(d2 < minDistSq) { minDistSq = d2; closestEdge = edge; }
+        });
+
+        if(closestEdge && minDistSq <= HIT_RADIUS * HIT_RADIUS) {
+            if (closestEdge.color !== currentTool) {
+                historyStack.push(edges.map(e => ({ ...e })));
+                closestEdge.color = currentTool;
+                checkTriangles(); updateUI(); draw();
+            }
+        }
+    }
+
+    canvas.addEventListener('mousedown', handleInput);
+    canvas.addEventListener('touchstart', handleInput, {passive: false});
+
+    function undoMove() {
+        if (historyStack.length > 0 && appMode === 'GAME') {
+            edges = historyStack.pop(); checkTriangles(); updateUI(); draw();
+        }
+    }
+
+    function getEdgeColor(u, v) {
+        let edge = edges.find(e => (e.u === u && e.v === v) || (e.u === v && e.v === u));
+        return edge ? edge.color : 0;
+    }
+
+    function checkTriangles() {
+        for(let i=0; i<6; i++) {
+            for(let j=i+1; j<6; j++) {
+                for(let k=j+1; k<6; k++) {
+                    let c1 = getEdgeColor(i, j); let c2 = getEdgeColor(j, k); let c3 = getEdgeColor(k, i);
+                    if(c1 !== 0 && c1 === c2 && c2 === c3) {
+                        gameOver = true; failedTriangle = { u: i, v: j, w: k, color: c1 }; return;
+                    }
+                }
+            }
+        }
+        gameOver = false; failedTriangle = null;
+    }
+
+    // İSPAT MODU KONTROLLERİ
+    function startProofMode() {
+        appMode = 'PROOF';
+        proofStep = 1;
+        document.getElementById('gameToolbar').style.opacity = '0.3';
+        document.getElementById('gameButtons').style.display = 'none';
+        document.getElementById('infoBox').innerHTML = '<h3>İspat Analizi</h3><div>Güvercin Yuvası İlkesi devrede.</div>';
+        
+        let btn = document.getElementById('proofModeBtn');
+        btn.innerText = "Sonraki Adım \u2192";
+        btn.className = "action-btn btn-warning";
+        btn.setAttribute('onclick', 'nextProofStep()');
+        
+        updateProofUI();
+        draw();
+    }
+
+    function nextProofStep() {
+        if(proofStep < 5) {
+            proofStep++;
+            updateProofUI();
+            draw();
+        } else {
+            exitProofMode();
+        }
+    }
+
+    function exitProofMode() {
+        appMode = 'GAME';
+        document.getElementById('gameToolbar').style.opacity = '1';
+        document.getElementById('gameButtons').style.display = 'grid';
+        
+        let btn = document.getElementById('proofModeBtn');
+        btn.innerText = "Adım Adım İspatı Gör";
+        btn.className = "action-btn btn-success";
+        btn.setAttribute('onclick', 'startProofMode()');
+        
+        clearCanvas();
+    }
+
+    function updateProofUI() {
+        let box = document.getElementById('statusBox');
+        box.className = 'calc-box proof-mode';
+        
+        if(proofStep === 1) {
+            box.innerHTML = `<strong>ADIM 1: Güvercinleri Seçelim</strong><br>Sistemdeki herhangi bir kişiyi seçelim: <span class="highlight">A Noktası</span>.<br>A'dan çıkan toplam <span class="highlight">5 adet çizgi</span> var. Bu 5 çizgi bizim <strong>GÜVERCİNLERİMİZ</strong> olacak.`;
+        }
+        else if(proofStep === 2) {
+            box.innerHTML = `<strong>ADIM 2: Yuvaları Kuralları</strong><br>Çizgileri boyamak için <span class="highlight">2 rengimiz (Kırmızı/Mavi)</span> var. Bunlar bizim <strong>YUVALARIMIZ</strong>.<br><br><strong>Güvercin Yuvası İlkesi der ki:</strong><br>5 Güvercin 2 yuvaya dağılırsa, en az bir yuvada en az 3 güvercin olmalıdır. Yani A'dan çıkan çizgilerden <span class="highlight">en az 3'ü aynı renk</span> olmalı (Varsayalım ki Kırmızı).`;
+        }
+        else if(proofStep === 3) {
+            box.innerHTML = `<strong>ADIM 3: Hedef Grubu İzleme</strong><br>A noktasının kırmızı çizgiyle bağlandığı <span class="highlight">B, C ve D</span> kişilerine odaklanalım.<br>Şimdi oyunun kuralını bozmamak için bu 3 kişinin kendi arasındaki ilişkileri inceleyeceğiz.`;
+        }
+        else if(proofStep === 4) {
+            box.innerHTML = `<strong>ADIM 4: Kırmızı Çöküş İhtimali</strong><br>Eğer B, C veya D kendi aralarında <span class="highlight" style="color:#f28b82;">tek bir Kırmızı çizgi</span> bile çekerse (örneğin B ile C), A noktasıyla birleşerek anında <span class="highlight" style="color:#f28b82;">KIPKIRMIZI BİR ÜÇGEN</span> oluştururlar ve kural çiğnenir!`;
+        }
+        else if(proofStep === 5) {
+            box.innerHTML = `<strong>ADIM 5: Mavi Çöküş ve Kapanış</strong><br>Kırmızı üçgen tuzağından kaçmak için B, C ve D kendi aralarındaki tüm bağları <span class="highlight" style="color:#8ab4f8;">Mavi</span> yapmak zorundadır. <br><br>Ama bunu yaptıkları an bu sefer de kendi aralarında <span class="highlight" style="color:#8ab4f8;">MASMAVİ BİR ÜÇGEN</span> oluşur! Kaçış yoktur. Oyun her zaman matematiksel olarak biter!`;
+            document.getElementById('proofModeBtn').innerText = "Normal Oyuna Dön";
+        }
+    }
+
+    function fillRandom() {
+        if(appMode === 'PROOF') return;
+        if(gameOver) clearCanvas();
+        historyStack.push(edges.map(e => ({ ...e })));
+        edges.forEach(edge => { if(edge.color === 0) { edge.color = Math.random() < 0.5 ? 1 : 2; } });
+        checkTriangles(); updateUI(); draw();
+    }
+
+    function clearCanvas() {
+        edges.forEach(edge => edge.color = 0);
+        historyStack = []; gameOver = false; failedTriangle = null;
+        document.getElementById('infoBox').innerHTML = '<h3>Oyun Durumu</h3><div>Boyanan Çizgi: <span class="progress" id="edgeCount">0 / 15</span></div>';
+        let statusBox = document.getElementById('statusBox');
+        statusBox.className = 'calc-box';
+        statusBox.innerHTML = '<span style="color:#9aa0a6; text-align:center;">Sıfırlandı.<br>Yeniden deneyin!</span>';
+        if(appMode === 'PROOF') exitProofMode();
+        updateUI(); draw();
+    }
+
+    function updateUI() {
+        if(appMode === 'PROOF') return;
+        let coloredCount = edges.filter(e => e.color !== 0).length;
+        document.getElementById('edgeCount').innerText = `${coloredCount} / 15`;
+        document.getElementById('undoBtn').disabled = (historyStack.length === 0);
+
+        let statusBox = document.getElementById('statusBox');
+        if(gameOver && failedTriangle) {
+            let n1 = nodes[failedTriangle.u].label; let n2 = nodes[failedTriangle.v].label; let n3 = nodes[failedTriangle.w].label;
+            statusBox.className = failedTriangle.color === 1 ? 'calc-box error-red' : 'calc-box error-blue';
+            statusBox.innerHTML = `<strong>OYUN BİTTİ!</strong><br>${n1}, ${n2} ve ${n3} arasında tamamen <span class="highlight">${failedTriangle.color === 1 ? 'KIRMIZI' : 'MAVİ'}</span> bir üçgen kapandı.`;
+        } else {
+            statusBox.className = 'calc-box';
+            statusBox.innerHTML = coloredCount === 15 ? '<span>Tebrikler! (Matematiksel olarak imkansız)</span>' : '<span style="color:#9aa0a6; text-align:center;">Boyamaya devam edin...</span>';
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // OYUN MODU ÇİZİMİ
+        if (appMode === 'GAME') {
+            edges.forEach(edge => {
+                let isFailedEdge = gameOver && failedTriangle && 
+                    ((edge.u===failedTriangle.u && edge.v===failedTriangle.v) || (edge.u===failedTriangle.v && edge.v===failedTriangle.u) ||
+                     (edge.u===failedTriangle.v && edge.v===failedTriangle.w) || (edge.u===failedTriangle.w && edge.v===failedTriangle.v) ||
+                     (edge.u===failedTriangle.w && edge.v===failedTriangle.u) || (edge.u===failedTriangle.u && edge.v===failedTriangle.w));
+
+                if(!isFailedEdge) {
+                    let n1 = nodes[edge.u]; let n2 = nodes[edge.v];
+                    ctx.beginPath(); ctx.moveTo(n1.x, n1.y); ctx.lineTo(n2.x, n2.y);
+                    if(edge.color === 0) { ctx.lineWidth = 1.5; ctx.strokeStyle = "#e8eaed"; }
+                    else { ctx.lineWidth = 4; ctx.strokeStyle = edge.color === 1 ? (gameOver ? "rgba(234,67,53,0.15)":"#ea4335") : (gameOver ? "rgba(66,133,244,0.15)":"#4285f4"); }
+                    ctx.stroke();
+                }
+            });
+
+            if(gameOver && failedTriangle) {
+                let tri = [nodes[failedTriangle.u], nodes[failedTriangle.v], nodes[failedTriangle.w]];
+                ctx.beginPath(); ctx.moveTo(tri[0].x, tri[0].y); ctx.lineTo(tri[1].x, tri[1].y); ctx.lineTo(tri[2].x, tri[2].y); ctx.closePath();
+                ctx.fillStyle = failedTriangle.color === 1 ? "rgba(234,67,53,0.15)" : "rgba(66,133,244,0.15)"; ctx.fill();
+                ctx.lineWidth = 6; ctx.strokeStyle = failedTriangle.color === 1 ? "#d93025" : "#1a73e8";
+                ctx.beginPath(); ctx.moveTo(tri[0].x, tri[0].y); ctx.lineTo(tri[1].x, tri[1].y); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(tri[1].x, tri[1].y); ctx.lineTo(tri[2].x, tri[2].y); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(tri[2].x, tri[2].y); ctx.lineTo(tri[0].x, tri[0].y); ctx.stroke();
+            }
+        }
+        // İSPAT MODU ADIM ADIM ÇİZİM MOTORU
+        else if (appMode === 'PROOF') {
+            if(proofStep === 1) {
+                // Sadece A noktasından çıkan 5 çizgiyi nötr çiz
+                nodes.forEach((n, i) => {
+                    if(i !== 0) {
+                        ctx.beginPath(); ctx.moveTo(nodes[0].x, nodes[0].y); ctx.lineTo(n.x, n.y);
+                        ctx.lineWidth = 3; ctx.strokeStyle = "#bcc1c6"; ctx.stroke();
+                    }
+                });
+            }
+            else if(proofStep === 2 || proofStep === 3) {
+                // Güvercin yuvası gereği 3 tanesini zorunlu kırmızı boya (B, C, D'ye gidenler)
+                for(let i=1; i<=3; i++) {
+                    ctx.beginPath(); ctx.moveTo(nodes[0].x, nodes[0].y); ctx.lineTo(nodes[i].x, nodes[i].y);
+                    ctx.lineWidth = 5; ctx.strokeStyle = "#ea4335"; ctx.stroke();
+                }
+                // Diğer 2 çizgiyi soluk çiz
+                for(let i=4; i<=5; i++) {
+                    ctx.beginPath(); ctx.moveTo(nodes[0].x, nodes[0].y); ctx.lineTo(nodes[i].x, nodes[i].y);
+                    ctx.lineWidth = 2; ctx.strokeStyle = "rgba(232,234,237,0.4)"; ctx.stroke();
+                }
+            }
+            else if(proofStep === 4) {
+                // A'dan çıkan kırmızıları koru
+                for(let i=1; i<=3; i++) {
+                    ctx.beginPath(); ctx.moveTo(nodes[0].x, nodes[0].y); ctx.lineTo(nodes[i].x, nodes[i].y);
+                    ctx.lineWidth = 4; ctx.strokeStyle = "#ea4335"; ctx.stroke();
+                }
+                // B ile C arasına flaşör kırmızı çizgi koyarak tuzağı göster
+                ctx.beginPath(); ctx.moveTo(nodes[1].x, nodes[1].y); ctx.lineTo(nodes[2].x, nodes[2].y);
+                ctx.lineWidth = 6; ctx.strokeStyle = "#d93025"; ctx.stroke();
+                
+                // Oluşan kırmızı üçgenin içini tara
+                ctx.beginPath(); ctx.moveTo(nodes[0].x, nodes[0].y); ctx.lineTo(nodes[1].x, nodes[1].y); ctx.lineTo(nodes[2].x, nodes[2].y); ctx.closePath();
+                ctx.fillStyle = "rgba(234,67,53,0.15)"; ctx.fill();
+            }
+            else if(proofStep === 5) {
+                // Kırmızı çizgileri koru
+                for(let i=1; i<=3; i++) {
+                    ctx.beginPath(); ctx.moveTo(nodes[0].x, nodes[0].y); ctx.lineTo(nodes[i].x, nodes[i].y);
+                    ctx.lineWidth = 3; ctx.strokeStyle = "rgba(234,67,53,0.3)"; ctx.stroke();
+                }
+                // B, C, D arasındaki kaçınılmaz MAVİ üçgeni çiz
+                ctx.lineWidth = 6; ctx.strokeStyle = "#1a73e8";
+                ctx.beginPath(); ctx.moveTo(nodes[1].x, nodes[1].y); ctx.lineTo(nodes[2].x, nodes[2].y); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(nodes[2].x, nodes[2].y); ctx.lineTo(nodes[3].x, nodes[3].y); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(nodes[3].x, nodes[3].y); ctx.lineTo(nodes[1].x, nodes[1].y); ctx.stroke();
+                
+                ctx.beginPath(); ctx.moveTo(nodes[1].x, nodes[1].y); ctx.lineTo(nodes[2].x, nodes[2].y); ctx.lineTo(nodes[3].x, nodes[3].y); ctx.closePath();
+                ctx.fillStyle = "rgba(66,133,244,0.2)"; ctx.fill();
+            }
+        }
+
+        // DÜĞÜMLERİ (NOKTALARI) ÇİZ
+        nodes.forEach(n => {
+            let isActiveNode = true;
+            if(appMode === 'PROOF') {
+                if(proofStep === 1) isActiveNode = (n.id === 0);
+                else if(proofStep === 2) isActiveNode = (n.id === 0);
+                else if(proofStep === 3 || proofStep === 4 || proofStep === 5) isActiveNode = (n.id <= 3);
+            }
+
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, isActiveNode ? 13 : 9, 0, Math.PI*2);
+            ctx.fillStyle = isActiveNode ? ((appMode==='PROOF' && n.id===0)? "#fbbc04" : "#202124") : "rgba(203,205,208,0.4)";
+            ctx.fill();
+            
+            ctx.fillStyle = isActiveNode ? "#ffffff" : "rgba(255,255,255,0.6)";
+            ctx.font = "bold 12px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText(n.label, n.x, n.y);
+        });
+    }
+
+    draw();
+</script>
+</body>
+</html>

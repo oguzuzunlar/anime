@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Öğretmen Paneli: Güvercin Yuvası İlkesi</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            position: relative;
+        }
+
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .btn-info {
+            background-color: #0284c7;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-info:hover {
+            background-color: #0369a1;
+        }
+
+        .problem-statement {
+            background-color: #f0fdf4;
+            border: 2px dashed #22c55e;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            color: #14532d;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .slider-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .slider-label span {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .pool-container {
+            background: #fffbeb;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .pool-title {
+            font-weight: bold;
+            color: #b45309;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .pigeon-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            min-height: 55px;
+        }
+
+        .pigeon {
+            width: 48px;
+            height: 48px;
+            background-color: #ffedd5;
+            border: 2px solid #f97316;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            user-select: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .simulation-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .pigeonhole {
+            background: #fff;
+            border: 3px dashed var(--border);
+            border-radius: 14px;
+            min-height: 180px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .pigeonhole:hover {
+            border-color: var(--primary);
+            background-color: #f5f3ff;
+            transform: translateY(-2px);
+        }
+
+        .pigeonhole.highlight-multiple {
+            border-color: #ef4444;
+            background-color: #fef2f2;
+            box-shadow: 0 0 0 4px #fca5a5;
+        }
+
+        .pigeonhole-title {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #475569;
+            margin-bottom: 15px;
+        }
+
+        .pigeons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .hole-count {
+            margin-top: auto;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .pigeonhole.highlight-multiple .hole-count {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .reset-btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 25px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 25px;
+        }
+
+        .btn-reset {
+            background-color: #64748b;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .btn-reset:hover {
+            background-color: #475569;
+        }
+
+        /* ALIŞTIRMA SORULARI ALANI */
+        .exercises-section {
+            margin-top: 35px;
+        }
+
+        .exercises-title {
+            color: #1e293b;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .exercise-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .exercise-question {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        .btn-answer {
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-answer:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .exercise-answer {
+            margin-top: 12px;
+            padding: 12px 15px;
+            background-color: #f0fdf4;
+            border-left: 4px solid #16a34a;
+            border-radius: 0 6px 6px 0;
+            color: #14532d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            display: none;
+        }
+
+        /* MODAL TASARIMI */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 16px;
+            max-width: 650px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #f1f5f9;
+            padding: 20px 25px;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .close-modal {
+            font-size: 1.8rem;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .close-modal:hover {
+            color: #475569;
+        }
+
+        .modal-body {
+            padding: 25px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .theory-section {
+            background-color: #f8fafc;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 25px;
+        }
+
+        .theory-section.generalized {
+            border-left-color: #0284c7;
+            background-color: #f0f9ff;
+        }
+
+        .theory-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #1e293b;
+        }
+
+        .theory-text {
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #334155;
+            margin: 0 0 10px 0;
+        }
+
+        .math-block {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-area">
+        <h1>🐦 Sınıf İçi Güvercin Yuvası İlkesi Simülasyonu</h1>
+        <button class="btn-info" onclick="toggleModal(true)">📖 İlkelerin Tanımını Göster</button>
+    </div>
+    
+    <div class="problem-statement" id="problemText">
+        Elinizde 5 güvercin ve 4 güvercin yuvası var. Her bir yuvada SADECE BİR güvercin olmasını sağlayabilir misiniz?
+    </div>
+
+    <div class="slider-section">
+        <div class="slider-group">
+            <div class="slider-label">Yuva Sayısı (k): <span id="holeVal">4</span></div>
+            <input type="range" id="holeSlider" min="1" max="8" value="4" oninput="updateSliders('hole')">
+        </div>
+        <div class="slider-group">
+            <div class="slider-label">Güvercin Sayısı (n): <span id="pigeonVal">5</span></div>
+            <input type="range" id="pigeonSlider" min="2" max="20" value="5" oninput="updateSliders('pigeon')">
+        </div>
+    </div>
+
+    <div class="pool-container">
+        <div class="pool-title">Yuvaya Yerleştirilmeyi Bekleyen Güvercinler (<span id="remCount">5</span> adet)</div>
+        <div class="pigeon-pool" id="pigeonPool"></div>
+    </div>
+
+    <div class="simulation-area" id="simulationArea"></div>
+
+    <div class="reset-btn-container">
+        <button class="btn-reset" onclick="initSimulation()">Mevcut Sayılarla Dağıtımı Sıfırla</button>
+    </div>
+
+    <!-- ALIŞTIRMA SORULARI BÖLÜMÜ -->
+    <div class="exercises-section">
+        <div class="exercises-title">📝 Kendimizi Deneyelim: Alıştırma Soruları</div>
+        
+        <!-- Soru 1 (Ankara Sorusu - Cevapsız ve Notsuz) -->
+        <div class="exercise-card">
+            <div class="exercise-question">Soru 1: Ankara'da saç teli sayısı tamamen eşit olan en az iki kişi var mıdır?</div>
+        </div>
+
+        <!-- Soru 2 -->
+        <div class="exercise-card">
+            <div class="exercise-question">Soru 2: Bir çekmecede 6 siyah ve 6 mavi çorap vardır. Karanlıkta çekmeceden en az kaç çorap almalısınız ki kesinlikle aynı renkten bir çift elde etmiş olasınız?</div>
+            <button class="btn-answer" onclick="toggleAnswer('ans2')">Cevabı Göster / Gizle</button>
+            <div class="exercise-answer" id="ans2">
+                En az 3 çorap almalısınız. Burada renkler bizim yuvalarımızdır yani siyah ve mavi olmak üzere 2 yuva vardır. Çekmeceden çekilen çoraplar ise güvercinlerdir. En az bir yuvada 2 çorap olmasını garanti etmek için yuva sayısından 1 fazla yani 3 çorap seçilmesi gerekir.
+            </div>
+        </div>
+
+        <!-- Soru 3 -->
+        <div class="exercise-card">
+            <div class="exercise-question">Soru 3: 13 kişinin bulunduğu bir odada, en az iki kişinin aynı ayda doğmuş olduğunu kesin olarak söyleyebilir miyiz?</div>
+            <button class="btn-answer" onclick="toggleAnswer('ans3')">Cevabı Göster / Gizle</button>
+            <div class="exercise-answer" id="ans3">
+                Evet, kesinlikle söyleyebiliriz. Bir yılda 12 ay vardır yani yuva sayımız 12'dir. Odadaki kişi sayısı ise 13'tür. İnsan sayısı ay sayısından fazla olduğu için en az iki kişi aynı ayda doğmuş olmak zorundadır.
+            </div>
+        </div>
+
+        <!-- Soru 4 -->
+        <div class="exercise-card">
+            <div class="exercise-question">Soru 4: 50 öğrencisi olan bir sınıfta, haftanın aynı gününde doğmuş en az kaç öğrenci vardır?</div>
+            <button class="btn-answer" onclick="toggleAnswer('ans4')">Cevabı Göster / Gizle</button>
+            <div class="exercise-answer" id="ans4">
+                En az 8 öğrenci vardır. Haftanın günleri yuva sayısıdır yani 7 yuva vardır. Öğrenci sayısı ise 50'dir. Genelleştirilmiş Güvercin Yuvası İlkesi formülüne göre 50 sayısını 7 sayısına bölüp tavan değerini aldığımızda 8 sonucuna ulaşırız. Bu yüzden haftanın aynı gününde doğmuş en az 8 öğrenci bulunur.
+            </div>
+        </div>
+
+        <!-- Soru 5 -->
+        <div class="exercise-card">
+            <div class="exercise-question">Soru 5: Bir okul testinde öğrencilere 1 ile 10 arasında tam sayı puanlar verilmektedir. Teste giren 45 öğrenci olduğuna göre, aynı puanı alan en az kaç öğrenci bulunmak zorundadır?</div>
+            <button class="btn-answer" onclick="toggleAnswer('ans5')">Cevabı Göster / Gizle</button>
+            <div class="exercise-answer" id="ans5">
+                En az 5 öğrenci vardır. Alınabilecek puan türleri yuva sayısıdır yani 10 yuva vardır. Öğrenci sayısı ise 45'tir. Genelleştirilmiş kural gereğince 45 sayısını 10 sayısına böldüğümüzde çıkan 4.5 değerini yukarı yuvarlarız ve 5 tavan değerine ulaşırız. Bu puan tablosunda aynı notu paylaşan en az 5 öğrenci bulunur.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TANIM MODÜLÜ -->
+<div class="modal-overlay" id="theoryModal" onclick="toggleModal(false)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2 class="modal-title">Matematiksel Teori ve Tanımlar</h2>
+            <button class="close-modal" onclick="toggleModal(false)">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+            <div class="theory-section">
+                <div class="theory-title">1. Güvercin Yuvası İlkesi</div>
+                <p class="theory-text">
+                    Matematiksel koşul ve kural şu şekildedir:
+                </p>
+                <div class="math-block">
+                    n > k ise en az bir kutuda ≥ 2 nesne vardır.
+                </div>
+                <p class="theory-text">
+                    Burada n nesne sayısını, k ise kutu sayısını temsil eder. Nesne sayısı kutu sayısından fazla olduğu sürece en az bir kutunun birden fazla nesne barındırması matematiksel bir zorunluluktur.
+                    <br><br>
+                    <b>Örnek:</b> n = 5 güvercin k = 4 yuvaya dağıtıldığında en az bir yuvada 2 veya daha fazla güvercin bulunur.
+                </p>
+            </div>
+
+            <div class="theory-section generalized">
+                <div class="theory-title">2. Genelleştirilmiş Güvercin Yuvası İlkesi</div>
+                <p class="theory-text">
+                    Çok sayıda nesne daha az sayıda kutuya yerleştirildiğinde kullanılacak matematiksel formül şu şekildedir:
+                </p>
+                <div class="math-block">
+                    En az bir kutudaki nesne sayısı ≥ ⌈n / k⌉
+                </div>
+                <p class="theory-text">
+                    Bu ifadedeki ⌈ ⌉ sembolü bölme sonucunu bir üst tam sayıya tamamlayan tavan değer fonksiyonudur. Dağıtım mimarisi nasıl kurulursa kurulsun en az bir kutuda bu formül sonucu kadar veya daha fazla nesne birikecektir.
+                    <br><br>
+                    <b>Örnek:</b> n = 10 nesne k = 3 kutuya dağıtıldığında tavan değer hesabı ⌈10 / 3⌉ = 4 sonucunu verir. Bu durumda en az bir kutuda 4 veya daha fazla nesne yer almak zorundadır.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let n = 5; 
+    let k = 4; 
+    let poolCount = 5; 
+    let holesData = []; 
+
+    function toggleModal(show) {
+        const modal = document.getElementById('theoryModal');
+        if (show) {
+            modal.classList.add('open');
+        } else {
+            modal.classList.remove('open');
+        }
+    }
+
+    function toggleAnswer(id) {
+        const ans = document.getElementById(id);
+        if (ans.style.display === 'block') {
+            ans.style.display = 'none';
+        } else {
+            ans.style.display = 'block';
+        }
+    }
+
+    function updateSliders(triggerSource) {
+        k = parseInt(document.getElementById('holeSlider').value);
+        n = parseInt(document.getElementById('pigeonSlider').value);
+
+        if (n <= k) {
+            if (triggerSource === 'hole') {
+                n = k + 1;
+                document.getElementById('pigeonSlider').value = n;
+            } else if (triggerSource === 'pigeon') {
+                k = n - 1;
+                document.getElementById('holeSlider').value = k;
+            }
+        }
+
+        document.getElementById('holeVal').innerText = k;
+        document.getElementById('pigeonVal').innerText = n;
+        document.getElementById('problemText').innerText = `Elinizde ${n} güvercin ve ${k} güvercin yuvası var. Her bir yuvada SADECE BİR güvercin olmasını sağlayabilir misiniz?`;
+
+        initSimulation();
+    }
+
+    function initSimulation() {
+        poolCount = n;
+        document.getElementById('remCount').innerText = poolCount;
+        holesData = Array(k).fill(0);
+
+        const pool = document.getElementById('pigeonPool');
+        pool.innerHTML = '';
+        for(let i=0; i<poolCount; i++) {
+            const p = document.createElement('div');
+            p.className = 'pigeon';
+            p.innerText = '🐦';
+            pool.appendChild(p);
+        }
+
+        const simArea = document.getElementById('simulationArea');
+        simArea.innerHTML = '';
+
+        for(let j=0; j<k; j++) {
+            const hole = document.createElement('div');
+            hole.className = 'pigeonhole';
+            hole.id = `hole-${j}`;
+            hole.onclick = () => addPigeonToHole(j);
+
+            const title = document.createElement('div');
+            title.className = 'pigeonhole-title';
+            title.innerText = `Yuva ${j + 1}`;
+
+            const container = document.createElement('div');
+            container.className = 'pigeons-container';
+            container.id = `container-${j}`;
+
+            const count = document.createElement('div');
+            count.className = 'hole-count';
+            count.id = `count-${j}`;
+            count.innerText = 'Güvercin: 0';
+
+            hole.appendChild(title);
+            hole.appendChild(container);
+            hole.appendChild(count);
+            simArea.appendChild(hole);
+        }
+    }
+
+    function addPigeonToHole(holeIndex) {
+        if (poolCount <= 0) {
+            alert("Tüm güvercinleri yerleştirdiniz!");
+            return;
+        }
+
+        poolCount--;
+        document.getElementById('remCount').innerText = poolCount;
+        const pool = document.getElementById('pigeonPool');
+        if(pool.lastChild) pool.removeChild(pool.lastChild);
+
+        holesData[holeIndex]++;
+
+        const container = document.getElementById(`container-${holeIndex}`);
+        const pVisual = document.createElement('div');
+        pVisual.className = 'pigeon';
+        pVisual.innerText = '🐦';
+        container.appendChild(pVisual);
+
+        document.getElementById(`count-${holeIndex}`).innerText = `Güvercin: ${holesData[holeIndex]}`;
+
+        checkHoleStatus();
+    }
+
+    function checkHoleStatus() {
+        for(let j=0; j<k; j++) {
+            const holeEl = document.getElementById('hole-' + j);
+            if (holesData[j] >= 2) {
+                holeEl.classList.add('highlight-multiple');
+            } else {
+                holeEl.classList.remove('highlight-multiple');
+            }
+        }
+    }
+
+    window.onload = initSimulation;
+</script>
+
+</body>
+</html>
