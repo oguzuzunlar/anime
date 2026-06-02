@@ -10,16 +10,47 @@
             background-color: #f0f2f5;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: flex-start; /* GeoGebra içinde ortalama yerine sola hizalama */
             margin: 0;
-            padding: 20px;
+            padding: 15px; /* Aşırı boşluğu engellemek için padding azaltıldı */
+            box-sizing: border-box;
+            width: 100%;
         }
-        h1 { color: #1a73e8; margin-bottom: 5px; text-align: center; }
-        p.subtitle { color: #4f5358; margin-top: 0; margin-bottom: 20px; font-size: 1.1em; text-align: center; max-width: 800px; line-height: 1.5; }
-        .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .canvas-container { width: 500px; height: 500px; max-width: 90vw; max-height: 90vw; }
+        h1 { color: #1a73e8; margin-bottom: 5px; text-align: left; font-size: 1.8em; }
+        p.subtitle { color: #4f5358; margin-top: 0; margin-bottom: 20px; font-size: 1em; text-align: left; max-width: 100%; line-height: 1.5; }
+        
+        .container { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: flex-start; /* Sola yaslama sağlandı */
+            align-items: flex-start;
+            gap: 20px; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            width: 100%; /* GeoGebra alanına tam yayılması için */
+            max-width: 950px; /* Panel ve Canvas'ın ideal yan yana durma sınırı */
+            box-sizing: border-box;
+        }
+        
+        .canvas-container { 
+            width: 500px; 
+            height: 500px; 
+            max-width: 100%; /* Taşmayı önlemek için */
+            max-height: 500px; 
+        }
         canvas { background-color: #ffffff; border: 2px solid #dadce0; border-radius: 8px; touch-action: none; width: 100%; height: 100%; display: block; }
-        .panel { display: flex; flex-direction: column; gap: 15px; min-width: 300px; max-width: 350px; }
+        
+        .panel { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            flex: 1; /* Kalan boşluğu panelin esnekçe doldurması için */
+            min-width: 280px; 
+            max-width: 380px; 
+        }
+        
         .info-box { background: #e8f0fe; padding: 15px; border-radius: 8px; border-left: 5px solid #1a73e8; }
         .info-box h3 { margin: 0 0 10px 0; font-size: 1.2em; color: #1a73e8; }
         .info-box span { font-size: 1.5em; font-weight: bold; color: #3c4043; }
@@ -28,7 +59,7 @@
         button.btn-danger { background-color: #ea4335; }
         button.btn-success { background-color: #34a853; }
         button.btn-warning { background-color: #fbbc04; color: #202124; }
-        #statusMessage { font-weight: bold; font-size: 1.1em; color: #3c4043; min-height: 60px; line-height: 1.4; }
+        #statusMessage { font-weight: bold; font-size: 1.05em; color: #3c4043; min-height: 60px; line-height: 1.4; }
         .step-box { background-color: #fff9c4; border: 1px solid #fbc02d; padding: 12px; border-radius: 6px; font-size: 1em; color: #202124; display: none; line-height: 1.4; }
     </style>
 </head>
@@ -59,7 +90,6 @@
             <button class="btn-warning" id="conflictBtn" onclick="toggleAllConflicts()">Tüm Mesafeleri Göster</button>
             <button class="btn-danger" id="clearBtn" onclick="clearCanvas()">Platformu Temizle</button>
             
-            
             <div id="stepDescription" class="step-box"></div>
         </div>
     </div>
@@ -67,7 +97,6 @@
 <script>
     const canvas = document.getElementById('squareCanvas');
     const ctx = canvas.getContext('2d');
-    // 400 piksel / 20 metre = 20 piksel/metre ölçeği kullanılıyor
     const MARGIN = 50, SQUARE_SIZE = 400, UNIT_PX = 20, TARGET_DIST = 15.00;
     
     let points = [], proofPoints = [], showAllConflicts = false, currentStep = 0;
@@ -109,48 +138,12 @@
     function clearCanvas() { 
         points = []; proofPoints = []; currentStep = 0; 
         document.getElementById('stepDescription').style.display = "none"; 
-        document.getElementById('solutionBtn').innerText = "İspatı Başlat (Adım Adım)";
         document.getElementById('liveStatsBox').style.opacity = "1";
         document.getElementById('conflictBtn').style.display = "block";
         draw(); 
     }
 
     function toggleAllConflicts() { showAllConflicts = !showAllConflicts; draw(); }
-
-    function nextSolutionStep() {
-        if(currentStep === 0) { 
-            points = []; 
-            document.getElementById('liveStatsBox').style.opacity = "0.3"; 
-            document.getElementById('conflictBtn').style.display = "none";
-        }
-        
-        currentStep++;
-        const info = document.getElementById('stepDescription');
-        info.style.display = "block";
-        const btn = document.getElementById('solutionBtn');
-
-        if(currentStep === 1) {
-            btn.innerText = "Devam Et (Bölgeleri İncele)";
-            info.innerHTML = "<strong>Adım 1: Alanı Parçalama</strong><br>20x20 metrelik platform temizlendi. Alanı, her biri 10x10 metrelik olan 4 eşit küçük kare bölgeye (yuvaya) böldük.";
-        } else if(currentStep === 2) {
-            btn.innerText = "Devam Et (Noktaları Yerleştir)";
-            info.innerHTML = "<strong>Adım 2: Maksimum Mesafe Analizi</strong><br>Bir yuvadaki en uzak mesafe köşegendir: <b>√(10² + 10²) ≈ 14.14m</b>. Bu uzunluk, kuralda istenen minimum 15 metreden daha küçüktür!";
-        } else if(currentStep === 3) {
-            btn.innerText = "Sonucu Gör (5. Çadır)";
-            info.innerHTML = "<strong>Adım 3: Çadırlar Dağılıyor</strong><br>Her yuvaya birer çadır yerleştirdik (Toplam 4 çadır). Şimdilik en uzak köşelere yerleşerek 15 metrelik mesafeyi korumayı başardılar.";
-            proofPoints = [
-                {x: MARGIN, y: MARGIN}, {x: MARGIN+SQUARE_SIZE, y: MARGIN},
-                {x: MARGIN, y: MARGIN+SQUARE_SIZE}, {x: MARGIN+SQUARE_SIZE, y: MARGIN+SQUARE_SIZE}
-            ];
-        } else if(currentStep === 4) {
-            btn.innerText = "Baştan Denemeye Dön";
-            info.innerHTML = "<strong>Sonuç: Güvercin Yuvası İlkesi</strong><br>Elimizde 4 yuva ve yerleşmesi gereken 5. bir çadır var. 5. çadır mecburen zaten dolu olan yuvalardan birine girecek! O yuvadaki iki çadır arasındaki mesafe en fazla 14.14m olabileceğinden, 15m kuralı kesinlikle ihlal edilir. Festival bu kurallarla yapılamaz!";
-            proofPoints.push({x: MARGIN+SQUARE_SIZE/3, y: MARGIN+SQUARE_SIZE/3}); 
-        } else {
-            clearCanvas();
-        }
-        draw();
-    }
 
     function drawDistanceText(x1, y1, x2, y2, value, color) {
         let mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
@@ -161,18 +154,15 @@
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Ana Kare Platform
         ctx.beginPath(); ctx.rect(MARGIN, MARGIN, SQUARE_SIZE, SQUARE_SIZE);
         ctx.fillStyle = "#f8f9fa"; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = "#3c4043"; ctx.stroke();
 
-        // İspat Modunda Kesikli Izgaralar (Adım 1+)
         if(currentStep >= 1) {
             ctx.setLineDash([5, 5]); ctx.strokeStyle = "#1a73e8"; ctx.lineWidth = 2;
             ctx.beginPath(); ctx.moveTo(MARGIN+200, MARGIN); ctx.lineTo(MARGIN+200, MARGIN+400);
             ctx.moveTo(MARGIN, MARGIN+200); ctx.lineTo(MARGIN+400, MARGIN+200); ctx.stroke(); ctx.setLineDash([]);
         }
 
-        // İspat Modunda Sol Üst Köşegen Analizi (Adım 2+)
         if(currentStep >= 2) {
             ctx.beginPath(); ctx.moveTo(MARGIN, MARGIN); ctx.lineTo(MARGIN+200, MARGIN+200);
             ctx.strokeStyle = "#ea4335"; ctx.setLineDash([3, 3]); ctx.stroke(); ctx.setLineDash([]);
@@ -181,7 +171,6 @@
 
         const activePoints = currentStep > 0 ? proofPoints : points;
         
-        // Mesafe Çizgileri ve Renklendirmeler
         if (activePoints.length > 1) {
             if (showAllConflicts || currentStep === 4) {
                 for(let i=0; i<activePoints.length; i++) {
@@ -215,12 +204,10 @@
             }
         }
 
-        // Çadırları Çiz
         activePoints.forEach(p => {
             ctx.beginPath(); ctx.arc(p.x, p.y, 10, 0, Math.PI*2); ctx.fillStyle = "#202124"; ctx.fill();
         });
 
-        // Durum Mesajları Yönetimi
         let msgElement = document.getElementById('statusMessage');
         let distTextElement = document.getElementById('minDistText');
         let countElement = document.getElementById('pointCount');
