@@ -1,0 +1,56 @@
+{
+  "format": "matbis-materyal",
+  "surum": "1.0",
+  "kimlik": {
+    "id": "yansima-donusumu-materyali",
+    "baslik": "Yansıma Dönüşümü Materyali",
+    "uretici": "Kaynak HTML dosyasında belirtilmemiştir",
+    "materyal_surumu": "1.1",
+    "tarih": "2026-09-08"
+  },
+  "matematik": {
+    "durum": "Dik koordinat sistemindeki nokta ve çokgenlerin eksenlere, y=x ve y=-x doğrularına ve eksenlere paralel doğrulara göre yansıma görüntülerinin koordinat değişimleri incelenir.",
+    "degiskenler": [
+      "nokta ve çokgen köşe koordinatları",
+      "yansıma doğrusu",
+      "x=a ve y=b doğrularının parametreleri"
+    ],
+    "cikti": "yansıyan noktaların koordinatları ve yansıyan geometrik şekil"
+  },
+  "teknik": {
+    "giris": "index.html",
+    "onizleme_tipi": "temsili_durum",
+    "onizleme_kipi": "?onizleme=1",
+    "onizleme_odagi": "Bir üçgenin y=x doğrusuna göre yansımasında koordinatların yer değiştirmesi",
+    "dis_baglanti": [],
+    "tema": "gunduz-varsayilan_gece-kullanici-secimi",
+    "klavye": true,
+    "hareket_azaltma": true,
+    "responsive": true,
+    "paket_ayrismasi": true,
+    "kullanim_rehberi": true
+  },
+  "program": {
+    "program_surumu": "TYMM-Ortaöğretim-2026",
+    "sinif_duzeyi": [9],
+    "ogrenme_ciktisi": [
+      "MAT.9.4.1"
+    ],
+    "beceri_etiketleri": [
+      "MAB1",
+      "MAB3",
+      "MAB5",
+      "KB2.10",
+      "OB2",
+      "OB4"
+    ],
+    "surec_bilesenleri": [
+      "MAT.9.4.1.a-d"
+    ]
+  },
+  "referans": {
+    "tur": "TYMM Matematik Öğretim Programı",
+    "not": "Kaynak HTML ile birlikte ayrı bir MMS/kılavuz referansı sağlanmamıştır; eşleşme güncel TYMM 9. sınıf 4. Tema Eşlik ve Benzerlik kapsamındaki geometrik dönüşümler çıktısına göre yapılmıştır."
+  },
+  "revizyon_notu": "Üretici bilgisi kaynak dosyada bulunmadığından teslim öncesi yetkili editör tarafından kesinleştirilmelidir."
+}
