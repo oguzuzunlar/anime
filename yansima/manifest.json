@@ -56,5 +56,5 @@
     "tur": "TYMM Matematik Öğretim Programı",
     "not": "Kaynak HTML ile birlikte ayrı bir MMS/kılavuz referansı sağlanmamıştır; eşleşme güncel TYMM 9. sınıf 4. Tema Eşlik ve Benzerlik kapsamındaki geometrik dönüşümler çıktısına göre yapılmıştır."
   },
-  "revizyon_notu": "v1.2: Mobil portre yerleşimi, modal klavye/odak yönetimi, sekmeler arası SVG olay dinleyicisi temizliği, değerlendirme yönergesi ve gerekçelendirme adımı güncellendi. Üretici bilgisi kaynak dosyada bulunmadığından teslim öncesi yetkili editör tarafından kesinleştirilmelidir."
+  "revizyon_notu": "v1.2: Üretici bilgisi OGM olarak kesinleştirildi; mobil portre yerleşimi grafik alanına öncelik verecek biçimde iyileştirildi; çakışık noktaların doğru parçası olarak kabul edilmesi engellendi; modal klavye/odak yönetimi, sekmeler arası SVG olay dinleyicisi temizliği, değerlendirme yönergesi ve gerekçelendirme adımı güncellendi."
 }
