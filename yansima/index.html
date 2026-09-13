@@ -1,9 +1,9 @@
-﻿﻿﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hareketli Yansıma Doğrusu Materyali</title>
+<title>Yansıma Dönüşümü Materyali</title>
 <script src="vendor/jquery-3.6.0.min.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded',function(){
@@ -99,7 +99,7 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px so
 .option-button.incorrect{background:rgba(239,68,68,.2);color:#ef4444;animation:shake .5s ease;}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.success-message{background:var(--success-bg);color:#fff;padding:10px 14px;border-radius:9px;text-align:center;margin:6px 0;font-size:.9em;}
+.success-message{background:#047857;color:#fff;padding:10px 14px;border-radius:9px;text-align:center;margin:6px 0;font-size:.9em;}
 .error-message{background:rgba(239,68,68,.18);border:1.5px solid #ef4444;color:#ef4444;padding:10px 14px;border-radius:9px;text-align:center;margin:6px 0;font-size:.9em;animation:shake .5s ease;}
 .info-message{background:var(--instruction-bg);border:1.5px solid var(--instruction-border);color:var(--text-primary);padding:8px 12px;border-radius:7px;font-size:.88em;margin-top:6px;display:none;}
 .info-message.visible{display:block;animation:slideIn .3s ease;}
@@ -111,6 +111,8 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px so
 .coord-input-wrap label{font-size:.85em;color:var(--text-secondary);white-space:nowrap;font-weight:600;flex-shrink:0;}
 .coord-input-wrap input{flex:1;min-width:0;max-width:100%;padding:8px 6px;background:var(--input-bg);border:2px solid var(--input-border);border-radius:7px;color:var(--text-primary);font-size:14px;text-align:center;box-sizing:border-box;}
 .coord-input-wrap input:focus{outline:none;border-color:var(--border-color);}
+.reflection-input{width:100%;min-height:86px;resize:vertical;padding:9px 12px;background:var(--input-bg);border:2px solid var(--input-border);border-radius:7px;color:var(--text-primary);font:inherit;line-height:1.5;margin-top:6px;}
+.reflection-input:focus{outline:none;border-color:var(--border-color);box-shadow:0 0 8px var(--border-glow);}
 /* Side toolbar */
 .side-toolbar{position:fixed;top:50%;right:8px;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--toolbar-bg);border:2px solid var(--border-color);border-radius:18px;padding:8px 5px;box-shadow:0 4px 24px var(--border-glow);z-index:500;backdrop-filter:blur(12px);min-width:46px;}
 .side-toolbar .tb-divider{width:28px;height:2px;background:var(--border-color);border-radius:2px;opacity:.4;margin:2px 0;}
@@ -141,7 +143,7 @@ body.preview-mode>.background-animation,body.preview-mode>.floating-controls,bod
 #mirrorSelector{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;background:var(--toolbar-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:6px 10px;z-index:30;backdrop-filter:blur(8px);flex-wrap:wrap;justify-content:center;max-width:90%;}
 .mirror-btn{padding:5px 11px;border:1.5px solid var(--border-color);border-radius:8px;background:transparent;color:var(--text-primary);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
 .mirror-btn:hover{background:var(--button-bg);color:#fff;}
-.mirror-btn.active{background:var(--mirror-color)!important;color:#1a1a00!important;border-color:var(--mirror-color)!important;box-shadow:0 0 10px var(--mirror-glow);}
+.mirror-btn.active{background:#6d28d9!important;color:#fff!important;border-color:#8b5cf6!important;box-shadow:0 0 10px var(--mirror-glow);}
 #mirrorParamRow{position:absolute;bottom:56px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:8px;background:var(--toolbar-bg);border:1.5px solid var(--border-color);border-radius:10px;padding:6px 12px;z-index:30;backdrop-filter:blur(8px);}
 #mirrorParamRow label{font-size:12px;color:var(--text-secondary);}
 #mirrorParamInput{width:64px;padding:5px 8px;border:1.5px solid var(--input-border);border-radius:6px;background:var(--input-bg);color:var(--text-primary);font-size:13px;text-align:center;}
@@ -165,12 +167,12 @@ body.preview-mode>.background-animation,body.preview-mode>.floating-controls,bod
 @media(max-width:900px){.main-content{padding-right:52px;}.left-panel{width:270px;min-width:240px;}}
 @media(max-width:640px){
 .app-container{overflow:visible;height:auto;min-height:100vh;}
-.main-content{flex-direction:column;padding-right:0;overflow:visible;}
+.main-content{flex-direction:column;padding-right:48px;overflow:visible;}
 .left-panel{width:100%;max-width:100%;max-height:54vh;overflow-y:auto;}
 .right-panel{min-height:55vw;flex:1;flex-shrink:0;}
 #coordContainer{padding-bottom:46px;}
-.side-toolbar{top:auto;bottom:10px;right:50%;flex-direction:row;flex-wrap:wrap;border-radius:16px;padding:5px 8px;transform:translateX(50%);}
-.side-toolbar .tb-divider{width:2px;height:26px;margin:0 2px;}
+.side-toolbar{top:50%;bottom:auto;right:4px;flex-direction:column;flex-wrap:nowrap;border-radius:16px;padding:5px;transform:translateY(-50%);}
+.side-toolbar .tb-divider{width:26px;height:2px;margin:2px 0;}
 /* Mirror selector — compact single row on mobile */
 #mirrorSelector{gap:4px;padding:5px 7px;max-width:96%;flex-wrap:nowrap;overflow-x:auto;bottom:8px;}
 #mirrorSelector .mirror-btn{padding:4px 7px;font-size:10.5px;border-radius:7px;white-space:nowrap;flex-shrink:0;}
@@ -236,8 +238,8 @@ mjx-container{color:var(--text-primary)!important;}
 #rotateOverlay .ro-desc{color:var(--text-secondary);font-size:.93em;line-height:1.7;}
 #rotateOverlay .ro-desc strong{color:var(--text-primary);}
 @media (pointer:coarse) and (orientation:portrait) and (max-width:767px){
-  #rotateOverlay{display:flex;}
-  .app-container,.side-toolbar,.floating-controls{visibility:hidden;pointer-events:none;}
+  #rotateOverlay{display:none;}
+  .app-container,.side-toolbar,.floating-controls{visibility:visible;pointer-events:auto;}
 }
 
 /* ── Mobile Landscape Optimizations ──────────────────────────── */
@@ -484,7 +486,7 @@ mjx-container{color:var(--text-primary)!important;}
 </div>
 
 <!-- ASSESSMENT DIALOG -->
-<div class="dialog-overlay" id="assessmentDialog" style="display:none;">
+<div class="dialog-overlay" id="assessmentDialog" role="dialog" aria-modal="true" aria-label="Değerlendirme sonucu" style="display:none;">
 <div class="dialog-content" id="assessmentContent">
 </div>
 </div>
@@ -809,6 +811,60 @@ svgFootDot(mp.x,mp.y,'#ffd700');
 let showHelpers=true, showCoordLabels=true;
 let currentScale=1; // zoom multiplier
 let appState={};    // per-app state
+let lastDialogTrigger=null;
+
+function setDialogBackgroundInert(locked){
+$('.app-container,.floating-controls,.side-toolbar,.background-animation,#rotateOverlay').each(function(){
+this.inert=locked;
+if(locked) this.setAttribute('aria-hidden','true');
+else this.removeAttribute('aria-hidden');
+});
+}
+
+function dialogFocusable($dialog){
+return $dialog.find('button:not(:disabled),input:not(:disabled),textarea:not(:disabled),select:not(:disabled),[href],[tabindex]:not([tabindex="-1"])').filter(':visible');
+}
+
+function openDialog($dialog,trigger){
+const candidate=trigger||document.activeElement;
+lastDialogTrigger=candidate&&$(candidate).is(':visible')?candidate:($('.tab-button.active').get(0)||null);
+$dialog.css('display','flex');
+setDialogBackgroundInert(true);
+requestAnimationFrame(function(){
+const $items=dialogFocusable($dialog);
+if($items.length) $items.first().trigger('focus');
+else $dialog.attr('tabindex','-1').trigger('focus');
+});
+}
+
+function closeDialog($dialog,restoreFocus){
+$dialog.hide();
+if(!$('.dialog-overlay:visible').length) setDialogBackgroundInert(false);
+if(restoreFocus!==false&&lastDialogTrigger&&document.contains(lastDialogTrigger)){
+lastDialogTrigger.focus();
+}
+lastDialogTrigger=null;
+}
+
+$(document).on('keydown.dialogAccess',function(e){
+const $dialog=$('.dialog-overlay:visible').last();
+if(!$dialog.length) return;
+if(e.key==='Escape'){
+e.preventDefault();
+if($dialog.is('#introDialog')) $('#introContinueBtn').trigger('click');
+else if($dialog.is('#appIntroDialog')) $('#appIntroCloseBtn').trigger('click');
+else if($dialog.is('#helpDialog')) $('#helpCloseBtn').trigger('click');
+else if($dialog.is('#calcDialog')) $('#calcCloseBtn').trigger('click');
+return;
+}
+if(e.key==='Tab'){
+const $items=dialogFocusable($dialog);
+if(!$items.length){e.preventDefault();$dialog.trigger('focus');return;}
+const first=$items.get(0),last=$items.get($items.length-1);
+if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+}
+});
 
 function setPointEntry(handler,guidance){
 appState.pointEntry=handler||null;
@@ -928,9 +984,9 @@ CS.scale=Math.max(12,CS.scale-5);
 buildGrid();drawMirror();refreshReflection();
 });
 $('#tbCalc').on('click',function(){
-$('#calcDialog').css('display','flex');
+openDialog($('#calcDialog'),this);
 });
-$('#calcCloseBtn').on('click',function(){$('#calcDialog').hide();});
+$('#calcCloseBtn').on('click',function(){closeDialog($('#calcDialog'));});
 
 // Hover coord display
 const $svg=$('#coordSVG');
@@ -996,9 +1052,9 @@ calcJustEq=false;calcUpdate(calcExpr);
 // ═══════════════════════════════════════════════
 function showAppIntro(htmlContent){
 $('#appIntroContent').html(htmlContent);
-$('#appIntroDialog').css('display','flex');
+openDialog($('#appIntroDialog'));
 $('#appIntroCloseBtn').off('click').on('click',function(){
-$('#appIntroDialog').fadeOut(200);
+closeDialog($('#appIntroDialog'));
 });
 }
 
@@ -1012,9 +1068,10 @@ loadApp(tab);
 });
 
 function loadApp(n){
-if(appState._freeSVGHandler){
-document.getElementById('coordSVG').removeEventListener('click',appState._freeSVGHandler);
-}
+const svgEl=document.getElementById('coordSVG');
+['_freeSVGHandler','_gameSVGHandler','_olcmeSVGHandler'].forEach(function(key){
+if(appState[key]) svgEl.removeEventListener('click',appState[key]);
+});
 appState={};
 setPointEntry(null,'Koordinat düzlemi. Yansıma doğrusunu altta seçiniz.');
 clearLayer('sv-orig-shapes');
@@ -1048,12 +1105,11 @@ drawMirror();
 // ═══════════════════════════════════════════════
 //  HELP / INTRO
 // ═══════════════════════════════════════════════
-$('#helpBtn').on('click',function(){$('#helpDialog').css('display','flex');});
-$('#helpCloseBtn').on('click',function(){$('#helpDialog').hide();});
+$('#helpBtn').on('click',function(){openDialog($('#helpDialog'),this);});
+$('#helpCloseBtn').on('click',function(){closeDialog($('#helpDialog'));});
 $('#introContinueBtn').on('click',function(){
-$('#introDialog').fadeOut(300,function(){
+closeDialog($('#introDialog'),false);
 loadApp('app1');
-});
 });
 
 function typeset(){}
@@ -1476,6 +1532,7 @@ setMirrorUI('xAxis');
 // ─── Ölçme & Değerlendirme durumu ───
 let olcmePts=[];      // orijinal doğru parçası noktaları (2 nokta)
 let olcmePhase='draw'; // 'draw' | 'explore'
+let olcmeGerekce='';
 const OFFSET={x:3,y:4};
 
 function olcmeDraw(){
@@ -1577,7 +1634,11 @@ function renderOlcme(){
         <p id="olcmeDiff" style="font-size:.82em;color:var(--text-secondary);margin-top:4px;"></p>
       </div>
       <p style="font-size:.8em;color:var(--text-secondary);margin-top:4px;">Alttaki yansıma doğrusu seçiciden farklı doğruları deneyiniz → yansımalar güncellenecek.</p>
+      <label for="olcmeGerekce" style="display:block;font-size:.85em;font-weight:700;margin-top:8px;">Yansıma doğrusu değiştiğinde hangi özelliklerin değiştiğini, hangilerinin değişmediğini kendi cümlelerinizle gerekçelendiriniz.</label>
+      <textarea id="olcmeGerekce" class="reflection-input" placeholder="Gözleminizi ve gerekçenizi yazınız..."></textarea>
+      <div id="olcmeGerekceDurum" role="status" aria-live="polite" style="min-height:22px;font-size:.82em;margin-top:4px;"></div>
       <div style="display:flex;gap:6px;margin-top:6px;">
+        <button class="action-button" id="olcmeGerekceKaydet" style="flex:1;padding:8px;">Gerekçeyi Kaydet</button>
         <button class="action-button" id="olcmeYeniCiz" style="flex:1;padding:8px;background:var(--bg-tertiary);">&#x21BA; Yeni Çiz</button>
       </div>`}
     </div>
@@ -1599,7 +1660,10 @@ function renderOlcme(){
         :`P1(${olcmePts[0].x},${olcmePts[0].y}), P2(${olcmePts[1].x},${olcmePts[1].y}) - Hazır!`);
       $('#coordHint').text(olcmePts.length===1?'İlk nokta eklendi. İkinci noktayı ekleyiniz.':'İki nokta eklendi. Keşfet düğmesi hazır.');
       $('#olcmeKesfet').prop('disabled',olcmePts.length<2);
-      if(olcmePts.length>=2) svgEl.removeEventListener('click',onSVGClickOlcme);
+      if(olcmePts.length>=2){
+        svgEl.removeEventListener('click',onSVGClickOlcme);
+        appState._olcmeSVGHandler=null;
+      }
     }
     function onSVGClickOlcme(e){
       const rect=svgEl.getBoundingClientRect();
@@ -1607,6 +1671,7 @@ function renderOlcme(){
                           s2m(e.clientX-rect.left,e.clientY-rect.top).y));
     }
     svgEl.addEventListener('click',onSVGClickOlcme);
+    appState._olcmeSVGHandler=onSVGClickOlcme;
     setPointEntry(addOlcmePoint,'Düzleme tıklayın veya x ve y girerek iki nokta ekleyin.');
 
     $('#olcmeGeri').on('click',function(){
@@ -1620,6 +1685,7 @@ function renderOlcme(){
           :`P1(${olcmePts[0].x},${olcmePts[0].y}) eklendi. 1 nokta daha ekleyiniz.`);
         $('#olcmeKesfet').prop('disabled',olcmePts.length<2);
         svgEl2.addEventListener('click',onSVGClickOlcme);
+        appState._olcmeSVGHandler=onSVGClickOlcme;
       }
     });
     $('#olcmeClear').on('click',function(){
@@ -1630,6 +1696,7 @@ function renderOlcme(){
       $('#olcmePtInfo').text('Koordinat düzlemine 2 noktaya tıklayınız...');
       $('#olcmeKesfet').prop('disabled',true);
       svgEl2.addEventListener('click',onSVGClickOlcme);
+      appState._olcmeSVGHandler=onSVGClickOlcme;
     });
     $('#olcmeKesfet').on('click',function(){
       olcmePhase='explore';
@@ -1639,9 +1706,20 @@ function renderOlcme(){
   } else {
     setPointEntry(null,'Yansıma doğrusunu değiştirerek iki doğru parçasının görüntülerini karşılaştırınız.');
     olcmeReflectionDraw();
+    $('#olcmeGerekce').val(olcmeGerekce);
+    $('#olcmeGerekceKaydet').on('click',function(){
+      const metin=$('#olcmeGerekce').val().trim();
+      if(metin.length<10){
+        $('#olcmeGerekceDurum').html('<span style="color:var(--error-bg);">Gerekçenizi en az bir açıklayıcı cümleyle yazınız.</span>');
+        return;
+      }
+      olcmeGerekce=metin;
+      $('#olcmeGerekceDurum').html('<span style="color:#047857;font-weight:700;">✓ Gerekçeniz bu çalışma için kaydedildi.</span>');
+    });
     $('#olcmeYeniCiz').on('click',function(){
       olcmePts=[];
       olcmePhase='draw';
+      olcmeGerekce='';
       appState._onMirrorChange=null;
       clearLayer('sv-orig-shapes');clearLayer('sv-ref-shapes');clearLayer('sv-points');clearLayer('sv-helpers');
       renderOlcme();
@@ -1708,7 +1786,7 @@ $('#contentArea').html(`
 <li>Koordinat düzlemindeki <strong>ABCD şeklini</strong> inceleyiniz.</li>
 <li>Simetrik şeklin köşelerini sırayla düzleme tıklayarak işaretleyiniz.</li>
 <li><strong>Kontrol Ediniz</strong> butonu ile cevabınızı doğrulayınız.</li>
-<li>Hatalı ise geri alıp tekrar deneyebilirsiniz.</li>
+<li>Kontrol etmeden önce <strong>Geri Al</strong> ile çiziminizi düzeltebilirsiniz. Kontrol sonrasında tur kilitlenir ve doğru görüntü gösterilir.</li>
 </ol>
 </div>
 <div class="app3-info-block" style="margin:8px 0;padding:8px 10px;background:rgba(249,115,22,.1);border-left:3px solid #f97316;border-radius:6px;">
@@ -1784,6 +1862,7 @@ if(sy>rect.height-70) return;
 addGamePoint(s2m(sx,sy));
 }
 svgEl.addEventListener('click',onSVGClick);
+appState._gameSVGHandler=onSVGClick;
 setPointEntry(addGamePoint,'Düzleme tıklayın veya x ve y girerek dört köşe ekleyin.');
 
 function updateCizimInfo(){
@@ -1831,6 +1910,7 @@ $('#oyunFeedback').html('<div class="error-message">⚠ 4 noktanın hepsi gerekl
 return;
 }
 svgEl.removeEventListener('click',onSVGClick);
+appState._gameSVGHandler=null;
 mirrorType=card.type;
 if(card.param!==null) mirrorParam=card.param;
 const expected=currentShape.map(p=>reflectPoint(p.x,p.y));
@@ -1928,7 +2008,7 @@ showAppIntro(`
 <li>Koordinat düzlemindeki <strong>ABCD dörtgenini</strong> inceleyiniz.</li>
 <li>Simetrik şeklin köşelerini sırayla düzleme <strong>tıklayarak</strong> işaretleyiniz.</li>
 <li><strong>Kontrol Ediniz</strong> butonu ile cevabınız doğrulanır.</li>
-<li>Hatalı ise Geri Al butonu ile düzeltme yapılabilir.</li>
+<li><strong>Kontrol etmeden önce</strong> Geri Al butonu ile düzeltme yapılabilir. Kontrol sonrasında tur kilitlenir ve doğru görüntü gösterilir.</li>
 </ul>
 <p style="margin-top:8px;font-size:.9em;"><strong>Zoom:</strong> Fare tekerleği veya araç çubuğuyla yakınlaştırma/uzaklaştırma yapılabilir; şekil ve ızgara birlikte ölçeklenir.</p>
 <div class="dialog-btn-row"><button class="action-button" id="appIntroCloseBtn">▶ Oyuna Başla</button></div>
@@ -2172,9 +2252,8 @@ setTimeout(initPreview,0);
 setTimeout(function(){
 buildGrid();
 drawMirror();
-$('#introDialog').css('display','flex');
+openDialog($('#introDialog'));
 },100);
-window.addEventListener('resize',onResize);
 }
 // Start with helpers active
 $('#tbShowHelpers').addClass('active');
