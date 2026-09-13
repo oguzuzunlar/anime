@@ -1,0 +1,56 @@
+{
+  "format": "matbis-materyal",
+  "surum": "1.0",
+  "kimlik": {
+    "id": "donme-donusumu-materyali",
+    "baslik": "Dönme Dönüşümü Materyali",
+    "uretici": "Kaynak HTML dosyalarında belirtilmemiştir",
+    "materyal_surumu": "1.1",
+    "tarih": "2026-09-09"
+  },
+  "matematik": {
+    "durum": "Dik koordinat sistemindeki nokta ve çokgenlerin orijin etrafında farklı yön ve açılarla dönme görüntüleri, koordinat değişimleri ve genel dönme bağıntısı incelenir.",
+    "degiskenler": [
+      "nokta ve çokgen köşe koordinatları",
+      "dönme açısı",
+      "dönme yönü"
+    ],
+    "cikti": "döndürülmüş noktaların koordinatları, geometrik görüntü ve genel dönme bağıntısı"
+  },
+  "teknik": {
+    "giris": "index.html",
+    "onizleme_tipi": "temsili_durum",
+    "onizleme_kipi": "?onizleme=1",
+    "onizleme_odagi": "P(4,3) noktasının orijin etrafında 90 derece dönme görüntüsü",
+    "dis_baglanti": [],
+    "tema": "gunduz-varsayilan_gece-kullanici-secimi",
+    "klavye": true,
+    "hareket_azaltma": true,
+    "responsive": true,
+    "paket_ayrismasi": true,
+    "kullanim_rehberi": true
+  },
+  "program": {
+    "program_surumu": "TYMM-Ortaöğretim-2026",
+    "sinif_duzeyi": [9],
+    "ogrenme_ciktisi": [
+      "MAT.9.4.1"
+    ],
+    "beceri_etiketleri": [
+      "MAB1",
+      "MAB3",
+      "MAB5",
+      "KB2.10",
+      "OB2",
+      "OB4"
+    ],
+    "surec_bilesenleri": [
+      "MAT.9.4.1.a-d"
+    ]
+  },
+  "referans": {
+    "tur": "TYMM Ortaöğretim Matematik Dersi Öğretim Programı",
+    "not": "Eşleşme güncel TYMM 9. sınıf 4. Tema Eşlik ve Benzerlik kapsamındaki geometrik dönüşümler çıktısına göre yapılmıştır."
+  },
+  "revizyon_notu": "Üretici bilgisi kaynak dosyalarda bulunmadığından teslim öncesi yetkili editör tarafından kesinleştirilmelidir."
+}
