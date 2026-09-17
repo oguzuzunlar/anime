@@ -1,2277 +1,1511 @@
 <!DOCTYPE html>
 <html lang="tr" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="mebi:simulation-id" content="acik_hava_tiyatrosu_ikizkenar_yamuk_simulasyonu">
-    <meta name="mebi:learning-outcome" content="MAT.11.2.5">
-    <meta name="mebi:mathematical-tools" content="ikizkenar yamuk alanı; düzgün çokgen iç açısı; köşegen sayısı; simetri eksenleri; alan ve maliyet modeli">
-    <title>Açık Hava Tiyatrosu: İkizkenar Yamuklarla Sahne Gölgeliği</title>
+    <title>2.Basamak Değerlendirme</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- MathJax Yapılandırması -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script src="vendor/mathjax/tex-svg.js" id="MathJax-script" defer></script>
+
     <style>
-        :root[data-theme="light"] {
-            --bg-page: #f8fafc;
-            --bg-card: #ffffff;
-            --bg-subtle: #f1f5f9;
-            --border-color: #e2e8f0;
-            --border-hover: #cbd5e1;
-            --text-main: #0f172a;
-            --text-sub: #475569;
-            --text-muted: #64748b;
-            --accent-blue: #0284c7;
-            --accent-blue-subtle: #e0f2fe;
-            --accent-gold: #d97706;
-            --accent-gold-subtle: #fef3c7;
-            --accent-green: #059669;
-            --accent-green-subtle: #ecfdf5;
-            --accent-purple: #7c3aed;
-            --accent-purple-subtle: #f5f3ff;
-            --accent-rose: #e11d48;
-            --accent-rose-subtle: #ffe4e6;
-            --canvas-bg: #ffffff;
-            --canvas-border: #e2e8f0;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
-            --modal-backdrop: rgba(15, 23, 42, 0.55);
+        :root,
+        [data-theme="light"] {
+            --bg-body: #f4f8fa;
+            --bg-gradient: linear-gradient(150deg, #eef5f8 0%, #dfedf3 45%, #f2f8fb 100%);
+            --surface-card: #ffffff;
+            --surface-card-subtle: #f6fafc;
+            --surface-glass: rgba(255, 255, 255, 0.94);
+            --border-glass: #c5e1ee;
+            --border-subtle: #d6ecf5;
+            --text-main: #0c2333;
+            --text-muted: #3d6379;
+            --primary: #0077b6;
+            --primary-hover: #025f93;
+            --primary-light: #e0f2fe;
+            --accent-cyan: #00b4d8;
+            --accent-emerald: #10b981;
+            --accent-orange: #d97706;
+            --accent-red: #ef4444;
+            --shadow-card: 0 10px 30px rgba(12, 35, 51, 0.07);
+            --input-bg: #ffffff;
+            --input-border: #bcdce9;
+            --input-focus-border: #0077b6;
+            --overlay-bg: rgba(12, 35, 51, 0.65);
+            --modal-bg: #ffffff;
+            --option-bg: #f8fbfd;
+            --option-border: #c8e3ef;
+            --option-hover-bg: #e6f4fa;
+            --option-selected-bg: #e0f2fe;
+            --option-selected-border: #0077b6;
         }
 
-        :root[data-theme="dark"] {
-            --bg-page: #070d18;
-            --bg-card: #0f172a;
-            --bg-subtle: #1e293b;
-            --border-color: #334155;
-            --border-hover: #475569;
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --text-muted: #64748b;
-            --accent-blue: #38bdf8;
-            --accent-blue-subtle: rgba(56, 189, 248, 0.15);
-            --accent-gold: #fbbf24;
-            --accent-gold-subtle: rgba(251, 191, 36, 0.15);
-            --accent-green: #34d399;
-            --accent-green-subtle: rgba(52, 211, 153, 0.15);
-            --accent-purple: #c084fc;
-            --accent-purple-subtle: rgba(192, 132, 252, 0.15);
-            --accent-rose: #fb7185;
-            --accent-rose-subtle: rgba(251, 113, 133, 0.15);
-            --canvas-bg: #0b1120;
-            --canvas-border: #1e293b;
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.35);
-            --shadow-lg: 0 14px 28px rgba(0, 0, 0, 0.45);
-            --modal-backdrop: rgba(0, 0, 0, 0.75);
+        [data-theme="dark"] {
+            --bg-body: #06131c;
+            --bg-gradient: linear-gradient(150deg, #040e15 0%, #081a26 45%, #05141f 100%);
+            --surface-card: #0b202e;
+            --surface-card-subtle: #0f2737;
+            --surface-glass: rgba(11, 32, 46, 0.92);
+            --border-glass: #173b52;
+            --border-subtle: #122f42;
+            --text-main: #e2f1f8;
+            --text-muted: #8bb2c9;
+            --primary: #38bdf8;
+            --primary-hover: #0ea5e9;
+            --primary-light: rgba(56, 189, 248, 0.15);
+            --accent-cyan: #22d3ee;
+            --accent-emerald: #34d399;
+            --accent-orange: #fbbf24;
+            --accent-red: #f87171;
+            --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --input-bg: #0d2638;
+            --input-border: #1e4963;
+            --input-focus-border: #38bdf8;
+            --overlay-bg: rgba(2, 8, 12, 0.78);
+            --modal-bg: #0b202e;
+            --option-bg: #0e293c;
+            --option-border: #1a425b;
+            --option-hover-bg: #14354c;
+            --option-selected-bg: rgba(56, 189, 248, 0.18);
+            --option-selected-border: #38bdf8;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-            font-style: normal !important;
-        }
-
-        h1, h2, h3, h4, .font-heading {
-            font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-page);
+            background: var(--bg-body);
+            background-image: var(--bg-gradient);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            padding: 10px 16px 18px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* HEADER */
-        header {
-            max-width: 1440px;
-            width: 100%;
-            margin: 0 auto 10px;
-            display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 1rem 4rem;
+            position: relative;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
-        .header-title-area {
+        /* Arka Plan Efekti */
+        .bg-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1080px;
+            position: relative;
+            z-index: 1;
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 1.5rem;
         }
 
-        header h1 {
-            font-size: 1.32rem;
+        /* Üst Menü */
+        .header-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background: var(--surface-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            border-radius: 18px;
+            padding: 1rem 1.4rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        .header-title-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 4px;
+        }
+
+        .header-badge-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.76rem;
             font-weight: 700;
-            color: var(--text-main);
-            letter-spacing: -0.02em;
+            letter-spacing: 0.02em;
         }
 
-        header p {
-            color: var(--text-sub);
-            font-size: 0.82rem;
+        .tag-primary {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .tag-accent {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--accent-emerald);
+        }
+
+        .header-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.01em;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.6rem;
+            position: absolute;
+            right: 1.4rem;
         }
 
-        .icon-btn {
-            background-color: var(--bg-card);
+        .visually-hidden {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+
+        .btn-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid var(--border-glass);
+            background: var(--surface-card);
             color: var(--text-main);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            width: 44px;
-            height: 44px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
             font-size: 1.15rem;
             font-weight: 700;
-            transition: all 0.2s ease;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .icon-btn:hover {
-            border-color: var(--accent-blue);
-            color: var(--accent-blue);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .help-btn {
-            background: linear-gradient(135deg, var(--accent-blue), #0369a1);
-            color: #ffffff;
-            border: none;
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            font-size: 1.2rem;
-            font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
-            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
-        .help-btn:hover {
+        .btn-circle:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(2, 132, 199, 0.4);
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
-        /* LAYOUT */
-        .app-container {
+        button:focus-visible,
+        [tabindex]:focus-visible {
+            outline: 3px solid var(--accent-orange);
+            outline-offset: 3px;
+        }
+
+        /* Bağlam ve İnteraktif Model Kartı */
+        .context-card {
+            background: var(--surface-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-card);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .context-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 0.75rem;
+        }
+
+        .context-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .context-body-grid {
             display: grid;
-            grid-template-columns: 370px 1fr;
-            gap: 14px;
-            max-width: 1440px;
-            width: 100%;
-            margin: 0 auto;
-            flex: 1;
+            grid-template-columns: 1.1fr 1.3fr;
+            gap: 1.5rem;
+            align-items: center;
         }
 
-        @media (max-width: 1100px) {
-            .app-container {
+        @media (max-width: 860px) {
+            .context-body-grid {
                 grid-template-columns: 1fr;
             }
         }
 
-        /* SIDEBAR */
-        .sidebar {
+        .context-text {
+            font-size: 0.95rem;
+            line-height: 1.65;
+            color: var(--text-main);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 0.75rem;
         }
 
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 10px 12px;
-            box-shadow: var(--shadow-sm);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        .context-data-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 0.25rem;
         }
 
-        .scenario-box {
-            background: linear-gradient(135deg, var(--accent-blue-subtle), var(--bg-card));
-            border: 1px solid var(--accent-blue);
-            border-left: 4px solid var(--accent-blue);
-            padding: 9px 11px;
-            border-radius: 10px;
-            font-size: 0.78rem;
-            color: var(--text-sub);
-            line-height: 1.35;
-        }
-
-        .scenario-box strong {
-            color: var(--text-main);
-            display: block;
-            margin-bottom: 2px;
+        .data-badge {
+            background: var(--surface-card-subtle);
+            border: 1px solid var(--border-subtle);
+            padding: 4px 10px;
+            border-radius: 8px;
             font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
         }
 
-        details.scenario-box {
-            padding: 0;
-            overflow: hidden;
-        }
-
-        details.scenario-box summary {
+        /* İnteraktif SVG Alanı */
+        .interactive-visual-box {
+            background: var(--surface-card-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 1rem;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 9px 11px;
-            cursor: pointer;
-            list-style: none;
-            user-select: none;
+            gap: 0.75rem;
+            position: relative;
         }
 
-        details.scenario-box summary::-webkit-details-marker {
-            display: none;
-        }
-
-        details.scenario-box summary strong {
-            display: inline;
-            margin: 0;
-        }
-
-        details.scenario-box summary::after {
-            content: "Görevi Aç";
-            flex: 0 0 auto;
-            color: var(--accent-blue);
-            font-size: 0.72rem;
-            font-weight: 700;
-            padding: 5px 8px;
-            border: 1px solid currentColor;
-            border-radius: 999px;
-        }
-
-        details.scenario-box[open] summary::after {
-            content: "Görevi Kapat  ×";
-            color: #ffffff;
-            background: var(--accent-rose);
-            border-color: var(--accent-rose);
-            animation: closeCue 1.35s ease-in-out 3;
-        }
-
-        @keyframes closeCue {
-            0%, 100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(225, 29, 72, 0);
-            }
-            50% {
-                transform: scale(1.06);
-                box-shadow: 0 0 0 6px rgba(225, 29, 72, 0.18);
-            }
-        }
-
-        .scenario-details {
-            padding: 0 11px 10px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 8px;
-        }
-
-        .scenario-details strong {
-            display: inline;
-            margin: 0;
-            font-size: inherit;
-        }
-
-        /* TABS IN SIDEBAR */
-        .nav-tabs {
+        .visual-toolbar {
             display: flex;
-            gap: 4px;
-            background: var(--bg-subtle);
-            padding: 3px;
-            margin-bottom: 8px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 6px;
+            width: 100%;
+            justify-content: center;
         }
 
-        .tab-btn {
-            flex: 1;
-            padding: 6px 5px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            border-radius: 7px;
-            border: none;
-            background: transparent;
-            color: var(--text-sub);
+        .btn-filter {
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-glass);
+            background: var(--surface-card);
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
+        }
+
+        .btn-filter:hover,
+        .btn-filter.active {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .svg-container {
+            width: 100%;
+            max-width: 380px;
+            height: auto;
+            aspect-ratio: 1/1;
+        }
+
+        .svg-caption {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
             text-align: center;
         }
 
-        .tab-btn.active {
-            background: var(--bg-card);
-            color: var(--accent-blue);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .tab-content {
-            display: none;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .tab-content.active {
-            display: flex;
-        }
-
-        .panel-section {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 9px;
-        }
-
-        .panel-section:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .section-title {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: var(--accent-gold);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .control-group label {
-            font-size: 0.78rem;
-            color: var(--text-sub);
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .control-group label span.val {
-            color: var(--accent-blue);
-            font-weight: 700;
-            font-family: 'Outfit', sans-serif;
-        }
-
-        .cost-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .cost-problem {
-            padding: 7px 8px;
-            border-radius: 8px;
-            background: var(--accent-gold-subtle);
-            color: var(--text-sub);
-            font-size: 0.74rem;
-            line-height: 1.35;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            min-height: 34px;
-            padding: 10px 0;
-            background: transparent;
-            outline: none;
-            accent-color: var(--accent-blue);
-            cursor: pointer;
-            border: 0;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        button.btn {
-            background-color: var(--bg-subtle);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 9px 12px;
-            border-radius: 8px;
-            font-size: 0.84rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            flex: 1;
-            min-height: 44px;
-        }
-
-        button:disabled {
-            cursor: not-allowed;
-            opacity: 0.55;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        .completion-requirements {
-            margin-top: 3px;
-            padding: 6px 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--bg-subtle);
-            color: var(--text-sub);
-            font-size: 0.74rem;
-            line-height: 1.3;
-        }
-
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
-        }
-
-        button.btn:hover {
-            background-color: var(--border-color);
-            transform: translateY(-1px);
-        }
-
-        button.btn.primary {
-            background-color: var(--accent-blue);
-            color: #ffffff;
-            border-color: var(--accent-blue);
-        }
-
-        button.btn.primary:hover {
-            background-color: #0369a1;
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
-        }
-
-        button.btn.success {
-            background-color: var(--accent-green);
-            color: #ffffff;
-            border-color: var(--accent-green);
-        }
-
-        button.btn.success:hover {
-            background-color: #047857;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-        }
-
-        .toggle-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.82rem;
-            color: var(--text-sub);
-            font-weight: 500;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 28px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 44px;
-            height: 28px;
-        }
-
-        .slider-round {
-            position: absolute;
-            cursor: pointer;
-            inset: 0;
-            background-color: var(--border-color);
-            transition: .25s;
+        /* Soru Sekmeleri ve Alanı */
+        .exam-section {
+            background: var(--surface-card);
+            border: 1px solid var(--border-glass);
             border-radius: 20px;
-        }
-
-        .slider-round:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .25s;
-            border-radius: 50%;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-
-        input:checked + .slider-round {
-            background-color: var(--accent-blue);
-        }
-
-        input:checked + .slider-round:before {
-            transform: translateX(16px);
-        }
-
-        textarea {
-            width: 100%;
-            min-height: 88px;
-            resize: vertical;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--bg-subtle);
-            color: var(--text-main);
-            font: inherit;
-            line-height: 1.45;
-        }
-
-        /* KAVRAM VE AÇIKLAMA KUTULARI */
-        .concept-callout {
-            background-color: var(--accent-purple-subtle);
-            border: 1px solid var(--accent-purple);
-            border-radius: 10px;
-            padding: 8px 9px;
-            font-size: 0.78rem;
-            color: var(--text-sub);
-            line-height: 1.35;
-        }
-
-        .concept-callout strong {
-            color: var(--accent-purple);
-            display: block;
-            margin-bottom: 4px;
-            font-size: 0.86rem;
-        }
-
-        .quiz-card {
-            background-color: var(--bg-subtle);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-card);
             display: flex;
             flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .tabs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-subtle);
+            padding-bottom: 0;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tabs-list {
+            display: flex;
             gap: 8px;
         }
 
-        .quiz-question {
+        .tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: var(--surface-card-subtle);
+            border: 1px solid var(--border-subtle);
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            bottom: -2px;
+        }
+
+        .tab-btn:hover {
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: var(--surface-card);
+            color: var(--primary);
+            border-color: var(--border-subtle);
+            border-bottom: 2px solid var(--surface-card);
+        }
+
+        .tab-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border-glass);
+            transition: background 0.2s ease;
+        }
+
+        .tab-dot.answered {
+            background: var(--accent-emerald);
+        }
+
+        .exam-score-pill {
             font-size: 0.82rem;
             font-weight: 700;
-            color: var(--text-main);
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: rgba(0, 119, 182, 0.08);
+            color: var(--primary);
+            border: 1px solid var(--border-glass);
         }
 
-        .quiz-options {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .quiz-option-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 6px 10px;
-            font-size: 0.8rem;
-            color: var(--text-main);
-            cursor: pointer;
-            text-align: left;
-            transition: all 0.2s ease;
-            min-height: 44px;
-        }
-
-        button:focus-visible,
-        input:focus-visible,
-        select:focus-visible,
-        textarea:focus-visible,
-        .switch input:focus-visible + .slider-round {
-            outline: 3px solid var(--accent-gold);
-            outline-offset: 3px;
-        }
-
-        .quiz-option-btn:hover {
-            border-color: var(--accent-blue);
-            color: var(--accent-blue);
-        }
-
-        .quiz-option-btn.selected-correct {
-            background-color: var(--accent-green-subtle);
-            border-color: var(--accent-green);
-            color: var(--accent-green);
-            font-weight: 700;
-        }
-
-        .quiz-option-btn.selected-wrong {
-            background-color: var(--accent-rose-subtle);
-            border-color: var(--accent-rose);
-            color: var(--accent-rose);
-        }
-
-        .quiz-feedback {
-            font-size: 0.78rem;
-            line-height: 1.4;
+        /* Soru Kartı */
+        .question-panel {
             display: none;
-            padding: 6px 8px;
-            border-radius: 6px;
+            flex-direction: column;
+            gap: 1.2rem;
+            animation: fadeIn 0.3s ease;
         }
 
-        .quiz-feedback.show {
-            display: block;
+        .question-panel.active {
+            display: flex;
         }
 
-        /* MAIN DISPLAY */
-        .main-display {
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .q-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .q-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .q-text {
+            font-size: 0.98rem;
+            line-height: 1.65;
+            color: var(--text-main);
+        }
+
+        /* 5 Seçenek Grubu */
+        .options-group {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 9px;
+            margin-top: 0.5rem;
         }
 
-        /* Tasarım kısıtlarının sonucu, tüm kontrollerden önce görünen canlı özet. */
-        .design-status-card {
-            grid-column: 1 / -1;
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+        .option-card {
+            display: flex;
             align-items: center;
             gap: 14px;
-            padding: 12px 16px;
-            border: 2px solid var(--accent-gold);
+            width: 100%;
+            min-height: 48px;
+            text-align: left;
+            padding: 12px 18px;
+            background: var(--option-bg);
+            border: 1.5px solid var(--option-border);
             border-radius: 14px;
-            background: linear-gradient(135deg, var(--accent-gold-subtle), var(--bg-card));
-            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
-        .design-status-card.is-valid {
-            border-color: var(--accent-green);
-            background: linear-gradient(135deg, var(--accent-green-subtle), var(--bg-card));
+        .option-card:hover {
+            background: var(--option-hover-bg);
+            border-color: var(--primary);
+            transform: translateX(3px);
         }
 
-        .status-heading {
-            color: var(--accent-gold);
-            font-size: 1rem;
+        .option-card.selected {
+            background: var(--option-selected-bg);
+            border-color: var(--option-selected-border);
+            box-shadow: 0 4px 14px rgba(0, 119, 182, 0.12);
+        }
+
+        .option-card.disabled {
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        .option-card.selected::after {
+            content: "✓ Seçildi";
+            margin-left: auto;
+            color: var(--primary);
+            font-size: 0.78rem;
             font-weight: 800;
-            margin-bottom: 2px;
         }
 
-        .design-status-card.is-valid .status-heading {
-            color: var(--accent-green);
+        .option-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--option-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            background: var(--surface-card);
         }
 
-        .status-hint {
-            color: var(--text-sub);
-            font-size: 0.8rem;
-            line-height: 1.35;
+        .option-card.selected .option-circle {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: #ffffff;
         }
 
-        .status-metrics {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(145px, 1fr));
+        .option-content {
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Alt Navigasyon */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 1.25rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .nav-left,
+        .nav-right {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-nav {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-glass);
+            background: var(--surface-card-subtle);
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: var(--surface-card);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-submit {
+            padding: 11px 24px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, #0096c7 100%);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0, 119, 182, 0.3);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
             gap: 8px;
         }
 
-        .status-metric {
-            min-width: 0;
-            padding: 8px 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            background: var(--bg-card);
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 119, 182, 0.4);
         }
 
-        .status-metric-label,
-        .status-target {
-            display: block;
-            font-size: 0.68rem;
-            color: var(--text-muted);
-        }
-
-        .status-value {
-            display: block;
-            margin: 1px 0;
-            color: var(--accent-rose);
-            font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 800;
-        }
-
-        .status-metric.is-valid .status-value {
-            color: var(--accent-green);
-        }
-
-        .canvas-container {
-            position: relative;
-            background-color: var(--canvas-bg);
-            border: 1px solid var(--canvas-border);
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 12px;
-            width: 100%;
-            min-height: 490px;
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            max-width: 820px;
-            height: auto;
-            aspect-ratio: 820 / 520;
-            background-color: transparent;
-        }
-
-        .canvas-watermark {
-            position: absolute;
-            top: 14px;
-            left: 16px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            pointer-events: none;
-            background: var(--bg-card);
-            padding: 4px 8px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-        }
-
-        /* INFO CARDS */
-        .info-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 12px;
-        }
-
-        .info-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 14px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            box-shadow: var(--shadow-sm);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .info-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background-color: var(--card-accent, var(--accent-blue));
-        }
-
-        .info-card .label {
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .info-card .value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-            font-family: 'Outfit', sans-serif;
-            letter-spacing: -0.01em;
-        }
-
-        .info-card .sub {
-            font-size: 0.8rem;
-            color: var(--text-sub);
-            font-weight: 500;
-        }
-
-        .area-card .value,
-        .area-number {
-            color: var(--accent-green);
-            font-weight: 800;
-        }
-
-        /* MODAL */
+        /* Modal */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background-color: var(--modal-backdrop);
+            background: var(--overlay-bg);
             backdrop-filter: blur(4px);
-            display: flex;
+            z-index: 2000;
+            display: none;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
-            padding: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
+            padding: 1.5rem;
         }
 
         .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-overlay[hidden] {
-            display: none;
+            display: flex;
         }
 
         .modal-card {
-            background-color: var(--bg-card);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            border-radius: 18px;
-            max-width: 650px;
+            background: var(--modal-bg);
+            border: 1px solid var(--border-glass);
+            border-radius: 22px;
+            padding: 2rem;
+            max-width: 580px;
             width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
             display: flex;
             flex-direction: column;
-            gap: 18px;
-            padding: 24px;
-            transform: scale(0.96);
-            transition: transform 0.25s ease;
-        }
-
-        .modal-overlay.active .modal-card {
-            transform: scale(1);
+            gap: 1.25rem;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-header {
             display: flex;
-            align-items: flex-start;
             justify-content: space-between;
-            gap: 12px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 14px;
+            align-items: center;
         }
 
-        .modal-header h2 {
-            font-size: 1.25rem;
+        .modal-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
             color: var(--text-main);
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .modal-close-btn {
-            background: var(--bg-subtle);
-            border: 1px solid var(--border-color);
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 1.6rem;
             color: var(--text-muted);
-            border-radius: 8px;
-            width: 46px;
-            height: 46px;
-            min-width: 46px;
-            min-height: 46px;
-            flex: 0 0 46px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
             cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .modal-close-btn:hover {
-            color: var(--accent-rose);
-            border-color: var(--accent-rose);
-        }
-
-        .instruction-step {
-            display: flex;
-            gap: 14px;
-            align-items: flex-start;
-        }
-
-        .step-num {
-            background: var(--accent-blue-subtle);
-            color: var(--accent-blue);
-            border: 1px solid var(--accent-blue);
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.85rem;
-            flex-shrink: 0;
-        }
-
-        .step-content {
-            font-size: 0.86rem;
-            color: var(--text-sub);
-            line-height: 1.5;
-        }
-
-        .step-content strong {
-            color: var(--text-main);
-            display: block;
-            margin-bottom: 2px;
-        }
-
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 14px;
-        }
-
-        .modal-footer .btn {
-            min-height: 46px;
-        }
-
-        /* TOAST */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: var(--bg-card);
-            color: var(--text-main);
-            border: 1px solid var(--accent-green);
-            border-left: 5px solid var(--accent-green);
-            padding: 12px 18px;
-            border-radius: 10px;
-            box-shadow: var(--shadow-lg);
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transform: translateY(120%);
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 999;
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        @media (max-width: 760px) {
-            .design-status-card {
-                grid-template-columns: 1fr;
-            }
+            padding: 4px;
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 8px;
         }
 
         @media (max-width: 600px) {
             body {
-                padding: 6px;
+                padding: 0.75rem 0.65rem 2rem;
             }
 
-            header {
-                align-items: flex-start;
+            .header-bar,
+            .context-header,
+            .bottom-nav {
+                align-items: stretch;
+                flex-direction: column;
             }
 
-            .header-title-area {
-                min-width: 0;
-                flex: 1 1 220px;
+            .header-actions {
+                position: static;
+                justify-content: center;
             }
 
-            header h1 {
-                font-size: 1.15rem;
-            }
-
-            .nav-tabs {
+            .tabs-list {
                 display: grid;
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
-
-            .tab-btn {
-                min-height: 44px;
+                grid-template-columns: 1fr;
                 width: 100%;
-                padding: 5px 3px;
-                font-size: 0.68rem;
             }
 
-            .app-container,
-            .main-display {
-                gap: 8px;
+            .tab-btn,
+            .nav-left,
+            .nav-right,
+            .btn-nav,
+            .btn-submit {
+                width: 100%;
             }
 
-            .card {
-                padding: 8px;
+            .nav-left,
+            .nav-right {
+                flex-direction: column;
             }
 
-            details.scenario-box summary {
-                align-items: flex-start;
-                padding: 8px;
-            }
-
-            .scenario-details {
-                padding: 8px;
-                font-size: 0.8rem;
-                line-height: 1.45;
-            }
-
-            .design-status-card {
-                grid-template-columns: 1fr;
-                gap: 7px;
-                padding: 9px;
-            }
-
-            .status-copy {
-                display: block;
-            }
-
-            .status-heading {
-                font-size: 0.86rem;
-                margin-bottom: 2px;
-            }
-
-            .status-hint {
-                text-align: left;
-                font-size: 0.72rem;
-            }
-
-            .status-metrics {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 6px;
-            }
-
-            .status-metric {
-                min-width: 0;
-                padding: 6px 8px;
-            }
-
-            .status-value {
-                font-size: 1rem;
-            }
-
-            input[type="range"] {
-                min-height: 44px;
-                padding: 12px 0;
-            }
-
-            .canvas-container {
-                min-height: 230px;
-                padding: 8px;
-            }
-
-            .canvas-watermark {
-                top: 8px;
-                left: 8px;
-                margin: 0;
-                font-size: 0.65rem;
-            }
-
-            .info-cards-grid {
-                display: grid;
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-
-            .info-card {
-                min-width: 0;
-                padding: 11px 13px;
+            .context-card,
+            .exam-section,
+            .modal-card {
+                padding: 1rem;
             }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            details.scenario-box[open] summary::after {
-                animation: none;
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
+
+            .bg-canvas {
+                display: none;
+            }
+        }
+
+        .modal-body {
+            font-size: 0.95rem;
+            line-height: 1.65;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .modal-btn {
+            padding: 13px 20px;
+            border-radius: 12px;
+            border: none;
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s ease;
+        }
+
+        .modal-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Skor ve Çözüm Görünümü */
+        .score-hero-box {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--surface-card-subtle);
+            border: 2px dashed var(--border-glass);
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .score-val {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--primary);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .score-desc {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .solution-item {
+            background: var(--surface-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .solution-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            padding: 2px 10px;
+            border-radius: 20px;
         }
     </style>
 </head>
+
 <body>
+    <!-- Arka Plan Akıcı Çizgiler -->
+    <canvas id="bgCanvas" class="bg-canvas"></canvas>
 
-    <!-- ÜST BAŞLIK BÖLÜMÜ -->
-    <header>
-        <div class="header-title-area">
-            <h1>Açık Hava Tiyatrosu: Sahne Gölgeliği Tasarımı</h1>
-            <p>Amaç, eş ikizkenar yamuk panellerle düzgün çokgen biçiminde, ölçülebilir ve uygulanabilir bir gölgelik tasarlamaktır.</p>
-        </div>
-
-        <div class="header-actions">
-            <button id="themeToggleBtn" class="icon-btn" title="Gündüz / Gece Teması Değiştir" aria-label="Gündüz / Gece Teması Değiştir">
-                <span id="themeIcon">☀️</span>
-            </button>
-            <button id="helpBtn" class="help-btn" title="Simülasyon Kılavuzu (?)" aria-label="Simülasyon Kılavuzu">
-                ?
-            </button>
-        </div>
-    </header>
-
-    <!-- ANA UYGULAMA ALANI -->
-    <main class="app-container">
-        <section id="designStatus" class="design-status-card" role="status" aria-live="polite" aria-atomic="true">
-            <div class="status-copy">
-                <div id="designStatusTitle" class="status-heading">Tasarım ölçülüyor…</div>
-                <div id="designStatusHint" class="status-hint">İki alan hedefi birlikte sağlanmalıdır.</div>
+    <main class="container">
+        <!-- Üst Menü -->
+        <header class="header-bar">
+            <div class="header-title-box">
+                <h1 class="header-title">2.Basamak Değerlendirme</h1>
             </div>
-            <div class="status-metrics" aria-label="Alan hedefleri">
-                <div id="canopyAreaMetric" class="status-metric">
-                    <span class="status-metric-label">Gölgelik alanı</span>
-                    <span id="designCanopyArea" class="status-value">— m²</span>
-                    <span class="status-target">Hedef: 180–220 m²</span>
+            <div class="header-actions">
+                <button class="btn-circle" id="helpBtn" title="Yönergeyi Aç" aria-label="Yönerge">?</button>
+                <button class="btn-circle" id="themeBtn" title="Temayı Değiştir" aria-label="Tema Değiştir">🌓</button>
+            </div>
+        </header>
+
+        <!-- Bağlam ve İnteraktif Model Kartı -->
+        <section class="context-card" aria-label="Problem Bağlamı">
+            <div class="context-header">
+                <h2 class="context-title">
+                    <span>Dinlenme Kameriyesi Zemin Planı</span>
+                </h2>
+                <span class="data-badge">Toplam Puan: 15 Puan</span>
+            </div>
+
+            <div class="context-body-grid">
+                <!-- Sol: Açıklama ve Veriler -->
+                <div class="context-text">
+                    <p>
+                        Bir belediye parkındaki düzgün altıgen biçimli kameriyenin bakımında çatı halatı yenilenecek ve iç dolaşım bölgesi paketli kayrak taşıyla kaplanacaktır. Belediye, ek yeri oluşturmadan yeterli malzemeyi en az miktarda sipariş etmek istemektedir.
+                    </p>
+                    <p>
+                        Kameriyenin dış sınırları bir kenar uzunluğu <strong>$6\text{ m}$</strong> olan bir düzgün altıgendir.
+                        Kameriyenin kenarları boyunca yerleştirilen özdeş ikizkenar yamuk biçimindeki her bir oturma bankının dış kenara bakan uzun tabanının uzunluğu <strong>$6\text{ m}$</strong>, iç kısma bakan kısa tabanının uzunluğu ise <strong>$4\text{ m}$</strong>'dir.
+                    </p>
+                    <p>
+                        Bankların ortasında kalan boş alan ise kenarları dış sınırlara paralel eş merkezli bir düzgün altıgensel dolaşım bölgesidir.
+                    </p>
+                    <p>
+                        Çelik halat yalnız tam metre uzunluklu makaralarla; kayrak taşı ise her biri <strong>$8\sqrt{3}\text{ m}^2$</strong> alan kaplayan paketlerle satılmaktadır. Paketler bölünememektedir.
+                    </p>
                 </div>
-                <div id="centerAreaMetric" class="status-metric">
-                    <span class="status-metric-label">Merkez boşluğu</span>
-                    <span id="designCenterArea" class="status-value">— m²</span>
-                    <span class="status-target">Hedef: en az 20 m²</span>
+
+                <!-- Sağ: İnteraktif SVG Şekli -->
+                <div class="interactive-visual-box">
+                    <div class="visual-toolbar" aria-label="Plan görünümü filtreleri">
+                        <button class="btn-filter active" id="filterAll" onclick="setVisualFilter('all')" aria-pressed="true">Tüm Plan</button>
+                        <button class="btn-filter" id="filterInner" onclick="setVisualFilter('inner')" aria-pressed="false">İç Bölge</button>
+                        <button class="btn-filter" id="filterBenches" onclick="setVisualFilter('benches')" aria-pressed="false">Banklar</button>
+                        <button class="btn-filter" id="filterDiag" onclick="setVisualFilter('diagonal')" aria-pressed="false">Ana Köşegen</button>
+                    </div>
+
+                    <div class="svg-container">
+                        <svg viewBox="-180 -180 360 360" xmlns="http://www.w3.org/2000/svg" id="gazeboSvg" style="width: 100%; height: 100%;" role="img" aria-labelledby="gazeboTitle gazeboDesc">
+                            <title id="gazeboTitle">Düzgün altıgen kameriye zemin planı</title>
+                            <desc id="gazeboDesc">Kenar uzunluğu 6 metre olan dış düzgün altıgen, kenar uzunluğu 4 metre olan eş merkezli iç düzgün altıgen ve aradaki altı yamuk bank bölgesi gösterilmektedir.</desc>
+                            <defs>
+                                <radialGradient id="gradInner" cx="0" cy="0" r="100" gradientUnits="userSpaceOnUse">
+                                    <stop offset="0%" stop-color="#caf0f8" />
+                                    <stop offset="100%" stop-color="#90e0ef" />
+                                </radialGradient>
+                                <linearGradient id="gradBench" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0%" stop-color="#ffe8cc" />
+                                    <stop offset="100%" stop-color="#ffd8a8" />
+                                </linearGradient>
+                            </defs>
+
+                            <!-- Dış zemin sınırı -->
+                            <polygon id="outerHex" points="
+                                150,0 75,129.9 -75,129.9 -150,0 -75,-129.9 75,-129.9"
+                                fill="#ffffff" stroke="#0077b6" stroke-width="4" stroke-linejoin="round" />
+
+                            <!-- 6 Adet İkizkenar Yamuk Bank -->
+                            <polygon class="svg-bench" id="bench0" points="75,-129.9 150,0 100,0 50,-86.6" fill="url(#gradBench)" stroke="#d97706" stroke-width="2" />
+                            <polygon class="svg-bench" id="bench1" points="150,0 75,129.9 50,86.6 100,0" fill="url(#gradBench)" stroke="#d97706" stroke-width="2" />
+                            <polygon class="svg-bench" id="bench2" points="75,129.9 -75,129.9 -50,86.6 50,86.6" fill="url(#gradBench)" stroke="#d97706" stroke-width="2" />
+                            <polygon class="svg-bench" id="bench3" points="-75,129.9 -150,0 -100,0 -50,86.6" fill="url(#gradBench)" stroke="#d97706" stroke-width="2" />
+                            <polygon class="svg-bench" id="bench4" points="-150,0 -75,-129.9 -50,-86.6 -100,0" fill="url(#gradBench)" stroke="#d97706" stroke-width="2" />
+                            <polygon class="svg-bench" id="bench5" points="-75,-129.9 75,-129.9 50,-86.6 -50,-86.6" fill="url(#gradBench)" stroke="#d97706" stroke-width="2" />
+
+                            <!-- İç Düzgün Altıgen -->
+                            <polygon id="innerHex" points="
+                                100,0 50,86.6 -50,86.6 -100,0 -50,-86.6 50,-86.6"
+                                fill="url(#gradInner)" stroke="#0096c7" stroke-width="3" stroke-linejoin="round" />
+
+                            <!-- Ana Köşegen Çizgisi (Vurgu) -->
+                            <line id="mainDiagLine" x1="-150" y1="0" x2="150" y2="0" stroke="#ef4444" stroke-width="3" stroke-dasharray="6,5" style="display: none;" />
+
+                            <!-- Merkez Noktası -->
+                            <circle cx="0" cy="0" r="5" fill="#0077b6" />
+                            <text x="0" y="-10" font-size="12" font-weight="800" fill="#0077b6" text-anchor="middle">O (Merkez)</text>
+
+                            <!-- Ölçü Etiketleri -->
+                            <text x="0" y="-140" font-size="13" font-weight="800" fill="#d97706" text-anchor="middle">6 m</text>
+                            <text x="0" y="-94" font-size="12" font-weight="800" fill="#0077b6" text-anchor="middle">4 m</text>
+                            <text id="diagText" x="0" y="24" font-size="13" font-weight="800" fill="#ef4444" text-anchor="middle" style="display: none;">Ana Köşegen</text>
+                            <text x="158" y="4" font-size="11" font-weight="700" fill="currentColor">A</text>
+                            <text x="80" y="143" font-size="11" font-weight="700" fill="currentColor">B</text>
+                            <text x="-84" y="143" font-size="11" font-weight="700" fill="currentColor">C</text>
+                            <text x="-166" y="4" font-size="11" font-weight="700" fill="currentColor">D</text>
+                            <text x="-84" y="-137" font-size="11" font-weight="700" fill="currentColor">E</text>
+                            <text x="80" y="-137" font-size="11" font-weight="700" fill="currentColor">F</text>
+                        </svg>
+                    </div>
+                    <span class="svg-caption">Şekil: Kameriye Zemin Planı</span>
+                    <span class="visually-hidden" id="visualStatus" aria-live="polite">Tüm plan gösteriliyor.</span>
                 </div>
             </div>
         </section>
 
-        <!-- SOL SÜTUN: KONTROLLER VE ETKİLEŞİM SEKMELERİ -->
-        <aside class="sidebar">
-            <!-- Açık hava tiyatrosu tasarım senaryosu -->
-            <details class="scenario-box" open>
-                <summary><strong>🎭 Okul Açık Hava Tiyatrosu Tasarım Görevi</strong></summary>
-                <div class="scenario-details">
-                    Bahar şenliğinde kullanılacak yaklaşık dairesel sahne için düzgün çokgen halkalarla modellenen bir gölgelik tasarlanacaktır. Gölgelik, eşmerkezli halkalar hâlinde yerleştirilen ve <strong>her halkada kendi içinde eş ikizkenar yamuk kumaş panellerden</strong> oluşacaktır. İç halkalardaki panellerin tabanları dış halkalardakilerden daha kısadır. Düzgün çokgen model, dairesel sahnenin ölçülebilir bir yaklaşımıdır. Tasarımın 180–220 m² kumaş alanı sınırında kalması ve merkezde en az 20 m² ışık ile havalandırma boşluğu bırakması gerekir. Kumaşın metrekare fiyatı ile her panelin dikim ve bağlantı bedeli kullanılarak gölgeliğin tahmini maliyeti de hesaplanacaktır.
+        <!-- Sınav Alanı: Sekmeler ve 5 Seçenekli Sorular -->
+        <section class="exam-section" aria-label="Sınav Soruları">
+            <div class="tabs-header">
+                <div class="tabs-list" role="tablist">
+                    <button class="tab-btn active" id="tabBtn1" onclick="switchTab(1)" role="tab" aria-selected="true" aria-controls="qPanel1" tabindex="0" aria-label="1. Soru, 7 puan">
+                        <span class="tab-dot" id="dot1"></span>
+                        <span>1. Soru (7 Puan)</span>
+                    </button>
+                    <button class="tab-btn" id="tabBtn2" onclick="switchTab(2)" role="tab" aria-selected="false" aria-controls="qPanel2" tabindex="-1" aria-label="2. Soru, 8 puan">
+                        <span class="tab-dot" id="dot2"></span>
+                        <span>2. Soru (8 Puan)</span>
+                    </button>
                 </div>
-            </details>
-
-            <!-- SEKMELİ KONTROL PANELİ -->
-            <div class="card">
-                <nav class="nav-tabs" role="tablist" aria-label="Simülasyon adımları">
-                    <button id="controlsTabBtn" class="tab-btn active" data-tab="tab-controls" role="tab" aria-controls="tab-controls" aria-selected="true" tabindex="0">⚙️ Tasarım</button>
-                    <button id="hypoTabBtn" class="tab-btn" data-tab="tab-hypo" role="tab" aria-controls="tab-hypo" aria-selected="false" tabindex="-1">💡 Tahmin Et ve Sına</button>
-                    <button id="geometryTabBtn" class="tab-btn" data-tab="tab-geometry" role="tab" aria-controls="tab-geometry" aria-selected="false" tabindex="-1">🔷 Çokgen ve Simetri</button>
-                </nav>
-
-                <!-- SEKME 1: PANEL VE AÇILMA PARAMETRELERİ -->
-                <div id="tab-controls" class="tab-content active" role="tabpanel" aria-labelledby="controlsTabBtn">
-                    <!-- 1. Gölgelik Geometrisi -->
-                    <div class="panel-section">
-                        <div class="section-title">
-                            <span>1. Gölgelik Çokgen Geometrisi</span>
-                            <span id="polyName" style="color: var(--accent-blue); font-size: 0.82rem;">Düzgün Sekizgen (N=8)</span>
-                        </div>
-                        
-                        <div class="control-group">
-                            <label for="sidesInput">Yamuk Panel Sayısı (N): <span class="val" id="sidesVal">8</span></label>
-                            <input type="range" id="sidesInput" min="3" max="12" value="8" aria-label="Yamuk Panel Sayısı">
-                        </div>
-
-                        <div class="control-group">
-                            <label for="radiusInput">Panel Dış Taban Uzunluğu (a): <span class="val" id="radiusVal">5,7 m</span></label>
-                            <input type="range" id="radiusInput" min="100" max="230" value="185" aria-label="Panel dış taban uzunluğu">
-                        </div>
-                    </div>
-
-                    <!-- 2. Katmanlar ve Hücre Kalınlığı -->
-                    <div class="panel-section">
-                        <div class="section-title">
-                            <span>2. Kumaş Panel Halkaları</span>
-                            <span id="layerCountText" style="color: var(--accent-purple); font-size: 0.82rem;">2 Halka</span>
-                        </div>
-
-                        <div class="control-group">
-                            <label for="layersInput">Eşmerkezli Halka Sayısı: <span class="val" id="layersVal">2</span></label>
-                            <input type="range" id="layersInput" min="1" max="5" value="2" aria-label="Halka Sayısı">
-                        </div>
-
-                        <div class="control-group">
-                            <label for="thicknessInput">Yamuk Panel Yüksekliği (h): <span class="val" id="thicknessVal">1,4 m</span></label>
-                            <input type="range" id="thicknessInput" min="15" max="60" value="35" aria-label="Yamuk Panel Yüksekliği">
-                        </div>
-                    </div>
-
-                    <div class="panel-section">
-                        <div class="section-title">
-                            <span>3. Tasarım Kısıtları</span>
-                        </div>
-                        <div class="concept-callout">
-                            Gölgelik alanı <strong>180–220 m²</strong> arasında olmalı; merkezdeki ışık ve havalandırma boşluğu en az <strong>20 m²</strong> kalmalıdır.
-                        </div>
-                    </div>
-
-                    <div class="panel-section">
-                        <div class="section-title">
-                            <span>4. Maliyet Problemi</span>
-                        </div>
-                        <div class="cost-controls">
-                            <div class="control-group">
-                                <label for="fabricPriceInput">Kumaş Birim Fiyatı (TL/m²): <span class="val" id="fabricPriceVal">450 TL</span></label>
-                                <input type="range" id="fabricPriceInput" min="200" max="1000" step="50" value="450" aria-label="Kumaşın metrekare fiyatı">
-                            </div>
-                            <div class="control-group">
-                                <label for="panelCostInput">Panel Başına Dikim ve Bağlantı Bedeli: <span class="val" id="panelCostVal">150 TL</span></label>
-                                <input type="range" id="panelCostInput" min="50" max="300" step="25" value="150" aria-label="Panel başına dikim ve bağlantı bedeli">
-                            </div>
-                        </div>
-                        <div class="cost-problem">
-                            Toplam maliyet, kumaş alanı, kumaşın metrekare fiyatı ve kullanılan panel sayısına göre modellenir.
-                        </div>
-                    </div>
-
-                    <div class="panel-section">
-                        <div class="section-title">
-                            <span>5. Tamamlama</span>
-                        </div>
-                        <div class="btn-group">
-                            <button id="resetBtn" class="btn" aria-label="Varsayılana Sıfırla">↺ Sıfırla</button>
-                        </div>
-                        <button id="completeSimBtn" class="btn success" style="margin-top: 4px;" aria-label="Tasarımı onayla ve MEBİ tamamlanma sinyalini gönder" aria-describedby="completionRequirements" disabled>
-                            ✓ Tasarımı Onayla ve Tamamla
-                        </button>
-                        <div id="completionRequirements" class="completion-requirements" role="status" aria-live="polite">Tamamlamak için: tasarım kısıtlarını sağlayın, üç tahmini doğru yanıtlayın, gölgeliğin simetri eksenleri ile köşegenlerini inceleyin ve kısa değerlendirmenizi yazın.</div>
-                    </div>
-
-                </div>
-
-                <!-- SEKME 2: DÜZGÜN ÇOKGEN VE BÜTÜNSEL SİMETRİ -->
-                <div id="tab-geometry" class="tab-content" role="tabpanel" aria-labelledby="geometryTabBtn" hidden>
-                    <div class="concept-callout">
-                        <strong>🔷 Yamuk Panellerden Düzgün Çokgen Oluşturma</strong>
-                        Eş ikizkenar yamuk paneller yan yana geldiğinde düzgün çokgen biçiminde bir halka oluşturur. Panel sayısı değiştirilerek oluşan çokgenin köşegenleri ve bütün gölgeliğin simetri eksenleri incelenir.
-                    </div>
-
-                    <div class="panel-section">
-                        <div class="section-title">
-                            <span>Gölgeliğin Simetrisi</span>
-                        </div>
-
-                        <div class="toggle-row">
-                            <span>Tüm Simetri Eksenlerini Göster</span>
-                            <label class="switch">
-                                <input type="checkbox" id="showSymmetryCheck" aria-label="Gölgeliğin simetri eksenlerini göster">
-                                <span class="slider-round"></span>
-                            </label>
-                        </div>
-
-                        <div class="toggle-row">
-                            <span>Açı ve Panel Ölçülerini Göster</span>
-                            <label class="switch">
-                                <input type="checkbox" id="showLabelsCheck" checked aria-label="Açı ve panel ölçülerini göster">
-                                <span class="slider-round"></span>
-                            </label>
-                        </div>
-
-                        <div class="toggle-row">
-                            <span>Bir Köşeden Çizilen Köşegenleri Göster</span>
-                            <label class="switch">
-                                <input type="checkbox" id="showDiagonalsCheck" aria-label="Bir köşeden çizilen köşegenleri göster">
-                                <span class="slider-round"></span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="quiz-card" aria-live="polite">
-                        <div class="quiz-question">Canlı Simetri Bilgisi</div>
-                        <div id="symmetryAxisInfo" style="font-size: 0.82rem; color: var(--text-sub);">Simetri eksenlerini gösterip eksenleri sayın; ardından tahmininizle karşılaştırın.</div>
-                        <div id="diagonalInfo" style="font-size: 0.82rem; color: var(--text-sub); margin-top: 6px;">Bir köşeden çizilen köşegenleri göstererek sayıyı N ile ilişkilendirin.</div>
-                    </div>
-
-                    <div class="control-group">
-                        <label for="reflectionInput">Kısa değerlendirme</label>
-                        <textarea id="reflectionInput" maxlength="240" placeholder="Bir girdi ile gözlenen bir çıktı arasındaki değişim ilişkisi"></textarea>
-                    </div>
-                </div>
-
-                <!-- SEKME 3: TAHMİN ET VE SINA (VARSAYIM - DOĞRULAMA) -->
-                <div id="tab-hypo" class="tab-content" role="tabpanel" aria-labelledby="hypoTabBtn" hidden>
-                    <div class="scenario-box" style="border-left-color: var(--accent-purple);">
-                        <strong>💡 Hipotez Kur ve Simülasyonda Sına</strong>
-                        Önce gölgelik parametrelerinin etkisine ilişkin tahmin yapılır, ardından karar simülasyondaki ölçümlerle sınanır.
-                    </div>
-
-                    <!-- Soru 1 -->
-                    <div class="quiz-card" id="quiz1">
-                        <div class="quiz-question">1. Yamuk panel sayısı (N) 4'ten 12'ye çıkarıldığında α açısının ölçüsü nasıl değişir?</div>
-                        <div class="quiz-options">
-                            <button class="quiz-option-btn" data-correct="false">α açısının ölçüsü küçülerek 0°ye yaklaşır.</button>
-                            <button class="quiz-option-btn" data-correct="true">α açısının ölçüsü büyüyerek 90°ye yaklaşır.</button>
-                            <button class="quiz-option-btn" data-correct="false">α açısının ölçüsü değişmeden 45° kalır.</button>
-                        </div>
-                        <div class="quiz-feedback" id="feedback1"></div>
-                    </div>
-
-                    <!-- Soru 2 -->
-                    <div class="quiz-card" id="quiz2">
-                        <div class="quiz-question">2. N eş ikizkenar yamukla oluşturulan düzgün çokgen biçimindeki gölgeliğin kaç simetri ekseni vardır?</div>
-                        <div class="quiz-options">
-                            <button class="quiz-option-btn" data-correct="true">N tane</button>
-                            <button class="quiz-option-btn" data-correct="false">N − 1 tane</button>
-                            <button class="quiz-option-btn" data-correct="false">2N tane</button>
-                        </div>
-                        <div class="quiz-feedback" id="feedback2"></div>
-                    </div>
-
-                    <!-- Soru 3 -->
-                    <div class="quiz-card" id="quiz3">
-                        <div class="quiz-question">3. Gölgeliğin toplam maliyetini veren doğru matematiksel model hangisidir?</div>
-                        <div class="quiz-options">
-                            <button class="quiz-option-btn" data-correct="false">Kumaş alanı + kumaşın m² fiyatı + panel bedeli</button>
-                            <button class="quiz-option-btn" data-correct="true">Kumaş alanı × m² fiyatı + panel sayısı × panel bedeli</button>
-                            <button class="quiz-option-btn" data-correct="false">Kumaş alanı × panel sayısı × panel bedeli</button>
-                        </div>
-                        <div class="quiz-feedback" id="feedback3"></div>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- SAĞ SÜTUN: GÖRSEL KANVAS VE BİLGİ KARTLARI -->
-        <section class="main-display">
-            <!-- CANVAS CONTAINER -->
-            <div class="canvas-container">
-                <span class="canvas-watermark">Açık Hava Tiyatrosu Gölgelik Modeli</span>
-                <canvas id="mainCanvas" width="820" height="520" role="img" aria-label="Açık hava tiyatrosu için ikizkenar yamuklardan oluşan tam açık gölgelik modeli" aria-describedby="canvasSummary"></canvas>
-                <span id="canvasSummary" class="sr-only" aria-live="polite"></span>
+                <span class="exam-score-pill" id="progressStatus" role="status" aria-live="polite">0 / 2 Soru Yanıtlandı</span>
             </div>
 
-            <!-- BİLGİ KARTLARI GRİDİ -->
-            <div class="info-cards-grid">
-                <div class="info-card" style="--card-accent: var(--accent-gold);">
-                    <div class="label">Yamuk Taban Açılarının Ölçüleri</div>
-                    <div class="value" id="infoAngles">m(α) = 67,5°, m(β) = 112,5°</div>
-                    <div class="sub" id="infoAngleSub">Çokgen iç açısının ölçüsü: 135,0° = 2·m(α)</div>
+            <!-- 1. Soru Paneli (5 Şıklı) -->
+            <div class="question-panel active" id="qPanel1" role="tabpanel" aria-labelledby="tabBtn1" aria-hidden="false">
+                <div class="q-header">
+                    <h3 class="q-title">1. Soru</h3>
+                    <span class="q-badge">7 Puan</span>
+                </div>
+                <div class="q-text">
+                    <p>
+                        Kameriyenin çatı taşıyıcı çelik halatı, dış altıgenin karşılıklı A ve D köşeleri arasına tek parça hâlinde gerilecektir. Halat yalnız tam metre uzunluklu makaralarla satılmaktadır.
+                    </p>
+                    <p style="margin-top: 8px;">
+                        <strong>Buna göre ek yeri oluşturmadan yeterli olacak en kısa makara hangisidir?</strong>
+                    </p>
                 </div>
 
-                <div class="info-card" style="--card-accent: var(--accent-blue);">
-                    <div class="label">Yamuk Panel Ölçüleri ve Alanı</div>
-                    <div class="value" id="infoBases">a = 6,1 m, b = 5,0 m</div>
-                    <div class="sub" id="infoPanelSummary">h = 1,4 m · Tek panel alanı: 7,8 m²</div>
+                <div class="options-group" role="radiogroup">
+                    <button type="button" class="option-card" role="radio" aria-checked="false" id="opt_1_A" onclick="selectOption(1, 'A')">
+                        <div class="option-circle">A</div>
+                        <div class="option-content">10 m</div>
+                    </button>
+                    <button type="button" class="option-card" role="radio" aria-checked="false" id="opt_1_B" onclick="selectOption(1, 'B')">
+                        <div class="option-circle">B</div>
+                        <div class="option-content">11 m</div>
+                    </button>
+                    <button type="button" class="option-card" role="radio" aria-checked="false" id="opt_1_C" onclick="selectOption(1, 'C')">
+                        <div class="option-circle">C</div>
+                        <div class="option-content">12 m</div>
+                    </button>
+                    <button type="button" class="option-card" role="radio" aria-checked="false" id="opt_1_D" onclick="selectOption(1, 'D')">
+                        <div class="option-circle">D</div>
+                        <div class="option-content">13 m</div>
+                    </button>
+                    <button type="button" class="option-card" role="radio" aria-checked="false" id="opt_1_E" onclick="selectOption(1, 'E')">
+                        <div class="option-circle">E</div>
+                        <div class="option-content">14 m</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Soru Paneli (5 Şıklı) -->
+            <div class="question-panel" id="qPanel2" role="tabpanel" aria-labelledby="tabBtn2" aria-hidden="true">
+                <div class="q-header">
+                    <h3 class="q-title">2. Soru</h3>
+                    <span class="q-badge">8 Puan</span>
+                </div>
+                <div class="q-text">
+                    <p>
+                        Bir kenar uzunluğu <strong>$4\text{ m}$</strong> olan iç düzgün altıgensel dolaşım bölgesi kayrak taşıyla kaplanacaktır. Bir paket taş <strong>$8\sqrt{3}\text{ m}^2$</strong> alan kaplamakta ve paketler bölünememektedir.
+                    </p>
+                    <p style="margin-top: 8px;">
+                        <strong>Buna göre bölgenin tamamını kaplamak için en az kaç paket taş sipariş edilmelidir?</strong>
+                    </p>
                 </div>
 
-                <div class="info-card area-card" style="--card-accent: var(--accent-green);">
-                    <div class="label">Toplam Gölgelik Alanı</div>
-                    <div class="value" id="infoTotalArea">62,1 m²</div>
-                    <div class="sub">Merkez ışık ve havalandırma boşluğu: <span id="infoHoleArea" class="area-number">54,7 m²</span></div>
+                <div class="options-group" role="radiogroup">
+                    <button type="button" class="option-card" role="radio" aria-checked="false" id="opt_2_A" onclick="selectOption(2, 'A')">
+                        <div class="option-circle">A</div>
+                        <div class="option-content">2 paket</div>
+                    </button>
+                    <button type="button" class="option-card" role="radio" aria-checked="false" id="opt_2_B" onclick="selectOption(2, 'B')">
+                        <div class="option-circle">B</div>
+                        <div class="option-content">3 paket</div>
+                    </button>
+                    <button type="button" class="option-card" role="radio" aria-checked="false" id="opt_2_C" onclick="selectOption(2, 'C')">
+                        <div class="option-circle">C</div>
+                        <div class="option-content">5 paket</div>
+                    </button>
+                    <button type="button" class="option-card" role="radio" aria-checked="false" id="opt_2_D" onclick="selectOption(2, 'D')">
+                        <div class="option-circle">D</div>
+                        <div class="option-content">9 paket</div>
+                    </button>
+                    <button type="button" class="option-card" role="radio" aria-checked="false" id="opt_2_E" onclick="selectOption(2, 'E')">
+                        <div class="option-circle">E</div>
+                        <div class="option-content">7 paket</div>
+                    </button>
                 </div>
+            </div>
 
-                <div class="info-card" style="--card-accent: var(--accent-rose);">
-                    <div class="label">Tahmini Gölgelik Maliyeti</div>
-                    <div class="value" id="infoTotalCost">Hesaplanıyor…</div>
-                    <div class="sub" id="infoCostBreakdown">Kumaş + 16 panelin dikim ve bağlantı bedeli</div>
+            <!-- Alt Navigasyon -->
+            <div class="bottom-nav">
+                <div class="nav-left">
+                    <button class="btn-nav" id="prevBtn" onclick="prevQuestion()" disabled>← Önceki Soru</button>
+                    <button class="btn-nav" id="nextBtn" onclick="nextQuestion()">Sonraki Soru →</button>
+                </div>
+                <div class="nav-right">
+                    <button class="btn-submit" id="finishBtn" onclick="submitExam()">
+                        <span>Sınavı Tamamla ve Bitir</span>
+                        <span>🔒</span>
+                    </button>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- '?' DÜĞMESİYLE AÇILABİLEN AYRINTILI YÖNERGE PENCERESİ -->
-    <div id="instructionModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-hidden="true" hidden>
+    <!-- Açılış / Yardım Yönergesi Modalı -->
+    <div class="modal-overlay active" id="guideModal" role="dialog" aria-modal="true" aria-labelledby="guideModalTitle">
         <div class="modal-card">
             <div class="modal-header">
-                <h2 id="modalTitle" tabindex="-1">🎭 Sahne Gölgeliği Tasarım Kılavuzu</h2>
-                <button id="modalCloseBtn" class="modal-close-btn" aria-label="Kılavuzu Kapat">✕</button>
+                <h3 class="modal-title" id="guideModalTitle">
+                    <span>📖</span>
+                    <span>2.Basamak Değerlendirme</span>
+                </h3>
+                <button class="modal-close" onclick="closeGuide()" aria-label="Kapat">×</button>
             </div>
-
-            <div class="instruction-step">
-                <div class="step-num">1</div>
-                <div class="step-content">
-                    <strong>Amaç ve Mühendislik Modellemesi</strong>
-                    Amaç, okulun açık hava tiyatrosu için her halkada eş ikizkenar yamuk kumaş panellerden oluşan bir gölgelik tasarlamaktır. Panel sayısının düzgün çokgenin biçimi, köşegenleri, taban açıları ve simetri ekseni sayısı üzerindeki etkisi; alan ve maliyet koşullarıyla birlikte incelenir.
-                </div>
+            <div class="modal-body">
+                <ul style="margin-left: 1.4rem; display: flex; flex-direction: column; gap: 8px;">
+                    <li>Sınavda <strong>5 seçenekli 2 soru</strong> bulunmaktadır (1. soru 7 puan, 2. soru 8 puan; toplam <strong>15 puan</strong>).</li>
+                    <li>Soruları sekmelerden veya ileri/geri butonlarıyla gezerek yanıtlayınız.</li>
+                    <li><strong>“Sınavı Tamamla ve Bitir”</strong> düğmesine tıkladığınızda yanıtlarınız ve puanınız kilitlenir.</li>
+                </ul>
             </div>
-
-            <div class="instruction-step">
-                <div class="step-num">2</div>
-                <div class="step-content">
-                    <strong>İlk Eyleminiz</strong>
-                    "Yamuk Panel Sayısı (N)", panel dış taban uzunluğu (a), halka sayısı ve panel yüksekliği kontrolleriyle 180–220 m² gölgelik alanı ve en az 20 m² merkez boşluğu sağlayan bir tasarım aranır. Kumaşın metrekare fiyatı ve panel başına dikim-bağlantı bedeli belirlenerek tahmini maliyet incelenir. Ardından "Tahmin Et ve Sına" sekmesine geçilir.
-                </div>
-            </div>
-
-            <div class="instruction-step">
-                <div class="step-num">3</div>
-                <div class="step-content">
-                    <strong>Düzgün Çokgen, Köşegen ve Simetri İncelemesi</strong>
-                    "Çokgen ve Simetri" sekmesinde gölgeliğin simetri eksenleri ve bir köşeden çizilen köşegenleri görünür yapılır. Gözlenen sayılar panel sayısıyla karşılaştırılır.
-                </div>
-            </div>
-
-            <div class="instruction-step">
-                <div class="step-num">4</div>
-                <div class="step-content">
-                    <strong>Tamamlanma Bildirimi</strong>
-                    Tasarım kısıtları sağlandıktan, üç tahmin doğru yanıtlandıktan, simetri eksenleri ile köşegenler incelendikten ve kısa değerlendirme yazıldıktan sonra "Tasarımı Onayla ve Tamamla" düğmesi etkinleşir. Tamamlama bildirimi gönderildiğinde oturumun yanıt ve tasarım girdileri kilitlenir.
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button id="modalStartBtn" class="btn primary" style="padding: 10px 20px;">
-                    Anladım, Simülasyona Başla
-                </button>
-            </div>
+            <button class="modal-btn" id="startExamBtn" onclick="closeGuide()">Sınava Başla</button>
         </div>
     </div>
 
-    <!-- TOAST BİLDİRİMİ -->
-    <div id="toastNotification" class="toast" role="status" aria-live="polite">
-        <span style="font-size: 1.2rem;">✓</span>
-        <span id="toastMsg">Tamamlanma bilgisi gönderildi.</span>
+    <!-- Sonuç ve Çözümler Modalı -->
+    <div class="modal-overlay" id="resultsModal" role="dialog" aria-modal="true" aria-labelledby="resultsModalTitle">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title" id="resultsModalTitle">
+                    <span>📊</span>
+                    <span>Sınav Sonucu ve Çözümler</span>
+                </h3>
+                <button class="modal-close" onclick="closeResults()" aria-label="Kapat">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="score-hero-box" role="status" aria-live="polite">
+                    <div class="score-val" id="scoreDisplay">0 / 15</div>
+                    <div class="score-desc" id="scorePercentDisplay">Başarı Oranı: %0</div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px;" id="solutionsContainer">
+                    <!-- Dinamik Çözüm Kartları -->
+                </div>
+            </div>
+            <button class="modal-btn" onclick="closeResults()">Kapat ve İncele</button>
+        </div>
     </div>
 
     <script>
-        // DOM ELEMANLARI
-        const canvas = document.getElementById('mainCanvas');
-        const ctx = canvas.getContext('2d');
-
-        const sidesInput = document.getElementById('sidesInput');
-        const radiusInput = document.getElementById('radiusInput');
-        const layersInput = document.getElementById('layersInput');
-        const thicknessInput = document.getElementById('thicknessInput');
-        const fabricPriceInput = document.getElementById('fabricPriceInput');
-        const panelCostInput = document.getElementById('panelCostInput');
-
-        const sidesVal = document.getElementById('sidesVal');
-        const radiusVal = document.getElementById('radiusVal');
-        const layersVal = document.getElementById('layersVal');
-        const thicknessVal = document.getElementById('thicknessVal');
-        const fabricPriceVal = document.getElementById('fabricPriceVal');
-        const panelCostVal = document.getElementById('panelCostVal');
-
-        const polyName = document.getElementById('polyName');
-        const layerCountText = document.getElementById('layerCountText');
-
-        const showLabelsCheck = document.getElementById('showLabelsCheck');
-        const showSymmetryCheck = document.getElementById('showSymmetryCheck');
-        const showDiagonalsCheck = document.getElementById('showDiagonalsCheck');
-        const symmetryAxisInfo = document.getElementById('symmetryAxisInfo');
-        const diagonalInfo = document.getElementById('diagonalInfo');
-
-        const resetBtn = document.getElementById('resetBtn');
-        const completeSimBtn = document.getElementById('completeSimBtn');
-        const completionRequirements = document.getElementById('completionRequirements');
-        const canvasSummary = document.getElementById('canvasSummary');
-        const reflectionInput = document.getElementById('reflectionInput');
-        const designStatus = document.getElementById('designStatus');
-        const designStatusTitle = document.getElementById('designStatusTitle');
-        const designStatusHint = document.getElementById('designStatusHint');
-        const canopyAreaMetric = document.getElementById('canopyAreaMetric');
-        const centerAreaMetric = document.getElementById('centerAreaMetric');
-        const designCanopyArea = document.getElementById('designCanopyArea');
-        const designCenterArea = document.getElementById('designCenterArea');
-
-        const infoAngles = document.getElementById('infoAngles');
-        const infoAngleSub = document.getElementById('infoAngleSub');
-        const infoBases = document.getElementById('infoBases');
-        const infoPanelSummary = document.getElementById('infoPanelSummary');
-        const infoTotalArea = document.getElementById('infoTotalArea');
-        const infoHoleArea = document.getElementById('infoHoleArea');
-        const infoTotalCost = document.getElementById('infoTotalCost');
-        const infoCostBreakdown = document.getElementById('infoCostBreakdown');
-
-        const themeToggleBtn = document.getElementById('themeToggleBtn');
-        const themeIcon = document.getElementById('themeIcon');
-        const helpBtn = document.getElementById('helpBtn');
-        const instructionModal = document.getElementById('instructionModal');
-        const modalCloseBtn = document.getElementById('modalCloseBtn');
-        const modalStartBtn = document.getElementById('modalStartBtn');
-        const toastNotification = document.getElementById('toastNotification');
-        let completionSent = false;
-        let hasAdjustedGeometry = false;
-        let hasUsedSymmetry = false;
-        let hasUsedDiagonals = false;
-        let designMeetsConstraints = false;
-        let lastFocusedElement = null;
-        const quizPassed = { quiz1: false, quiz2: false, quiz3: false };
-        const PX_PER_METER = 25;
-        const SIMULATION_ID = 'acik_hava_tiyatrosu_ikizkenar_yamuk_simulasyonu';
-        let scormApi = null;
-        let scormInitialized = false;
-
-        function findScormApi(startWindow) {
-            let current = startWindow;
-            let attempts = 0;
-            while (current && attempts < 10) {
-                if (current.API) return current.API;
-                if (current.parent === current) break;
-                current = current.parent;
-                attempts += 1;
-            }
-            if (startWindow.opener) {
-                current = startWindow.opener;
-                attempts = 0;
-                while (current && attempts < 10) {
-                    if (current.API) return current.API;
-                    if (current.parent === current) break;
-                    current = current.parent;
-                    attempts += 1;
+        // Sınav Veri Modeli
+        const examData = {
+            totalScore: 15,
+            questions: [
+                {
+                    no: 1,
+                    title: "1. Soru",
+                    points: 7,
+                    correct: "C",
+                    correctText: "C) 12 m",
+                    solution: "Düzgün altıgende karşılıklı iki köşeyi birleştiren ana köşegen, bir kenar uzunluğunun 2 katıdır. $a = 6\\text{ m}$ için $2a = 12\\text{ m}$ olur. Ek yeri oluşturmadan yeterli olan en kısa makara 12 metredir."
+                },
+                {
+                    no: 2,
+                    title: "2. Soru",
+                    points: 8,
+                    correct: "B",
+                    correctText: "B) 3 paket",
+                    solution: "Bir kenarı $a = 4\\text{ m}$ olan düzgün altıgenin alanı $6 \\cdot \\frac{a^2\\sqrt{3}}{4} = 24\\sqrt{3}\\text{ m}^2$ olur. Her paket $8\\sqrt{3}\\text{ m}^2$ alan kapladığı için $24\\sqrt{3} \\div 8\\sqrt{3} = 3$ paket sipariş edilmelidir."
                 }
+            ]
+        };
+
+        let currentQuestion = 1;
+        const userAnswers = { 1: null, 2: null };
+        let isExamSubmitted = false;
+
+        // Sekme Değiştirme
+        function switchTab(qNo) {
+            currentQuestion = qNo;
+            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx + 1 === qNo);
+                btn.setAttribute('aria-selected', idx + 1 === qNo ? 'true' : 'false');
+                btn.setAttribute('tabindex', idx + 1 === qNo ? '0' : '-1');
+            });
+
+            document.querySelectorAll('.question-panel').forEach((p, idx) => {
+                p.classList.toggle('active', idx + 1 === qNo);
+                p.setAttribute('aria-hidden', idx + 1 === qNo ? 'false' : 'true');
+            });
+
+            document.getElementById('prevBtn').disabled = (qNo === 1);
+            document.getElementById('nextBtn').disabled = (qNo === 2);
+
+            // MathJax re-render
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 1) switchTab(currentQuestion - 1);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < 2) switchTab(currentQuestion + 1);
+        }
+
+        // Seçenek Seçimi (5 Şık: A, B, C, D, E)
+        function selectOption(qNo, optionLetter) {
+            if (isExamSubmitted) return;
+
+            userAnswers[qNo] = optionLetter;
+
+            ['A', 'B', 'C', 'D', 'E'].forEach(l => {
+                const el = document.getElementById(`opt_${qNo}_${l}`);
+                if (el) {
+                    const isSelected = l === optionLetter;
+                    el.classList.toggle('selected', isSelected);
+                    el.setAttribute('aria-checked', isSelected ? 'true' : 'false');
+                }
+            });
+
+            const dot = document.getElementById(`dot${qNo}`);
+            if (dot) dot.classList.add('answered');
+            const tab = document.getElementById(`tabBtn${qNo}`);
+            if (tab) tab.setAttribute('aria-label', `${qNo}. Soru, ${qNo === 1 ? 7 : 8} puan, yanıtlandı`);
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            let answeredCount = 0;
+            if (userAnswers[1]) answeredCount++;
+            if (userAnswers[2]) answeredCount++;
+            document.getElementById('progressStatus').innerText = `${answeredCount} / 2 Soru Yanıtlandı`;
+        }
+
+        // SVG Görsel Filtreleme
+        function setVisualFilter(type) {
+            document.querySelectorAll('.btn-filter').forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-pressed', 'false');
+            });
+
+            const outerHex = document.getElementById('outerHex');
+            const innerHex = document.getElementById('innerHex');
+            const benches = document.querySelectorAll('.svg-bench');
+            const mainDiagLine = document.getElementById('mainDiagLine');
+            const diagText = document.getElementById('diagText');
+
+            // Sıfırla
+            outerHex.setAttribute('stroke', '#0077b6');
+            outerHex.setAttribute('stroke-width', '4');
+            innerHex.setAttribute('fill', 'url(#gradInner)');
+            benches.forEach(b => b.setAttribute('fill', 'url(#gradBench)'));
+            mainDiagLine.style.display = 'none';
+            diagText.style.display = 'none';
+
+            if (type === 'all') {
+                document.getElementById('filterAll').classList.add('active');
+            } else if (type === 'inner') {
+                document.getElementById('filterInner').classList.add('active');
+                innerHex.setAttribute('fill', '#00b4d8');
+                benches.forEach(b => b.setAttribute('fill', 'rgba(255, 232, 204, 0.35)'));
+            } else if (type === 'benches') {
+                document.getElementById('filterBenches').classList.add('active');
+                benches.forEach(b => b.setAttribute('fill', '#f59e0b'));
+            } else if (type === 'diagonal') {
+                document.getElementById('filterDiag').classList.add('active');
+                mainDiagLine.style.display = 'inline';
+                diagText.style.display = 'inline';
+            }
+
+            const activeButton = document.querySelector('.btn-filter.active');
+            if (activeButton) activeButton.setAttribute('aria-pressed', 'true');
+            const statusMessages = {
+                all: 'Tüm plan gösteriliyor.',
+                inner: 'İç dolaşım bölgesi vurgulandı.',
+                benches: 'Bank bölgeleri vurgulandı.',
+                diagonal: 'A ve D köşeleri arasındaki ana köşegen vurgulandı.'
+            };
+            document.getElementById('visualStatus').innerText = statusMessages[type];
+        }
+
+        // Sınavı Tamamla ve Kilitle
+        function submitExam() {
+            if (isExamSubmitted) {
+                openResults();
+                return;
+            }
+
+            isExamSubmitted = true;
+
+            // Seçenekleri kilitle
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.add('disabled');
+                card.disabled = true;
+                card.setAttribute('aria-disabled', 'true');
+            });
+            const finishBtn = document.getElementById('finishBtn');
+            finishBtn.innerHTML = '<span>Sonuçları Görüntüle</span> <span>📊</span>';
+
+            // Puan hesapla
+            let totalPoints = 0;
+            const solContainer = document.getElementById('solutionsContainer');
+            solContainer.innerHTML = '';
+
+            examData.questions.forEach(q => {
+                const userChoice = userAnswers[q.no];
+                const isCorrect = (userChoice === q.correct);
+                const earned = isCorrect ? q.points : 0;
+                totalPoints += earned;
+
+                solContainer.innerHTML += `
+                    <div class="solution-item">
+                        <div class="solution-item-header">
+                            <span>${q.title}</span>
+                            <span class="${isCorrect ? 'badge-success' : 'badge-danger'}">${earned} / ${q.points} Puan</span>
+                        </div>
+                        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-main); margin-top: 4px;">
+                            <strong>Sizin Yanıtınız:</strong> ${userChoice ? userChoice : 'Boş Bırakıldı'}<br>
+                            <strong>Doğru Yanıt:</strong> ${q.correctText}<br>
+                            <strong>Çözüm:</strong> ${q.solution}
+                        </p>
+                    </div>
+                `;
+            });
+
+            document.getElementById('scoreDisplay').innerText = `${totalPoints} / 15`;
+            const percent = Math.round((totalPoints / 15) * 100);
+            document.getElementById('scorePercentDisplay').innerText = `Başarı Oranı: %${percent}`;
+
+            // SCORM / MEBİ LMS Sinyali
+            sendScoreToLMS(totalPoints);
+
+            openResults();
+        }
+
+        // SCORM 1.2 API'sini üst pencere veya açıcı pencerede bulur.
+        function findScorm12Api(startWindow) {
+            let current = startWindow;
+            for (let depth = 0; depth < 10; depth++) {
+                try {
+                    if (current && current.API) return current.API;
+                    if (!current || current.parent === current) break;
+                    current = current.parent;
+                } catch (e) {
+                    break;
+                }
+            }
+            try {
+                if (window.opener && window.opener.API) return window.opener.API;
+            } catch (e) {
+                // Farklı kaynaklı açıcı pencereye erişilemiyorsa MEBİ köprüsü yine denenir.
             }
             return null;
         }
 
-        function initializeScorm() {
-            try {
-                scormApi = findScormApi(window);
-                if (!scormApi) return false;
-                scormInitialized = scormApi.LMSInitialize('') === 'true';
-                if (!scormInitialized) return false;
-                const status = scormApi.LMSGetValue('cmi.core.lesson_status');
-                if (!status || status === 'not attempted') {
-                    scormApi.LMSSetValue('cmi.core.lesson_status', 'incomplete');
-                    scormApi.LMSCommit('');
-                }
-                return true;
-            } catch (error) {
-                scormInitialized = false;
-                return false;
-            }
-        }
-
-        function sendScormCompletion(payload) {
-            if (!scormInitialized && !initializeScorm()) return { available: false, committed: false };
-            try {
-                scormApi.LMSSetValue('cmi.core.lesson_status', 'completed');
-                scormApi.LMSSetValue('cmi.core.lesson_location', 'completed');
-                scormApi.LMSSetValue('cmi.suspend_data', JSON.stringify(payload.params));
-                const committed = scormApi.LMSCommit('') === 'true';
-                return { available: true, committed };
-            } catch (error) {
-                return { available: true, committed: false };
-            }
-        }
-
-        function finishScorm() {
-            if (!scormInitialized || !scormApi) return;
-            try {
-                scormApi.LMSCommit('');
-                scormApi.LMSFinish('');
-            } catch (error) {}
-            scormInitialized = false;
-        }
-
-        const polygonNames = {
-            3: "Üç Bölümlü Gölgelik (N=3)",
-            4: "Dört Bölümlü Gölgelik (N=4)",
-            5: "Beş Bölümlü Gölgelik (N=5)",
-            6: "Altı Bölümlü Gölgelik (N=6)",
-            7: "Yedi Bölümlü Gölgelik (N=7)",
-            8: "Sekiz Bölümlü Gölgelik (N=8)",
-            9: "Dokuz Bölümlü Gölgelik (N=9)",
-            10: "On Bölümlü Gölgelik (N=10)",
-            11: "On Bir Bölümlü Gölgelik (N=11)",
-            12: "On İki Bölümlü Gölgelik (N=12)"
-        };
-
-        function formatLength(px) {
-            return (px / PX_PER_METER).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-        }
-
-        function formatArea(pxSquared) {
-            return (pxSquared / (PX_PER_METER * PX_PER_METER)).toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-        }
-
-        function formatAngle(degrees) {
-            return degrees.toLocaleString('tr-TR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-        }
-
-        function formatCurrency(value) {
-            return `${Math.round(value).toLocaleString('tr-TR')} TL`;
-        }
-
-        function reflectionIsMeaningful() {
-            const text = reflectionInput.value.trim().toLocaleLowerCase('tr-TR');
-            const mentionsInput = /(^|\s)n(\s|$)|panel|taban|halka|yükseklik/.test(text);
-            const mentionsResult = /çokgen|köşegen|açı|alan|simetri|boşluk|maliyet|fiyat/.test(text);
-            const statesRelation = /art|azal|büy|küçül|değiş|sabit|yaklaş|etkile|bağlı|orant/.test(text);
-            const words = text.match(/[a-zçğıöşü0-9]+/g) || [];
-            const uniqueWords = new Set(words);
-            return text.length >= 30 && words.length >= 6 && uniqueWords.size >= 5 && mentionsInput && mentionsResult && statesRelation;
-        }
-
-        // Katmanları birbirinden ayıran sabit, sade renkler.
-        const panelPalette = [
-            { fill: 'rgba(2, 132, 199, 0.45)', stroke: '#0284c7' },
-            { fill: 'rgba(3, 105, 161, 0.50)', stroke: '#0369a1' },
-            { fill: 'rgba(14, 165, 233, 0.45)', stroke: '#0ea5e9' },
-            { fill: 'rgba(2, 132, 199, 0.40)', stroke: '#0284c7' }
-        ];
-
-        // GEOMETRİK OLARAK GEÇERLİ PARAMETRE ARALIĞI
-        function normalizeGeometryInputs() {
-            const N = parseInt(sidesInput.value, 10);
-            const ROut = parseFloat(radiusInput.value);
-            const outerApothem = ROut * Math.cos(Math.PI / N);
-            const maxThickness = Math.max(15, Math.min(60, Math.floor(outerApothem - 6)));
-
-            thicknessInput.max = maxThickness;
-            if (parseFloat(thicknessInput.value) > maxThickness) {
-                thicknessInput.value = maxThickness;
-            }
-
-            const h = parseFloat(thicknessInput.value);
-            const maxLayers = Math.max(1, Math.min(5, Math.floor((outerApothem - 6) / h)));
-            layersInput.max = maxLayers;
-            if (parseInt(layersInput.value, 10) > maxLayers) {
-                layersInput.value = maxLayers;
-            }
-        }
-
-        function completionReady() {
-            return hasAdjustedGeometry && designMeetsConstraints && quizPassed.quiz1 && quizPassed.quiz2 && quizPassed.quiz3 && hasUsedSymmetry && hasUsedDiagonals && reflectionIsMeaningful();
-        }
-
-        function updateCompletionState() {
-            const predictionsDone = quizPassed.quiz1 && quizPassed.quiz2 && quizPassed.quiz3;
-            const missing = [];
-            if (!hasAdjustedGeometry) missing.push('bir geometrik değeri değiştirin');
-            if (!designMeetsConstraints) missing.push('tasarımın alan ve merkez boşluğu kısıtlarını sağlayın');
-            if (!predictionsDone) missing.push('üç tahmini doğru yanıtlayın');
-            if (!hasUsedSymmetry) missing.push('gölgeliğin simetri eksenlerini gösterin');
-            if (!hasUsedDiagonals) missing.push('bir köşeden çizilen köşegenleri gösterin');
-            if (!reflectionIsMeaningful()) missing.push('bir girdi ile köşegen, açı, alan, simetri veya maliyet arasındaki değişim ilişkisini yazın');
-
-            const interactionControls = [
-                sidesInput,
-                radiusInput,
-                layersInput,
-                thicknessInput,
-                fabricPriceInput,
-                panelCostInput,
-                showLabelsCheck,
-                showSymmetryCheck,
-                showDiagonalsCheck,
-                reflectionInput,
-                resetBtn
-            ];
-            interactionControls.forEach(control => {
-                control.disabled = completionSent;
-            });
-            document.querySelectorAll('.quiz-option-btn').forEach(option => {
-                option.disabled = completionSent;
-            });
-
-            completeSimBtn.disabled = completionSent || !completionReady();
-            completionRequirements.textContent = completionSent
-                ? 'Tamamlandı: öğrenme adımları doğrulandı ve MEBİ sinyali iletildi.'
-                : missing.length
-                    ? `Tamamlamak için: ${missing.join(', ')}.`
-                    : 'Tüm adımlar tamamlandı. Gölgelik tasarımını onaylayabilirsiniz.';
-        }
-
-        // PARAMETRELERİ AL
-        function getParams() {
-            normalizeGeometryInputs();
-            return {
-                N: parseInt(sidesInput.value, 10),
-                R_out: parseFloat(radiusInput.value),
-                layers: parseInt(layersInput.value, 10),
-                h: parseFloat(thicknessInput.value),
-                fabricUnitPrice: parseFloat(fabricPriceInput.value),
-                panelUnitCost: parseFloat(panelCostInput.value),
-                showLabels: showLabelsCheck.checked,
-                showSymmetry: showSymmetryCheck.checked,
-                showDiagonals: showDiagonalsCheck.checked
-            };
-        }
-
-        // ÇİZİM FONKSİYONU
-        function draw() {
-            const { N, R_out, layers, h, fabricUnitPrice, panelUnitCost, showLabels, showSymmetry, showDiagonals } = getParams();
-
-            // Etiket Güncellemeleri
-            sidesVal.textContent = N;
-            const displayedOuterBase = 2 * R_out * Math.sin(Math.PI / N);
-            radiusVal.textContent = `${formatLength(displayedOuterBase)} m`;
-            layersVal.textContent = layers;
-            thicknessVal.textContent = `${formatLength(h)} m`;
-            fabricPriceVal.textContent = formatCurrency(fabricUnitPrice);
-            panelCostVal.textContent = formatCurrency(panelUnitCost);
-            polyName.textContent = polygonNames[N] || `${N} Bölümlü Gölgelik`;
-            layerCountText.textContent = `${layers} Halka`;
-            symmetryAxisInfo.textContent = quizPassed.quiz2
-                ? `${N} eş yamuk panelle oluşan düzgün çokgen biçimindeki gölgeliğin ${N} simetri ekseni vardır.`
-                : 'Simetri eksenlerini gösterip eksenleri sayın; ardından tahmininizle karşılaştırın.';
-            diagonalInfo.textContent = showDiagonals
-                ? `Bir köşeden ${N - 3} köşegen çizilir; düzgün ${N}-genin toplam köşegen sayısı ${N * (N - 3) / 2} olur.`
-                : 'Bir köşeden çizilen köşegenleri göstererek sayıyı N ile ilişkilendirin.';
-            radiusInput.setAttribute('aria-valuetext', `${formatLength(displayedOuterBase)} metre panel dış taban uzunluğu`);
-            thicknessInput.setAttribute('aria-valuetext', `${formatLength(h)} metre`);
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-
-            const palette = panelPalette;
-            const angleStep = (2 * Math.PI) / N;
-
-            // Taban Açısı Hesapları
-            const alphaRad = Math.PI / 2 - Math.PI / N;
-            const betaRad = Math.PI - alphaRad;
-            const alphaDeg = alphaRad * 180 / Math.PI;
-            const betaDeg = betaRad * 180 / Math.PI;
-            const polyInteriorAngle = 180 - 360 / N;
-            const alphaText = formatAngle(alphaDeg);
-            const betaText = formatAngle(betaDeg);
-            const polyInteriorAngleText = formatAngle(polyInteriorAngle);
-
-            let currentApothemOut = R_out * Math.cos(Math.PI / N);
-            let totalFrameArea = 0;
-            let firstLayerOuterBase = 0;
-            let firstLayerInnerBase = 0;
-            let firstLayerSingleArea = 0;
-            let anglePanel = null;
-            let measurePanel = null;
-            let heightPanel = null;
-
-            // KATMANLARI ÇİZ
-            for (let l = 0; l < layers; l++) {
-                const r_out = currentApothemOut;
-                const r_in = r_out - h;
-
-                if (r_in <= 5) break;
-
-                const R_layer_out = r_out / Math.cos(Math.PI / N);
-                const R_layer_in = r_in / Math.cos(Math.PI / N);
-
-                const outerBase = 2 * r_out * Math.tan(Math.PI / N);
-                const innerBase = 2 * r_in * Math.tan(Math.PI / N);
-                const singleTrapArea = ((outerBase + innerBase) / 2) * h;
-
-                totalFrameArea += N * singleTrapArea;
-
-                if (l === 0) {
-                    firstLayerOuterBase = outerBase;
-                    firstLayerInnerBase = innerBase;
-                    firstLayerSingleArea = singleTrapArea;
-                }
-
-                const colorStyle = palette[l % palette.length];
-
-                for (let k = 0; k < N; k++) {
-                    // Paneller tam açık durumda düzgün çokgen halkalar boyunca yerleşir.
-                    const theta1 = (k * angleStep) - Math.PI / 2;
-                    const theta2 = theta1 + angleStep;
-
-                    const P1 = {
-                        x: centerX + R_layer_out * Math.cos(theta1),
-                        y: centerY + R_layer_out * Math.sin(theta1)
-                    };
-                    const P2 = {
-                        x: centerX + R_layer_out * Math.cos(theta2),
-                        y: centerY + R_layer_out * Math.sin(theta2)
-                    };
-                    const P3 = {
-                        x: centerX + R_layer_in * Math.cos(theta2),
-                        y: centerY + R_layer_in * Math.sin(theta2)
-                    };
-                    const P4 = {
-                        x: centerX + R_layer_in * Math.cos(theta1),
-                        y: centerY + R_layer_in * Math.sin(theta1)
-                    };
-
-                    // İkizkenar Yamuk Gövdesi
-                    ctx.beginPath();
-                    ctx.moveTo(P1.x, P1.y);
-                    ctx.lineTo(P2.x, P2.y);
-                    ctx.lineTo(P3.x, P3.y);
-                    ctx.lineTo(P4.x, P4.y);
-                    ctx.closePath();
-
-                    ctx.fillStyle = colorStyle.fill;
-                    ctx.fill();
-
-                    ctx.strokeStyle = colorStyle.stroke;
-                    ctx.lineWidth = 1.8;
-                    ctx.stroke();
-
-                    if (l === 0 && k === 0) {
-                        anglePanel = { P1, P2, P3, P4 };
-                    }
-
-                    if (l === 0 && k === 1) {
-                        measurePanel = { P1, P2, P3, P4, outerBase, innerBase };
-                    }
-
-                    if (l === 0 && k === 2) {
-                        heightPanel = { P1, P2, P3, P4 };
-                    }
-                }
-
-                currentApothemOut = r_in;
-            }
-
-            // İç sınırla aynı geometriye sahip düzgün çokgen göbek
-            const hubApothem = currentApothemOut;
-            const hubCircumradius = hubApothem / Math.cos(Math.PI / N);
-            ctx.beginPath();
-            for (let k = 0; k < N; k++) {
-                const theta = k * angleStep - Math.PI / 2;
-                const x = centerX + hubCircumradius * Math.cos(theta);
-                const y = centerY + hubCircumradius * Math.sin(theta);
-                if (k === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            }
-            ctx.closePath();
-            ctx.fillStyle = isDark ? "rgba(15, 23, 42, 0.9)" : "rgba(241, 245, 249, 0.9)";
-            ctx.fill();
-            ctx.strokeStyle = isDark ? "#38bdf8" : "#0284c7";
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            if (showSymmetry) {
-                drawCanopySymmetryAxes(ctx, centerX, centerY, R_out + 12, N, isDark);
-            }
-
-            if (showDiagonals) {
-                drawDiagonalFan(ctx, centerX, centerY, R_out, N, isDark);
-            }
-
-            // Merkez Gövde İkonu
-            ctx.fillStyle = isDark ? "#f8fafc" : "#0f172a";
-            ctx.font = "bold 11px Outfit, Segoe UI";
-            ctx.textAlign = "center";
-            ctx.fillText("SAHNE", centerX, centerY + 4);
-            ctx.textAlign = "start";
-
-            // Tüm paneller çizildikten sonra etiketleri en üst katmanda göster.
-            if (showLabels && anglePanel && measurePanel && heightPanel) {
-                drawAngleArc(ctx, anglePanel.P1, anglePanel.P2, anglePanel.P4, "α", alphaText + "°", isDark);
-                drawAngleArc(ctx, anglePanel.P4, anglePanel.P3, anglePanel.P1, "β", betaText + "°", isDark);
-                drawEdgeLabel(ctx, measurePanel.P1, measurePanel.P2, `a = ${formatLength(measurePanel.outerBase)} m`, centerX, centerY, 16, isDark);
-                drawEdgeLabel(ctx, measurePanel.P4, measurePanel.P3, `b = ${formatLength(measurePanel.innerBase)} m`, centerX, centerY, -16, isDark);
-                drawHeightMeasure(ctx, heightPanel.P1, heightPanel.P2, heightPanel.P3, heightPanel.P4, `h = ${formatLength(h)} m`, isDark);
-            }
-
-            // İç Boşluk Alanı
-            const innerHoleArea = N * Math.pow(hubApothem, 2) * Math.tan(Math.PI / N);
-            const totalAreaM2 = totalFrameArea / (PX_PER_METER * PX_PER_METER);
-            const innerHoleAreaM2 = innerHoleArea / (PX_PER_METER * PX_PER_METER);
-            const panelCount = N * layers;
-            const fabricCost = totalAreaM2 * fabricUnitPrice;
-            const connectionCost = panelCount * panelUnitCost;
-            const totalCost = fabricCost + connectionCost;
-            const canopyAreaIsValid = totalAreaM2 >= 180 && totalAreaM2 <= 220;
-            const centerAreaIsValid = innerHoleAreaM2 >= 20;
-            designMeetsConstraints = canopyAreaIsValid && centerAreaIsValid;
-            designCanopyArea.textContent = `${formatArea(totalFrameArea)} m²`;
-            designCenterArea.textContent = `${formatArea(innerHoleArea)} m²`;
-            canopyAreaMetric.classList.toggle('is-valid', canopyAreaIsValid);
-            centerAreaMetric.classList.toggle('is-valid', centerAreaIsValid);
-            designStatus.classList.toggle('is-valid', designMeetsConstraints);
-            designStatusTitle.textContent = designMeetsConstraints ? '✓ Uygun tasarım' : 'Hedeflere henüz ulaşılmadı';
-            designStatusHint.textContent = designMeetsConstraints
-                ? 'Gölgelik alanı ve merkez boşluğu hedefleri birlikte sağlandı.'
-                : !canopyAreaIsValid && !centerAreaIsValid
-                    ? 'Her iki alan değerini de hedef aralığına getirin.'
-                    : !canopyAreaIsValid
-                        ? 'Gölgelik alanını 180–220 m² aralığına getirin.'
-                        : 'Merkez boşluğunu en az 20 m² olacak biçimde artırın.';
-
-            // Bilgi Kartlarını Güncelle
-            infoAngles.textContent = `m(α) = ${alphaText}°, m(β) = ${betaText}°`;
-            infoAngleSub.textContent = `Düzgün çokgen iç açısının ölçüsü: ${polyInteriorAngleText}° = 2·m(α)`;
-            infoBases.textContent = `a = ${formatLength(firstLayerOuterBase)} m, b = ${formatLength(firstLayerInnerBase)} m`;
-            infoPanelSummary.textContent = `h = ${formatLength(h)} m · Tek panel alanı: ${formatArea(firstLayerSingleArea)} m²`;
-            infoTotalArea.textContent = `${formatArea(totalFrameArea)} m²`;
-            infoHoleArea.textContent = `${formatArea(innerHoleArea)} m²`;
-            infoTotalCost.textContent = formatCurrency(totalCost);
-            infoCostBreakdown.textContent = `${formatCurrency(fabricCost)} kumaş + ${panelCount} panel × ${formatCurrency(panelUnitCost)} · Kesim payı hariç`;
-
-            const symmetryState = showSymmetry ? `${N} simetri ekseni görünür` : 'simetri eksenleri gizli';
-            const diagonalState = showDiagonals ? `bir köşeden çizilen ${N - 3} köşegen görünür` : 'köşegenler gizli';
-            canvasSummary.textContent = `${N} yamuk panelli, ${layers} halkalı tam açık gölgelik; ${symmetryState}; ${diagonalState}. ` +
-                `Birinci yamukta dış taban ${formatLength(firstLayerOuterBase)} metre, iç taban ${formatLength(firstLayerInnerBase)} metre, ` +
-                `yükseklik ${formatLength(h)} metre, alan ${formatArea(firstLayerSingleArea)} metrekare. ` +
-                `Alfa açısının ölçüsü ${alphaText} derece, beta açısının ölçüsü ${betaText} derecedir. ` +
-                `Toplam gölgelik alanı ${formatArea(totalFrameArea)} metrekare, merkez boşluğu ${formatArea(innerHoleArea)} metrekaredir. ` +
-                `Tahmini toplam maliyet ${formatCurrency(totalCost)} tutarındadır. ` +
-                `${designMeetsConstraints ? 'Tasarım iki alan kısıtını da sağlıyor.' : 'Tasarım henüz iki alan kısıtını birlikte sağlamıyor.'}`;
-
-            updateCompletionState();
-
-        }
-
-        // KENAR ETİKETİ: Metin daima ilgili kenarın orta noktasına hizalanır.
-        function drawEdgeLabel(ctx, p1, p2, text, centerX, centerY, radialOffset, isDark) {
-            const midX = (p1.x + p2.x) / 2;
-            const midY = (p1.y + p2.y) / 2;
-            const radialLength = Math.hypot(midX - centerX, midY - centerY) || 1;
-            const labelX = midX + ((midX - centerX) / radialLength) * radialOffset;
-            const labelY = midY + ((midY - centerY) / radialLength) * radialOffset;
-            let angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
-            if (angle > Math.PI / 2 || angle < -Math.PI / 2) angle += Math.PI;
-
-            ctx.save();
-            ctx.strokeStyle = isDark ? "#38bdf8" : "#0369a1";
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(midX, midY);
-            ctx.lineTo(labelX, labelY);
-            ctx.stroke();
-            ctx.translate(labelX, labelY);
-            ctx.rotate(angle);
-            ctx.font = "bold 10px Plus Jakarta Sans, Segoe UI";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            const width = ctx.measureText(text).width + 8;
-            ctx.fillStyle = isDark ? "rgba(15, 23, 42, 0.88)" : "rgba(255, 255, 255, 0.88)";
-            ctx.fillRect(-width / 2, -8, width, 16);
-            ctx.fillStyle = isDark ? "#38bdf8" : "#0369a1";
-            ctx.fillText(text, 0, 0);
-            ctx.restore();
-        }
-
-        // PANEL YÜKSEKLİĞİ: İki tabanın orta noktalarını birleştirir.
-        function drawHeightMeasure(ctx, P1, P2, P3, P4, text, isDark) {
-            const outerMid = { x: (P1.x + P2.x) / 2, y: (P1.y + P2.y) / 2 };
-            const innerMid = { x: (P4.x + P3.x) / 2, y: (P4.y + P3.y) / 2 };
-            const midX = (outerMid.x + innerMid.x) / 2;
-            const midY = (outerMid.y + innerMid.y) / 2;
-            const offsetX = 0;
-            const offsetY = 0;
-
-            ctx.save();
-            ctx.setLineDash([3, 3]);
-            ctx.strokeStyle = isDark ? "#f8fafc" : "#334155";
-            ctx.lineWidth = 1.2;
-            ctx.beginPath();
-            ctx.moveTo(outerMid.x, outerMid.y);
-            ctx.lineTo(innerMid.x, innerMid.y);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            ctx.font = "bold 10px Plus Jakarta Sans, Segoe UI";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            const width = ctx.measureText(text).width + 8;
-            ctx.fillStyle = isDark ? "rgba(15, 23, 42, 0.88)" : "rgba(255, 255, 255, 0.88)";
-            ctx.fillRect(midX + offsetX - width / 2, midY + offsetY - 8, width, 16);
-            ctx.fillStyle = isDark ? "#f8fafc" : "#334155";
-            ctx.fillText(text, midX + offsetX, midY + offsetY);
-            ctx.restore();
-        }
-
-        // DÜZGÜN N-GEN GÖLGELİĞİN N SİMETRİ EKSENİ
-        function drawCanopySymmetryAxes(ctx, centerX, centerY, radius, N, isDark) {
-            ctx.save();
-            ctx.setLineDash([7, 5]);
-            ctx.strokeStyle = isDark ? "rgba(192, 132, 252, 0.75)" : "rgba(124, 58, 237, 0.62)";
-            ctx.lineWidth = 1.4;
-            for (let k = 0; k < N; k++) {
-                const theta = -Math.PI / 2 + k * Math.PI / N;
-                const dx = Math.cos(theta) * radius;
-                const dy = Math.sin(theta) * radius;
-                ctx.beginPath();
-                ctx.moveTo(centerX - dx, centerY - dy);
-                ctx.lineTo(centerX + dx, centerY + dy);
-                ctx.stroke();
-            }
-            ctx.restore();
-        }
-
-        // DIŞ DÜZGÜN N-GENİN BİR KÖŞESİNDEN ÇİZİLEN N-3 KÖŞEGEN
-        function drawDiagonalFan(ctx, centerX, centerY, radius, N, isDark) {
-            const startAngle = -Math.PI / 2;
-            const start = {
-                x: centerX + radius * Math.cos(startAngle),
-                y: centerY + radius * Math.sin(startAngle)
-            };
-            ctx.save();
-            ctx.setLineDash([5, 4]);
-            ctx.strokeStyle = isDark ? 'rgba(251, 191, 36, 0.82)' : 'rgba(180, 83, 9, 0.72)';
-            ctx.lineWidth = 1.5;
-            for (let k = 2; k <= N - 2; k++) {
-                const theta = startAngle + k * 2 * Math.PI / N;
-                ctx.beginPath();
-                ctx.moveTo(start.x, start.y);
-                ctx.lineTo(centerX + radius * Math.cos(theta), centerY + radius * Math.sin(theta));
-                ctx.stroke();
-            }
-            ctx.restore();
-        }
-
-        // AÇI YAYI ÇİZİMİ
-        function drawAngleArc(ctx, vertex, p2, p3, labelText, angleVal, isDark) {
-            ctx.save();
-            const a1 = Math.atan2(p2.y - vertex.y, p2.x - vertex.x);
-            const a2 = Math.atan2(p3.y - vertex.y, p3.x - vertex.x);
-            // Her açı için iki ışın arasındaki en kısa (minör) yayı seç.
-            const shortestDelta = ((a2 - a1 + 3 * Math.PI) % (2 * Math.PI)) - Math.PI;
-
-            ctx.beginPath();
-            ctx.arc(vertex.x, vertex.y, 16, a1, a1 + shortestDelta, shortestDelta < 0);
-            ctx.strokeStyle = isDark ? "#fbbf24" : "#d97706";
-            ctx.lineWidth = 1.6;
-            ctx.stroke();
-
-            ctx.fillStyle = isDark ? "#fbbf24" : "#b45309";
-            ctx.font = "bold 11px Plus Jakarta Sans, Segoe UI";
-            ctx.fillText(`m(${labelText}) = ${angleVal}`, vertex.x + 18, vertex.y + 4);
-            ctx.restore();
-        }
-
-        // MEBİ TAMAMLANMA SİNYALİ (frm3b HEDEFİ)
-        function checkAndSendSignal(isManual) {
-            if (completionSent || !completionReady()) {
-                showToast('Tamamlanma sinyali için önce tüm öğrenme adımlarını bitirin.');
-                return;
-            }
-            completionSent = true;
-
-            const payload = {
+        // LMS İletimi: MEBİ platform köprüsü ve varsa standart SCORM 1.2 API'si ayrı ayrı kullanılır.
+        function sendScoreToLMS(ogrenciPuani) {
+            const result = {
+                score: {
+                    max: 15,
+                    min: 0,
+                    raw: ogrenciPuani,
+                    scaled: ogrenciPuani / 15
+                },
                 completion: true,
-                target: 'frm3b',
-                module: '2B_3B_Simulasyon',
-                activityId: SIMULATION_ID,
-                timestamp: new Date().toISOString(),
-                params: {
-                    N: parseInt(sidesInput.value, 10),
-                    layers: parseInt(layersInput.value, 10),
-                    displayState: 'fully_open',
-                    diagonalsInspected: hasUsedDiagonals
-                }
+                success: true
             };
 
-            let mebiMessageSent = false;
+            let mebiDelivered = false;
+            let scormDelivered = false;
+
             try {
-                window.dispatchEvent(new CustomEvent('mebi:completion', { detail: payload }));
-
-                const isWebProtocol = window.location.protocol === 'http:' || window.location.protocol === 'https:';
-                if (isWebProtocol && window.parent && window.parent !== window) {
-                    const targetOrigin = document.referrer
-                        ? new URL(document.referrer).origin
-                        : window.location.origin;
-                    window.parent.postMessage(payload, targetOrigin);
-                    mebiMessageSent = true;
+                const lmsWindow = window.parent.document.getElementById("frmApp-0")?.contentWindow;
+                if (lmsWindow && typeof lmsWindow.onCompleted === 'function') {
+                    lmsWindow.onCompleted(result);
+                    mebiDelivered = true;
+                    console.log("MEBİ LMS puanı iletildi (15 üzerinden):", ogrenciPuani);
                 }
-            } catch (err) {}
+            } catch (e) {
+                console.warn("MEBİ frame uyarısı:", e);
+            }
 
-            const scormResult = sendScormCompletion(payload);
+            try {
+                const scormApi = findScorm12Api(window);
+                if (scormApi && scormApi.LMSInitialize("") === "true") {
+                    scormApi.LMSSetValue("cmi.core.score.min", "0");
+                    scormApi.LMSSetValue("cmi.core.score.max", "15");
+                    scormApi.LMSSetValue("cmi.core.score.raw", String(ogrenciPuani));
+                    scormApi.LMSSetValue("cmi.core.lesson_status", "completed");
+                    scormApi.LMSCommit("");
+                    scormApi.LMSFinish("");
+                    scormDelivered = true;
+                    console.log("SCORM 1.2 puanı ve tamamlanma durumu iletildi.");
+                }
+            } catch (e) {
+                console.warn("SCORM 1.2 API uyarısı:", e);
+            }
 
-            updateCompletionState();
-
-            if (scormResult.available && scormResult.committed) {
-                showToast('Tasarım onaylandı. SCORM tamamlanma bilgisi LMS tarafından kaydedildi.');
-            } else if (mebiMessageSent) {
-                showToast('Tasarım onaylandı. MEBİ tamamlanma isteği platforma gönderildi.');
-            } else {
-                showToast('Tasarım onaylandı. Platform bağlantısı bulunamadı; yerel tamamlanma olayı oluşturuldu.');
+            if (!mebiDelivered && !scormDelivered) {
+                console.log("LMS bağlantısı yok, yerel puan:", ogrenciPuani);
             }
         }
 
-        function showToast(text) {
-            const toastMsg = document.getElementById('toastMsg');
-            toastMsg.textContent = text;
-            toastNotification.classList.add('show');
-            setTimeout(() => {
-                toastNotification.classList.remove('show');
-            }, 3600);
-        }
+        // Modallar
+        let lastFocusedElement = null;
 
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            themeIcon.textContent = newTheme === 'light' ? '☀️' : '🌙';
-            draw();
-        }
-
-        function openModal() {
+        function activateModal(modal) {
             lastFocusedElement = document.activeElement;
-            instructionModal.hidden = false;
-            instructionModal.classList.add('active');
-            instructionModal.setAttribute('aria-hidden', 'false');
-            document.getElementById('modalTitle').focus({ preventScroll: true });
-            instructionModal.querySelector('.modal-card').scrollTop = 0;
+            modal.classList.add('active');
+            document.querySelector('main').setAttribute('inert', '');
+            const firstControl = modal.querySelector('button');
+            if (firstControl) firstControl.focus();
         }
 
-        function closeModal() {
-            instructionModal.classList.remove('active');
-            instructionModal.setAttribute('aria-hidden', 'true');
-            instructionModal.hidden = true;
-            if (lastFocusedElement && lastFocusedElement !== document.body) lastFocusedElement.focus();
-        }
-
-        // TABS YÖNETİMİ
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        function activateTab(btn, moveFocus = false) {
-            if (btn.disabled) return;
-            tabBtns.forEach(b => {
-                const selected = b === btn;
-                b.classList.toggle('active', selected);
-                b.setAttribute('aria-selected', String(selected));
-                b.tabIndex = selected ? 0 : -1;
-            });
-
-            document.querySelectorAll('.tab-content').forEach(content => {
-                const selected = content.id === btn.getAttribute('data-tab');
-                content.classList.toggle('active', selected);
-                content.hidden = !selected;
-            });
-
-            if (moveFocus) btn.focus();
-        }
-
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => activateTab(btn));
-            btn.addEventListener('keydown', event => {
-                if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-                event.preventDefault();
-                const enabledTabs = [...tabBtns].filter(tab => !tab.disabled);
-                const currentIndex = enabledTabs.indexOf(btn);
-                const nextIndex = event.key === 'Home' ? 0
-                    : event.key === 'End' ? enabledTabs.length - 1
-                    : event.key === 'ArrowRight' ? (currentIndex + 1) % enabledTabs.length
-                    : (currentIndex - 1 + enabledTabs.length) % enabledTabs.length;
-                activateTab(enabledTabs[nextIndex], true);
-            });
-        });
-
-        // TAHMİN ET VE SINA KONTROLLERİ
-        document.querySelectorAll('.quiz-card[id^="quiz"]').forEach(card => {
-            const options = card.querySelectorAll('.quiz-option-btn');
-            const feedback = card.querySelector('.quiz-feedback');
-
-            options.forEach(opt => {
-                opt.addEventListener('click', () => {
-                    const isCorrect = opt.getAttribute('data-correct') === 'true';
-                    options.forEach(o => {
-                        o.classList.remove('selected-correct', 'selected-wrong');
-                    });
-
-                    if (isCorrect) {
-                        opt.classList.add('selected-correct');
-                        quizPassed[card.id] = true;
-                        const correctFeedback = {
-                            quiz1: '✓ Doğru. N arttıkça merkez açının ölçüsü küçülür ve α açısının ölçüsü 90°ye yaklaşır.',
-                            quiz2: '✓ Doğru. Düzgün N-genin N tane simetri ekseni vardır.',
-                            quiz3: '✓ Doğru. Alan ile m² fiyatı; panel sayısı ile panel bedeli ayrı ayrı çarpılıp sonuçlar toplanır.'
-                        };
-                        feedback.textContent = correctFeedback[card.id];
-                        feedback.style.backgroundColor = "var(--accent-green-subtle)";
-                        feedback.style.color = "var(--accent-green)";
-                    } else {
-                        quizPassed[card.id] = false;
-                        opt.classList.add('selected-wrong');
-                        const wrongFeedback = {
-                            quiz1: "✕ Yamuk panel sayısını 4'ten 12'ye değiştirip α açısının ölçülerini karşılaştırın.",
-                            quiz2: '✕ Panel sayısı ile oluşan düzgün çokgenin simetri ekseni sayısını karşılaştırın.',
-                            quiz3: '✕ Her maliyet bileşeninde miktar ile o miktarın birim fiyatını çarpın.'
-                        };
-                        feedback.textContent = wrongFeedback[card.id];
-                        feedback.style.backgroundColor = "var(--accent-rose-subtle)";
-                        feedback.style.color = "var(--accent-rose)";
-                    }
-                    feedback.classList.add('show');
-                    updateCompletionState();
-                    draw();
-                });
-            });
-        });
-
-        // OLAY DİNLEYİCİLERİ
-        [sidesInput, radiusInput, layersInput, thicknessInput].forEach(elem => {
-            elem.addEventListener('input', () => {
-                hasAdjustedGeometry = true;
-                draw();
-            });
-        });
-
-        [fabricPriceInput, panelCostInput].forEach(elem => {
-            elem.addEventListener('input', draw);
-        });
-
-        reflectionInput.addEventListener('input', updateCompletionState);
-
-        showSymmetryCheck.addEventListener('change', () => {
-            if (showSymmetryCheck.checked) hasUsedSymmetry = true;
-            updateCompletionState();
-        });
-
-        showDiagonalsCheck.addEventListener('change', () => {
-            if (showDiagonalsCheck.checked) hasUsedDiagonals = true;
-            updateCompletionState();
-        });
-
-        [showLabelsCheck, showSymmetryCheck, showDiagonalsCheck].forEach(elem => {
-            elem.addEventListener('change', draw);
-        });
-
-        resetBtn.addEventListener('click', () => {
-            if (completionSent) {
-                showToast('Etkinlik tamamlandı. Aynı oturumda yeni tamamlanma sinyali gönderilemez.');
-                return;
+        function deactivateModal(modal) {
+            modal.classList.remove('active');
+            document.querySelector('main').removeAttribute('inert');
+            if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+                lastFocusedElement.focus();
             }
-            sidesInput.value = 8;
-            radiusInput.value = 185;
-            layersInput.max = 5;
-            layersInput.value = 2;
-            thicknessInput.max = 60;
-            thicknessInput.value = 35;
-            fabricPriceInput.value = 450;
-            panelCostInput.value = 150;
-            showLabelsCheck.checked = true;
-            showSymmetryCheck.checked = false;
-            showDiagonalsCheck.checked = false;
-            hasAdjustedGeometry = false;
-            hasUsedSymmetry = false;
-            hasUsedDiagonals = false;
-            designMeetsConstraints = false;
-            quizPassed.quiz1 = false;
-            quizPassed.quiz2 = false;
-            quizPassed.quiz3 = false;
-            reflectionInput.value = '';
-            document.querySelectorAll('.quiz-option-btn').forEach(option => {
-                option.classList.remove('selected-correct', 'selected-wrong');
-            });
-            document.querySelectorAll('.quiz-feedback').forEach(feedback => {
-                feedback.classList.remove('show');
-                feedback.textContent = '';
-            });
-            activateTab(document.getElementById('controlsTabBtn'));
-            draw();
-        });
+        }
 
-        completeSimBtn.addEventListener('click', () => {
-            checkAndSendSignal(true);
-        });
+        function openGuide() {
+            activateModal(document.getElementById('guideModal'));
+        }
 
-        themeToggleBtn.addEventListener('click', toggleTheme);
-        helpBtn.addEventListener('click', openModal);
-        modalCloseBtn.addEventListener('click', closeModal);
-        modalStartBtn.addEventListener('click', closeModal);
+        function closeGuide() {
+            deactivateModal(document.getElementById('guideModal'));
+        }
 
-        instructionModal.addEventListener('click', (e) => {
-            if (e.target === instructionModal) closeModal();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && instructionModal.classList.contains('active')) {
-                closeModal();
+        function openResults() {
+            activateModal(document.getElementById('resultsModal'));
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise();
             }
-            if (e.key === 'Tab' && instructionModal.classList.contains('active')) {
-                const focusable = [...instructionModal.querySelectorAll('button, a[href], input, select, [tabindex]:not([tabindex="-1"])')]
-                    .filter(element => !element.disabled);
-                const first = focusable[0];
-                const last = focusable[focusable.length - 1];
-                if (e.shiftKey && document.activeElement === first) {
-                    e.preventDefault();
+        }
+
+        function closeResults() {
+            deactivateModal(document.getElementById('resultsModal'));
+        }
+
+        // Tema Ayarı
+        function setupTheme() {
+            const themeBtn = document.getElementById('themeBtn');
+            themeBtn.setAttribute('aria-pressed', 'false');
+            themeBtn.addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme') || 'light';
+                const next = current === 'light' ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', next);
+                themeBtn.setAttribute('aria-pressed', next === 'dark' ? 'true' : 'false');
+                themeBtn.setAttribute('aria-label', next === 'dark' ? 'Gündüz temasına geç' : 'Koyu temaya geç');
+            });
+        }
+
+        function setupKeyboardAccessibility() {
+            const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+            document.querySelector('.tabs-list').addEventListener('keydown', event => {
+                const currentIndex = tabs.indexOf(document.activeElement);
+                if (currentIndex < 0) return;
+                let nextIndex = currentIndex;
+                if (event.key === 'ArrowRight' || event.key === 'ArrowDown') nextIndex = (currentIndex + 1) % tabs.length;
+                if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+                if (event.key === 'Home') nextIndex = 0;
+                if (event.key === 'End') nextIndex = tabs.length - 1;
+                if (nextIndex !== currentIndex) {
+                    event.preventDefault();
+                    switchTab(nextIndex + 1);
+                    tabs[nextIndex].focus();
+                }
+            });
+
+            document.addEventListener('keydown', event => {
+                const activeModal = document.querySelector('.modal-overlay.active');
+                if (!activeModal) return;
+
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    activeModal.id === 'guideModal' ? closeGuide() : closeResults();
+                    return;
+                }
+
+                if (event.key !== 'Tab') return;
+                const controls = Array.from(activeModal.querySelectorAll('button:not(:disabled)'));
+                if (!controls.length) return;
+                const first = controls[0];
+                const last = controls[controls.length - 1];
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
                     last.focus();
-                } else if (!e.shiftKey && document.activeElement === last) {
-                    e.preventDefault();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
                     first.focus();
                 }
+            });
+        }
+
+        // Arka Plan Çizimi
+        function initBgCanvas() {
+            const canvas = document.getElementById('bgCanvas');
+            if (!canvas || !canvas.getContext) return;
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const ctx = canvas.getContext('2d');
+            let w = canvas.width = window.innerWidth;
+            let h = canvas.height = window.innerHeight;
+            let t = 0;
+
+            window.addEventListener('resize', () => {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            });
+
+            function render() {
+                t += 0.006;
+                ctx.clearRect(0, 0, w, h);
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const gridColor = isDark ? 'rgba(56, 189, 248, 0.04)' : 'rgba(0, 119, 182, 0.04)';
+                const waveColor = isDark ? 'rgba(56, 189, 248, 0.05)' : 'rgba(0, 180, 216, 0.05)';
+
+                ctx.strokeStyle = gridColor;
+                ctx.lineWidth = 1;
+                const step = 70;
+                for (let x = 0; x < w; x += step) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, h);
+                    ctx.stroke();
+                }
+                for (let y = 0; y < h; y += step) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(w, y);
+                    ctx.stroke();
+                }
+
+                ctx.beginPath();
+                ctx.moveTo(0, h);
+                for (let x = 0; x <= w; x += 20) {
+                    const y = h * 0.85 + Math.sin(x * 0.003 + t) * 30 + Math.cos(x * 0.002 + t * 0.6) * 15;
+                    ctx.lineTo(x, y);
+                }
+                ctx.fillStyle = waveColor;
+                ctx.fill();
+
+                requestAnimationFrame(render);
             }
+            render();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupTheme();
+            setupKeyboardAccessibility();
+            initBgCanvas();
+            document.getElementById('helpBtn').addEventListener('click', openGuide);
+            document.querySelector('main').setAttribute('inert', '');
+            lastFocusedElement = document.getElementById('helpBtn');
+            document.getElementById('startExamBtn').focus();
         });
-
-        window.addEventListener('load', () => {
-            initializeScorm();
-            draw();
-            openModal();
-        });
-
-        window.addEventListener('pagehide', finishScorm);
-
-        draw();
     </script>
 </body>
+
 </html>
