@@ -4,9 +4,9 @@
   "kimlik": {
     "id": "donme-donusumu-materyali",
     "baslik": "Dönme Dönüşümü Materyali",
-    "uretici": "Kaynak HTML dosyalarında belirtilmemiştir",
-    "materyal_surumu": "1.1",
-    "tarih": "2026-09-09"
+    "uretici": "OGM",
+    "materyal_surumu": "1.2",
+    "tarih": "2026-09-13"
   },
   "matematik": {
     "durum": "Dik koordinat sistemindeki nokta ve çokgenlerin orijin etrafında farklı yön ve açılarla dönme görüntüleri, koordinat değişimleri ve genel dönme bağıntısı incelenir.",
@@ -31,7 +31,7 @@
     "kullanim_rehberi": true
   },
   "program": {
-    "program_surumu": "TYMM-Ortaöğretim-2026",
+    "program_surumu": "Türkiye Yüzyılı Maarif Modeli Ortaöğretim Matematik Dersi Öğretim Programı (2024)",
     "sinif_duzeyi": [9],
     "ogrenme_ciktisi": [
       "MAT.9.4.1"
@@ -45,12 +45,21 @@
       "OB4"
     ],
     "surec_bilesenleri": [
-      "MAT.9.4.1.a-d"
+      "MAT.9.4.1.a",
+      "MAT.9.4.1.b",
+      "MAT.9.4.1.c",
+      "MAT.9.4.1.ç",
+      "MAT.9.4.1.d"
     ]
   },
   "referans": {
     "tur": "TYMM Ortaöğretim Matematik Dersi Öğretim Programı",
     "not": "Eşleşme güncel TYMM 9. sınıf 4. Tema Eşlik ve Benzerlik kapsamındaki geometrik dönüşümler çıktısına göre yapılmıştır."
   },
-  "revizyon_notu": "Üretici bilgisi kaynak dosyalarda bulunmadığından teslim öncesi yetkili editör tarafından kesinleştirilmelidir."
+  "revizyon_notu": "v1.2: Üretici bilgisi OGM olarak kesinleştirildi; mobil portre yerleşimi grafik alanına öncelik verecek biçimde iyileştirildi; ana ve gömülü uygulama diyaloglarının odak yönetimi geliştirildi; sayı girişlerine ve sembol düğmelerine erişilebilir adlar eklendi; dönüş yönü simgeleri ve Serbest Mod yönergeleri tutarlı hâle getirildi.",
+  "paketleme": {
+    "tur": "yerel_html_ve_lib",
+    "ses_dosyalari": "kullanilmadi",
+    "dis_dosya_gereksinimi": false
+  }
 }
