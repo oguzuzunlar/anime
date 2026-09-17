@@ -144,6 +144,9 @@ body.preview-mode>.background-animation,body.preview-mode>.floating-controls,bod
 .mirror-btn{padding:5px 11px;border:1.5px solid var(--border-color);border-radius:8px;background:transparent;color:var(--text-primary);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
 .mirror-btn:hover{background:var(--button-bg);color:#fff;}
 .mirror-btn.active{background:#6d28d9!important;color:#fff!important;border-color:#8b5cf6!important;box-shadow:0 0 10px var(--mirror-glow);}
+.mirror-btn:disabled,#mirrorParamInput:disabled{opacity:.58;cursor:not-allowed;filter:saturate(.65);}
+.mirror-btn:disabled:hover{background:transparent;color:var(--text-primary);}
+.mirror-btn.active:disabled{background:#6d28d9!important;color:#fff!important;}
 #mirrorParamRow{position:absolute;bottom:56px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:8px;background:var(--toolbar-bg);border:1.5px solid var(--border-color);border-radius:10px;padding:6px 12px;z-index:30;backdrop-filter:blur(8px);}
 #mirrorParamRow label{font-size:12px;color:var(--text-secondary);}
 #mirrorParamInput{width:64px;padding:5px 8px;border:1.5px solid var(--input-border);border-radius:6px;background:var(--input-bg);color:var(--text-primary);font-size:13px;text-align:center;}
@@ -1052,6 +1055,7 @@ const svgEl=document.getElementById('coordSVG');
 if(appState[key]) svgEl.removeEventListener('click',appState[key]);
 });
 appState={};
+setMirrorControlsLocked(false);
 setPointEntry(null,'Koordinat düzlemi. Yansıma doğrusunu altta seçiniz.');
 clearLayer('sv-orig-shapes');
 clearLayer('sv-ref-shapes');
@@ -1079,6 +1083,13 @@ $('#mirrorParamRow').css('display','flex');
 $('#mirrorParamRow').hide();
 }
 drawMirror();
+}
+
+function setMirrorControlsLocked(locked){
+$('.mirror-btn[data-mirror],#mirrorParamInput,#mirrorParamApply').prop('disabled',locked);
+$('#mirrorSelector,#mirrorParamRow').attr('aria-label',locked
+?'Bu adımda yansıma doğrusu soru tarafından belirlenmiştir.'
+:'Yansıma doğrusu seçimi');
 }
 
 // ═══════════════════════════════════════════════
@@ -1437,6 +1448,7 @@ const st=steps[i];
 const totalSteps=steps.length+1;
 const pct=Math.round(((i+1)/totalSteps)*100);
 setMirrorUI(st.type,st.param!==null?st.param:mirrorParam);
+setMirrorControlsLocked(true);
 const p=st.point;
 const ref=reflectPoint(p.x,p.y);
 
@@ -1507,6 +1519,7 @@ $('#hintBox').addClass('visible');
 function completeApp2(){
 clearLayer('sv-orig-shapes');clearLayer('sv-ref-shapes');clearLayer('sv-points');clearLayer('sv-helpers');
 setMirrorUI('xAxis');
+setMirrorControlsLocked(false);
 
 // ─── Ölçme & Değerlendirme durumu ───
 let olcmePts=[];      // orijinal doğru parçası noktaları (2 nokta)
@@ -1756,6 +1769,7 @@ let currentShape=[...SHAPE];
 
 function showIntro(){
 setMirrorUI('xAxis');
+setMirrorControlsLocked(false);
 clearLayer('sv-orig-shapes');clearLayer('sv-ref-shapes');clearLayer('sv-points');clearLayer('sv-drawing');clearLayer('sv-helpers');
 // Şekli koordinat düzleminde önizleme olarak göster
 svgPolygon(SHAPE,SHAPE_COLOR,SHAPE_COLOR,0.25,'sv-orig-shapes');
@@ -1811,6 +1825,7 @@ function renderOyunStep(){
 currentShape=[...SHAPE];
 clearLayer('sv-orig-shapes');clearLayer('sv-ref-shapes');clearLayer('sv-points');clearLayer('sv-drawing');clearLayer('sv-helpers');
 drawShape();
+setMirrorControlsLocked(true);
 const card=deck[cardIdx%deck.length];
 let userPts=[];
 
@@ -1958,6 +1973,7 @@ renderOyunStep();
 function sonucuGoster(){
 clearLayer('sv-orig-shapes');clearLayer('sv-ref-shapes');clearLayer('sv-points');clearLayer('sv-helpers');clearLayer('sv-drawing');
 setMirrorUI('xAxis');
+setMirrorControlsLocked(false);
 $('#contentArea').html(`
 <div class="success-message" style="padding:16px;font-size:1.05em;">&#x1F3C6; Oyun Bitti!</div>
 <div style="text-align:center;margin:16px 0;">
@@ -2010,6 +2026,7 @@ showAppIntro(`
 // ═══════════════════════════════════════════════
 function loadFree(){
 setMirrorUI('xAxis');
+setMirrorControlsLocked(false);
 clearLayer('sv-orig-shapes');clearLayer('sv-ref-shapes');clearLayer('sv-points');clearLayer('sv-helpers');clearLayer('sv-drawing');
 let freePts=[];
 let phase='drawing'; // 'drawing' | 'reflection'

@@ -5,8 +5,8 @@
     "id": "yansima-donusumu-materyali",
     "baslik": "Yansıma Dönüşümü Materyali",
     "uretici": "OGM",
-    "materyal_surumu": "1.2",
-    "tarih": "2026-09-13"
+    "materyal_surumu": "1.3",
+    "tarih": "2026-09-17"
   },
   "matematik": {
     "durum": "Dik koordinat sistemindeki nokta ve çokgenlerin eksenlere, y=x ve y=-x doğrularına ve eksenlere paralel doğrulara göre yansıma görüntülerinin koordinat değişimleri incelenir.",
@@ -56,5 +56,5 @@
     "tur": "TYMM Matematik Öğretim Programı",
     "not": "Kaynak HTML ile birlikte ayrı bir MMS/kılavuz referansı sağlanmamıştır; eşleşme güncel TYMM 9. sınıf 4. Tema Eşlik ve Benzerlik kapsamındaki geometrik dönüşümler çıktısına göre yapılmıştır."
   },
-  "revizyon_notu": "v1.2: Üretici bilgisi OGM olarak kesinleştirildi; mobil portre yerleşimi grafik alanına öncelik verecek biçimde iyileştirildi; çakışık noktaların doğru parçası olarak kabul edilmesi engellendi; modal klavye/odak yönetimi, sekmeler arası SVG olay dinleyicisi temizliği, değerlendirme yönergesi ve gerekçelendirme adımı güncellendi."
+  "revizyon_notu": "v1.3: Uygulama 2'nin sabit sorularında ve Uygulama 3'ün değerlendirme turlarında yansıma doğrusu kontrolleri kilitlendi; böylece görünür doğru ile cevap denetiminin kullandığı doğru ayrışması engellendi. Keşif, sonuç ve serbest modlarda kontroller yeniden kullanılabilir hâle getirildi. v1.2: Üretici bilgisi OGM olarak kesinleştirildi; mobil portre yerleşimi grafik alanına öncelik verecek biçimde iyileştirildi; çakışık noktaların doğru parçası olarak kabul edilmesi engellendi; modal klavye/odak yönetimi, sekmeler arası SVG olay dinleyicisi temizliği, değerlendirme yönergesi ve gerekçelendirme adımı güncellendi."
 }
