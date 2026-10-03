@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yansıma Dönüşümü Materyali</title>
+<title>Yansıma Dönüşümü Materyali · MEBİ Renk Teması</title>
 <script src="vendor/jquery-3.6.0.min.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded',function(){
@@ -14,42 +14,42 @@ window.addEventListener('DOMContentLoaded',function(){
 </script>
 <style>
 :root[data-theme="dark"]{
---bg-primary:#1a0f08;--bg-secondary:#2b1a0e;--bg-tertiary:#3a2213;
---border-color:#c8824a;--border-glow:rgba(200,130,74,.55);
---text-primary:#f0e0cc;--text-secondary:#c4a882;--text-accent:#e8955a;
---button-bg:#6b3a1f;--button-hover:#8b4f2a;--button-text:#fff;
---panel-border:#c8824a;
---dialog-bg:rgba(42,25,12,.98);--dialog-overlay:rgba(0,0,0,.85);
---scrollbar-track:#3a2213;--scrollbar-thumb:#c8824a;
---instruction-bg:rgba(107,58,31,.28);--instruction-border:#a06030;
---input-bg:#3a2213;--input-border:#8b5a32;
---success-bg:#10b981;--error-bg:#ef4444;
---toolbar-bg:rgba(26,15,8,.92);
---grid-color:rgba(200,130,74,.12);--grid-major:rgba(200,130,74,.28);
---axis-color:#c8824a;--axis-label:#c4a882;
---mirror-color:#a855f7;--mirror-glow:rgba(168,85,247,.55);
---shape-orig:#5ec45e;--shape-ref:#f97316;--shape-helper:rgba(255,220,180,.35);
+--bg-primary:#040308;--bg-secondary:#10162f;--bg-tertiary:#182146;
+--border-color:#2450be;--border-glow:rgba(2,132,199,.28);
+--text-primary:#f5f5f5;--text-secondary:#b6c5e9;--text-accent:#67c7f0;
+--button-bg:#2450be;--button-hover:#0033b3;--button-text:#fff;
+--panel-border:#2450be;--focus:#67c7f0;
+--dialog-bg:rgba(16,22,47,.98);--dialog-overlay:rgba(4,3,8,.78);
+--scrollbar-track:#10162f;--scrollbar-thumb:#0284c7;
+--instruction-bg:#151f48;--instruction-border:#2450be;
+--input-bg:#0b1026;--input-border:#2450be;
+--success-bg:#0284c7;--error-bg:#ff8a8a;
+--toolbar-bg:rgba(16,22,47,.95);
+--grid-color:rgba(182,197,233,.14);--grid-major:rgba(182,197,233,.3);
+--axis-color:#f5f5f5;--axis-label:#b6c5e9;
+--mirror-color:#67c7f0;--mirror-glow:rgba(2,132,199,.48);
+--shape-orig:#6f9dff;--shape-ref:#fd9843;--shape-helper:rgba(245,245,245,.25);
 }
 :root[data-theme="light"]{
---bg-primary:#fdf5ee;--bg-secondary:#fff8f2;--bg-tertiary:#f0e0cc;
---border-color:#a05a2c;--border-glow:rgba(160,90,44,.3);
---text-primary:#3b1f0a;--text-secondary:#7a4f2e;--text-accent:#8b4513;
---button-bg:#a05a2c;--button-hover:#7a3f18;--button-text:#fff;
---panel-border:#a05a2c;
---dialog-bg:rgba(255,248,242,.98);--dialog-overlay:rgba(0,0,0,.55);
---scrollbar-track:#f0e0cc;--scrollbar-thumb:#a05a2c;
---instruction-bg:rgba(160,90,44,.1);--instruction-border:#a05a2c;
---input-bg:#fff8f2;--input-border:#c4946a;
---success-bg:#10b981;--error-bg:#ef4444;
---toolbar-bg:rgba(255,248,242,.96);
---grid-color:rgba(120,70,20,.12);--grid-major:rgba(120,70,20,.25);
---axis-color:#8b4513;--axis-label:#7a4f2e;
---mirror-color:#9333ea;--mirror-glow:rgba(147,51,234,.45);
---shape-orig:#2a8a2a;--shape-ref:#d2520a;--shape-helper:rgba(0,0,0,.18);
+--bg-primary:#f5f5f5;--bg-secondary:#fff;--bg-tertiary:#fdfeff;
+--border-color:#b6c5e9;--border-glow:rgba(0,51,179,.16);
+--text-primary:#040308;--text-secondary:#3b3d3f;--text-accent:#0033b3;
+--button-bg:#0033b3;--button-hover:#132b93;--button-text:#fff;
+--panel-border:#b6c5e9;--focus:#0284c7;
+--dialog-bg:rgba(255,255,255,.98);--dialog-overlay:rgba(4,3,8,.55);
+--scrollbar-track:#dfe6f5;--scrollbar-thumb:#0033b3;
+--instruction-bg:#f2f6ff;--instruction-border:#2450be;
+--input-bg:#fdfeff;--input-border:#b6c5e9;
+--success-bg:#0284c7;--error-bg:#c93434;
+--toolbar-bg:rgba(255,255,255,.96);
+--grid-color:rgba(0,51,179,.1);--grid-major:rgba(0,51,179,.24);
+--axis-color:#0033b3;--axis-label:#3b3d3f;
+--mirror-color:#0284c7;--mirror-glow:rgba(2,132,199,.38);
+--shape-orig:#0033b3;--shape-ref:#fd9843;--shape-helper:rgba(4,3,8,.18);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Segoe UI',sans-serif;background:var(--bg-primary);color:var(--text-primary);overflow-x:hidden;transition:background .3s,color .3s;}
-button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid #0ea5e9;outline-offset:3px;box-shadow:0 0 0 5px rgba(14,165,233,.24);}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--focus);outline-offset:3px;box-shadow:0 0 0 5px color-mix(in srgb,var(--focus) 24%,transparent);}
 .load-error{max-width:680px;margin:10vh auto;padding:24px;border:2px solid #b91c1c;border-radius:12px;background:#fff;color:#3b1f0a;font:16px/1.6 'Segoe UI',sans-serif;}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:var(--scrollbar-track);border-radius:10px;}
@@ -122,8 +122,8 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px so
 .tb-btn::after{content:attr(data-tip);position:absolute;right:46px;top:50%;transform:translateY(-50%);background:var(--bg-tertiary);border:1px solid var(--border-color);color:var(--text-primary);font-size:10px;white-space:nowrap;padding:3px 7px;border-radius:5px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:600;}
 .tb-btn:hover::after{opacity:1;}
 /* Coordinate plane container */
-#coordContainer{flex:1;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 50%,#231208 0%,#130a04 100%);}
-:root[data-theme="light"] #coordContainer{background:radial-gradient(ellipse at 50% 50%,#fdf0e3 0%,#f0dcc6 100%);}
+#coordContainer{flex:1;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 50%,#10162f 0%,#040308 100%);}
+:root[data-theme="light"] #coordContainer{background:#fff;}
 #coordSVG{width:100%;height:100%;display:block;cursor:crosshair;}
 #coordHint{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;font-size:11px;padding:4px 12px;border-radius:16px;pointer-events:none;white-space:nowrap;z-index:20;backdrop-filter:blur(3px);}
 #keyboardPointControls{display:none;position:absolute;left:8px;bottom:58px;z-index:25;align-items:end;gap:6px;padding:7px;background:var(--toolbar-bg);border:1.5px solid var(--border-color);border-radius:9px;box-shadow:0 3px 12px var(--border-glow);}
@@ -135,7 +135,8 @@ button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px so
 #previewCard .preview-shell{width:min(100%,520px);padding:18px;border:2px solid var(--panel-border);border-radius:16px;background:var(--bg-secondary);box-shadow:0 8px 30px var(--border-glow);}
 #previewCard h1{font-size:1.15rem;color:var(--text-accent);text-align:center;margin-bottom:6px;}
 #previewCard p{font-size:.9rem;line-height:1.5;text-align:center;color:var(--text-secondary);margin-bottom:10px;}
-#previewSvg{width:100%;aspect-ratio:1.35/1;display:block;border-radius:10px;background:#fffaf5;}
+#previewSvg{width:100%;aspect-ratio:1.35/1;display:block;border-radius:10px;background:var(--bg-primary);}
+:root[data-theme="light"] #previewSvg{background:#fff;}
 body.preview-mode>#previewCard{display:flex;}
 body.preview-mode>.background-animation,body.preview-mode>.floating-controls,body.preview-mode>.app-container,body.preview-mode>.side-toolbar,body.preview-mode>.dialog-overlay,body.preview-mode>.rotate-overlay{display:none!important;}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important;}.background-animation{display:none;}}
@@ -143,10 +144,10 @@ body.preview-mode>.background-animation,body.preview-mode>.floating-controls,bod
 #mirrorSelector{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;background:var(--toolbar-bg);border:1.5px solid var(--border-color);border-radius:14px;padding:6px 10px;z-index:30;backdrop-filter:blur(8px);flex-wrap:wrap;justify-content:center;max-width:90%;}
 .mirror-btn{padding:5px 11px;border:1.5px solid var(--border-color);border-radius:8px;background:transparent;color:var(--text-primary);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
 .mirror-btn:hover{background:var(--button-bg);color:#fff;}
-.mirror-btn.active{background:#6d28d9!important;color:#fff!important;border-color:#8b5cf6!important;box-shadow:0 0 10px var(--mirror-glow);}
+.mirror-btn.active{background:var(--mirror-color)!important;color:var(--bg-secondary)!important;border-color:var(--mirror-color)!important;box-shadow:0 0 10px var(--mirror-glow);}
 .mirror-btn:disabled,#mirrorParamInput:disabled{opacity:.58;cursor:not-allowed;filter:saturate(.65);}
 .mirror-btn:disabled:hover{background:transparent;color:var(--text-primary);}
-.mirror-btn.active:disabled{background:#6d28d9!important;color:#fff!important;}
+.mirror-btn.active:disabled{background:var(--mirror-color)!important;color:var(--bg-secondary)!important;}
 #mirrorParamRow{position:absolute;bottom:56px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:8px;background:var(--toolbar-bg);border:1.5px solid var(--border-color);border-radius:10px;padding:6px 12px;z-index:30;backdrop-filter:blur(8px);}
 #mirrorParamRow label{font-size:12px;color:var(--text-secondary);}
 #mirrorParamInput{width:64px;padding:5px 8px;border:1.5px solid var(--input-border);border-radius:6px;background:var(--input-bg);color:var(--text-primary);font-size:13px;text-align:center;}
@@ -547,9 +548,9 @@ const aEl=document.getElementById('sv-axes');
 gEl.innerHTML=''; aEl.innerHTML='';
 
 const isDark=theme==='dark';
-const gridC=isDark?'rgba(200,130,74,.15)':'rgba(120,70,20,.24)';
-const gridM=isDark?'rgba(200,130,74,.32)':'rgba(120,70,20,.5)';
-const axC=isDark?'#00d4ff':'#0ea5e9';
+const gridC=isDark?'rgba(182,197,233,.14)':'rgba(0,51,179,.10)';
+const gridM=isDark?'rgba(182,197,233,.30)':'rgba(0,51,179,.24)';
+const axC=isDark?'#67c7f0':'#0033b3';
 const lblC=isDark?'#7090b8':'#64748b';
 const ns='http://www.w3.org/2000/svg';
 
@@ -670,7 +671,7 @@ g.innerHTML='';
 const ep=getMirrorEndpoints();
 const p1=m2s(ep[0].x,ep[0].y), p2=m2s(ep[1].x,ep[1].y);
 const isDark=theme==='dark';
-const mc=isDark?'#a855f7':'#9333ea';
+const mc=isDark?'#67c7f0':'#0284c7';
 
 // Glow layer
 const glow=document.createElementNS(ns,'line');
@@ -783,7 +784,7 @@ origPts.forEach(p=>{
 const r=reflectPoint(p.x,p.y);
 const mp=midPoint(p,r);
 svgDashedLine(p.x,p.y,r.x,r.y,'rgba(255,255,255,.3)');
-svgFootDot(mp.x,mp.y,'#ffd700');
+svgFootDot(mp.x,mp.y,'#fd9843');
 });
 }
 
@@ -880,8 +881,8 @@ clearLayer('sv-helpers');
 if(origPts.length<1) return;
 const refPts=reflectPolygonPts(origPts);
 const isDark=theme==='dark';
-const oColor=origColor||'#22c55e';
-const rColor=refColor||'#f97316';
+const oColor=origColor||'#0033b3';
+const rColor=refColor||'#fd9843';
 
 if(origPts.length>=3){
 svgPolygon(origPts,oColor,oColor,0.22,'sv-orig-shapes');
@@ -1185,13 +1186,13 @@ html+=`<div class="instruction-box">
   <ellipse cx="270" cy="124" rx="11" ry="15" fill="#1a4a1a" opacity="0.7"/>
   <ellipse cx="270" cy="130" rx="8" ry="11" fill="#1e5a1e" opacity="0.65"/>
   <!-- Koordinat ipucu: dikey ok çifti -->
-  <line x1="155" y1="52" x2="155" y2="88" stroke="#ff6b35" stroke-width="1.5" stroke-dasharray="3,2"/>
-  <polygon points="155,46 151,56 159,56" fill="#ff6b35"/>
-  <line x1="155" y1="128" x2="155" y2="92" stroke="#ff6b35" stroke-width="1.5" stroke-dasharray="3,2"/>
-  <polygon points="155,134 151,124 159,124" fill="#ff6b35" opacity="0.8"/>
-  <circle cx="155" cy="90" r="3" fill="#ff6b35"/>
-  <text x="160" y="73" font-size="9" fill="#ff6b35" font-family="Segoe UI,sans-serif" font-weight="700">y</text>
-  <text x="160" y="117" font-size="9" fill="#ff6b35" font-family="Segoe UI,sans-serif" font-weight="700">−y</text>
+  <line x1="155" y1="52" x2="155" y2="88" stroke="#fd9843" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <polygon points="155,46 151,56 159,56" fill="#fd9843"/>
+  <line x1="155" y1="128" x2="155" y2="92" stroke="#fd9843" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <polygon points="155,134 151,124 159,124" fill="#fd9843" opacity="0.8"/>
+  <circle cx="155" cy="90" r="3" fill="#fd9843"/>
+  <text x="160" y="73" font-size="9" fill="#fd9843" font-family="Segoe UI,sans-serif" font-weight="700">y</text>
+  <text x="160" y="117" font-size="9" fill="#fd9843" font-family="Segoe UI,sans-serif" font-weight="700">−y</text>
   <!-- Etiket -->
   <rect x="90" y="84" width="140" height="13" rx="4" fill="rgba(0,0,0,0.45)"/>
   <text x="160" y="93.5" font-size="9" fill="white" font-family="Segoe UI,sans-serif" text-anchor="middle" font-weight="600">&#8592; Su yüzeyi = Yansıma doğrusu &#8594;</text>
@@ -1217,7 +1218,7 @@ html+=`<div class="instruction-box">
 <div style="text-align:center;"><button class="action-button" id="nextBtn">Devam Ediniz →</button></div>`;
 setMirrorUI('yAxis');
 appState.currentOrig=[{x:2,y:1},{x:5,y:1},{x:5,y:4},{x:2,y:4}];
-appState.oColor='#22c55e';appState.rColor='#f97316';
+appState.oColor='#0033b3';appState.rColor='#fd9843';
 renderShapeAndReflection(appState.currentOrig,(i)=>['A','B','C','D'][i],(i)=>["A'","B'","C'","D'"][i]);
 break;
 case 2:
@@ -1235,7 +1236,7 @@ html+=`<div class="instruction-box">
 <div style="text-align:center;"><button class="action-button" id="nextBtn">Devam Ediniz →</button></div>`;
 setMirrorUI('xAxis');
 appState.currentOrig=[{x:2,y:3},{x:5,y:3},{x:4,y:6}];
-appState.oColor='#22c55e';appState.rColor='#f97316';
+appState.oColor='#0033b3';appState.rColor='#fd9843';
 renderShapeAndReflection(appState.currentOrig,(i)=>['A','B','C'][i],(i)=>["A'","B'","C'"][i]);
 break;
 case 3:
@@ -1252,7 +1253,7 @@ html+=`<div class="instruction-box">
 <div style="text-align:center;"><button class="action-button" id="nextBtn">Devam Ediniz →</button></div>`;
 setMirrorUI('yx');
 appState.currentOrig=[{x:2,y:3},{x:5,y:3},{x:4,y:6}];
-appState.oColor='#22c55e';appState.rColor='#f97316';
+appState.oColor='#0033b3';appState.rColor='#fd9843';
 renderShapeAndReflection(appState.currentOrig,(i)=>['A','B','C'][i],(i)=>["A'","B'","C'"][i]);
 break;
 case 4:
@@ -1269,7 +1270,7 @@ html+=`<div class="instruction-box">
 <div style="text-align:center;"><button class="action-button" id="nextBtn">Devam Ediniz →</button></div>`;
 setMirrorUI('ynx');
 appState.currentOrig=[{x:1,y:2},{x:4,y:2},{x:4,y:5},{x:1,y:5}];
-appState.oColor='#22c55e';appState.rColor='#f97316';
+appState.oColor='#0033b3';appState.rColor='#fd9843';
 renderShapeAndReflection(appState.currentOrig,(i)=>['A','B','C','D'][i],(i)=>["A'","B'","C'","D'"][i]);
 break;
 case 5:
@@ -1287,7 +1288,7 @@ html+=`<div class="instruction-box">
 <div style="text-align:center;"><button class="action-button" id="nextBtn">Devam Ediniz →</button></div>`;
 setMirrorUI('xa',3);
 appState.currentOrig=[{x:-4,y:1},{x:-1,y:1},{x:-1,y:4},{x:-4,y:4}];
-appState.oColor='#22c55e';appState.rColor='#f97316';
+appState.oColor='#0033b3';appState.rColor='#fd9843';
 renderShapeAndReflection(appState.currentOrig,(i)=>['A','B','C','D'][i],(i)=>["A'","B'","C'","D'"][i]);
 break;
 case 6:
@@ -1305,7 +1306,7 @@ html+=`<div class="instruction-box">
 <div style="text-align:center;"><button class="action-button" id="nextBtn">Devam Ediniz →</button></div>`;
 setMirrorUI('yb',1);
 appState.currentOrig=[{x:1,y:4},{x:5,y:4},{x:3,y:7}];
-appState.oColor='#22c55e';appState.rColor='#f97316';
+appState.oColor='#0033b3';appState.rColor='#fd9843';
 renderShapeAndReflection(appState.currentOrig,(i)=>['A','B','C'][i],(i)=>["A'","B'","C'"][i]);
 break;
 case 7:
@@ -1313,8 +1314,8 @@ html+=`<div class="instruction-box">
 <h3>&#x2194; Paralel İki Doğruya Göre Ardışık Yansıma</h3>
 <p>Şekil iki <strong>paralel</strong> doğruya göre sırayla yansıtılırsa:</p>
 <ul>
-<li>d₁ = <strong>y ekseni</strong> (x=0) <span style="color:#8b5cf6;">● Mor: ara görüntü</span></li>
-<li>d₂ = <strong>x = 3</strong> doğrusu <span style="color:#f97316;">● Turuncu: son görüntü</span></li>
+<li>d₁ = <strong>y ekseni</strong> (x=0) <span style="color:#0284c7;">● Açık mavi: ara görüntü</span></li>
+<li>d₂ = <strong>x = 3</strong> doğrusu <span style="color:#fd9843;">● Turuncu: son görüntü</span></li>
 </ul>
 <p>Sonuca bakınız: yeşil ile turuncu şekil arasında <strong>6 birim sağa öteleme</strong> ilişkisi vardır.</p>
 <p style="color:var(--success-bg);font-weight:600;">→ Paralel iki doğruya göre ardışık yansıma <strong>öteleme dönüşümüdür.</strong></p>
@@ -1326,12 +1327,12 @@ setMirrorUI('xa',3);
 const mid7=orig7.map(p=>({x:-p.x,y:p.y}));
 const fin7=mid7.map(p=>({x:6-p.x,y:p.y}));
 clearLayer('sv-orig-shapes');clearLayer('sv-ref-shapes');clearLayer('sv-points');clearLayer('sv-helpers');
-svgPolygon(orig7,'#22c55e','#22c55e',0.2,'sv-orig-shapes');
-svgPolygon(mid7,'#8b5cf6','#8b5cf6',0.2,'sv-ref-shapes');
-svgPolygon(fin7,'#f97316','#f97316',0.2,'sv-ref-shapes',true);
-orig7.forEach((p,i)=>svgPoint(p.x,p.y,'#22c55e',5,'sv-points',['A','B','C','D'][i]));
-mid7.forEach((p,i)=>svgPoint(p.x,p.y,'#8b5cf6',5,'sv-points',["A'","B'","C'","D'"][i]));
-fin7.forEach((p,i)=>svgPoint(p.x,p.y,'#f97316',5,'sv-points',['A"','B"','C"','D"'][i]));
+svgPolygon(orig7,'#0033b3','#0033b3',0.2,'sv-orig-shapes');
+svgPolygon(mid7,'#0284c7','#0284c7',0.2,'sv-ref-shapes');
+svgPolygon(fin7,'#fd9843','#fd9843',0.2,'sv-ref-shapes',true);
+orig7.forEach((p,i)=>svgPoint(p.x,p.y,'#0033b3',5,'sv-points',['A','B','C','D'][i]));
+mid7.forEach((p,i)=>svgPoint(p.x,p.y,'#0284c7',5,'sv-points',["A'","B'","C'","D'"][i]));
+fin7.forEach((p,i)=>svgPoint(p.x,p.y,'#fd9843',5,'sv-points',['A"','B"','C"','D"'][i]));
 appState.currentOrig=[];}
 break;
 case 8:
@@ -1339,8 +1340,8 @@ html+=`<div class="instruction-box">
 <h3>&#x2702; Kesişen İki Doğruya Göre Ardışık Yansıma</h3>
 <p>Şekil iki <strong>kesişen</strong> doğruya göre sırayla yansıtılırsa:</p>
 <ul>
-<li>d₁ = <strong>x ekseni</strong> (y=0) <span style="color:#8b5cf6;">● Mor: ara görüntü</span></li>
-<li>d₂ = <strong>y = x</strong> doğrusu <span style="color:#f97316;">● Turuncu: son görüntü</span></li>
+<li>d₁ = <strong>x ekseni</strong> (y=0) <span style="color:#0284c7;">● Açık mavi: ara görüntü</span></li>
+<li>d₂ = <strong>y = x</strong> doğrusu <span style="color:#fd9843;">● Turuncu: son görüntü</span></li>
 </ul>
 <p>İki doğrunun kesişim noktası <strong>orijin (0,0)</strong>'dir. Sonuç, orijine göre <strong>90° dönme</strong> ile aynıdır.</p>
 <p style="color:var(--success-bg);font-weight:600;">→ Kesişen iki doğruya göre ardışık yansıma <strong>dönme dönüşümüdür.</strong></p>
@@ -1352,11 +1353,11 @@ setMirrorUI('yx');
 const mid8=orig8.map(p=>({x:p.x,y:-p.y}));
 const fin8=mid8.map(p=>({x:p.y,y:p.x}));
 clearLayer('sv-orig-shapes');clearLayer('sv-ref-shapes');clearLayer('sv-points');clearLayer('sv-helpers');
-svgPolygon(orig8,'#22c55e','#22c55e',0.2,'sv-orig-shapes');
-svgPolygon(mid8,'#8b5cf6','#8b5cf6',0.2,'sv-ref-shapes');
-svgPolygon(fin8,'#f97316','#f97316',0.2,'sv-ref-shapes',true);
-orig8.forEach((p,i)=>svgPoint(p.x,p.y,'#22c55e',5,'sv-points',['A','B','C','D'][i]));
-fin8.forEach((p,i)=>svgPoint(p.x,p.y,'#f97316',5,'sv-points',['A"','B"','C"','D"'][i]));
+svgPolygon(orig8,'#0033b3','#0033b3',0.2,'sv-orig-shapes');
+svgPolygon(mid8,'#0284c7','#0284c7',0.2,'sv-ref-shapes');
+svgPolygon(fin8,'#fd9843','#fd9843',0.2,'sv-ref-shapes',true);
+orig8.forEach((p,i)=>svgPoint(p.x,p.y,'#0033b3',5,'sv-points',['A','B','C','D'][i]));
+fin8.forEach((p,i)=>svgPoint(p.x,p.y,'#fd9843',5,'sv-points',['A"','B"','C"','D"'][i]));
 appState.currentOrig=[];}
 break;
 }
@@ -1456,17 +1457,17 @@ const ref=reflectPoint(p.x,p.y);
 let step2Checked=false;
 appState._onMirrorChange=function(){
 if(step2Checked){
-renderShapeAndReflection([p],(i)=>'P',(i)=>"P'",'#22c55e','#f97316');
+renderShapeAndReflection([p],(i)=>'P',(i)=>"P'",'#0033b3','#fd9843');
 }else{
 clearLayer('sv-orig-shapes');clearLayer('sv-ref-shapes');clearLayer('sv-points');clearLayer('sv-helpers');
-svgPoint(p.x,p.y,'#22c55e',5,'sv-points',showCoordLabels?`P(${p.x},${p.y})`:'P',{dx:10,dy:-10});
+svgPoint(p.x,p.y,'#0033b3',5,'sv-points',showCoordLabels?`P(${p.x},${p.y})`:'P',{dx:10,dy:-10});
 }
 };
 
 // Draw the point (no reflection yet)
 appState.currentOrig=[p];
 clearLayer('sv-orig-shapes');clearLayer('sv-ref-shapes');clearLayer('sv-points');clearLayer('sv-helpers');
-svgPoint(p.x,p.y,'#22c55e',6,'sv-points',`P(${p.x},${p.y})`,{dx:10,dy:-10});
+svgPoint(p.x,p.y,'#0033b3',6,'sv-points',`P(${p.x},${p.y})`,{dx:10,dy:-10});
 
 let html=`<div class="progress-container">
 <div class="progress-label"><span>Soru ${i+1}/${steps.length}</span><span class="score-badge">Puan: ${score}</span></div>
@@ -1501,7 +1502,7 @@ score++;
 $('#checkFeedback').html(`<div class="success-message">✓ Doğru! P'(${ref.x},${ref.y})</div>`);
 // show both points + helpers via renderShapeAndReflection so toggle works
 step2Checked=true;
-renderShapeAndReflection([p],(i)=>'P',(i)=>"P'",'#22c55e','#f97316');
+renderShapeAndReflection([p],(i)=>'P',(i)=>"P'",'#0033b3','#fd9843');
 // reveal formula
 $('#checkFeedback').append(`<div class="formula-reveal"><p class="f-label">Kural:</p><p class="f-label">${st.formulaLabel}</p><p class="f-math">${st.formulaMath}</p></div>`);
 $('#checkBtn').prop('disabled',true);
@@ -1533,19 +1534,19 @@ function olcmeDraw(){
   if(olcmePts.length===0) return;
   // Orijinal doğru parçası (yeşil)
   olcmePts.forEach((p,i)=>{
-    svgPoint(p.x,p.y,'#22c55e',5,'sv-points',`P${i+1}(${p.x},${p.y})`,{dx:9,dy:-9});
+    svgPoint(p.x,p.y,'#0033b3',5,'sv-points',`P${i+1}(${p.x},${p.y})`,{dx:9,dy:-9});
   });
   if(olcmePts.length===2){
     const p1=m2s(olcmePts[0].x,olcmePts[0].y),p2=m2s(olcmePts[1].x,olcmePts[1].y);
-    const ln=makeSVGEl('line',{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke:'#22c55e','stroke-width':'2.5'});
+    const ln=makeSVGEl('line',{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke:'#0033b3','stroke-width':'2.5'});
     document.getElementById('sv-orig-shapes').appendChild(ln);
     // Ötelenmiş doğru parçası (turuncu)
     const tPts=olcmePts.map(p=>({x:p.x+OFFSET.x,y:p.y+OFFSET.y}));
     tPts.forEach((p,i)=>{
-      svgPoint(p.x,p.y,'#f97316',5,'sv-points',`Q${i+1}(${p.x},${p.y})`,{dx:9,dy:-9});
+      svgPoint(p.x,p.y,'#fd9843',5,'sv-points',`Q${i+1}(${p.x},${p.y})`,{dx:9,dy:-9});
     });
     const q1=m2s(tPts[0].x,tPts[0].y),q2=m2s(tPts[1].x,tPts[1].y);
-    const ln2=makeSVGEl('line',{x1:q1.x,y1:q1.y,x2:q2.x,y2:q2.y,stroke:'#f97316','stroke-width':'2.5','stroke-dasharray':'6,3'});
+    const ln2=makeSVGEl('line',{x1:q1.x,y1:q1.y,x2:q2.x,y2:q2.y,stroke:'#fd9843','stroke-width':'2.5','stroke-dasharray':'6,3'});
     document.getElementById('sv-orig-shapes').appendChild(ln2);
     // Öteleme oku (ip ucu)
     const mid1=m2s((olcmePts[0].x+olcmePts[1].x)/2,(olcmePts[0].y+olcmePts[1].y)/2);
@@ -1566,22 +1567,22 @@ function olcmeReflectionDraw(){
   const rTrans=tPts.map(p=>reflectPoint(p.x,p.y));
 
   // Orijinal (yeşil)
-  olcmePts.forEach((p,i)=>svgPoint(p.x,p.y,'#22c55e',5,'sv-points',`P${i+1}`,{dx:8,dy:-8}));
+  olcmePts.forEach((p,i)=>svgPoint(p.x,p.y,'#0033b3',5,'sv-points',`P${i+1}`,{dx:8,dy:-8}));
   const p1=m2s(olcmePts[0].x,olcmePts[0].y),p2=m2s(olcmePts[1].x,olcmePts[1].y);
   document.getElementById('sv-orig-shapes').appendChild(
-    makeSVGEl('line',{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke:'#22c55e','stroke-width':'2'}));
+    makeSVGEl('line',{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke:'#0033b3','stroke-width':'2'}));
 
   // Ötelenmiş (turuncu)
-  tPts.forEach((p,i)=>svgPoint(p.x,p.y,'#f97316',5,'sv-points',`Q${i+1}`,{dx:8,dy:-8}));
+  tPts.forEach((p,i)=>svgPoint(p.x,p.y,'#fd9843',5,'sv-points',`Q${i+1}`,{dx:8,dy:-8}));
   const q1=m2s(tPts[0].x,tPts[0].y),q2=m2s(tPts[1].x,tPts[1].y);
   document.getElementById('sv-orig-shapes').appendChild(
-    makeSVGEl('line',{x1:q1.x,y1:q1.y,x2:q2.x,y2:q2.y,stroke:'#f97316','stroke-width':'2','stroke-dasharray':'5,3'}));
+    makeSVGEl('line',{x1:q1.x,y1:q1.y,x2:q2.x,y2:q2.y,stroke:'#fd9843','stroke-width':'2','stroke-dasharray':'5,3'}));
 
   // Yansımalar (soluk renkler)
-  rOrig.forEach((p,i)=>svgPoint(p.x,p.y,'#86efac',4,'sv-points',`P${i+1}'`,{dx:7,dy:-7}));
+  rOrig.forEach((p,i)=>svgPoint(p.x,p.y,'#6f9dff',4,'sv-points',`P${i+1}'`,{dx:7,dy:-7}));
   const r1=m2s(rOrig[0].x,rOrig[0].y),r2=m2s(rOrig[1].x,rOrig[1].y);
   document.getElementById('sv-ref-shapes').appendChild(
-    makeSVGEl('line',{x1:r1.x,y1:r1.y,x2:r2.x,y2:r2.y,stroke:'#86efac','stroke-width':'2.2'}));
+    makeSVGEl('line',{x1:r1.x,y1:r1.y,x2:r2.x,y2:r2.y,stroke:'#6f9dff','stroke-width':'2.2'}));
 
   rTrans.forEach((p,i)=>svgPoint(p.x,p.y,'#fdba74',4,'sv-points',`Q${i+1}'`,{dx:7,dy:-7}));
   const s1=m2s(rTrans[0].x,rTrans[0].y),s2=m2s(rTrans[1].x,rTrans[1].y);
@@ -1610,7 +1611,7 @@ function renderOlcme(){
     <div class="instruction-box" style="margin-top:6px;">
       <h3>&#x1F4CF; Ölçme ve Keşif</h3>
       <p style="font-size:.88em;">Koordinat düzlemine <strong>bir doğru parçası çiziniz</strong> (2 noktaya tıklayınız).<br>
-      <span style="color:#f97316;">Turuncu kesikli çizgi</span> = 3 birim sağ, 4 birim yukarı ötelenmiş hâli.</p>
+      <span style="color:#fd9843;">Turuncu kesikli çizgi</span> = 3 birim sağ, 4 birim yukarı ötelenmiş hâli.</p>
       <p style="font-weight:700;font-size:.88em;margin-top:6px;">Bu iki doğru parçasının herhangi bir doğruya göre simetrileri arasındaki ilişki nedir?</p>
       ${drawPhase?`
       <div id="olcmePtInfo" style="font-size:.82em;color:var(--text-secondary);min-height:16px;margin:6px 0;">
@@ -1793,8 +1794,8 @@ $('#contentArea').html(`
 <li>Kontrol etmeden önce <strong>Geri Al</strong> ile çiziminizi düzeltebilirsiniz. Kontrol sonrasında tur kilitlenir ve doğru görüntü gösterilir.</li>
 </ol>
 </div>
-<div class="app3-info-block" style="margin:8px 0;padding:8px 10px;background:rgba(249,115,22,.1);border-left:3px solid #f97316;border-radius:6px;">
-<p style="margin:0 0 4px;font-size:.85em;font-weight:600;color:#f97316;">&#x1F4D0; Simetri Formülleri</p>
+<div class="app3-info-block" style="margin:8px 0;padding:8px 10px;background:rgba(253,152,67,.12);border-left:3px solid #fd9843;border-radius:6px;">
+<p style="margin:0 0 4px;font-size:.85em;font-weight:600;color:#fd9843;">&#x1F4D0; Simetri Formülleri</p>
 <ul class="app3-formula-list" style="margin:4px 0 0 8px;font-size:.82em;line-height:1.7;">
 <li>x eksenine göre: (x,y) → (x,−y)</li>
 <li>y eksenine göre: (x,y) → (−x,y)</li>
@@ -1880,16 +1881,16 @@ $('#cizimInfo').text(txt);
 function updateCizim(){
 clearLayer('sv-ref-shapes');clearLayer('sv-drawing');
 userPts.forEach((p,i)=>{
-svgPoint(p.x,p.y,'#f97316',5,'sv-drawing',
+svgPoint(p.x,p.y,'#fd9843',5,'sv-drawing',
 showCoordLabels?`${LABELS[i]}'(${p.x},${p.y})`:LABELS[i]+"'",{dx:8,dy:-9});
 });
 if(userPts.length>=2){
 if(userPts.length===2){
 const p1=m2s(userPts[0].x,userPts[0].y),p2=m2s(userPts[1].x,userPts[1].y);
-const ln=makeSVGEl('line',{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke:'#f97316','stroke-width':'2.5'});
+const ln=makeSVGEl('line',{x1:p1.x,y1:p1.y,x2:p2.x,y2:p2.y,stroke:'#fd9843','stroke-width':'2.5'});
 document.getElementById('sv-drawing').appendChild(ln);
 }else if(userPts.length>=3){
-svgPolygon(userPts,'#f97316','#f97316',0.22,'sv-drawing',true);
+svgPolygon(userPts,'#fd9843','#fd9843',0.22,'sv-drawing',true);
 }
 }
 }
@@ -1932,7 +1933,7 @@ clearLayer('sv-orig-shapes');clearLayer('sv-ref-shapes');clearLayer('sv-points')
 svgPolygon(currentShape,SHAPE_COLOR,SHAPE_COLOR,0.25,'sv-orig-shapes');
 currentShape.forEach((p,i)=>svgPoint(p.x,p.y,SHAPE_COLOR,4,'sv-points',LABELS[i]+'('+p.x+','+p.y+')',{dx:7,dy:-7}));
 // Yansıma şekli (turuncu kesikli - kendi yerinde)
-const refColor='#f97316';
+const refColor='#fd9843';
 svgPolygon(expected,refColor,refColor,0.25,'sv-ref-shapes',true);
 expected.forEach((p,i)=>svgPoint(p.x,p.y,refColor,5,'sv-ref-shapes',LABELS[i]+"'("+p.x+','+p.y+')',{dx:8,dy:-9}));
 // Yardımcı kesikli çizgiler
@@ -1947,7 +1948,7 @@ appState._onMirrorChange=function(){
 clearLayer('sv-orig-shapes');clearLayer('sv-ref-shapes');clearLayer('sv-points');clearLayer('sv-helpers');clearLayer('sv-drawing');
 svgPolygon(_snapOrig,SHAPE_COLOR,SHAPE_COLOR,0.25,'sv-orig-shapes');
 _snapOrig.forEach((p,i)=>svgPoint(p.x,p.y,SHAPE_COLOR,4,'sv-points',LABELS[i]+'('+p.x+','+p.y+')',{dx:7,dy:-7}));
-const _rc='#f97316';
+const _rc='#fd9843';
 svgPolygon(_snapExp,_rc,_rc,0.25,'sv-ref-shapes',true);
 _snapExp.forEach((p,i)=>svgPoint(p.x,p.y,_rc,5,'sv-ref-shapes',LABELS[i]+"'("+p.x+','+p.y+')',{dx:8,dy:-9}));
 if(showHelpers) _snapOrig.forEach((p,i)=>svgDashedLine(p.x,p.y,_snapExp[i].x,_snapExp[i].y,'rgba(255,215,0,.4)'));
@@ -1955,7 +1956,7 @@ if(showHelpers) _snapOrig.forEach((p,i)=>svgDashedLine(p.x,p.y,_snapExp[i].x,_sn
 }else{
 $('#oyunFeedback').html('<div class="error-message">✗ Koordinatlar yanlış. Tur tamamlandı; doğru görüntüyü inceleyiniz.</div>');
 clearLayer('sv-ref-shapes');clearLayer('sv-drawing');
-const refColor='#f97316';
+const refColor='#fd9843';
 svgPolygon(expected,refColor,refColor,0.18,'sv-ref-shapes',true);
 expected.forEach((p,i)=>svgPoint(p.x,p.y,refColor,5,'sv-ref-shapes',LABELS[i]+"'("+p.x+','+p.y+')',{dx:8,dy:-9}));
 $('#kontrolEt,#gerial,#temizle').prop('disabled',true);
@@ -2114,10 +2115,10 @@ if(freePts.length===0) return;
 // draw points
 freePts.forEach((p,i)=>{
 const lbl=String.fromCharCode(65+Math.min(i,25));
-svgPoint(p.x,p.y,'#22c55e',5,'sv-points',`${lbl}(${p.x},${p.y})`,{dx:9,dy:-9});
+svgPoint(p.x,p.y,'#0033b3',5,'sv-points',`${lbl}(${p.x},${p.y})`,{dx:9,dy:-9});
 });
 if(freePts.length===1) return;
-const color='#22c55e';
+const color='#0033b3';
 if(freePts.length===2){
 // line segment
 const p1=m2s(freePts[0].x,freePts[0].y),p2=m2s(freePts[1].x,freePts[1].y);
@@ -2131,7 +2132,7 @@ svgPolygon(freePts,color,color,0.18,'sv-orig-shapes');
 // Final reflection render
 function drawReflection(){
 clearAll();
-const color='#22c55e',rColor='#f97316';
+const color='#0033b3',rColor='#fd9843';
 freePts.forEach((p,i)=>{
 const lbl=String.fromCharCode(65+Math.min(i,25));
 svgPoint(p.x,p.y,color,5,'sv-points',`${lbl}(${p.x},${p.y})`,{dx:9,dy:-9});
@@ -2155,7 +2156,7 @@ freePts.forEach(p=>{
 const r=reflectPoint(p.x,p.y);
 const mp2=midPoint(p,r);
 svgDashedLine(p.x,p.y,r.x,r.y,'rgba(255,215,0,.35)');
-svgFootDot(mp2.x,mp2.y,'#ffd700');
+svgFootDot(mp2.x,mp2.y,'#fd9843');
 });
 }
 
@@ -2245,10 +2246,10 @@ svg.appendChild(makeSVGEl('line',{x1:20,y1:i,x2:380,y2:i,stroke:'#ead7c4','strok
 }
 svg.appendChild(makeSVGEl('line',{x1:20,y1:150,x2:380,y2:150,stroke:'#8b4513','stroke-width':'2'}));
 svg.appendChild(makeSVGEl('line',{x1:200,y1:15,x2:200,y2:285,stroke:'#8b4513','stroke-width':'2'}));
-svg.appendChild(makeSVGEl('line',{x1:65,y1:285,x2:335,y2:15,stroke:'#9333ea','stroke-width':'3','stroke-dasharray':'8,5'}));
-polygon(original,'#2a8a2a','#2a8a2a');
-polygon(reflected,'#d2520a','#d2520a','7,4');
-const label=makeSVGEl('text',{x:300,y:52,fill:'#6b21a8','font-size':'16','font-weight':'700'});
+svg.appendChild(makeSVGEl('line',{x1:65,y1:285,x2:335,y2:15,stroke:'#0284c7','stroke-width':'3','stroke-dasharray':'8,5'}));
+polygon(original,'#0033b3','#0033b3');
+polygon(reflected,'#fd9843','#fd9843','7,4');
+const label=makeSVGEl('text',{x:300,y:52,fill:'#006aa1','font-size':'16','font-weight':'700'});
 label.textContent='y = x';svg.appendChild(label);
 }
 
