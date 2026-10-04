@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Konikler Materyali – 3D İnteraktif</title>
+<script>
+try{document.documentElement.dataset.theme=localStorage.getItem('konikler-theme')||'light';}catch(e){}
+if(new URLSearchParams(location.search).get('mode')==='free'||location.hash==='#serbest'){
+  document.documentElement.dataset.entryMode='free';
+}
+</script>
 <script type="importmap">
 {
   "imports": {
@@ -14,6 +20,7 @@
 </script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[data-entry-mode="free"] #intro { display: none !important; }
 
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
@@ -116,6 +123,7 @@ body {
   font-family: 'Consolas', monospace;
   font-size: 12.5px; text-align: center;
   transition: background 0.3s, color 0.3s;
+  text-shadow: none;
 }
 
 .circle  #conic-formula { background: rgba(0,229,255,0.13); color: #00e5ff; }
@@ -130,6 +138,8 @@ body {
   width: 210px; z-index: 20;
   display: flex; flex-direction: column; gap: 7px;
 }
+
+#mobile-tools-toggle { display: none; }
 
 .section-label {
   font-size: 10px; font-weight: 700;
@@ -429,6 +439,8 @@ body {
   font-size: 12px; color: #94a3b8;
   line-height: 1.6; margin-bottom: 2px;
 }
+.modal-card .card-title { font-size: 13.5px; line-height: 1.45; }
+.modal-card p { font-size: 14.5px !important; line-height: 1.68 !important; }
 
 .modal-warning {
   background: rgba(251,146,60,0.08);
@@ -479,6 +491,9 @@ body {
 .portal-btn-free { background: linear-gradient(135deg,#0ea5e9,#38bdf8); color:#001824; border-color:#38bdf8; }
 .portal-btn-u1   { background: rgba(167,139,250,0.12); color:#a78bfa; border-color:rgba(167,139,250,0.38); }
 .portal-btn-u2   { background: rgba(251,146,60,0.10);  color:#fb923c; border-color:rgba(251,146,60,0.32); }
+.portal-btn-u1   { order: 1; }
+.portal-btn-u2   { order: 2; }
+.portal-btn-free { order: 3; }
 .portal-grid #startBtn { margin-top:0; font-size:13px; padding:14px 8px; }
 
 /* ── Sol Panel Sayfa Navigasyonu ───────────────────────── */
@@ -491,6 +506,7 @@ body {
   transition: background .15s, color .15s;
 }
 .nav-link-btn:hover { background: rgba(56,189,248,0.14); color: #e2e8f0; }
+.nav-link-btn.current { background: rgba(56,189,248,0.14); border-color: rgba(56,189,248,0.34); color: #38bdf8; cursor: default; }
 .nav-link-btn .nl-icon { font-size: 15px; flex-shrink: 0; }
 .nav-link-btn small { display: block; font-size: 10px; font-weight: 500; color: #64748b; margin-top: 1px; }
 
@@ -524,27 +540,183 @@ body {
   #conic-formula { margin-top: 0; margin-left: auto; font-size: 12px; padding: 4px 9px; white-space: nowrap; }
 
   #free-panel {
-    bottom: 68px; width: calc(100vw - 20px); min-width: 0;
+    bottom: 62px; width: calc(100vw - 20px); min-width: 0;
     padding: 10px 14px;
   }
 
+  #mobile-tools-toggle {
+    position: fixed; z-index: 32;
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px;
+    left: 8px; right: 8px; bottom: max(8px, env(safe-area-inset-bottom));
+    min-height: 46px; padding: 8px 12px;
+    border: 1.5px solid var(--mebi-accent); border-radius: 14px;
+    background: var(--ui-panel-solid); color: var(--ui-text);
+    box-shadow: 0 -4px 22px rgba(19,43,147,.16);
+    font: inherit; font-size: 12px; font-weight: 800; cursor: pointer;
+  }
+  #mobile-tools-current {
+    color: var(--mebi-primary); text-align: right; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+  .mobile-tools-chevron { color: var(--mebi-accent); transition: transform .2s ease; }
+  #mobile-tools-toggle[aria-expanded="true"] .mobile-tools-chevron { transform: rotate(180deg); }
+
   #side-panel {
-    top: auto; right: 0; bottom: 0; left: 0; width: 100%;
-    flex-direction: row; overflow-x: auto; gap: 5px;
-    padding: 6px 8px 8px; background: rgba(8,18,32,0.97);
-    border-top: 1px solid rgba(56,189,248,0.18); border-radius: 0;
+    top: auto; right: 8px; bottom: calc(62px + env(safe-area-inset-bottom)); left: 8px; width: auto; z-index: 31;
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow-y: auto; gap: 7px; max-height: min(44vh, 310px);
+    padding: 10px; background: var(--ui-panel-solid);
+    border: 1px solid var(--ui-border); border-radius: 16px;
+    box-shadow: 0 -10px 32px rgba(15,23,42,.22);
+    transform: translateY(calc(100% + 76px));
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: transform .22s ease, opacity .18s ease, visibility .18s;
+  }
+  #side-panel.mobile-open {
+    transform: translateY(0); opacity: 1; visibility: visible; pointer-events: auto;
   }
   #side-panel::-webkit-scrollbar { display: none; }
   .section-label, .ctrl-sep, .angle-badge { display: none; }
   .ctrl-btn {
-    flex: 0 0 auto; flex-direction: column; gap: 3px;
-    padding: 7px 12px; min-width: 64px; text-align: center;
+    width: auto; min-width: 0; flex-direction: column; gap: 3px;
+    padding: 8px 5px; text-align: center;
     justify-content: center; font-size: 11px; border-radius: 10px;
   }
+  .ctrl-btn:hover { transform: translateY(-2px); }
+}
+
+@media (max-width: 900px) and (orientation: portrait) {
+  .page-title { min-height: 34px; padding: 7px 42px 4px 8px; font-size: 12px; }
+  #conic-display { top: 36px; padding: 6px 9px; gap: 6px; }
+  #conic-name { font-size: 12px; }
+  #conic-formula { max-width: 58%; overflow: hidden; text-overflow: ellipsis; font-size: 10px; }
+  #free-panel { bottom: 62px; padding: 8px 10px; border-radius: 13px; }
+  #free-panel .fp-header { font-size: 11px; }
+  .slider-row { margin-bottom: 5px; }
+  #free-stats { display: none; }
+  #side-panel { gap: 5px; padding: 8px; }
+  .ctrl-btn { min-width: 0; padding: 7px 4px; font-size: 10px; }
+  .btn-icon { font-size: 15px; }
+}
+
+@media (max-width: 600px) {
+  .portal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .portal-btn { padding: 11px 4px; font-size: 11px; }
+  .portal-btn .p-sub { font-size: 9px; }
+}
+
+/* ── MEBİ açık / koyu tema sistemi ─────────────────── */
+:root {
+  color-scheme: light;
+  --mebi-primary:#0033b3;
+  --mebi-primary-dark:#132b93;
+  --mebi-primary-light:#2450be;
+  --mebi-accent:#0284c7;
+  --mebi-accent-soft:#67c7f0;
+  --mebi-orange:#fd9843;
+  --ui-bg:#f4f7fc;
+  --ui-panel:rgba(255,255,255,.94);
+  --ui-panel-solid:#ffffff;
+  --ui-text:#172033;
+  --ui-muted:#526079;
+  --ui-border:rgba(0,51,179,.25);
+  --ui-shadow:rgba(19,43,147,.16);
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ui-bg:#071127;
+  --ui-panel:rgba(11,27,61,.94);
+  --ui-panel-solid:#0b1b3d;
+  --ui-text:#f5f8ff;
+  --ui-muted:#bdc9df;
+  --ui-border:rgba(103,199,240,.38);
+  --ui-shadow:rgba(0,0,0,.5);
+}
+body{background:var(--ui-bg);color:var(--ui-text);}
+.page-title{color:var(--mebi-primary-dark);text-shadow:none;background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(244,247,252,.72) 72%,transparent);}
+.info-card,#conic-display,#proj-panel,#free-panel{background:var(--ui-panel);border-color:var(--ui-border);color:var(--ui-text);box-shadow:0 7px 26px var(--ui-shadow);}
+.info-card h3,#proj-panel h4{color:var(--mebi-primary);}
+.info-card p,#conic-desc,.metric-chip,.proj-legend,#hint,.nav-link-btn,.nav-link-btn small{color:var(--ui-muted);}
+.formula-box,#ecc-badge{background:rgba(2,132,199,.10);border-color:rgba(2,132,199,.28);color:#075f8f;}
+.cot-step{background:#edf3ff;border-left-color:var(--mebi-primary);color:var(--ui-text);}
+.cot-step b{color:var(--mebi-primary-dark);}
+.cot-step code{color:#9a3412;}
+.ctrl-btn{background:var(--ui-panel);color:var(--ui-text);box-shadow:0 2px 9px rgba(19,43,147,.08);}
+.ctrl-sep{background:var(--ui-border);}
+.angle-badge,.metric-chip{background:rgba(0,51,179,.06);border-color:rgba(0,51,179,.14);}
+.metric-chip b{color:var(--ui-text);}
+#proj-canvas{background:#fff;border-color:rgba(0,51,179,.20);}
+#free-panel .fp-header{color:var(--ui-text);}
+.lab-slider{accent-color:var(--mebi-primary);}
+#c-slider{accent-color:var(--mebi-accent);}
+#intro{background:rgba(231,238,251,.92);}
+#intro .modal-box{background:var(--ui-panel-solid);border-color:var(--ui-border);box-shadow:0 12px 60px rgba(19,43,147,.24);}
+#intro .modal-box h1,#intro .modal-box .section-title{color:var(--mebi-primary);}
+#intro .modal-box p,#intro .modal-box li,#intro .modal-box .subtitle{color:var(--ui-muted)!important;}
+#intro .modal-box li b{color:var(--ui-text);}
+.modal-card{background:#f7f9fe;border-color:rgba(0,51,179,.16);}
+.modal-warning{background:#fff4e9;border-color:rgba(253,152,67,.55);color:#8f3b00;}
+.modal-warning code{color:#6f2d00!important;}
+.portal-btn-free,#startBtn{background:linear-gradient(135deg,var(--mebi-primary),var(--mebi-primary-light));color:#fff;border-color:var(--mebi-primary);}
+.portal-btn-u1{background:#eef1ff;color:#5b21b6;border-color:#8b5cf6;}
+.portal-btn-u2{background:#fff3e8;color:#9a3d00;border-color:var(--mebi-orange);}
+.nav-link-btn{background:rgba(0,51,179,.05);border-color:rgba(0,51,179,.18);}
+.nav-link-btn:hover{background:rgba(0,51,179,.11);color:var(--mebi-primary-dark);}
+.theme-toggle{position:fixed;top:8px;right:14px;z-index:120;width:38px;height:38px;border-radius:50%;border:2px solid var(--mebi-primary);background:var(--ui-panel-solid);color:var(--mebi-primary);box-shadow:0 4px 16px var(--ui-shadow);font-size:18px;cursor:pointer;display:grid;place-items:center;}
+.theme-toggle:hover{background:var(--mebi-primary);color:#fff;}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--mebi-orange);outline-offset:3px;}
+
+/* Açık temada konik türleri için erişilebilir tonlar */
+:root[data-theme="light"] #conic-display.circle,:root[data-theme="light"] .ctrl-btn.circle{border-color:#0369a1;}
+:root[data-theme="light"] #conic-display.ellipse,:root[data-theme="light"] .ctrl-btn.ellipse{border-color:#6d28d9;}
+:root[data-theme="light"] #conic-display.parabola,:root[data-theme="light"] .ctrl-btn.parabola{border-color:#c2410c;}
+:root[data-theme="light"] #conic-display.hyperbola,:root[data-theme="light"] .ctrl-btn.hyperbola{border-color:#b91c1c;}
+:root[data-theme="light"] #conic-display.degenerate{border-color:#047857;}
+:root[data-theme="light"] .circle #conic-name{color:#0369a1;}
+:root[data-theme="light"] .ellipse #conic-name{color:#6d28d9;}
+:root[data-theme="light"] .parabola #conic-name{color:#c2410c;}
+:root[data-theme="light"] .hyperbola #conic-name{color:#b91c1c;}
+:root[data-theme="light"] .degenerate #conic-name{color:#047857;}
+:root[data-theme="light"] #intro .modal-box code{color:#7c2d12!important;}
+:root[data-theme="light"] #intro .modal-box p b{color:var(--mebi-primary-dark)!important;}
+:root[data-theme="light"] .modal-row .modal-card:nth-child(1) .card-title{color:#0369a1!important;}
+:root[data-theme="light"] .modal-row .modal-card:nth-child(2) .card-title{color:#6d28d9!important;}
+:root[data-theme="light"] .modal-row .modal-card:nth-child(3) .card-title{color:#9a3d00!important;}
+
+/* Koyu temada MEBİ mavisi ve yüksek kontrast */
+:root[data-theme="dark"] .page-title{color:#dff5ff;background:linear-gradient(180deg,rgba(7,17,39,.98),transparent);text-shadow:0 0 18px rgba(103,199,240,.35);}
+:root[data-theme="dark"] .info-card h3,:root[data-theme="dark"] #proj-panel h4{color:#67c7f0;}
+:root[data-theme="dark"] .formula-box,:root[data-theme="dark"] #ecc-badge{background:rgba(103,199,240,.12);border-color:rgba(103,199,240,.34);color:#9cddf7;}
+:root[data-theme="dark"] .cot-step{background:rgba(19,43,147,.22);border-left-color:#67c7f0;color:var(--ui-text);}
+:root[data-theme="dark"] .cot-step b{color:#9cddf7;}
+:root[data-theme="dark"] .cot-step code{color:#ffd08a;}
+:root[data-theme="dark"] #proj-canvas{background:#071127;border-color:rgba(103,199,240,.28);}
+:root[data-theme="dark"] #intro{background:rgba(3,9,23,.93);}
+:root[data-theme="dark"] #intro .modal-box h1,:root[data-theme="dark"] #intro .modal-box .section-title{color:#67c7f0;}
+:root[data-theme="dark"] .modal-card{background:rgba(255,255,255,.035);border-color:rgba(103,199,240,.18);}
+:root[data-theme="dark"] .modal-warning{background:rgba(253,152,67,.09);border-color:rgba(253,152,67,.38);color:#ffd0a3;}
+:root[data-theme="dark"] .modal-warning code{color:#fff!important;}
+:root[data-theme="dark"] .portal-btn-u1{background:rgba(124,58,237,.16);color:#c4b5fd;border-color:#8b5cf6;}
+:root[data-theme="dark"] .portal-btn-u2{background:rgba(253,152,67,.10);color:#fdba74;border-color:#fd9843;}
+:root[data-theme="dark"] .nav-link-btn:hover{color:#e7f7ff;}
+:root[data-theme="dark"] .theme-toggle{background:#0b1b3d;border-color:#67c7f0;color:#f8fbff;}
+:root[data-theme="light"] .circle #conic-formula{background:#e8f2f7;color:#075985;}
+:root[data-theme="dark"] .circle #conic-formula{background:rgba(103,199,240,.10);color:#9ccfe0;}
+:root[data-theme="dark"] #mobile-tools-current{color:#9cddf7;}
+:root[data-theme="light"] #hint{color:#475569;}
+:root[data-theme="dark"] #hint{color:#9fb0ca;}
+@media (max-width:900px){
+  .theme-toggle{top:4px;right:6px;width:32px;height:32px;font-size:15px;}
+  #side-panel{background:var(--ui-panel-solid);border-top-color:var(--ui-border);}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}
 }
 </style>
 </head>
 <body>
+
+<button id="theme-toggle" class="theme-toggle" type="button" aria-label="Gece temasına geç" title="Temayı değiştir">🌙</button>
 
 <!-- Giriş Modalı -->
 <div id="intro">
@@ -552,12 +724,7 @@ body {
     <h1><span style="color:#f87171">▲</span> Konikler Sanal Matematik Laboratuvarı</h1>
 
     <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#64748b;margin:0 0 8px;">Başlamak İstediğiniz Bölümü Seçin</p>
-    <div class="portal-grid" style="margin-bottom:16px;">
-      <button id="startBtn" class="portal-btn portal-btn-free">
-        <span class="p-icon">🔬</span>
-        3B + 2B Laboratuvar
-        <span class="p-sub">Keşif &amp; Analitik İzdüşüm</span>
-      </button>
+    <div class="portal-grid" style="margin-bottom:14px;">
       <button onclick="location.href='konikler_uygulama1_3D.html'" class="portal-btn portal-btn-u1">
         <span class="p-icon">📐</span>
         Uygulama 1
@@ -568,17 +735,17 @@ body {
         Uygulama 2
         <span class="p-sub">Parabol &amp; Hiperbol</span>
       </button>
+      <button id="startBtn" class="portal-btn portal-btn-free">
+        <span class="p-icon">🔬</span>
+        Serbest Mod
+        <span class="p-sub">3B + 2B Keşif Alanı</span>
+      </button>
     </div>
 
-    <p style="font-size:13px;color:#94a3b8;line-height:1.7;margin-bottom:14px;">
-      Yarı tepe açısı <b style="color:#38bdf8">θ = 45°</b> olan çift dik koni (<code style="color:#fde047">x² + z² = y²</code>), <code style="color:#fde047">y = tan(α)·x + c</code> düzlemiyle kesildiğinde oluşan kesitleri hem <b>3B uzayda</b> hem de kesit düzleminin kendi <b>2B yerel koordinat sisteminde (u, v)</b> eşzamanlı olarak inceleyin.
-    </p>
-
-    <div class="section-title">Yeni Laboratuvar Özellikleri</div>
     <div class="modal-row" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:14px;">
       <div class="modal-card">
         <div class="card-title" style="color:#38bdf8">🎚️ Çift Parametre (α ve c)</div>
-        <p style="font-size:12px;color:#94a3b8;line-height:1.6;margin:0;">Düzlem eğim açısı <b>α</b> ve tepeye uzaklık <b>c</b> parametrelerini sürekli değiştirerek standart ve dejenere konikleri gözlemleyin.</p>
+      <p style="font-size:12px;color:#94a3b8;line-height:1.6;margin:0;">Düzlemin tabanla yaptığı açı <b>α</b> ile düzlemin koni eksenini kestiği <b>c</b> değerini değiştirerek standart ve dejenere konikleri gözlemleyin.</p>
       </div>
       <div class="modal-card">
         <div class="card-title" style="color:#a78bfa">📐 2B Gerçek İzdüşüm</div>
@@ -590,9 +757,6 @@ body {
       </div>
     </div>
 
-    <div class="modal-warning">
-      💡 <b>Matematiksel İpucu:</b> Dışmerkezlik <code style="color:#fff">e = sin(α) / sin(45°) = √2·sin(α)</code> formülüyle belirlenir. Düzlem koninin tam tepesinden geçtiğinde (<b>c = 0</b>) nokta, teğet doğru veya kesişen iki doğru (<i>dejenere konikler</i>) oluşur!
-    </div>
   </div>
 </div>
 
@@ -612,6 +776,10 @@ body {
       <span class="nl-icon">📊</span>
       <span>Uygulama 2<small>Parabol &amp; Hiperbol</small></span>
     </a>
+    <div class="nav-link-btn current" aria-current="page">
+      <span class="nl-icon">🔬</span>
+      <span>Serbest Mod<small>3B + 2B Keşif Alanı</small></span>
+    </div>
   </div>
 
   <div class="info-card">
@@ -619,11 +787,11 @@ body {
     <div class="cot-step" id="cot-step-1">
       <b>1. Yüzey &amp; Düzlem:</b><br>
       Koni: <code>x² + z² = y²</code> (θ = 45°)<br>
-      Düzlem: <code id="cot-plane-eq">y = 0.80</code>
+      Düzlem: <code id="cot-plane-eq">y = 0,80</code>
     </div>
     <div class="cot-step" id="cot-step-2">
       <b>2. Kesişim &amp; Dışmerkezlik:</b><br>
-      <span id="cot-ecc-text">α = 0° ⇒ e = √2·sin(0°) = 0.00</span>
+      <span id="cot-ecc-text">α = 0° ⇒ e = sin(0°)/cos(45°) = 0,00</span>
     </div>
     <div class="cot-step" id="cot-step-3">
       <b>3. Geometrik Sonuç:</b><br>
@@ -640,7 +808,12 @@ body {
 </div>
 
 <!-- Sağ Kontrol Paneli -->
-<div id="side-panel">
+<button id="mobile-tools-toggle" type="button" aria-controls="side-panel" aria-expanded="false">
+  <span>🧰 Kesit Araçları</span>
+  <span id="mobile-tools-current">Çember</span>
+  <span class="mobile-tools-chevron" aria-hidden="true">▲</span>
+</button>
+<div id="side-panel" aria-label="Kesit araçları">
   <div class="section-label">Hızlı Kesit Modları</div>
 
   <button class="ctrl-btn circle active" id="btn-circle" onclick="setMode('circle')">
@@ -695,14 +868,14 @@ body {
 <div id="proj-panel">
   <div class="proj-header">
     <h4>📐 2B Kesit Düzlemi (u, v)</h4>
-    <span id="ecc-badge">e = 0.00</span>
+    <span id="ecc-badge">e = 0,00</span>
   </div>
   <canvas id="proj-canvas" width="440" height="320"></canvas>
   <div class="proj-metrics">
-    <div class="metric-chip"><span>Yarı eksen a:</span><b id="m-a">0.80</b></div>
-    <div class="metric-chip"><span>Yarı eksen b:</span><b id="m-b">0.80</b></div>
-    <div class="metric-chip"><span>Odak uz. f:</span><b id="m-f">0.00</b></div>
-    <div class="metric-chip"><span>Tepe uz. c:</span><b id="m-c">0.80</b></div>
+    <div class="metric-chip"><span>Yarı eksen a:</span><b id="m-a">0,80</b></div>
+    <div class="metric-chip"><span>Yarı eksen b:</span><b id="m-b">0,80</b></div>
+    <div class="metric-chip"><span>Odak uz. f:</span><b id="m-f">0,00</b></div>
+    <div class="metric-chip"><span>Eksen kes. c:</span><b id="m-c">0,80</b></div>
   </div>
   <div class="proj-legend">
     <span><i class="legend-dot" style="background:#facc15"></i>Odak (F₁, F₂)</span>
@@ -715,7 +888,7 @@ body {
 <div id="free-panel">
   <div class="slider-row">
     <div class="fp-header">
-      <span>🎚️ Kesim Düzlemi Açısı (α)</span>
+      <span>🎚️ Düzlemin Tabanla Açısı (α)</span>
       <span class="fp-val" id="free-angle-val">α = 0°</span>
     </div>
     <input type="range" class="lab-slider" id="angle-slider" min="0" max="82" value="0" step="1">
@@ -723,8 +896,8 @@ body {
 
   <div class="slider-row">
     <div class="fp-header">
-      <span>📏 Tepe Noktasına Uzaklık (c)</span>
-      <span class="fp-val" id="free-c-val" style="color:#34d399">c = 0.80</span>
+      <span>📏 Eksen Kesişim Değeri (c)</span>
+      <span class="fp-val" id="free-c-val" style="color:#34d399">c = 0,80</span>
     </div>
     <input type="range" class="lab-slider" id="c-slider" min="0" max="1.25" value="0.80" step="0.05">
   </div>
@@ -754,9 +927,13 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.localClippingEnabled = true;
 
+let currentTheme = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+const isDarkTheme = () => currentTheme === 'dark';
+const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0d1b2a);
-scene.fog = new THREE.Fog(0x0d1b2a, 18, 35);
+const initialSceneColor = isDarkTheme() ? 0x071127 : 0xf4f7fc;
+scene.background = new THREE.Color(initialSceneColor);
+scene.fog = new THREE.Fog(initialSceneColor, 18, 35);
 
 const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
 camera.position.set(4.6, 3.3, 5.4);
@@ -945,12 +1122,20 @@ let currentC = 0.80;
 let animRequest = null;
 
 const COLORS = {
-  circle:     { hex: 0x00e5ff, css: '#00e5ff', name: 'Çember' },
-  ellipse:    { hex: 0xa78bfa, css: '#a78bfa', name: 'Elips' },
-  parabola:   { hex: 0xfb923c, css: '#fb923c', name: 'Parabol' },
-  hyperbola:  { hex: 0xf87171, css: '#f87171', name: 'Hiperbol' },
-  degenerate: { hex: 0x34d399, css: '#34d399', name: 'Dejenere Konik' },
+  circle:     { hex: 0x0284c7, css: '#0284c7', name: 'Çember' },
+  ellipse:    { hex: 0x7c3aed, css: '#7c3aed', name: 'Elips' },
+  parabola:   { hex: 0xf97316, css: '#f97316', name: 'Parabol' },
+  hyperbola:  { hex: 0xdc2626, css: '#dc2626', name: 'Hiperbol' },
+  degenerate: { hex: 0x168a74, css: '#168a74', name: 'Dejenere Konik' },
 };
+
+function formatDecimal(value, digits = 2) {
+  return Number(value).toFixed(digits).replace('.', ',');
+}
+
+function formatAngle(value) {
+  return Math.abs(value - Math.round(value)) < 1e-7 ? String(Math.round(value)) : formatDecimal(value, 1);
+}
 
 function computeConicState(alphaDeg, cVal) {
   const alpha = Math.max(0, Math.min(82, alphaDeg));
@@ -958,7 +1143,8 @@ function computeConicState(alphaDeg, cVal) {
   const rad = (alpha * Math.PI) / 180;
   const m = Math.tan(rad);
   const scaleU = Math.sqrt(1 + m * m); // u = x * scaleU
-  const ecc = Math.SQRT2 * Math.sin(rad); // e = sin(α) / sin(45°)
+  const ecc = Math.SQRT2 * Math.sin(rad); // e = sin(α) / cos(θ), θ = 45°
+  const alphaText = formatAngle(alpha);
 
   const pts3D = [];
   const pts2D = []; // {u, v}
@@ -968,13 +1154,14 @@ function computeConicState(alphaDeg, cVal) {
   let desc = '';
   let cotStep2 = '';
   let cotStep3 = '';
-  let metrics = { a: '—', b: '—', f: '—', c: c.toFixed(2) };
+  let metrics = { a: '—', b: '—', f: '—', c: formatDecimal(c) };
   let foci2D = [];       // [{u, v, label}]
   let foci3D = [];       // [THREE.Vector3]
   let center2D = null;   // {u, v}
   let directrixU = [];   // [u1, u2...]
 
-  const isDegenerate = c < 0.025;
+  const EPS = 1e-7;
+  const isDegenerate = Math.abs(c) < EPS;
 
   if (isDegenerate) {
     type = 'degenerate';
@@ -982,11 +1169,11 @@ function computeConicState(alphaDeg, cVal) {
     foci2D = [{ u: 0, v: 0, label: 'T(0,0)' }];
     foci3D = [new THREE.Vector3(0, 0, 0)];
 
-    if (alpha < 44.5) {
+    if (alpha < 45 - EPS) {
       subTitle = 'Dejenere Konik (Tek Nokta)';
       formula = 'u² + v² = 0  ⇒  (0, 0)';
       desc = 'Düzlem koninin tam tepe noktasından (c = 0) ve α < 45° açıyla geçtiği için kesişim yalnızca tepe noktasıdır.';
-      cotStep2 = `c = 0 ve α = ${alpha.toFixed(0)}° < 45° ⇒ (1−m²)x² + z² = 0`;
+      cotStep2 = `c = 0 ve α = ${alphaText}° < 45° ⇒ (1−m²)x² + z² = 0`;
       cotStep3 = `Denklemi sağlayan tek reel çözüm koninin tepesidir: (0, 0, 0) noktası.`;
       // Tepe noktasını belirgin küçük bir halka olarak çiz
       for (let i = 0; i <= 40; i++) {
@@ -994,8 +1181,8 @@ function computeConicState(alphaDeg, cVal) {
         pts3D.push(new THREE.Vector3(0.05 * Math.cos(t), 0, 0.05 * Math.sin(t)));
         pts2D.push({ u: 0.05 * Math.cos(t), v: 0.05 * Math.sin(t) });
       }
-      metrics = { a: '0.00', b: '0.00', f: '0.00', c: '0.00' };
-    } else if (alpha <= 45.5) {
+      metrics = { a: '0,00', b: '0,00', f: '0,00', c: '0,00' };
+    } else if (Math.abs(alpha - 45) <= EPS) {
       subTitle = 'Dejenere Parabol (Teğet Doğru)';
       formula = 'v² = 0  ⇒  v = 0 doğrusu';
       desc = 'Düzlem c = 0 iken α = 45° (ana doğru eğimi) ile geçtiğinden koni yüzeyine boyunca tek bir teğet doğru (üreteç) oluşturur.';
@@ -1008,13 +1195,13 @@ function computeConicState(alphaDeg, cVal) {
         pts3D.push(new THREE.Vector3(x, y, 0));
         pts2D.push({ u: x * scaleU, v: 0 });
       }
-      metrics = { a: '∞', b: '0.00', f: '0.00', c: '0.00' };
+      metrics = { a: '∞', b: '0,00', f: '0,00', c: '0,00' };
     } else {
       subTitle = 'Dejenere Hiperbol (Kesişen İki Doğru)';
       const slopeV = Math.sqrt(m * m - 1) / scaleU;
-      formula = `v = ±${slopeV.toFixed(2)}·u`;
+      formula = `v = ±${formatDecimal(slopeV)}·u`;
       desc = 'Düzlem tepe noktasından (c = 0) α > 45° açıyla geçtiği için her iki koniyi iki ana doğru boyunca keser.';
-      cotStep2 = `c = 0 ve α = ${alpha.toFixed(0)}° > 45° ⇒ z² = (m²−1)x²`;
+      cotStep2 = `c = 0 ve α = ${alphaText}° > 45° ⇒ z² = (m²−1)x²`;
       cotStep3 = `Hiperbolün asimptotları olan kesişen iki doğru (z = ±√(m²−1)x) elde edilir.`;
       const A = Math.sqrt(m * m - 1);
       const xMax = Math.min(1.95 / m, 1.95);
@@ -1031,16 +1218,16 @@ function computeConicState(alphaDeg, cVal) {
         pts3D.push(new THREE.Vector3(x, m * x, -A * x));
         pts2D.push({ u: x * scaleU, v: -A * x });
       }
-      metrics = { a: '0.00', b: '0.00', f: '0.00', c: '0.00' };
+      metrics = { a: '0,00', b: '0,00', f: '0,00', c: '0,00' };
     }
-  } else if (alpha < 1.0) {
+  } else if (Math.abs(alpha) <= EPS) {
     /* ── ÇEMBER (α ≈ 0°) ── */
     type = 'circle';
     subTitle = 'Çember';
-    formula = `u² + v² = ${c.toFixed(2)}²`;
+    formula = `u² + v² = ${formatDecimal(c)}²`;
     desc = `Düzlem tabana paralel (α = 0°) kesiyor. Dışmerkezlik e = 0 olup odak noktaları merkezde (F₁ = F₂) çakışıktır.`;
-    cotStep2 = `α = 0° ⇒ e = √2·sin(0°) = 0.00`;
-    cotStep3 = `y = ${c.toFixed(2)} düzlemi koniyi r = ${c.toFixed(2)} yarıçaplı tam çember boyunca keser.`;
+    cotStep2 = `α = 0° ⇒ e = sin(0°)/cos(45°) = 0,00`;
+    cotStep3 = `y = ${formatDecimal(c)} düzlemi koniyi r = ${formatDecimal(c)} yarıçaplı tam çember boyunca keser.`;
 
     const N = 240;
     for (let i = 0; i <= N; i++) {
@@ -1053,9 +1240,9 @@ function computeConicState(alphaDeg, cVal) {
     center2D = { u: 0, v: 0 };
     foci2D = [{ u: 0, v: 0, label: 'F₁=F₂' }];
     foci3D = [new THREE.Vector3(0, c, 0)];
-    metrics = { a: c.toFixed(2), b: c.toFixed(2), f: '0.00', c: c.toFixed(2) };
+    metrics = { a: formatDecimal(c), b: formatDecimal(c), f: '0,00', c: formatDecimal(c) };
 
-  } else if (alpha < 44.5) {
+  } else if (alpha < 45 - EPS) {
     /* ── ELİPS (0° < α < 45°) ── */
     type = 'ellipse';
     subTitle = 'Elips';
@@ -1067,10 +1254,10 @@ function computeConicState(alphaDeg, cVal) {
     const fPlane = Math.sqrt(Math.max(0, aPlane * aPlane - bPlane * bPlane));
     const uc = xc * scaleU;
 
-    formula = `(u−${uc.toFixed(1)})²/${aPlane.toFixed(2)}² + v²/${bPlane.toFixed(2)}² = 1`;
+    formula = `(u−${formatDecimal(uc, 1)})²/${formatDecimal(aPlane)}² + v²/${formatDecimal(bPlane)}² = 1`;
     desc = `0° < α < 45° olduğundan düzlem tek koni kolunu kapalı eğri (Elips) olarak keser. 0 < e < 1.`;
-    cotStep2 = `α = ${alpha.toFixed(0)}° ⇒ e = √2·sin(${alpha.toFixed(0)}°) = ${ecc.toFixed(2)} < 1`;
-    cotStep3 = `Düzlem içi yarı eksenler a = ${aPlane.toFixed(2)}, b = ${bPlane.toFixed(2)} ve odak uzaklığı f = ${fPlane.toFixed(2)}.`;
+    cotStep2 = `α = ${alphaText}° ⇒ e = sin(${alphaText}°)/cos(45°) = ${formatDecimal(ecc)} < 1`;
+    cotStep3 = `Düzlem içi yarı eksenler a = ${formatDecimal(aPlane)}, b = ${formatDecimal(bPlane)} ve odak uzaklığı f = ${formatDecimal(fPlane)}.`;
 
     const N = 260;
     for (let i = 0; i <= N; i++) {
@@ -1095,19 +1282,19 @@ function computeConicState(alphaDeg, cVal) {
     if (ecc > 0.05) {
       directrixU = [uc - aPlane / ecc, uc + aPlane / ecc];
     }
-    metrics = { a: aPlane.toFixed(2), b: bPlane.toFixed(2), f: fPlane.toFixed(2), c: c.toFixed(2) };
+    metrics = { a: formatDecimal(aPlane), b: formatDecimal(bPlane), f: formatDecimal(fPlane), c: formatDecimal(c) };
 
-  } else if (alpha <= 45.5) {
+  } else if (Math.abs(alpha - 45) <= EPS) {
     /* ── PARABOL (α ≈ 45°) ── */
     type = 'parabola';
     subTitle = 'Parabol';
     // m = 1 => z² = 2c(x + c/2), u = x√2 => v² = √2·c·(u - uV) = 4p(u - uV)
     const uV = (-c / 2) * Math.SQRT2;
     const pFocal = (Math.SQRT2 * c) / 4;
-    formula = `v² = ${(4 * pFocal).toFixed(2)}·(u + ${Math.abs(uV).toFixed(2)})`;
+    formula = `v² = ${formatDecimal(4 * pFocal)}·(u + ${formatDecimal(Math.abs(uV))})`;
     desc = `Düzlem koninin ana doğrusuna paraleldir (α = 45°). Dışmerkezlik tam olarak e = 1 olur ve eğri sonsuza açılır.`;
-    cotStep2 = `α = 45° ⇒ e = √2·sin(45°) = 1.00 (Kritik Sınır)`;
-    cotStep3 = `x² terimleri sadeleşir: v² = 4p(u − u₀), odak parametresi p = ${pFocal.toFixed(2)}.`;
+    cotStep2 = `α = 45° ⇒ e = sin(45°)/cos(45°) = 1,00 (Kritik Sınır)`;
+    cotStep3 = `x² terimleri sadeleşir: v² = 4p(u − u₀), odak parametresi p = ${formatDecimal(pFocal)}.`;
 
     const yMax = 2.0;
     const tMax = Math.sqrt(Math.max(0.1, 2 * c * yMax - c * c));
@@ -1125,7 +1312,7 @@ function computeConicState(alphaDeg, cVal) {
     const xF = uF / Math.SQRT2;
     foci3D = [new THREE.Vector3(xF, xF + c, 0)];
     directrixU = [uV - pFocal];
-    metrics = { a: '∞', b: '∞', f: pFocal.toFixed(2), c: c.toFixed(2) };
+    metrics = { a: '∞', b: '∞', f: formatDecimal(pFocal), c: formatDecimal(c) };
 
   } else {
     /* ── HİPERBOL (α > 45°) ── */
@@ -1139,10 +1326,10 @@ function computeConicState(alphaDeg, cVal) {
     const fPlane = Math.sqrt(aPlane * aPlane + bPlane * bPlane);
     const uc = xc * scaleU;
 
-    formula = `(u+${Math.abs(uc).toFixed(1)})²/${aPlane.toFixed(2)}² − v²/${bPlane.toFixed(2)}² = 1`;
+    formula = `(u+${formatDecimal(Math.abs(uc), 1)})²/${formatDecimal(aPlane)}² − v²/${formatDecimal(bPlane)}² = 1`;
     desc = `α > 45° olduğundan düzlem hem üst hem alt koniyi keser ve iki ayrı kol (Hiperbol, e > 1) oluşur.`;
-    cotStep2 = `α = ${alpha.toFixed(0)}° > 45° ⇒ e = √2·sin(${alpha.toFixed(0)}°) = ${ecc.toFixed(2)} > 1`;
-    cotStep3 = `İki koni kolu kesilir: a = ${aPlane.toFixed(2)}, b = ${bPlane.toFixed(2)}, odak uzaklığı f = ${fPlane.toFixed(2)}.`;
+    cotStep2 = `α = ${alphaText}° > 45° ⇒ e = sin(${alphaText}°)/cos(45°) = ${formatDecimal(ecc)} > 1`;
+    cotStep3 = `İki koni kolu kesilir: a = ${formatDecimal(aPlane)}, b = ${formatDecimal(bPlane)}, odak uzaklığı f = ${formatDecimal(fPlane)}.`;
 
     const zMax = 1.75;
     const N = 200;
@@ -1181,7 +1368,7 @@ function computeConicState(alphaDeg, cVal) {
       new THREE.Vector3(xF2, m * xF2 + c, 0),
     ];
     directrixU = [uc + aPlane / ecc, uc - aPlane / ecc];
-    metrics = { a: aPlane.toFixed(2), b: bPlane.toFixed(2), f: fPlane.toFixed(2), c: c.toFixed(2) };
+    metrics = { a: formatDecimal(aPlane), b: formatDecimal(bPlane), f: formatDecimal(fPlane), c: formatDecimal(c) };
   }
 
   // 3B Düzlem Konumu ve Normali: y - m·x - c = 0  =>  normal = (-m, 1, 0)
@@ -1266,9 +1453,10 @@ function draw2DProjection(state) {
   const W = projCanvas.width;
   const H = projCanvas.height;
   pCtx.clearRect(0, 0, W, H);
+  const dark = isDarkTheme();
 
   // Arka plan
-  pCtx.fillStyle = '#07111e';
+  pCtx.fillStyle = dark ? '#071127' : '#ffffff';
   pCtx.fillRect(0, 0, W, H);
 
   // Merkez ve ölçek (u yatay, v dikey)
@@ -1280,7 +1468,9 @@ function draw2DProjection(state) {
   pCtx.lineWidth = 1;
   for (let u = -4; u <= 4; u += 0.5) {
     const px = cx + u * scale;
-    pCtx.strokeStyle = Math.abs(u) < 0.01 ? 'rgba(148,163,184,0.45)' : 'rgba(56,189,248,0.08)';
+    pCtx.strokeStyle = Math.abs(u) < 0.01
+      ? (dark ? 'rgba(189,201,223,0.55)' : 'rgba(19,43,147,0.46)')
+      : (dark ? 'rgba(103,199,240,0.10)' : 'rgba(0,51,179,0.10)');
     pCtx.beginPath();
     pCtx.moveTo(px, 0);
     pCtx.lineTo(px, H);
@@ -1288,7 +1478,9 @@ function draw2DProjection(state) {
   }
   for (let v = -3; v <= 3; v += 0.5) {
     const py = cy - v * scale;
-    pCtx.strokeStyle = Math.abs(v) < 0.01 ? 'rgba(148,163,184,0.45)' : 'rgba(56,189,248,0.08)';
+    pCtx.strokeStyle = Math.abs(v) < 0.01
+      ? (dark ? 'rgba(189,201,223,0.55)' : 'rgba(19,43,147,0.46)')
+      : (dark ? 'rgba(103,199,240,0.10)' : 'rgba(0,51,179,0.10)');
     pCtx.beginPath();
     pCtx.moveTo(0, py);
     pCtx.lineTo(W, py);
@@ -1296,7 +1488,7 @@ function draw2DProjection(state) {
   }
 
   // Eksen isimleri
-  pCtx.fillStyle = '#64748b';
+  pCtx.fillStyle = dark ? '#bdc9df' : '#334155';
   pCtx.font = 'bold 18px Consolas, monospace';
   pCtx.fillText('u', W - 20, cy - 8);
   pCtx.fillText('v', cx + 8, 20);
@@ -1349,7 +1541,7 @@ function draw2DProjection(state) {
   if (state.center2D) {
     const mx = cx + state.center2D.u * scale;
     const my = cy - state.center2D.v * scale;
-    pCtx.fillStyle = '#38bdf8';
+    pCtx.fillStyle = dark ? '#67c7f0' : '#0033b3';
     pCtx.beginPath();
     pCtx.arc(mx, my, 4.5, 0, Math.PI * 2);
     pCtx.fill();
@@ -1360,12 +1552,12 @@ function draw2DProjection(state) {
     const fx = cx + f.u * scale;
     const fy = cy - f.v * scale;
     if (fx >= -20 && fx <= W + 20) {
-      pCtx.fillStyle = '#facc15';
+      pCtx.fillStyle = dark ? '#ffd166' : '#9a6200';
       pCtx.beginPath();
       pCtx.arc(fx, fy, 5.5, 0, Math.PI * 2);
       pCtx.fill();
 
-      pCtx.fillStyle = '#fef08a';
+      pCtx.fillStyle = dark ? '#fff0a6' : '#6b4200';
       pCtx.font = 'bold 17px Segoe UI, sans-serif';
       pCtx.fillText(f.label, fx - 10, fy - 10);
     }
@@ -1419,15 +1611,16 @@ function renderConicState(alphaDeg, cVal) {
   document.getElementById('conic-name').textContent = state.subTitle;
   document.getElementById('conic-desc').textContent = state.desc;
   document.getElementById('conic-formula').textContent = state.formula;
+  document.getElementById('mobile-tools-current').textContent = state.subTitle;
 
   // 5) Sol Üst Adım Adım Matematiksel Çıkarım (CoT)
-  const mStr = state.m < 0.01 ? '' : `${state.m.toFixed(2)}·x + `;
-  document.getElementById('cot-plane-eq').textContent = `y = ${mStr}${state.c.toFixed(2)}`;
+  const mStr = state.m < 0.01 ? '' : `${formatDecimal(state.m)}·x + `;
+  document.getElementById('cot-plane-eq').textContent = `y = ${mStr}${formatDecimal(state.c)}`;
   document.getElementById('cot-ecc-text').textContent = state.cotStep2;
   document.getElementById('cot-result-text').textContent = state.cotStep3;
 
   // 6) Sağ Alt 2B İzdüşüm ve Metrikler
-  document.getElementById('ecc-badge').textContent = `e = ${state.ecc.toFixed(2)}`;
+  document.getElementById('ecc-badge').textContent = `e = ${formatDecimal(state.ecc)}`;
   document.getElementById('m-a').textContent = state.metrics.a;
   document.getElementById('m-b').textContent = state.metrics.b;
   document.getElementById('m-f').textContent = state.metrics.f;
@@ -1437,8 +1630,8 @@ function renderConicState(alphaDeg, cVal) {
   // 7) Kaydırıcı Etiketleri
   document.getElementById('angle-slider').value = alphaDeg;
   document.getElementById('c-slider').value = cVal;
-  document.getElementById('free-angle-val').textContent = `α = ${Math.round(alphaDeg)}°`;
-  document.getElementById('free-c-val').textContent = `c = ${cVal.toFixed(2)}`;
+  document.getElementById('free-angle-val').textContent = `α = ${formatAngle(alphaDeg)}°`;
+  document.getElementById('free-c-val').textContent = `c = ${formatDecimal(cVal)}`;
 
   // 8) Aktif Buton Vurgusu
   document.querySelectorAll('#side-panel .ctrl-btn').forEach(b => {
@@ -1543,16 +1736,58 @@ document.getElementById('c-slider').addEventListener('input', function() {
   renderConicState(currentAlpha, parseFloat(this.value));
 });
 
+const mobileToolsToggle = document.getElementById('mobile-tools-toggle');
+const sidePanel = document.getElementById('side-panel');
+
+function setMobileToolsOpen(open) {
+  const shouldOpen = Boolean(open) && window.matchMedia('(max-width: 900px)').matches;
+  sidePanel.classList.toggle('mobile-open', shouldOpen);
+  mobileToolsToggle.setAttribute('aria-expanded', String(shouldOpen));
+}
+
+mobileToolsToggle.addEventListener('click', () => {
+  setMobileToolsOpen(mobileToolsToggle.getAttribute('aria-expanded') !== 'true');
+});
+
+document.querySelectorAll('#side-panel .ctrl-btn').forEach(button => {
+  button.addEventListener('click', () => {
+    if (window.matchMedia('(max-width: 900px)').matches) setMobileToolsOpen(false);
+  });
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') setMobileToolsOpen(false);
+});
+
+window.matchMedia('(min-width: 901px)').addEventListener('change', event => {
+  if (event.matches) setMobileToolsOpen(false);
+});
+
 /* ═══════════════════════════════════════════════════
    10. IZGARA / ZEMİN VE RENDER DÖNGÜSÜ
 ═══════════════════════════════════════════════════ */
-const gridHelper = new THREE.GridHelper(14, 20, 0x1e3a5f, 0x132030);
-gridHelper.position.y = -2.4;
-scene.add(gridHelper);
+let gridHelper = null;
+function rebuildGridForTheme() {
+  if (gridHelper) {
+    scene.remove(gridHelper);
+    gridHelper.geometry.dispose();
+    const mats = Array.isArray(gridHelper.material) ? gridHelper.material : [gridHelper.material];
+    mats.forEach(m => m.dispose());
+  }
+  gridHelper = new THREE.GridHelper(
+    14,
+    20,
+    isDarkTheme() ? 0x67c7f0 : 0x0033b3,
+    isDarkTheme() ? 0x173a72 : 0xc8d5f2
+  );
+  gridHelper.position.y = -2.4;
+  scene.add(gridHelper);
+}
+rebuildGridForTheme();
 
 const floorGeo = new THREE.CircleGeometry(7, 64);
 const floorMat = new THREE.MeshStandardMaterial({
-  color: 0x0a1828, roughness: 0.92, metalness: 0.1,
+  color: isDarkTheme() ? 0x09152f : 0xeaf0fb, roughness: 0.92, metalness: 0.1,
   transparent: true, opacity: 0.7,
 });
 const floorMesh = new THREE.Mesh(floorGeo, floorMat);
@@ -1561,10 +1796,41 @@ floorMesh.position.y = -2.42;
 floorMesh.receiveShadow = true;
 scene.add(floorMesh);
 
+function applyTheme(theme, redraw = true) {
+  currentTheme = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = currentTheme;
+  const dark = isDarkTheme();
+  const bg = dark ? 0x071127 : 0xf4f7fc;
+  scene.background.setHex(bg);
+  scene.fog.color.setHex(bg);
+  floorMat.color.setHex(dark ? 0x09152f : 0xeaf0fb);
+  floorMat.opacity = dark ? 0.72 : 0.90;
+  rebuildGridForTheme();
+
+  const themeButton = document.getElementById('theme-toggle');
+  themeButton.textContent = dark ? '☀️' : '🌙';
+  themeButton.setAttribute('aria-label', dark ? 'Gündüz temasına geç' : 'Gece temasına geç');
+  themeButton.setAttribute('aria-pressed', String(dark));
+  if (redraw) renderConicState(currentAlpha, currentC);
+}
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  const next = isDarkTheme() ? 'light' : 'dark';
+  try { localStorage.setItem('konikler-theme', next); } catch (e) {}
+  applyTheme(next);
+});
+applyTheme(currentTheme, false);
+
 function resize() {
   const w = canvas.clientWidth, h = canvas.clientHeight;
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
+  const portrait = h > w;
+  camera.fov = portrait ? 52 : 45;
+  const desiredDistance = portrait ? 9.2 : 7.8;
+  if (Math.abs(camera.position.length() - desiredDistance) > 0.15) {
+    camera.position.setLength(desiredDistance);
+  }
   camera.updateProjectionMatrix();
 }
 new ResizeObserver(resize).observe(canvas);
@@ -1577,13 +1843,22 @@ document.getElementById('startBtn').addEventListener('click', () => {
   setTimeout(() => intro.classList.add('hidden'), 420);
 });
 
+// Alt uygulamalardaki "Serbest Mod" bağlantısı giriş portalını atlayarak
+// doğrudan laboratuvar çalışma alanını açar.
+const requestedMode = document.documentElement.dataset.entryMode;
+if (requestedMode === 'free') {
+  const intro = document.getElementById('intro');
+  intro.classList.add('hidden');
+  intro.setAttribute('aria-hidden', 'true');
+}
+
 // İlk durumu yükle
 renderConicState(0, 0.85);
 
 function animate() {
   requestAnimationFrame(animate);
 
-  if (!controls.autoRotate) {
+  if (!controls.autoRotate && !reduceMotionQuery.matches) {
     coneGroup.rotation.y += 0.0025;
     planeGroup.rotation.y += 0.0025;
 
