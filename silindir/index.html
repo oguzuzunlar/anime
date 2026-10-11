@@ -1,0 +1,2485 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Katı Silindirin Hacmi Materyali</title>
+  
+  <!-- Gömülü Matbis Manifest v1.0 -->
+  <script type="application/json" id="matbis-manifest">
+  {
+    "format": "matbis-materyal",
+    "surum": "1.0",
+    "kimlik": {
+      "id": "silindir-dilimleri-geometrik-seri-alan-hacim",
+      "baslik": "Katı Silindirin Hacmi Materyali",
+      "uretici": "OGM",
+      "materyal_surumu": "1.2",
+      "tarih": "2026-10-11"
+    },
+    "matematik": {
+      "durum": "Dik dairesel silindirin açısal dilimlere ayrılmasıyla geometrik diziler, sonsuz küçükler, limit yaklaşımı ile taban alanı ve hacim bağıntılarının yapılandırılması incelenir.",
+      "degiskenler": ["taban yarıçapı", "silindir yüksekliği", "dilim sayısı ve merkez açı", "geometrik dizi adım sayısı"],
+      "cikti": "dilim hacimleri, geometrik dizi toplamı, paralelkenara/dikdörtgene yaklaşan taban alanı ve silindir hacmi"
+    },
+    "teknik": {
+      "giris": "index.html",
+      "onizleme_tipi": "temsili_durum",
+      "onizleme_kipi": "?onizleme=1",
+      "onizleme_odagi": "Dik dairesel silindirin 1/4, 1/8, 1/16 ve 1/32'lik renkli dilimlerinin 3B temsili",
+      "dis_baglanti": [],
+      "tema": "gunduz-varsayilan_gece-kullanici-secimi",
+      "yerel_kutuphaneler": ["lib/three.min.js", "lib/mathjax/tex-chtml.js"],
+      "klavye": true,
+      "hareket_azaltma": true,
+      "responsive": true,
+      "paket_ayrismasi": true,
+      "kullanim_rehberi": true
+    },
+    "program": {
+      "program_surumu": "Türkiye Yüzyılı Maarif Modeli Matematik Dersi Öğretim Programı",
+      "sinif_duzeyi": [10, 11, 12],
+      "ogrenme_ciktisi": ["MAT.10.4.1", "MAT.11.3.1", "MAT.12.3.2"],
+      "beceri_etiketleri": ["MAB1", "MAB3", "MAB5", "KB2.6", "KB2.10", "OB2", "OB4"],
+      "surec_bilesenleri": ["MAT.10.4.1.a", "MAT.11.3.1.b", "MAT.12.3.2.c"]
+    }
+  }
+  </script>
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']]
+      },
+      chtml: { scale: 0.96 },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script defer id="MathJax-script" src="lib/mathjax/tex-chtml.js"></script>
+  <style>
+    :root {
+      --ms-bg: #F6F8FD;
+      --ms-surface: #FFFFFF;
+      --ms-surface-alt: #EDF2FF;
+      --ms-preview-bg: #F4F6F9;
+      --ms-text: #142448;
+      --ms-text-muted: #596786;
+      --ms-border: #DCE4F4;
+      --ms-control-border: #7182A4;
+      --ms-primary: #285CD1;
+      --ms-primary-hover: #224FBA;
+      --ms-primary-light: #E4ECFF;
+      --ms-selection-text: #142448;
+      --ms-focus: #2C5ECB;
+      --ms-link: #2C5ECB;
+      --ms-info: #2455AA;
+      --ms-info-bg: #EDF4FF;
+      --ms-success: #096D60;
+      --ms-success-bg: #E8F6F2;
+      --ms-warning: #855000;
+      --ms-warning-bg: #FFF5DF;
+      --ms-error: #B42332;
+      --ms-error-bg: #FFF0F2;
+      --ms-badge-bg: #285CD1;
+      --ms-badge-text: #ffffff;
+      --ms-card-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --ms-bg: #09132A;
+      --ms-surface: #101E39;
+      --ms-surface-alt: #18284C;
+      --ms-preview-bg: #151C28;
+      --ms-text: #EDF3FF;
+      --ms-text-muted: #ACBBD7;
+      --ms-border: #2C3D61;
+      --ms-control-border: #7183A6;
+      --ms-primary: #3564D8;
+      --ms-primary-hover: #2D58C7;
+      --ms-primary-light: #223968;
+      --ms-selection-text: #EDF3FF;
+      --ms-focus: #A2BDFF;
+      --ms-link: #A2BDFF;
+      --ms-info: #ABC7FF;
+      --ms-info-bg: #142D51;
+      --ms-success: #85E3C2;
+      --ms-success-bg: #173B36;
+      --ms-warning: #FFD38A;
+      --ms-warning-bg: #352918;
+      --ms-error: #FFA8B1;
+      --ms-error-bg: #381F30;
+      --ms-badge-bg: #3564D8;
+      --ms-badge-text: #FFFFFF;
+      --ms-card-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-style: normal !important;
+    }
+    [hidden] { display: none !important; }
+
+    .app-loading {
+      position: fixed;
+      inset: 0;
+      z-index: 1900;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: var(--ms-bg);
+      color: var(--ms-text);
+    }
+    .app-loading-card {
+      width: min(420px, 100%);
+      padding: 22px;
+      border: 1px solid var(--ms-border);
+      border-radius: 12px;
+      background: var(--ms-surface);
+      color: var(--ms-text);
+      text-align: center;
+      box-shadow: var(--ms-card-shadow);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .app-loading-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-right: 8px;
+      border-radius: 50%;
+      background: var(--ms-primary);
+      animation: loading-pulse 0.9s ease-in-out infinite alternate;
+    }
+    @keyframes loading-pulse {
+      from { opacity: 0.35; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Materyalde metin ve matematik değişkenleri dâhil tüm karakterler diktir. */
+    mjx-container,
+    mjx-container *,
+    mjx-mi,
+    mjx-mi.mjx-i {
+      font-style: normal !important;
+    }
+    body {
+      font-family: var(--font-family);
+      background-color: var(--ms-bg);
+      color: var(--ms-text);
+      height: 100vh;
+      overflow: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--ms-focus);
+      outline-offset: 2px;
+    }
+
+    header {
+      background: var(--ms-surface);
+      border-bottom: 2px solid var(--ms-border);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .header-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--ms-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      background: var(--ms-surface-alt);
+      border: 1px solid var(--ms-control-border);
+      color: var(--ms-text);
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn-icon:hover {
+      background: var(--ms-primary-light);
+      border-color: var(--ms-primary);
+      color: var(--ms-primary);
+    }
+
+    main {
+      --sidebar-width: 555px;
+      flex: 1;
+      display: grid;
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      height: calc(100vh - 56px);
+      min-height: 0;
+      overflow: hidden;
+      position: relative;
+      transition: grid-template-columns 0.25s ease;
+    }
+
+    main.sidebar-collapsed { grid-template-columns: 0 minmax(0, 1fr); }
+    main.sidebar-collapsed .sidebar {
+      display: none;
+      padding-inline: 0;
+      border-right-width: 0;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .sidebar {
+      grid-column: 1;
+      min-width: 0;
+      background: var(--ms-surface);
+      border-right: 2px solid var(--ms-border);
+      padding: 14px 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: opacity 0.2s ease, padding 0.25s ease;
+    }
+
+    .sidebar-toggle {
+      position: absolute;
+      top: 34%;
+      left: calc(var(--sidebar-width) - 18px);
+      z-index: 12;
+      width: 36px;
+      height: 68px;
+      border: 2px solid var(--ms-primary);
+      border-radius: 10px;
+      background: var(--ms-surface);
+      color: var(--ms-primary);
+      box-shadow: var(--ms-card-shadow);
+      cursor: pointer;
+      font-size: 1.7rem;
+      font-weight: 800;
+      line-height: 1;
+      transform: translateY(-50%);
+      transition: left 0.25s ease, background 0.15s ease, color 0.15s ease;
+    }
+    .sidebar-toggle:hover {
+      background: var(--ms-primary);
+      color: #ffffff;
+    }
+    main.sidebar-collapsed .sidebar-toggle {
+      left: 8px;
+    }
+
+    @media (max-width: 1100px) {
+      body {
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+      main,
+      main.sidebar-collapsed {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(260px, 44vh) auto;
+        height: auto;
+        overflow: visible;
+      }
+      .sidebar,
+      main.sidebar-collapsed .sidebar {
+        display: flex;
+        grid-row: 2;
+        padding: 14px 16px;
+        border-right: 0;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        overflow: visible;
+      }
+      .sidebar-toggle { display: none; }
+      main .viewport-container {
+        grid-column: 1;
+        grid-row: 1;
+        position: sticky;
+        top: 0;
+        align-self: start;
+        z-index: 8;
+        height: 44vh;
+        min-height: 260px;
+        border-bottom: 2px solid var(--ms-border);
+      }
+      main .viewport-controls {
+        top: auto;
+        right: 12px;
+        bottom: 12px;
+        flex-direction: row;
+      }
+      main .viewport-instructions {
+        top: 12px;
+        bottom: auto;
+        left: 12px;
+        max-width: calc(100% - 24px);
+        transform: none;
+        white-space: normal;
+      }
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 0.8fr 1fr 1fr 1.2fr;
+      gap: 4px;
+      background: var(--ms-surface-alt);
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid var(--ms-control-border);
+    }
+
+    .tab-btn {
+      min-width: 0;
+      background: transparent;
+      border: none;
+      padding: 7px 2px;
+      font-size: clamp(0.74rem, 1vw, 0.84rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--ms-text-muted);
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .tab-btn.active {
+      background: var(--ms-primary);
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .panel-section {
+      background: var(--ms-surface-alt);
+      border: 1px solid var(--ms-control-border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 1rem;
+    }
+    .panel-section > p { font-size: 0.95rem !important; line-height: 1.5 !important; }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--ms-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-left: 3px solid var(--ms-primary);
+      padding-left: 6px;
+    }
+
+    .btn {
+      background: var(--ms-primary);
+      color: #ffffff;
+      border: none;
+      padding: 8px 14px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn:hover {
+      background: var(--ms-primary-hover);
+    }
+    .btn-secondary {
+      background: var(--ms-surface);
+      color: var(--ms-text);
+      border: 1px solid var(--ms-control-border);
+    }
+    .btn-secondary:hover {
+      background: var(--ms-surface-alt);
+      border-color: var(--ms-primary);
+      color: var(--ms-primary);
+    }
+
+    .badge-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-yellow { background: #fef3c7; color: #92400e; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+
+    .control-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--ms-text);
+    }
+    .range-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--ms-control-border);
+      accent-color: var(--ms-primary);
+      cursor: pointer;
+    }
+
+    .viewport-container {
+      grid-column: 2;
+      position: relative;
+      background: var(--ms-preview-bg);
+      width: 100%;
+      height: 100%;
+      min-height: 400px;
+      overflow: hidden;
+    }
+
+    #three-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .viewport-overlay {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(15, 23, 42, 0.78);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+      z-index: 5;
+    }
+
+    .viewport-controls {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    .viewport-instructions {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.75);
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: 14px;
+      font-size: 0.72rem;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+      white-space: nowrap;
+    }
+
+    .dialog-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 16px;
+    }
+    .dialog-backdrop.open {
+      display: flex;
+    }
+
+    .dialog-box {
+      background: var(--ms-surface);
+      border: 2px solid var(--ms-border);
+      border-radius: 12px;
+      max-width: 640px;
+      width: 100%;
+      padding: 20px;
+      box-shadow: var(--ms-card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+    }
+
+    .dialog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .dialog-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+    .dialog-actions .btn-icon {
+      width: 44px;
+      height: 44px;
+    }
+
+    .dialog-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--ms-text);
+    }
+
+    .intro-guide {
+      color: var(--ms-text-muted);
+      font-size: 0.98rem;
+      line-height: 1.55;
+    }
+    .intro-guide ol {
+      margin: 4px 0 0 1.35rem;
+      display: grid;
+      gap: 10px;
+    }
+    .intro-guide li { padding-left: 3px; }
+    .intro-guide strong { color: var(--ms-text); }
+    .dialog-start { align-self: flex-start; min-height: 44px; }
+
+    @media (max-width: 520px) {
+      .dialog-backdrop { padding: 10px; }
+      .dialog-box { padding: 16px; max-height: calc(100vh - 20px); }
+      .dialog-title { font-size: 1.18rem; }
+      .intro-guide { font-size: 0.92rem; }
+    }
+
+    .dependency-error {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: var(--ms-bg);
+      color: var(--ms-text);
+    }
+    .dependency-error[hidden] { display: none; }
+    .dependency-error-card {
+      width: min(560px, 100%);
+      padding: 24px;
+      border: 2px solid var(--ms-error);
+      border-radius: 12px;
+      background: var(--ms-surface);
+      text-align: center;
+      box-shadow: var(--ms-card-shadow);
+    }
+    .dependency-error-card h1 { margin-bottom: 8px; font-size: 1.5rem; }
+    .dependency-error-card p { margin-bottom: 14px; line-height: 1.5; color: var(--ms-text-muted); }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 14px;
+      background: var(--ms-surface);
+      border: 1px solid var(--ms-control-border);
+      border-radius: 7px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1d4ed8, #059669);
+      width: 0%;
+      transition: width 0.25s ease;
+    }
+
+    .quiz-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid var(--ms-control-border);
+      border-radius: 8px;
+      background: var(--ms-surface);
+    }
+    .quiz-panel[hidden] { display: none; }
+    #app1-step-desc { font-size: 1rem !important; line-height: 1.55 !important; }
+    #app1-math-box { font-size: 1.05rem !important; line-height: 1.45; }
+    #lab-status-badge { font-size: 0.88rem !important; }
+    #card-goal-min,
+    #card-goal-max { font-size: 0.9rem !important; line-height: 1.45; }
+    .quiz-heading { color: var(--ms-primary); font-size: 1.24rem; font-weight: 750; line-height: 1.25; }
+    .quiz-progress-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--ms-text-muted);
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .quiz-progress-track {
+      flex: 1;
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--ms-surface-alt);
+      border: 1px solid var(--ms-control-border);
+    }
+    .quiz-progress-value {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--ms-primary);
+      transition: width 0.2s ease;
+    }
+    .quiz-item {
+      min-inline-size: 0;
+      padding: 8px;
+      border: 1px solid var(--ms-border);
+      border-radius: 7px;
+      background: var(--ms-surface-alt);
+    }
+    .quiz-slide {
+      min-height: 300px;
+      animation: quiz-slide-in 0.18s ease-out;
+    }
+    .quiz-slide[hidden] { display: none; }
+    @keyframes quiz-slide-in {
+      from { opacity: 0; transform: translateX(8px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .quiz-item legend {
+      float: left;
+      width: 100%;
+      padding: 2px 0 10px;
+      margin: 0;
+      color: var(--ms-text);
+      background: var(--ms-surface-alt);
+      font-size: 1.12rem;
+      font-weight: 650;
+      line-height: 1.45;
+    }
+    .quiz-item legend + * { clear: both; }
+    .quiz-choices {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .quiz-choices.yes-no { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .quiz-choice {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 48px;
+      padding: 8px 9px;
+      border: 1px solid var(--ms-control-border);
+      border-radius: 6px;
+      color: var(--ms-text);
+      cursor: pointer;
+      font-size: 1.05rem;
+      justify-content: center;
+    }
+    .quiz-choice:hover,
+    .quiz-choice:focus-within { border-color: var(--ms-primary); background: var(--ms-primary-light); }
+    .quiz-choice:has(input:checked) {
+      border-color: var(--ms-primary);
+      background: var(--ms-primary-light);
+      color: var(--ms-selection-text);
+      font-weight: 700;
+    }
+    .quiz-number {
+      width: 100%;
+      min-height: 38px;
+      margin-top: 6px;
+      padding: 7px 9px;
+      border: 1px solid var(--ms-control-border);
+      border-radius: 6px;
+      background: var(--ms-surface);
+      color: var(--ms-text);
+      font: inherit;
+    }
+    .quiz-feedback { min-height: 1.1em; margin-top: 8px; font-size: 0.98rem; line-height: 1.45; }
+    .quiz-feedback.correct { color: var(--ms-success); }
+    .quiz-feedback.incorrect { color: var(--ms-warning); }
+    .quiz-summary {
+      padding: 8px;
+      border-radius: 6px;
+      background: var(--ms-info-bg);
+      color: var(--ms-text);
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+    .quiz-nav {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr 0.8fr;
+      gap: 6px;
+    }
+    .quiz-nav .btn { margin-top: 0; min-width: 0; padding-inline: 6px; font-size: 0.92rem; min-height: 44px; }
+    .math-display { overflow-x: auto; overflow-y: hidden; }
+
+    /* Önizleme Kipi */
+    body.preview-mode header,
+    body.preview-mode .sidebar,
+    body.preview-mode .viewport-controls,
+    body.preview-mode .viewport-instructions,
+    body.preview-mode .sidebar-toggle,
+    body.preview-mode .dialog-backdrop {
+      display: none !important;
+    }
+    body.preview-mode main {
+      grid-template-columns: 1fr !important;
+      height: 100vh !important;
+    }
+    body.preview-mode .viewport-container {
+      height: 100vh !important;
+    }
+    body.preview-mode .viewport-overlay {
+      display: block;
+      top: 8px;
+      left: 8px;
+      font-size: 0.7rem;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .app-loading-dot {
+        animation: none !important;
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app-loading" class="app-loading" role="status" aria-live="polite" hidden>
+    <div class="app-loading-card"><span class="app-loading-dot" aria-hidden="true"></span>Matematiksel ifadeler hazırlanıyor…</div>
+  </div>
+
+  <header role="banner">
+    <div class="header-title">
+      <span>⬢</span>
+      <span>Katı Silindirin Hacmi Materyali</span>
+    </div>
+    <div class="header-actions">
+      <button id="btn-theme" class="btn-icon" aria-label="Koyu temaya geç" title="Koyu temaya geç" aria-pressed="false">🌙</button>
+      <button id="btn-help" class="btn-icon" aria-label="Kullanım Rehberi" title="Kullanım Rehberi">?</button>
+    </div>
+  </header>
+
+  <div id="dependency-error" class="dependency-error" role="alert" hidden>
+    <div class="dependency-error-card">
+      <h1>Materyal bileşenleri yüklenemedi</h1>
+      <p id="dependency-error-detail">Yerel kütüphane dosyalarını kontrol edip sayfayı yeniden açın.</p>
+      <button class="btn" type="button" onclick="window.location.reload()">Yeniden Dene</button>
+    </div>
+  </div>
+
+  <main role="main">
+    <aside class="sidebar" id="control-panel" role="region" aria-label="Kontrol ve Pedagoji Paneli">
+      <div class="tabs" role="tablist">
+        <button class="tab-btn active" id="tab-0" role="tab" aria-selected="true" onclick="switchTab(0)">Tanıtım</button>
+        <button class="tab-btn" id="tab-1" role="tab" aria-selected="false" onclick="switchTab(1)">Uygulama 1</button>
+        <button class="tab-btn" id="tab-2" role="tab" aria-selected="false" onclick="switchTab(2)">Uygulama 2</button>
+        <button class="tab-btn" id="tab-3" role="tab" aria-selected="false" onclick="switchTab(3)">Serbest Mod</button>
+      </div>
+
+      <!-- TAB 0: Tanıtım -->
+      <div id="panel-tab-0" class="panel-section">
+        <div class="section-title">Materyalin Amacı</div>
+        <p style="font-size: 0.8rem; line-height: 1.45; color: var(--ms-text-muted);">
+          Bu 3B öğrenme materyali; silindir dilimlerinden hareketle <strong>geometrik dizi ile seri arasındaki farkı</strong>, daire alanını ve silindir hacmini keşfetmenizi sağlar.
+        </p>
+        <div id="intro-fractions" style="background: var(--ms-surface); padding: 10px; border-radius: 6px; font-size: 1.14rem; line-height: 1.4; border: 1px solid var(--ms-border); display: flex; flex-direction: column; gap: 6px;">
+          <div><strong style="color: #1d4ed8;">■ Mavi Dilim:</strong> \(\frac14\) silindir \((90^\circ)\)</div>
+          <div><strong style="color: #b45309;">■ Sarı Dilim:</strong> \(\frac18\) silindir \((45^\circ)\)</div>
+          <div><strong style="color: #b91c1c;">■ Kırmızı Dilim:</strong> \(\frac1{16}\) silindir \((22{,}5^\circ)\)</div>
+          <div><strong style="color: #0f766e;">■ Turkuaz Dilim:</strong> \(\frac1{32}\) silindir \((11{,}25^\circ)\)</div>
+        </div>
+        <button class="btn" onclick="switchTab(1)">Geometrik Seriyi İnşa Et →</button>
+      </div>
+
+      <!-- TAB 1: Geometrik dizi ve seri -->
+      <div id="panel-tab-1" class="panel-section" style="display: none;">
+        <div class="section-title" id="app1-step-title">Adım 1: 1/4 Dilim (Mavi)</div>
+        <p id="app1-step-desc" style="font-size: 0.78rem; line-height: 1.45; color: var(--ms-text-muted);">
+          Dik dairesel silindirden \(\frac14\)'lük bir dilim alıyoruz.
+        </p>
+        <div id="app1-math-box" style="background: var(--ms-surface); padding: 8px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; text-align: center; border: 1px solid var(--ms-border);">
+          <span data-app1-math="1">\(\mathrm{a}_1=\frac14\), merkez açı \(=90^\circ\)</span>
+          <span data-app1-math="2" hidden>\(45^\circ+45^\circ=90^\circ\Rightarrow \frac18+\frac18=\frac14\)</span>
+          <span data-app1-math="3" hidden>\(11{,}25^\circ+11{,}25^\circ=22{,}5^\circ\Rightarrow \frac1{32}+\frac1{32}=\frac1{16}\)</span>
+          <span data-app1-math="4" hidden>\(\mathrm{a}_{\mathrm{n}}=\frac14(\frac12)^{\mathrm{n}-1}\to0\)<br>\(\mathrm{S}_{\mathrm{n}}=\frac12[1-(\frac12)^{\mathrm{n}}]\to\frac12\)</span>
+          <span data-app1-math="5" hidden>\(\mathrm{a}_{\mathrm{n}}=\mathrm{a}_1\mathrm{r}^{\mathrm{n}-1}\qquad \mathrm{S}_{\mathrm{n}}=\mathrm{a}_1\frac{1-\mathrm{r}^{\mathrm{n}}}{1-\mathrm{r}}\)</span>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <button class="btn btn-secondary" style="flex: 1;" onclick="prevApp1Step()">← Geri</button>
+          <button class="btn" style="flex: 2;" id="btn-app1-next" onclick="nextApp1Step()">Sonraki Adım →</button>
+        </div>
+
+        <section id="series-quiz" class="quiz-panel" aria-labelledby="series-quiz-title" hidden>
+          <div class="quiz-heading" id="series-quiz-title">Geometrik Seri Kavrama Kontrolü</div>
+          <div class="quiz-progress-row">
+            <span id="series-slide-counter">Soru 1 / 5</span>
+            <div class="quiz-progress-track" aria-hidden="true"><div id="series-slide-progress" class="quiz-progress-value" style="width: 20%;"></div></div>
+          </div>
+
+          <fieldset class="quiz-item quiz-slide" data-series-slide="0">
+            <legend>1. \(\frac14,\frac18,\frac1{16},\ldots\) dizisinin \(\mathrm{r}\) ile gösterilen ortak çarpanı nedir?</legend>
+            <div class="quiz-choices">
+              <label class="quiz-choice"><input type="radio" name="q1" value="1/8"> \(\frac18\)</label>
+              <label class="quiz-choice"><input type="radio" name="q1" value="1/4"> \(\frac14\)</label>
+              <label class="quiz-choice"><input type="radio" name="q1" value="1/2"> \(\frac12\)</label>
+              <label class="quiz-choice"><input type="radio" name="q1" value="2"> \(2\)</label>
+              <label class="quiz-choice"><input type="radio" name="q1" value="4"> \(4\)</label>
+            </div>
+            <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-item quiz-slide" data-series-slide="1" hidden>
+            <legend>2. \(\mathrm{a}_1=\frac14\) ise \(\mathrm{a}_6\) kesrinin paydası kaçtır?</legend>
+            <div class="quiz-choices">
+              <label class="quiz-choice"><input type="radio" name="q2" value="32"> \(32\)</label>
+              <label class="quiz-choice"><input type="radio" name="q2" value="64"> \(64\)</label>
+              <label class="quiz-choice"><input type="radio" name="q2" value="128"> \(128\)</label>
+              <label class="quiz-choice"><input type="radio" name="q2" value="256"> \(256\)</label>
+              <label class="quiz-choice"><input type="radio" name="q2" value="512"> \(512\)</label>
+            </div>
+            <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-item quiz-slide" data-series-slide="2" hidden>
+            <legend>3. “Terimler sıfıra yaklaşırken serinin toplamı \(\frac12\)'yi geçer.” ifadesi doğru mudur?</legend>
+            <div class="quiz-choices yes-no">
+              <label class="quiz-choice"><input type="radio" name="q3" value="evet"> Evet</label>
+              <label class="quiz-choice"><input type="radio" name="q3" value="hayir"> Hayır</label>
+            </div>
+            <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-item quiz-slide" data-series-slide="3" hidden>
+            <legend>4. İlk dört dilimin toplamı \(\mathrm{S}_4\) hangisidir?</legend>
+            <div class="quiz-choices">
+              <label class="quiz-choice"><input type="radio" name="q4" value="3/8"> \(\frac38\)</label>
+              <label class="quiz-choice"><input type="radio" name="q4" value="7/16"> \(\frac7{16}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q4" value="15/32"> \(\frac{15}{32}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q4" value="31/64"> \(\frac{31}{64}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q4" value="1/2"> \(\frac12\)</label>
+            </div>
+            <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-item quiz-slide" data-series-slide="4" hidden>
+            <legend>5. İlk beş terimden sonra \(\frac12\)'ye ulaşmak için kalan pay \(1\) ise payda kaçtır?</legend>
+            <div class="quiz-choices">
+              <label class="quiz-choice"><input type="radio" name="q5" value="16"> \(16\)</label>
+              <label class="quiz-choice"><input type="radio" name="q5" value="32"> \(32\)</label>
+              <label class="quiz-choice"><input type="radio" name="q5" value="48"> \(48\)</label>
+              <label class="quiz-choice"><input type="radio" name="q5" value="64"> \(64\)</label>
+              <label class="quiz-choice"><input type="radio" name="q5" value="128"> \(128\)</label>
+            </div>
+            <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
+          </fieldset>
+
+          <div class="quiz-nav">
+            <button class="btn btn-secondary" id="series-prev" type="button" onclick="moveSeriesSlide(-1)" disabled>← Geri</button>
+            <button class="btn" type="button" onclick="checkCurrentSeriesQuestion()">Kontrol Et</button>
+            <button class="btn btn-secondary" id="series-next" type="button" onclick="moveSeriesSlide(1)">İleri →</button>
+          </div>
+          <div id="series-quiz-summary" class="quiz-summary" aria-live="polite">Soruları sırayla yanıtlayın.</div>
+        </section>
+      </div>
+
+      <!-- TAB 2: Daireden dikdörtgene alan limiti -->
+      <div id="panel-tab-2" class="panel-section" style="display: none;">
+        <div class="section-title">Daireden Dikdörtgene: Alan Limiti</div>
+        <p style="font-size: 0.78rem; line-height: 1.4; color: var(--ms-text-muted);">
+          Soldaki silindirin eş dilimleri <strong>tek tek sağdaki yüzeye taşınarak</strong> ters yönlü dizilir. Dilim sayısı arttıkça oluşan şeklin neden dikdörtgene yaklaştığını inceleyin.
+        </p>
+
+        <div class="control-row">
+          <div class="control-label">
+            <span>Dilim Sayısı (n):</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+            <button class="btn" id="btn-n-8" data-app2-n="8" onclick="setApp2N(8)">8 Dilim</button>
+            <button class="btn btn-secondary" id="btn-n-16" data-app2-n="16" onclick="setApp2N(16)">16 Dilim</button>
+            <button class="btn btn-secondary" id="btn-n-32" data-app2-n="32" onclick="setApp2N(32)">32 Dilim</button>
+            <button class="btn btn-secondary" id="btn-n-64" data-app2-n="64" onclick="setApp2N(64)">64 Dilim</button>
+          </div>
+        </div>
+
+        <div class="control-row">
+          <div class="control-label">
+            <span>Taşınan Parça Sayısı:</span>
+            <span id="txt-app2-moved">0 / 8</span>
+          </div>
+          <input type="range" id="slider-app2-progress" class="range-slider" min="0" max="8" step="0.05" value="0" oninput="onApp2Slider(this.value)">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+          <button class="btn btn-secondary" onclick="stepApp2Move(-1)">⟵ 1 Geri Al</button>
+          <button class="btn" onclick="stepApp2Move(1)">1 Dilim Taşı ⟶</button>
+        </div>
+
+        <button class="btn btn-secondary" id="btn-app2-auto" onclick="toggleApp2AutoPlay()">▶ Otomatik Tek Tek Taşı</button>
+
+        <section class="quiz-panel" aria-labelledby="area-quiz-title">
+          <div class="quiz-heading" id="area-quiz-title">Tahmin Et ve Gerekçelendir</div>
+          <div class="quiz-progress-row">
+            <span id="area-slide-counter">Soru 1 / 4</span>
+            <div class="quiz-progress-track" aria-hidden="true"><div id="area-slide-progress" class="quiz-progress-value" style="width: 25%;"></div></div>
+          </div>
+          <fieldset class="quiz-item quiz-slide" data-area-slide="0">
+            <legend>6. Dilim sayısını artırmak dairenin gerçek alanını değiştirir mi?</legend>
+            <div class="quiz-choices yes-no">
+              <label class="quiz-choice"><input type="radio" name="q6" value="evet"> Evet</label>
+              <label class="quiz-choice"><input type="radio" name="q6" value="hayir"> Hayır</label>
+            </div>
+            <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
+          </fieldset>
+          <fieldset class="quiz-item quiz-slide" data-area-slide="1" hidden>
+            <legend>7. Limitte oluşan dikdörtgenin kenarları hangileridir?</legend>
+            <div class="quiz-choices">
+              <label class="quiz-choice"><input type="radio" name="q7" value="halfr-r"> \(\frac{\mathrm{R}}2\) ve \(\mathrm{R}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q7" value="r-r"> \(\mathrm{R}\) ve \(\mathrm{R}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q7" value="2r-r"> \(2\mathrm{R}\) ve \(\mathrm{R}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q7" value="pir-r"> \(\pi\mathrm{R}\) ve \(\mathrm{R}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q7" value="2pir-r"> \(2\pi\mathrm{R}\) ve \(\mathrm{R}\)</label>
+            </div>
+            <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
+          </fieldset>
+          <fieldset class="quiz-item quiz-slide" data-area-slide="2" hidden>
+            <legend>8. Kenarları \(\pi\mathrm{R}\) ve \(\mathrm{R}\) olan yaklaşık dikdörtgenin alanı hangisidir?</legend>
+            <div class="quiz-choices">
+              <label class="quiz-choice"><input type="radio" name="q8" value="half-pir2"> \(\frac{\pi\mathrm{R}^2}{2}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q8" value="pir2"> \(\pi\mathrm{R}^2\)</label>
+              <label class="quiz-choice"><input type="radio" name="q8" value="2pir2"> \(2\pi\mathrm{R}^2\)</label>
+              <label class="quiz-choice"><input type="radio" name="q8" value="3pir2"> \(3\pi\mathrm{R}^2\)</label>
+              <label class="quiz-choice"><input type="radio" name="q8" value="4pir2"> \(4\pi\mathrm{R}^2\)</label>
+            </div>
+            <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
+          </fieldset>
+          <fieldset class="quiz-item quiz-slide" data-area-slide="3" hidden>
+            <legend>9. Dilimler yalnızca yeniden düzenlendiği için yaklaşık dikdörtgenin alanı başlangıçtaki dairenin alanına eşit midir?</legend>
+            <div class="quiz-choices yes-no">
+              <label class="quiz-choice"><input type="radio" name="q9" value="evet"> Evet</label>
+              <label class="quiz-choice"><input type="radio" name="q9" value="hayir"> Hayır</label>
+            </div>
+            <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
+          </fieldset>
+          <div class="quiz-nav">
+            <button class="btn btn-secondary" id="area-prev" type="button" onclick="moveAreaSlide(-1)" disabled>← Geri</button>
+            <button class="btn" type="button" onclick="checkCurrentAreaQuestion()">Kontrol Et</button>
+            <button class="btn btn-secondary" id="area-next" type="button" onclick="moveAreaSlide(1)">İleri →</button>
+          </div>
+          <div id="area-quiz-summary" class="quiz-summary" aria-live="polite">Soruları sırayla yanıtlayın.</div>
+          <button class="btn" id="btn-app2-free" type="button" onclick="switchTab(3)" hidden>Serbest Moda Geç →</button>
+        </section>
+      </div>
+
+      <!-- TAB 3: Serbest keşif alanı -->
+      <div id="panel-tab-3" class="panel-section" style="display: none;">
+        <div class="section-title">Serbest Keşif Alanı</div>
+        <p style="font-size: 0.77rem; line-height: 1.35; color: var(--ms-text-muted);">
+          Boyutları ve dilimleri siz belirleyin; parçaları ekleyip çıkarın, ayırarak inceleyin ve istediğiniz zaman ölçümleri açın.
+        </p>
+
+        <!-- Doluluk Çubuğu -->
+        <div class="control-row">
+          <div class="control-label">
+            <span>Silindir Doluluğu:</span>
+            <span id="txt-lab-ratio" style="font-weight: 700; color: var(--ms-primary);">0 / 32 (%0)</span>
+          </div>
+          <div class="progress-bar-container">
+            <div id="lab-progress-bar" class="progress-bar-fill"></div>
+          </div>
+          <div id="lab-status-badge" style="font-size: 0.75rem; font-weight: 600; text-align: center; margin-top: 2px;">Silindir henüz boş</div>
+        </div>
+
+        <!-- Parça Ekleme Butonları -->
+        <div style="display: flex; flex-direction: column; gap: 6px;">
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <button class="btn" style="flex: 3; background: #1d4ed8;" onclick="addLabPiece('blue')">+ Mavi Ekle (1/4)</button>
+            <span id="cnt-blue" class="badge-chip badge-blue" style="flex: 1; text-align: center;">0 ad.</span>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <button class="btn" style="flex: 3; background: #b45309;" onclick="addLabPiece('yellow')">+ Sarı Ekle (1/8)</button>
+            <span id="cnt-yellow" class="badge-chip badge-yellow" style="flex: 1; text-align: center;">0 ad.</span>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <button class="btn" style="flex: 3; background: #b91c1c;" onclick="addLabPiece('red')">+ Kırmızı Ekle (1/16)</button>
+            <span id="cnt-red" class="badge-chip badge-red" style="flex: 1; text-align: center;">0 ad.</span>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <button class="btn" style="flex: 3; background: #0f766e;" onclick="addLabPiece('teal')">+ Turkuaz Ekle (1/32)</button>
+            <span id="cnt-teal" class="badge-chip" style="flex: 1; text-align: center; background: #ccfbf1; color: #115e59;">0 ad.</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 6px;">
+          <button class="btn btn-secondary" style="flex: 1;" onclick="removeLastLabPiece()">↩ Son Parçayı Çıkar</button>
+          <button class="btn btn-secondary" style="flex: 1;" onclick="clearLab()">🗑 Temizle</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+          <button class="btn btn-secondary" id="btn-lab-explode" onclick="toggleLabExplode()">Parçaları Ayır</button>
+          <button class="btn btn-secondary" id="btn-lab-guide" onclick="toggleLabGuide()">Rehberi Gizle</button>
+          <button class="btn btn-secondary" id="btn-lab-ground" onclick="toggleLabGround()">Zemini Gizle</button>
+          <button class="btn btn-secondary" id="btn-lab-measures" onclick="toggleLabMeasurements()">Ölçümleri Göster</button>
+        </div>
+
+        <!-- Pedagojik Görev Kartları -->
+        <details style="background: var(--ms-surface); padding: 8px; border-radius: 6px; border: 1px solid var(--ms-border);">
+          <summary style="font-size: 0.85rem; font-weight: 700; color: var(--ms-primary); cursor: pointer;">İsteğe Bağlı Keşif Görevleri</summary>
+          <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">
+          
+          <div id="card-goal-min" style="padding: 6px; border-radius: 4px; background: var(--ms-surface-alt); font-size: 0.72rem; border-left: 3px solid var(--ms-border);">
+            <strong>Görev A (En Az Parça):</strong> Her renkten en az bir tane kullanarak tam bir silindiri mümkün olan en az parçayla oluşturun.
+            <div id="badge-goal-min" style="display: none; margin-top: 3px; color: var(--ms-success); font-weight: 700;">Başarıldı: 3 mavi + 1 sarı + 1 kırmızı + 2 turkuaz = 7 parça</div>
+          </div>
+
+          <div id="card-goal-max" style="padding: 6px; border-radius: 4px; background: var(--ms-surface-alt); font-size: 0.72rem; border-left: 3px solid var(--ms-border);">
+            <strong>Görev B (En Çok Parça):</strong> Her renkten en az bir tane kullanarak tam bir silindiri mümkün olan en çok parçayla oluşturun.
+            <div id="badge-goal-max" style="display: none; margin-top: 3px; color: var(--ms-success); font-weight: 700;">Başarıldı: 1 mavi + 1 sarı + 1 kırmızı + 18 turkuaz = 21 parça</div>
+          </div>
+
+          <button class="btn btn-secondary" style="font-size: 0.72rem; padding: 4px 8px;" onclick="showLabHint('min')">Görev A için İpucu</button>
+          <button class="btn btn-secondary" style="font-size: 0.72rem; padding: 4px 8px;" onclick="showLabHint('max')">Görev B için İpucu</button>
+          <div id="lab-hint" class="quiz-summary" hidden aria-live="polite"></div>
+          </div>
+        </details>
+
+        <!-- Hacim ve Ölçü Sürgüleri -->
+        <div class="control-row">
+          <div class="control-label">
+            <span>Yarıçap (R):</span>
+            <span id="txt-lab-r">2,0 br</span>
+          </div>
+          <input type="range" class="range-slider" min="1.0" max="3.5" step="0.1" value="2.0" oninput="setLabRadius(this.value)">
+        </div>
+
+        <div class="control-row">
+          <div class="control-label">
+            <span>Yükseklik (h):</span>
+            <span id="txt-lab-h">3,0 br</span>
+          </div>
+          <input type="range" class="range-slider" min="1.0" max="5.0" step="0.5" value="3.0" oninput="setLabHeight(this.value)">
+        </div>
+
+        <div id="lab-measurements" hidden style="background: var(--ms-surface); padding: 8px; border-radius: 6px; font-size: 0.82rem; line-height: 1.5; border: 1px solid var(--ms-border);">
+          <div class="math-display" style="margin-bottom: 4px;">\(\mathrm{V}=\pi\mathrm{R}^2\mathrm{h}\)</div>
+          <strong>Toplam Silindir Hacmi:</strong> <span id="txt-lab-vol">37,70</span> br³<br>
+          <strong>Dolu Kısmın Hacmi:</strong> <span id="txt-lab-filled-vol">0,00</span> br³<br>
+          <strong>Toplam Merkez Açı:</strong> <span id="txt-lab-angle">0,0°</span>
+        </div>
+      </div>
+    </aside>
+
+    <button
+      class="sidebar-toggle"
+      id="sidebar-toggle"
+      type="button"
+      aria-controls="control-panel"
+      aria-expanded="true"
+      aria-label="Kontrol panelini gizle"
+      title="Kontrol panelini göster veya gizle"
+      onclick="toggleSidebar()"
+    >‹</button>
+
+    <div class="viewport-container">
+      <div class="viewport-overlay" id="scene-badge">Temsilî Silindir Modeli</div>
+      
+      <div class="viewport-controls">
+        <button class="btn-icon" onclick="resetCamera()" title="Kamerayı Sıfırla" aria-label="Kamerayı Sıfırla">⟲</button>
+        <button class="btn-icon" onclick="zoomCamera(0.85)" title="Yakınlaştır" aria-label="Yakınlaştır">+</button>
+        <button class="btn-icon" onclick="zoomCamera(1.15)" title="Uzaklaştır" aria-label="Uzaklaştır">−</button>
+        <button class="btn-icon" onclick="toggleAutoRotate()" id="btn-spin" title="Döndürme Aç/Kapa" aria-label="Otomatik Döndür">🔄</button>
+      </div>
+
+      <div class="viewport-instructions">Fareyle/parmakla çevirin · Ok tuşlarıyla döndürün · [+ / −] yakınlaştırın</div>
+
+      <canvas id="three-canvas" aria-label="3 Boyutlu Silindir Sahnesi" role="img" tabindex="0"></canvas>
+    </div>
+  </main>
+
+  <!-- KULLANIM REHBERİ MODAL -->
+  <div class="dialog-backdrop" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-description">
+    <div class="dialog-box">
+      <div class="dialog-header">
+        <div class="dialog-title" id="modal-title">İncelemeye Başlarken</div>
+        <div class="dialog-actions">
+          <button id="btn-theme-modal" class="btn-icon" type="button" aria-label="Koyu temaya geç" title="Koyu temaya geç" aria-pressed="false">🌙</button>
+          <button class="btn-icon" type="button" aria-label="Tanıtımı kapat" title="Tanıtımı kapat" onclick="closeHelpModal()">×</button>
+        </div>
+      </div>
+      <div class="intro-guide" id="modal-description">
+        <p>Silindir dilimlerinden hareketle geometrik seri, daire alanı ve silindir hacmi arasındaki ilişkileri inceleyeceksiniz.</p>
+        <ol>
+          <li><strong>Tanıtım:</strong> Renkli silindir dilimlerini ve bunların bütün içindeki paylarını karşılaştırın.</li>
+          <li><strong>Uygulama 1:</strong> Dilimlerin küçülme örüntüsünü izleyerek geometrik dizi ve seri ilişkisini keşfedin.</li>
+          <li><strong>Uygulama 2:</strong> Daire dilimlerinin yeniden düzenlenmesiyle alan ilişkisinin nasıl ortaya çıktığını inceleyin.</li>
+          <li><strong>Serbest Mod:</strong> Boyutları ve parçaları değiştirerek kendi silindirinizi oluşturun; ölçümleri karşılaştırın.</li>
+        </ol>
+        <p style="margin-top: 10px;">3B modeli fareyle veya parmağınızla çevirebilir; yön tuşları ve [+ / −] tuşlarıyla da kontrol edebilirsiniz. Bu tanıtıma üstteki <strong>?</strong> düğmesinden yeniden ulaşabilirsiniz.</p>
+      </div>
+      <button class="btn dialog-start" id="btn-start-material" type="button" onclick="closeHelpModal()">İncelemeye Başla</button>
+    </div>
+  </div>
+
+  <!-- Yerel Three.js -->
+  <script src="lib/three.min.js"></script>
+
+  <script>
+    /* Global Sahne Tanımları */
+    let scene, camera, renderer;
+    let viewportResizeObserver;
+    let groundGrid;
+    let currentGroundLevel = -1.4;
+    let mainGroup;
+    let isAutoRotating = false;
+    let currentTab = 0;
+    let isPreview = false;
+
+    // Renk Sabitleri
+    const COLOR_BLUE = 0x1d4ed8;    // 1/4 dilim
+    const COLOR_YELLOW = 0xd97706;  // 1/8 dilim
+    const COLOR_RED = 0xb91c1c;     // 1/16 dilim
+    const COLOR_TEAL = 0x0f766e;    // 1/32 dilim
+    const COLOR_PURPLE = 0x6b21a8;  // 1/64 dilim
+
+    function formatTr(value, digits = 2) {
+      return Number(value).toLocaleString('tr-TR', {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits
+      });
+    }
+
+    function showApp1Math(step) {
+      document.querySelectorAll('[data-app1-math]').forEach((element) => {
+        element.hidden = element.dataset.app1Math !== String(step);
+      });
+    }
+
+    /* --- ÜST DÜZEY ANALİTİK GEOMETRİ FONKSİYONLARI --- */
+
+    // 1. Silindir Dilim Geometrisi (0 ile dTheta açısı arasında)
+    function createCylinderSectorGeometry(radius, height, dTheta, segments) {
+      segments = Math.max(2, Math.round(segments || Math.max(4, Math.round(dTheta / (Math.PI / 16)))));
+      const positions = [];
+      const normals = [];
+      const halfH = height / 2;
+
+      // Üst Kapak
+      for (let i = 0; i < segments; i++) {
+        const th1 = (i / segments) * dTheta;
+        const th2 = ((i + 1) / segments) * dTheta;
+        positions.push(
+          0, halfH, 0,
+          radius * Math.cos(th1), halfH, radius * Math.sin(th1),
+          radius * Math.cos(th2), halfH, radius * Math.sin(th2)
+        );
+        normals.push(0, 1, 0, 0, 1, 0, 0, 1, 0);
+      }
+
+      // Alt Kapak
+      for (let i = 0; i < segments; i++) {
+        const th1 = (i / segments) * dTheta;
+        const th2 = ((i + 1) / segments) * dTheta;
+        positions.push(
+          0, -halfH, 0,
+          radius * Math.cos(th2), -halfH, radius * Math.sin(th2),
+          radius * Math.cos(th1), -halfH, radius * Math.sin(th1)
+        );
+        normals.push(0, -1, 0, 0, -1, 0, 0, -1, 0);
+      }
+
+      // Eğri Dış Yüzey
+      for (let i = 0; i < segments; i++) {
+        const th1 = (i / segments) * dTheta;
+        const th2 = ((i + 1) / segments) * dTheta;
+        const x1 = radius * Math.cos(th1), z1 = radius * Math.sin(th1);
+        const x2 = radius * Math.cos(th2), z2 = radius * Math.sin(th2);
+        const nx1 = Math.cos(th1), nz1 = Math.sin(th1);
+        const nx2 = Math.cos(th2), nz2 = Math.sin(th2);
+
+        positions.push(
+          x1, -halfH, z1,  x2, -halfH, z2,  x1, halfH, z1,
+          x2, -halfH, z2,  x2, halfH, z2,   x1, halfH, z1
+        );
+        normals.push(
+          nx1, 0, nz1,  nx2, 0, nz2,  nx1, 0, nz1,
+          nx2, 0, nz2,  nx2, 0, nz2,  nx1, 0, nz1
+        );
+      }
+
+      // Sol Düz Yan Yüzey (th = 0, x ekseni boyu)
+      positions.push(
+        0, -halfH, 0,  0, halfH, 0,  radius, halfH, 0,
+        0, -halfH, 0,  radius, halfH, 0,  radius, -halfH, 0
+      );
+      normals.push(0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1);
+
+      // Sağ Düz Yan Yüzey (th = dTheta)
+      const xE = radius * Math.cos(dTheta), zE = radius * Math.sin(dTheta);
+      const nxR = -Math.sin(dTheta), nzR = Math.cos(dTheta);
+      positions.push(
+        0, -halfH, 0,  xE, halfH, zE,  0, halfH, 0,
+        0, -halfH, 0,  xE, -halfH, zE,  xE, halfH, zE
+      );
+      normals.push(nxR, 0, nzR, nxR, 0, nzR, nxR, 0, nzR, nxR, 0, nzR, nxR, 0, nzR, nxR, 0, nzR);
+
+      const geom = new THREE.BufferGeometry();
+      geom.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geom.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+      return geom;
+    }
+
+    // 2. Simetrik Kama Geometrisi [-dTheta/2, +dTheta/2] (Zikzak kilitlenme için)
+    function createSymmetricWedgeGeometry(radius, height, dTheta, segments) {
+      segments = Math.max(2, Math.round(segments || Math.max(4, Math.round(dTheta / (Math.PI / 16)))));
+      const positions = [];
+      const normals = [];
+      const halfH = height / 2;
+      const thHalf = dTheta / 2;
+
+      for (let i = 0; i < segments; i++) {
+        const th1 = -thHalf + (i / segments) * dTheta;
+        const th2 = -thHalf + ((i + 1) / segments) * dTheta;
+        positions.push(
+          0, halfH, 0,
+          radius * Math.sin(th1), halfH, radius * Math.cos(th1),
+          radius * Math.sin(th2), halfH, radius * Math.cos(th2)
+        );
+        normals.push(0, 1, 0, 0, 1, 0, 0, 1, 0);
+      }
+
+      for (let i = 0; i < segments; i++) {
+        const th1 = -thHalf + (i / segments) * dTheta;
+        const th2 = -thHalf + ((i + 1) / segments) * dTheta;
+        positions.push(
+          0, -halfH, 0,
+          radius * Math.sin(th2), -halfH, radius * Math.cos(th2),
+          radius * Math.sin(th1), -halfH, radius * Math.cos(th1)
+        );
+        normals.push(0, -1, 0, 0, -1, 0, 0, -1, 0);
+      }
+
+      for (let i = 0; i < segments; i++) {
+        const th1 = -thHalf + (i / segments) * dTheta;
+        const th2 = -thHalf + ((i + 1) / segments) * dTheta;
+        const x1 = radius * Math.sin(th1), z1 = radius * Math.cos(th1);
+        const x2 = radius * Math.sin(th2), z2 = radius * Math.cos(th2);
+        const nx1 = Math.sin(th1), nz1 = Math.cos(th1);
+        const nx2 = Math.sin(th2), nz2 = Math.cos(th2);
+
+        positions.push(
+          x1, -halfH, z1,  x2, -halfH, z2,  x1, halfH, z1,
+          x2, -halfH, z2,  x2, halfH, z2,   x1, halfH, z1
+        );
+        normals.push(nx1, 0, nz1, nx2, 0, nz2, nx1, 0, nz1, nx2, 0, nz2, nx2, 0, nz2, nx1, 0, nz1);
+      }
+
+      // Sol Düz Yan Yüzey (th = -thHalf)
+      const xL = radius * Math.sin(-thHalf), zL = radius * Math.cos(-thHalf);
+      const nxL = -Math.cos(-thHalf), nzL = Math.sin(-thHalf);
+      positions.push(
+        0, -halfH, 0,  xL, halfH, zL,  0, halfH, 0,
+        0, -halfH, 0,  xL, -halfH, zL,  xL, halfH, zL
+      );
+      normals.push(nxL, 0, nzL, nxL, 0, nzL, nxL, 0, nzL, nxL, 0, nzL, nxL, 0, nzL, nxL, 0, nzL);
+
+      // Sağ Düz Yan Yüzey (th = +thHalf)
+      const xR = radius * Math.sin(thHalf), zR = radius * Math.cos(thHalf);
+      const nxR = Math.cos(thHalf), nzR = -Math.sin(thHalf);
+      positions.push(
+        0, -halfH, 0,  0, halfH, 0,  xR, halfH, zR,
+        0, -halfH, 0,  xR, halfH, zR,  xR, -halfH, zR
+      );
+      normals.push(nxR, 0, nzR, nxR, 0, nzR, nxR, 0, nzR, nxR, 0, nzR, nxR, 0, nzR, nxR, 0, nzR);
+
+      const geom = new THREE.BufferGeometry();
+      geom.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geom.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+      return geom;
+    }
+
+    function createSliceMesh(geom, color, opacity) {
+      opacity = opacity || 0.92;
+      const mat = new THREE.MeshStandardMaterial({
+        color: color,
+        roughness: 0.35,
+        metalness: 0.1,
+        transparent: opacity < 1.0,
+        opacity: opacity,
+        side: THREE.DoubleSide
+      });
+      const mesh = new THREE.Mesh(geom, mat);
+      const wireMat = new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25 });
+      const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 25), wireMat);
+      mesh.add(wire);
+      return mesh;
+    }
+
+    /* --- SAHNE KURULUMU --- */
+
+    function initScene() {
+      const canvas = document.getElementById('three-canvas');
+      const container = canvas.parentElement;
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+      camera.position.set(0, 5.0, 13.0);
+      camera.lookAt(0, -0.3, 0);
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(container.clientWidth, container.clientHeight, false);
+
+      // Panel açılıp kapanırken CSS ızgarasının her ara ölçüsünü izleyerek
+      // WebGL tuvalini görünür alanla eşleştirir.
+      if ('ResizeObserver' in window) {
+        viewportResizeObserver = new ResizeObserver(() => onWindowResize());
+        viewportResizeObserver.observe(container);
+      }
+
+      // Işıklar
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+      scene.add(ambientLight);
+
+      const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.85);
+      dirLight1.position.set(6, 12, 8);
+      scene.add(dirLight1);
+
+      const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+      dirLight2.position.set(-6, -6, -6);
+      scene.add(dirLight2);
+
+      // Zemin Izgarası
+      groundGrid = new THREE.GridHelper(20, 20, 0x94a3b8, 0xe2e8f0);
+      groundGrid.position.y = -1.4;
+      scene.add(groundGrid);
+
+      mainGroup = new THREE.Group();
+      scene.add(mainGroup);
+
+      initInteractions(canvas);
+      window.addEventListener('resize', onWindowResize);
+      animate();
+
+      // Önizleme veya Standart Kontrolü
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('onizleme') === '1') {
+        enablePreviewMode();
+      } else {
+        switchTab(0);
+      }
+    }
+
+    function onWindowResize() {
+      if (!renderer || !camera) return;
+      const canvas = document.getElementById('three-canvas');
+      const container = canvas.parentElement;
+      const width = Math.max(1, container.clientWidth);
+      const height = Math.max(1, container.clientHeight);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height, false);
+    }
+
+    function setGroundLevel(level) {
+      currentGroundLevel = level;
+      if (groundGrid) groundGrid.position.y = level;
+    }
+
+    function toggleSidebar() {
+      const mainElement = document.querySelector('main');
+      const toggleButton = document.getElementById('sidebar-toggle');
+      const isCollapsed = mainElement.classList.toggle('sidebar-collapsed');
+      toggleButton.textContent = isCollapsed ? '›' : '‹';
+      toggleButton.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+      toggleButton.setAttribute('aria-label', isCollapsed ? 'Kontrol panelini göster' : 'Kontrol panelini gizle');
+      window.requestAnimationFrame(onWindowResize);
+      window.setTimeout(onWindowResize, 280);
+    }
+
+    /* --- ETKİLEŞİM & KAMERA KONTROLLERİ --- */
+
+    let isDragging = false;
+    let prevMouseX = 0, prevMouseY = 0;
+    let cameraRotY = 0, cameraRotX = 0.35;
+    let cameraDist = 14.0;
+    let cameraTargetX = 0;
+    let cameraTargetY = -0.3;
+    let cameraOrbitCenterY = 0;
+
+    function initInteractions(canvas) {
+      canvas.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
+      });
+      window.addEventListener('mouseup', () => { isDragging = false; });
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - prevMouseX;
+        const dy = e.clientY - prevMouseY;
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
+
+        cameraRotY -= dx * 0.008;
+        cameraRotX = Math.max(-0.2, Math.min(1.4, cameraRotX + dy * 0.008));
+        updateCameraTransform();
+      });
+
+      canvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          isDragging = true;
+          prevMouseX = e.touches[0].clientX;
+          prevMouseY = e.touches[0].clientY;
+        }
+      }, { passive: true });
+      window.addEventListener('touchend', () => { isDragging = false; });
+      window.addEventListener('touchmove', (e) => {
+        if (!isDragging || e.touches.length !== 1) return;
+        const dx = e.touches[0].clientX - prevMouseX;
+        const dy = e.touches[0].clientY - prevMouseY;
+        prevMouseX = e.touches[0].clientX;
+        prevMouseY = e.touches[0].clientY;
+
+        cameraRotY -= dx * 0.008;
+        cameraRotX = Math.max(-0.2, Math.min(1.4, cameraRotX + dy * 0.008));
+        updateCameraTransform();
+      }, { passive: true });
+
+      canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        cameraDist = Math.max(4.0, Math.min(22.0, cameraDist + e.deltaY * 0.01));
+        updateCameraTransform();
+      }, { passive: false });
+
+      // Klavye ile kontrol
+      canvas.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') cameraRotY += 0.08;
+        else if (e.key === 'ArrowRight') cameraRotY -= 0.08;
+        else if (e.key === 'ArrowUp') cameraRotX = Math.min(1.4, cameraRotX + 0.06);
+        else if (e.key === 'ArrowDown') cameraRotX = Math.max(-0.2, cameraRotX - 0.06);
+        else if (e.key === '+' || e.key === '=') cameraDist = Math.max(4.0, cameraDist - 0.5);
+        else if (e.key === '-' || e.key === '_') cameraDist = Math.min(22.0, cameraDist + 0.5);
+        else return;
+        e.preventDefault();
+        updateCameraTransform();
+      });
+    }
+
+    function updateCameraTransform() {
+      camera.position.x = cameraTargetX + cameraDist * Math.sin(cameraRotY) * Math.cos(cameraRotX);
+      camera.position.y = cameraOrbitCenterY + cameraDist * Math.sin(cameraRotX);
+      camera.position.z = cameraDist * Math.cos(cameraRotY) * Math.cos(cameraRotX);
+      camera.lookAt(cameraTargetX, cameraTargetY, 0);
+    }
+
+    function resetCamera() {
+      cameraRotY = 0;
+      cameraRotX = 0.35;
+      if (currentTab === 2) {
+        // İki çalışma masasının geometrik merkezi x=-0,5'tir. Kameranın
+        // zemin düzlemine bakması, zemini ekran yüksekliğinin ortasına getirir.
+        cameraTargetX = -0.5;
+        cameraTargetY = currentGroundLevel;
+        cameraOrbitCenterY = currentGroundLevel;
+        cameraDist = 14.5;
+      } else {
+        cameraTargetX = 0;
+        cameraTargetY = -0.3;
+        cameraOrbitCenterY = 0;
+        cameraDist = 14.0;
+      }
+      updateCameraTransform();
+    }
+
+    function zoomCamera(factor) {
+      cameraDist = Math.max(4.0, Math.min(24.0, cameraDist * factor));
+      updateCameraTransform();
+    }
+
+    function toggleAutoRotate() {
+      isAutoRotating = !isAutoRotating;
+      document.getElementById('btn-spin').style.background = isAutoRotating ? 'var(--ms-primary-light)' : '';
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (isAutoRotating) {
+        cameraRotY += 0.005;
+        updateCameraTransform();
+      }
+      if (app2AutoPlaying) {
+        advanceApp2AutoPlay();
+      }
+      renderer.render(scene, camera);
+    }
+
+    /* --- SEKME YÖNETİMİ --- */
+
+    function switchTab(index) {
+      currentTab = index;
+      if (groundGrid && index !== 3) groundGrid.visible = true;
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+        btn.setAttribute('aria-selected', i === index ? 'true' : 'false');
+      });
+      for (let i = 0; i <= 3; i++) {
+        const panel = document.getElementById(`panel-tab-${i}`);
+        if (panel) panel.style.display = (i === index) ? 'flex' : 'none';
+      }
+
+      // Sahne Temizleme
+      while (mainGroup.children.length > 0) {
+        const obj = mainGroup.children[0];
+        mainGroup.remove(obj);
+      }
+
+      if (index === 0) {
+        document.getElementById('scene-badge').textContent = 'Silindir Dilimleri 3B Tanıtım';
+        buildOverviewScene();
+      } else if (index === 1) {
+        document.getElementById('scene-badge').textContent = 'Uygulama 1: Geometrik Dizi ve Seri';
+        app1Step = 1;
+        buildApp1Scene();
+      } else if (index === 2) {
+        document.getElementById('scene-badge').textContent = 'Uygulama 2: Daire Alanı ve Limit';
+        app2Progress = 0;
+        document.getElementById('slider-app2-progress').value = 0;
+        renderAreaSlide();
+        buildApp2Scene();
+      } else if (index === 3) {
+        document.getElementById('scene-badge').textContent = 'Serbest Mod: Dilimlerle Keşif';
+        buildLabScene();
+      }
+      resetCamera();
+    }
+
+    /* --- TAB 0: GENEL BAKIŞ SAHNESİ --- */
+
+    function buildOverviewScene() {
+      const R = 2.2, H = 2.8;
+      setGroundLevel(-H / 2);
+
+      const contactShadow = new THREE.Mesh(
+        new THREE.CircleGeometry(R * 1.06, 64),
+        new THREE.MeshBasicMaterial({
+          color: 0x334155,
+          transparent: true,
+          opacity: 0.18,
+          depthWrite: false,
+          side: THREE.DoubleSide
+        })
+      );
+      contactShadow.rotation.x = -Math.PI / 2;
+      contactShadow.position.y = -H / 2 + 0.004;
+      mainGroup.add(contactShadow);
+
+      // 8 dilim: 2 Mavi, 2 Sarı, 4 Kırmızı
+      const slices = [
+        { dTheta: Math.PI / 2, color: COLOR_BLUE },
+        { dTheta: Math.PI / 2, color: COLOR_BLUE },
+        { dTheta: Math.PI / 4, color: COLOR_YELLOW },
+        { dTheta: Math.PI / 4, color: COLOR_YELLOW },
+        { dTheta: Math.PI / 8, color: COLOR_RED },
+        { dTheta: Math.PI / 8, color: COLOR_RED },
+        { dTheta: Math.PI / 8, color: COLOR_RED },
+        { dTheta: Math.PI / 8, color: COLOR_RED }
+      ];
+
+      let startAngle = 0;
+      slices.forEach((s) => {
+        const geom = createCylinderSectorGeometry(R, H, s.dTheta, 12);
+        const mesh = createSliceMesh(geom, s.color, 0.95);
+        mesh.rotation.y = -startAngle;
+        mainGroup.add(mesh);
+        startAngle += s.dTheta;
+      });
+    }
+
+    /* --- TAB 1: GEOMETRİK DİZİ VE SERİ --- */
+
+    let app1Step = 1;
+    let seriesQuizChecked = false;
+
+    function buildApp1Scene() {
+      while (mainGroup.children.length > 0) mainGroup.remove(mainGroup.children[0]);
+      const R = 2.2, H = 2.8;
+      setGroundLevel(app1Step === 5 ? -(H * 0.7) / 2 : -H / 2);
+      const quiz = document.getElementById('series-quiz');
+      quiz.hidden = app1Step !== 5;
+      showApp1Math(app1Step);
+      if (app1Step === 5) renderSeriesSlide();
+
+      if (app1Step === 1) {
+        document.getElementById('app1-step-title').textContent = 'Adım 1: 1/4 Dilim (Mavi)';
+        document.getElementById('app1-step-desc').textContent = 'Mavi dik dairesel silindirden bir çeyrek dilim alıyoruz. Bu, dizinin ilk terimidir.';
+        document.getElementById('btn-app1-next').textContent = 'Sonraki Adım (Sarı Dilimler) →';
+
+        const g1 = createCylinderSectorGeometry(R, H, Math.PI / 2, 16);
+        const m1 = createSliceMesh(g1, COLOR_BLUE);
+        mainGroup.add(m1);
+
+      } else if (app1Step === 2) {
+        document.getElementById('app1-step-title').textContent = 'Adım 2: 1/8 Dilimler (Sarı)';
+        document.getElementById('app1-step-desc').textContent = "1/4'lük mavi dilimin yanına iki adet 1/8'lik sarı dilim (45°+45°) koyuyoruz. İki sarı dilim tam olarak bir mavi dilimi oluşturur.";
+        document.getElementById('btn-app1-next').textContent = 'Sonraki Adım (Kırmızı Dilimler) →';
+
+        // Sol: 1/4 Mavi
+        const g1 = createCylinderSectorGeometry(R, H, Math.PI / 2, 16);
+        const m1 = createSliceMesh(g1, COLOR_BLUE);
+        m1.position.x = -1.6;
+        mainGroup.add(m1);
+
+        // Sağ: 2 adet 1/8 Sarı bitişik
+        const g2 = createCylinderSectorGeometry(R, H, Math.PI / 4, 12);
+        const m2a = createSliceMesh(g2, COLOR_YELLOW);
+        m2a.position.x = 1.6;
+        mainGroup.add(m2a);
+
+        const m2b = createSliceMesh(g2, COLOR_YELLOW);
+        m2b.position.x = 1.6;
+        m2b.rotation.y = -Math.PI / 4;
+        mainGroup.add(m2b);
+
+      } else if (app1Step === 3) {
+        document.getElementById('app1-step-title').textContent = 'Adım 3: 1/32 Dilimler (Turkuaz)';
+        document.getElementById('app1-step-desc').textContent = "1/16'lık kırmızı dilimin yanında iki adet 1/32'lik turkuaz dilimi karşılaştırın. İki turkuaz dilim bir kırmızı dilime eşittir; merkez açı da 22,5°'den 11,25°'ye yarıya iner.";
+        document.getElementById('btn-app1-next').textContent = 'Sonraki Adım (Diziden Seriye) →';
+
+        // Sol: 1/16 Kırmızı
+        const gRed = createCylinderSectorGeometry(R, H, Math.PI / 8, 10);
+        const mRed = createSliceMesh(gRed, COLOR_RED);
+        mRed.position.x = -1.6;
+        mainGroup.add(mRed);
+
+        // Sağ: 2 adet 1/32 Turkuaz bitişik
+        const gTeal = createCylinderSectorGeometry(R, H, Math.PI / 16, 8);
+        const mTealA = createSliceMesh(gTeal, COLOR_TEAL);
+        mTealA.position.x = 1.6;
+        mainGroup.add(mTealA);
+
+        const mTealB = createSliceMesh(gTeal, COLOR_TEAL);
+        mTealB.position.x = 1.6;
+        mTealB.rotation.y = -Math.PI / 16;
+        mainGroup.add(mTealB);
+
+      } else if (app1Step === 4) {
+        document.getElementById('app1-step-title').textContent = 'Adım 4: Diziden Seriye';
+        document.getElementById('app1-step-desc').textContent = 'Her terim bir öncekinin yarısıdır. Tek tek terimler sıfıra yaklaşırken, bu terimlerin kısmi toplamları büyür ve yarım silindire yaklaşır. Dizi ile seriyi birbirine karıştırmayın.';
+        document.getElementById('btn-app1-next').textContent = 'Kavrama Sorularına Geç →';
+
+        // Silindir teli (Yarım silindir)
+        const wireCylGeom = new THREE.CylinderGeometry(R, R, H, 32, 1, true, 0, Math.PI);
+        const wireCylMat = new THREE.MeshBasicMaterial({ color: 0x64748b, wireframe: true, transparent: true, opacity: 0.3 });
+        const wireCyl = new THREE.Mesh(wireCylGeom, wireCylMat);
+        wireCyl.rotation.y = Math.PI / 2;
+        mainGroup.add(wireCyl);
+
+        // Ardışık azalan dilimler
+        const series = [
+          { dTh: Math.PI / 2, col: COLOR_BLUE },
+          { dTh: Math.PI / 4, col: COLOR_YELLOW },
+          { dTh: Math.PI / 8, col: COLOR_RED },
+          { dTh: Math.PI / 16, col: COLOR_TEAL },
+          { dTh: Math.PI / 32, col: COLOR_PURPLE }
+        ];
+
+        let curTh = 0;
+        series.forEach((s) => {
+          const g = createCylinderSectorGeometry(R, H, s.dTh, 10);
+          const m = createSliceMesh(g, s.col, 0.95);
+          m.rotation.y = -curTh;
+          mainGroup.add(m);
+          curTh += s.dTh;
+        });
+
+      } else if (app1Step === 5) {
+        document.getElementById('app1-step-title').textContent = 'Adım 5: Tahmin Et, Hesapla, Açıkla';
+        document.getElementById('app1-step-desc').textContent = 'Modeli kullanarak r ortak çarpanını, genel terimi ve kısmi toplamların sınırını belirleyin. Yanıtlamadan önce dilimlerin kapladığı açıyı karşılaştırın.';
+        document.getElementById('btn-app1-next').textContent = seriesQuizChecked ? "Uygulama 2'ye Geç →" : 'Önce Yanıtları Kontrol Et';
+
+        // Karşılaştırmalı 3 silindir
+        const gBlue = createCylinderSectorGeometry(R * 0.7, H * 0.7, Math.PI / 2, 12);
+        const mB = createSliceMesh(gBlue, COLOR_BLUE);
+        mB.position.x = -2.5;
+        mainGroup.add(mB);
+
+        const gYel = createCylinderSectorGeometry(R * 0.7, H * 0.7, Math.PI / 4, 10);
+        const mY = createSliceMesh(gYel, COLOR_YELLOW);
+        mY.position.x = 0;
+        mainGroup.add(mY);
+
+        const gRed = createCylinderSectorGeometry(R * 0.7, H * 0.7, Math.PI / 8, 8);
+        const mR = createSliceMesh(gRed, COLOR_RED);
+        mR.position.x = 2.5;
+        mainGroup.add(mR);
+      }
+    }
+
+    function nextApp1Step() {
+      if (app1Step < 5) {
+        app1Step++;
+        buildApp1Scene();
+      } else {
+        if (!seriesQuizChecked) {
+          document.getElementById('series-quiz-summary').textContent = 'Beş soru tamamlandığında ikinci uygulamaya geçebilirsiniz.';
+          document.getElementById('series-quiz').scrollIntoView({ block: 'start' });
+          return;
+        }
+        switchTab(2);
+      }
+    }
+
+    function prevApp1Step() {
+      if (app1Step > 1) {
+        app1Step--;
+        buildApp1Scene();
+      } else {
+        switchTab(0);
+      }
+    }
+
+    function getRadioValue(name) {
+      const selected = document.querySelector(`input[name="${name}"]:checked`);
+      return selected ? selected.value : '';
+    }
+
+    function setQuestionFeedback(id, correct, message) {
+      const element = document.getElementById(id);
+      element.className = `quiz-feedback ${correct ? 'correct' : 'incorrect'}`;
+      element.innerHTML = `${correct ? 'Doğru.' : 'Tekrar düşünün.'} ${message}`;
+    }
+
+    const seriesQuestions = [
+      { name: 'q1', answer: '1/2', feedback: 'feedback-q1', explanation: 'Her dilim bir öncekinin yarısıdır; dolayısıyla ortak çarpan r = 1/2 olur.' },
+      { name: 'q2', answer: '128', feedback: 'feedback-q2', explanation: 'a₆ = (1/4)·(1/2)⁵ = 1/128.' },
+      { name: 'q3', answer: 'hayir', feedback: 'feedback-q3', explanation: 'Kısmi toplamlar 1/2’ye alttan yaklaşır; bu değeri geçmez.' },
+      { name: 'q4', answer: '15/32', feedback: 'feedback-q4', explanation: 'S₄ = 1/4 + 1/8 + 1/16 + 1/32 = 15/32.' },
+      { name: 'q5', answer: '64', feedback: 'feedback-q5', explanation: 'S₅ = 31/64 olduğundan 1/2 − S₅ = 1/64.' }
+    ];
+    let seriesSlideIndex = 0;
+
+    function renderSeriesSlide() {
+      document.querySelectorAll('[data-series-slide]').forEach((slide) => {
+        slide.hidden = Number(slide.dataset.seriesSlide) !== seriesSlideIndex;
+      });
+      document.getElementById('series-slide-counter').textContent = `Soru ${seriesSlideIndex + 1} / ${seriesQuestions.length}`;
+      document.getElementById('series-slide-progress').style.width = `${((seriesSlideIndex + 1) / seriesQuestions.length) * 100}%`;
+      document.getElementById('series-prev').disabled = seriesSlideIndex === 0;
+      document.getElementById('series-next').hidden = seriesSlideIndex === seriesQuestions.length - 1;
+    }
+
+    function checkSeriesQuestion(index) {
+      const question = seriesQuestions[index];
+      const value = getRadioValue(question.name);
+      if (!value) {
+        const feedback = document.getElementById(question.feedback);
+        feedback.className = 'quiz-feedback incorrect';
+        feedback.textContent = 'Devam etmek için bir seçenek işaretleyin.';
+        return false;
+      }
+      setQuestionFeedback(question.feedback, value === question.answer, question.explanation);
+      return true;
+    }
+
+    function checkCurrentSeriesQuestion() {
+      if (!checkSeriesQuestion(seriesSlideIndex)) return;
+      if (seriesSlideIndex === seriesQuestions.length - 1) {
+        const score = seriesQuestions.filter((question) => getRadioValue(question.name) === question.answer).length;
+        seriesQuizChecked = true;
+        document.getElementById('series-quiz-summary').textContent = `${score} / ${seriesQuestions.length} doğru. Yanıtlarınızı Geri düğmesiyle inceleyebilir veya Uygulama 2'ye geçebilirsiniz.`;
+        document.getElementById('btn-app1-next').textContent = "Uygulama 2'ye Geç →";
+      }
+    }
+
+    function moveSeriesSlide(direction) {
+      if (direction > 0 && !checkSeriesQuestion(seriesSlideIndex)) return;
+      seriesSlideIndex = Math.max(0, Math.min(seriesQuestions.length - 1, seriesSlideIndex + direction));
+      renderSeriesSlide();
+    }
+
+    const areaQuestions = [
+      { name: 'q6', answer: 'hayir', feedback: 'feedback-q6', explanation: 'Dilimler yalnızca yeniden düzenlenir; alan korunur.' },
+      { name: 'q7', answer: 'pir-r', feedback: 'feedback-q7', explanation: 'Çevrenin yarısı πR, dilimin yüksekliği ise yarıçap R’dir.' },
+      { name: 'q8', answer: 'pir2', feedback: 'feedback-q8', explanation: 'Dikdörtgenin alanı, kenar uzunluklarının çarpımıdır: πR · R = πR².' },
+      { name: 'q9', answer: 'evet', feedback: 'feedback-q9', explanation: 'Kesilip yeniden düzenlenen parçaların toplam alanı değişmez; bu nedenle yaklaşık dikdörtgen ile dairenin alanları eşittir.' }
+    ];
+    let areaSlideIndex = 0;
+    let areaQuizChecked = false;
+
+    function renderAreaSlide() {
+      document.querySelectorAll('[data-area-slide]').forEach((slide) => {
+        slide.hidden = Number(slide.dataset.areaSlide) !== areaSlideIndex;
+      });
+      document.getElementById('area-slide-counter').textContent = `Soru ${areaSlideIndex + 1} / ${areaQuestions.length}`;
+      document.getElementById('area-slide-progress').style.width = `${((areaSlideIndex + 1) / areaQuestions.length) * 100}%`;
+      document.getElementById('area-prev').disabled = areaSlideIndex === 0;
+      document.getElementById('area-next').hidden = areaSlideIndex === areaQuestions.length - 1;
+      document.getElementById('btn-app2-free').hidden = !areaQuizChecked;
+    }
+
+    function checkAreaQuestion(index) {
+      const question = areaQuestions[index];
+      const value = getRadioValue(question.name);
+      if (!value) {
+        const feedback = document.getElementById(question.feedback);
+        feedback.className = 'quiz-feedback incorrect';
+        feedback.textContent = 'Devam etmek için bir seçenek işaretleyin.';
+        return false;
+      }
+      setQuestionFeedback(question.feedback, value === question.answer, question.explanation);
+      return true;
+    }
+
+    function checkCurrentAreaQuestion() {
+      if (!checkAreaQuestion(areaSlideIndex)) return;
+      if (areaSlideIndex === areaQuestions.length - 1) {
+        const score = areaQuestions.filter((question) => getRadioValue(question.name) === question.answer).length;
+        areaQuizChecked = true;
+        document.getElementById('area-quiz-summary').textContent = `${score} / ${areaQuestions.length} doğru. Yanıtlarınızı Geri düğmesiyle gözden geçirebilir veya Serbest Mod'a geçebilirsiniz.`;
+        document.getElementById('btn-app2-free').hidden = false;
+      }
+    }
+
+    function moveAreaSlide(direction) {
+      if (direction > 0 && !checkAreaQuestion(areaSlideIndex)) return;
+      areaSlideIndex = Math.max(0, Math.min(areaQuestions.length - 1, areaSlideIndex + direction));
+      renderAreaSlide();
+    }
+
+    /* --- TAB 2: UYGULAMA 2 (PARÇALARIN TEK TEK HAVADAN TAŞINMASI) --- */
+
+    let app2N = 8;
+    let app2Progress = 0; // 0 ile app2N arasında float
+    let app2Slices = [];
+    let app2AutoPlaying = false;
+
+    function setApp2N(n) {
+      app2N = n;
+      document.querySelectorAll('[data-app2-n]').forEach((button) => {
+        button.classList.toggle('btn-secondary', Number(button.dataset.app2N) !== n);
+      });
+      app2AutoPlaying = false;
+      const autoButton = document.getElementById('btn-app2-auto');
+      autoButton.textContent = '▶ Otomatik Tek Tek Taşı';
+      autoButton.classList.add('btn-secondary');
+      const slider = document.getElementById('slider-app2-progress');
+      slider.max = n;
+      slider.value = 0;
+      app2Progress = 0;
+      buildApp2Scene();
+    }
+
+    function buildApp2Scene() {
+      while (mainGroup.children.length > 0) mainGroup.remove(mainGroup.children[0]);
+      app2Slices = [];
+
+      const R = 2.0, H = 2.4;
+      setGroundLevel(-H / 2 - 0.03);
+      const dTheta = (2 * Math.PI) / app2N;
+      const halfTh = dTheta / 2;
+      const w = R * Math.sin(halfTh);
+      const d = R * Math.cos(halfTh);
+
+      // Sol Silindir Merkezi ve Sağ Montaj Şeridi
+      const cylCenterX = -4.5;
+      const stripCenterX = 3.5;
+
+      // Sol Zemin Platformu (Silindir Masası)
+      const cylBaseMark = new THREE.Mesh(
+        new THREE.CircleGeometry(R + 0.25, 32),
+        new THREE.MeshBasicMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.35, side: THREE.DoubleSide })
+      );
+      cylBaseMark.rotation.x = Math.PI / 2;
+      cylBaseMark.position.set(cylCenterX, -H/2 - 0.02, 0);
+      mainGroup.add(cylBaseMark);
+
+      const cylRing = new THREE.Mesh(
+        new THREE.RingGeometry(R - 0.04, R + 0.04, 32),
+        new THREE.MeshBasicMaterial({ color: 0x2563eb, side: THREE.DoubleSide })
+      );
+      cylRing.rotation.x = Math.PI / 2;
+      cylRing.position.set(cylCenterX, -H/2 - 0.01, 0);
+      mainGroup.add(cylRing);
+
+      // Sağ Zemin Platformu (Açınım / İspat Masası)
+      const stripTotalW = app2N * w + 0.6;
+      const stripMatGeom = new THREE.PlaneGeometry(stripTotalW, d + 0.6);
+      const stripMat = new THREE.Mesh(
+        stripMatGeom,
+        new THREE.MeshBasicMaterial({ color: 0xfde68a, transparent: true, opacity: 0.4, side: THREE.DoubleSide })
+      );
+      stripMat.rotation.x = Math.PI / 2;
+      stripMat.position.set(stripCenterX, -H/2 - 0.02, 0);
+      mainGroup.add(stripMat);
+
+      const stripBorder = new THREE.LineSegments(
+        new THREE.EdgesGeometry(stripMatGeom),
+        new THREE.LineBasicMaterial({ color: 0xd97706 })
+      );
+      stripBorder.rotation.x = Math.PI / 2;
+      stripBorder.position.set(stripCenterX, -H/2 - 0.01, 0);
+      mainGroup.add(stripBorder);
+
+      for (let i = 0; i < app2N; i++) {
+        const geom = createSymmetricWedgeGeometry(R, H, dTheta, 8);
+        const col = (i % 2 === 0) ? COLOR_BLUE : COLOR_YELLOW;
+        const mesh = createSliceMesh(geom, col, 0.95);
+
+        // Kaynak Konum (Silindirde)
+        const srcMidAngle = (i + 0.5) * dTheta;
+        const srcRotY = -srcMidAngle + Math.PI / 2;
+        const srcPos = new THREE.Vector3(cylCenterX, 0, 0);
+
+        // Hedef Konum (Sağ Masada Zikzak Diş)
+        const dstX = stripCenterX + (i - (app2N - 1) / 2) * w;
+        let dstZ, dstRotY;
+        if (i % 2 === 0) {
+          dstZ = -d / 2;
+          dstRotY = 0;
+        } else {
+          dstZ = d / 2;
+          dstRotY = Math.PI;
+        }
+        const dstPos = new THREE.Vector3(dstX, 0, dstZ);
+
+        mainGroup.add(mesh);
+        app2Slices.push({
+          mesh: mesh,
+          srcPos: srcPos,
+          srcRotY: srcRotY,
+          dstPos: dstPos,
+          dstRotY: dstRotY,
+          index: i
+        });
+      }
+
+      updateApp2SlicePositions();
+    }
+
+    function onApp2Slider(val) {
+      app2Progress = parseFloat(val);
+      updateApp2SlicePositions();
+    }
+
+    function stepApp2Move(delta) {
+      app2Progress = Math.max(0, Math.min(app2N, Math.round(app2Progress) + delta));
+      document.getElementById('slider-app2-progress').value = app2Progress;
+      updateApp2SlicePositions();
+    }
+
+    function toggleApp2AutoPlay() {
+      app2AutoPlaying = !app2AutoPlaying;
+      const btn = document.getElementById('btn-app2-auto');
+      if (app2AutoPlaying) {
+        btn.textContent = '⏸ Duraklat';
+        btn.classList.remove('btn-secondary');
+        if (app2Progress >= app2N) app2Progress = 0;
+      } else {
+        btn.textContent = '▶ Otomatik Tek Tek Taşı';
+        btn.classList.add('btn-secondary');
+      }
+    }
+
+    function advanceApp2AutoPlay() {
+      app2Progress += 0.04;
+      if (app2Progress >= app2N) {
+        app2Progress = app2N;
+        app2AutoPlaying = false;
+        document.getElementById('btn-app2-auto').textContent = '▶ Otomatik Tek Tek Taşı';
+        document.getElementById('btn-app2-auto').classList.add('btn-secondary');
+      }
+      document.getElementById('slider-app2-progress').value = app2Progress;
+      updateApp2SlicePositions();
+    }
+
+    function updateApp2SlicePositions() {
+      const movedCount = Math.floor(app2Progress);
+      document.getElementById('txt-app2-moved').textContent = `${movedCount} / ${app2N}`;
+
+      app2Slices.forEach((item) => {
+        const i = item.index;
+        if (app2Progress <= i) {
+          // Henüz taşınmadı: Sol silindirdeki yerinde durur
+          item.mesh.position.copy(item.srcPos);
+          item.mesh.rotation.y = item.srcRotY;
+        } else if (app2Progress >= i + 1) {
+          // Taşındı: Sağ masadaki kilitli yerinde durur
+          item.mesh.position.copy(item.dstPos);
+          item.mesh.rotation.y = item.dstRotY;
+        } else {
+          // ŞU ANDA TAŞINIYOR (u ∈ [0, 1])
+          const u = app2Progress - i;
+          // Havaya kalkma (parabolik yay): u=0.5'te tepe yapar
+          const arcHeight = 3.0 * Math.sin(Math.PI * u);
+
+          item.mesh.position.x = THREE.MathUtils.lerp(item.srcPos.x, item.dstPos.x, u);
+          item.mesh.position.y = arcHeight;
+          item.mesh.position.z = THREE.MathUtils.lerp(item.srcPos.z, item.dstPos.z, u);
+
+          // Açının dönmesi
+          let diffAngle = item.dstRotY - item.srcRotY;
+          while (diffAngle < -Math.PI) diffAngle += 2 * Math.PI;
+          while (diffAngle > Math.PI) diffAngle -= 2 * Math.PI;
+          item.mesh.rotation.y = item.srcRotY + diffAngle * u;
+        }
+      });
+    }
+
+    /* --- TAB 3: LABORATUVAR (PARÇADAN ÖRÜNTÜYE İNŞA) --- */
+
+    let labRadius = 2.0;
+    let labHeight = 3.0;
+    let labPieces = []; // { type, dTheta, color, ratio, mesh }
+    let labGuideMesh = null;
+    let labExploded = false;
+    let labGuideVisible = true;
+    let labGroundVisible = true;
+
+    const PIECE_CONFIG = {
+      blue: { dTheta: Math.PI / 2, color: COLOR_BLUE, ratio: 8, name: 'Mavi (1/4)' },
+      yellow: { dTheta: Math.PI / 4, color: COLOR_YELLOW, ratio: 4, name: 'Sarı (1/8)' },
+      red: { dTheta: Math.PI / 8, color: COLOR_RED, ratio: 2, name: 'Kırmızı (1/16)' },
+      teal: { dTheta: Math.PI / 16, color: COLOR_TEAL, ratio: 1, name: 'Turkuaz (1/32)' }
+    };
+
+    function buildLabScene() {
+      while (mainGroup.children.length > 0) mainGroup.remove(mainGroup.children[0]);
+      labPieces = [];
+      labExploded = false;
+      labGuideVisible = true;
+      labGroundVisible = true;
+      setGroundLevel(-labHeight / 2);
+      groundGrid.visible = true;
+      document.getElementById('lab-measurements').hidden = true;
+      document.getElementById('btn-lab-measures').textContent = 'Ölçümleri Göster';
+      updateLabUI();
+
+      // Silindirin tel kafesi (rehber boş silindir)
+      const guideGeom = new THREE.CylinderGeometry(labRadius, labRadius, labHeight, 32, 1, true);
+      const guideMat = new THREE.MeshBasicMaterial({ color: 0x94a3b8, wireframe: true, transparent: true, opacity: 0.25 });
+      labGuideMesh = new THREE.Mesh(guideGeom, guideMat);
+      mainGroup.add(labGuideMesh);
+      updateLabToolButtons();
+    }
+
+    function addLabPiece(type) {
+      const current32nds = getLabTotal32nds();
+      const cfg = PIECE_CONFIG[type];
+      if (current32nds + cfg.ratio > 32) {
+        alert('Silindir taştı! Eklemek istediğiniz parça kalan boşluğa sığmıyor.');
+        return;
+      }
+
+      // Parça oluştur
+      const startAngle = (current32nds / 32) * (2 * Math.PI);
+      const geom = createCylinderSectorGeometry(labRadius, labHeight, cfg.dTheta, 12);
+      const mesh = createSliceMesh(geom, cfg.color, 0.96);
+      mesh.rotation.y = -startAngle;
+      mainGroup.add(mesh);
+
+      labPieces.push({
+        type: type,
+        dTheta: cfg.dTheta,
+        color: cfg.color,
+        ratio: cfg.ratio,
+        mesh: mesh
+      });
+
+      applyLabPieceLayout();
+      updateLabUI();
+    }
+
+    function removeLastLabPiece() {
+      if (labPieces.length === 0) return;
+      const last = labPieces.pop();
+      mainGroup.remove(last.mesh);
+      applyLabPieceLayout();
+      updateLabUI();
+    }
+
+    function clearLab() {
+      while (labPieces.length > 0) {
+        const p = labPieces.pop();
+        mainGroup.remove(p.mesh);
+      }
+      updateLabUI();
+    }
+
+    function applyLabPieceLayout() {
+      let used32nds = 0;
+      labPieces.forEach((piece) => {
+        const startAngle = (used32nds / 32) * (2 * Math.PI);
+        const middleAngle = ((used32nds + piece.ratio / 2) / 32) * (2 * Math.PI);
+        piece.mesh.rotation.y = -startAngle;
+        if (labExploded) {
+          // Her dilimi kendi açıortayı boyunca merkezden dışarı taşı.
+          // Mesafenin yarıçapla ölçeklenmesi, farklı boyutlarda parçaların
+          // birbirinin içine girmeden geriye doğru açılmasını sağlar.
+          const distance = Math.max(0.9, labRadius * 0.55);
+          piece.mesh.position.set(
+            Math.cos(middleAngle) * distance,
+            0,
+            Math.sin(middleAngle) * distance
+          );
+        } else {
+          piece.mesh.position.set(0, 0, 0);
+        }
+        used32nds += piece.ratio;
+      });
+    }
+
+    function updateLabToolButtons() {
+      document.getElementById('btn-lab-explode').textContent = labExploded ? 'Parçaları Birleştir' : 'Parçaları Ayır';
+      document.getElementById('btn-lab-guide').textContent = labGuideVisible ? 'Rehberi Gizle' : 'Rehberi Göster';
+      document.getElementById('btn-lab-ground').textContent = labGroundVisible ? 'Zemini Gizle' : 'Zemini Göster';
+    }
+
+    function toggleLabExplode() {
+      labExploded = !labExploded;
+      applyLabPieceLayout();
+      updateLabToolButtons();
+    }
+
+    function toggleLabGuide() {
+      labGuideVisible = !labGuideVisible;
+      if (labGuideMesh) labGuideMesh.visible = labGuideVisible;
+      updateLabToolButtons();
+    }
+
+    function toggleLabGround() {
+      labGroundVisible = !labGroundVisible;
+      if (groundGrid) groundGrid.visible = labGroundVisible;
+      updateLabToolButtons();
+    }
+
+    function toggleLabMeasurements() {
+      const panel = document.getElementById('lab-measurements');
+      const button = document.getElementById('btn-lab-measures');
+      panel.hidden = !panel.hidden;
+      button.textContent = panel.hidden ? 'Ölçümleri Göster' : 'Ölçümleri Gizle';
+    }
+
+    function getLabTotal32nds() {
+      return labPieces.reduce((acc, p) => acc + p.ratio, 0);
+    }
+
+    function updateLabUI() {
+      const total32nds = getLabTotal32nds();
+      const pct = (total32nds / 32) * 100;
+      document.getElementById('txt-lab-ratio').textContent = `${total32nds} / 32 (%${formatTr(pct, 1)})`;
+      document.getElementById('lab-progress-bar').style.width = `${pct}%`;
+
+      const cntB = labPieces.filter(p => p.type === 'blue').length;
+      const cntY = labPieces.filter(p => p.type === 'yellow').length;
+      const cntR = labPieces.filter(p => p.type === 'red').length;
+      const cntT = labPieces.filter(p => p.type === 'teal').length;
+
+      document.getElementById('cnt-blue').textContent = `${cntB} ad.`;
+      document.getElementById('cnt-yellow').textContent = `${cntY} ad.`;
+      document.getElementById('cnt-red').textContent = `${cntR} ad.`;
+      document.getElementById('cnt-teal').textContent = `${cntT} ad.`;
+
+      const statusBadge = document.getElementById('lab-status-badge');
+      if (total32nds === 0) {
+        statusBadge.textContent = 'Silindir henüz boş';
+        statusBadge.style.color = 'var(--ms-text-muted)';
+      } else if (total32nds < 32) {
+        statusBadge.textContent = `Eksik: ${32 - total32nds}/32 dilim`;
+        statusBadge.style.color = 'var(--ms-warning)';
+      } else {
+        statusBadge.textContent = `Tam silindir inşa edildi. Toplam ${labPieces.length} parça kullandınız.`;
+        statusBadge.style.color = 'var(--ms-success)';
+      }
+
+      // İnşa görevi kontrolleri
+      const badgeMin = document.getElementById('badge-goal-min');
+      const badgeMax = document.getElementById('badge-goal-max');
+      const cardMin = document.getElementById('card-goal-min');
+      const cardMax = document.getElementById('card-goal-max');
+
+      const isComplete = (total32nds === 32);
+      const hasAllColors = (cntB >= 1 && cntY >= 1 && cntR >= 1 && cntT >= 1);
+
+      if (isComplete && hasAllColors && labPieces.length === 7 && cntB === 3 && cntY === 1 && cntR === 1 && cntT === 2) {
+        badgeMin.style.display = 'block';
+        cardMin.style.borderLeftColor = 'var(--ms-success)';
+      } else {
+        badgeMin.style.display = 'none';
+        cardMin.style.borderLeftColor = 'var(--ms-border)';
+      }
+
+      if (isComplete && hasAllColors && labPieces.length === 21 && cntB === 1 && cntY === 1 && cntR === 1 && cntT === 18) {
+        badgeMax.style.display = 'block';
+        cardMax.style.borderLeftColor = 'var(--ms-success)';
+      } else {
+        badgeMax.style.display = 'none';
+        cardMax.style.borderLeftColor = 'var(--ms-border)';
+      }
+
+      // Canlı Hacimler
+      const totalVol = Math.PI * labRadius * labRadius * labHeight;
+      const filledVol = totalVol * (total32nds / 32);
+      document.getElementById('txt-lab-vol').textContent = formatTr(totalVol, 2);
+      document.getElementById('txt-lab-filled-vol').textContent = formatTr(filledVol, 2);
+      document.getElementById('txt-lab-angle').textContent = `${formatTr((total32nds / 32) * 360, 1)}°`;
+    }
+
+    function showLabHint(goal) {
+      const hint = document.getElementById('lab-hint');
+      hint.hidden = false;
+      if (goal === 'min') {
+        hint.innerHTML = '<strong>İpucu A:</strong> Önce her renkten bir tane ayırın. Kalan boşluğu mümkün olduğunca büyük dilimlerle doldurun. Denklem: 8m + 4s + 2k + t = 32.';
+      } else {
+        hint.innerHTML = '<strong>İpucu B:</strong> Önce her renkten bir tane ayırın. Parça sayısını artırmak için kalan boşlukta en küçük dilimi tercih edin. Denklem: 8m + 4s + 2k + t = 32.';
+      }
+    }
+
+    function setLabRadius(val) {
+      labRadius = parseFloat(val);
+      document.getElementById('txt-lab-r').textContent = `${formatTr(labRadius, 1)} br`;
+      rebuildLabGeometry();
+    }
+
+    function setLabHeight(val) {
+      labHeight = parseFloat(val);
+      document.getElementById('txt-lab-h').textContent = `${formatTr(labHeight, 1)} br`;
+      rebuildLabGeometry();
+    }
+
+    function rebuildLabGeometry() {
+      const savedTypes = labPieces.map(p => p.type);
+      clearLab();
+      setGroundLevel(-labHeight / 2);
+      // Silindir teli yenile
+      while (mainGroup.children.length > 0) mainGroup.remove(mainGroup.children[0]);
+      const guideGeom = new THREE.CylinderGeometry(labRadius, labRadius, labHeight, 32, 1, true);
+      const guideMat = new THREE.MeshBasicMaterial({ color: 0x94a3b8, wireframe: true, transparent: true, opacity: 0.25 });
+      labGuideMesh = new THREE.Mesh(guideGeom, guideMat);
+      labGuideMesh.visible = labGuideVisible;
+      mainGroup.add(labGuideMesh);
+      savedTypes.forEach(t => addLabPiece(t));
+    }
+
+    /* --- ÖNİZLEME KİPİ (?onizleme=1) --- */
+
+    function enablePreviewMode() {
+      isPreview = true;
+      document.body.classList.add('preview-mode');
+      document.getElementById('scene-badge').textContent = 'Silindir Dilimleri 3B Temsili';
+      buildOverviewScene();
+      camera.position.set(0, 4.5, 7.5);
+      camera.lookAt(0, 0, 0);
+      onWindowResize();
+    }
+
+    /* --- TEMA YÖNETİMİ VE GÜVENLİ MATBİS PROTOKOLÜ --- */
+
+    const THEME_STORAGE_KEY = 'matbis-kati-silindir-hacmi-theme';
+    const trustedParentOrigin = (() => {
+      if (window.parent === window || !document.referrer) return null;
+      try {
+        const referrerOrigin = new URL(document.referrer).origin;
+        return referrerOrigin === window.location.origin ? referrerOrigin : null;
+      } catch (error) {
+        return null;
+      }
+    })();
+
+    function readSavedTheme() {
+      try {
+        const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
+        return saved === 'dark' ? 'dark' : 'light';
+      } catch (error) {
+        return 'light';
+      }
+    }
+
+    let currentTheme = readSavedTheme();
+    let siteThemeManaged = false;
+
+    function applyTheme(theme, options = {}) {
+      const normalizedTheme = theme === 'dark' ? 'dark' : 'light';
+      currentTheme = normalizedTheme;
+      if (normalizedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+
+      const themeButton = document.getElementById('btn-theme');
+      const modalThemeButton = document.getElementById('btn-theme-modal');
+      const switchesToDark = normalizedTheme !== 'dark';
+      [themeButton, modalThemeButton].filter(Boolean).forEach((button) => {
+        button.textContent = normalizedTheme === 'dark' ? '☀️' : '🌙';
+        button.setAttribute('aria-label', switchesToDark ? 'Koyu temaya geç' : 'Açık temaya geç');
+        button.setAttribute('title', switchesToDark ? 'Koyu temaya geç' : 'Açık temaya geç');
+        button.setAttribute('aria-pressed', normalizedTheme === 'dark' ? 'true' : 'false');
+      });
+
+      if (options.persist) {
+        try {
+          window.localStorage.setItem(THEME_STORAGE_KEY, normalizedTheme);
+        } catch (error) {}
+      }
+
+      if (options.managedBySite) {
+        siteThemeManaged = true;
+        themeButton.hidden = true;
+        if (modalThemeButton) modalThemeButton.hidden = true;
+      }
+
+      if (renderer) {
+        renderer.setClearColor(normalizedTheme === 'dark' ? 0x151c28 : 0xf4f6f9, 1);
+      }
+    }
+
+    function toggleLocalTheme() {
+      if (siteThemeManaged) return;
+      applyTheme(currentTheme === 'light' ? 'dark' : 'light', { persist: true });
+    }
+
+    document.getElementById('btn-theme').addEventListener('click', toggleLocalTheme);
+    document.getElementById('btn-theme-modal').addEventListener('click', toggleLocalTheme);
+
+    window.addEventListener('message', (event) => {
+      if (!trustedParentOrigin) return;
+      if (event.source !== window.parent || event.origin !== trustedParentOrigin) return;
+      if (!event.data || typeof event.data !== 'object') return;
+      if (event.data.channel !== 'matbis-theme' || event.data.type !== 'set-theme') return;
+      if (event.data.theme !== 'light' && event.data.theme !== 'dark') return;
+      applyTheme(event.data.theme, { managedBySite: true });
+    });
+
+    applyTheme(currentTheme);
+
+    if (trustedParentOrigin) {
+      window.parent.postMessage(
+        { channel: 'matbis-theme', type: 'ready' },
+        trustedParentOrigin
+      );
+    }
+
+    /* --- YARDIM MODALI --- */
+
+    let helpReturnFocus = null;
+
+    function openHelpModal() {
+      const modal = document.getElementById('help-modal');
+      const activeElement = document.activeElement;
+      helpReturnFocus = activeElement && activeElement !== document.body ? activeElement : null;
+      document.querySelector('header').inert = true;
+      document.querySelector('main').inert = true;
+      modal.classList.add('open');
+      window.requestAnimationFrame(() => document.getElementById('btn-start-material').focus());
+    }
+
+    function closeHelpModal() {
+      document.getElementById('help-modal').classList.remove('open');
+      document.querySelector('header').inert = false;
+      document.querySelector('main').inert = false;
+      const focusTarget = helpReturnFocus && helpReturnFocus.isConnected
+        ? helpReturnFocus
+        : document.getElementById('tab-0');
+      helpReturnFocus = null;
+      focusTarget.focus();
+    }
+
+    document.getElementById('btn-help').addEventListener('click', openHelpModal);
+    document.getElementById('help-modal').addEventListener('click', (event) => {
+      if (event.target === event.currentTarget) closeHelpModal();
+    });
+    document.addEventListener('keydown', (event) => {
+      const modal = document.getElementById('help-modal');
+      if (!modal.classList.contains('open')) return;
+      if (event.key === 'Escape') {
+        closeHelpModal();
+        return;
+      }
+      if (event.key === 'Tab') {
+        const focusable = [...modal.querySelectorAll('button:not([hidden])')];
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+
+    function showDependencyError(missingLibraries) {
+      document.getElementById('app-loading').hidden = true;
+      const errorPanel = document.getElementById('dependency-error');
+      document.getElementById('dependency-error-detail').textContent =
+        `${missingLibraries.join(' ve ')} yüklenemedi. lib klasöründeki yerel dosyaları kontrol edip yeniden deneyin.`;
+      errorPanel.hidden = false;
+    }
+
+    // Başlatma
+    window.addEventListener('DOMContentLoaded', () => {
+      const missingLibraries = [];
+      if (typeof THREE === 'undefined') missingLibraries.push('Three.js');
+      if (!window.MathJax || typeof window.MathJax.typesetPromise !== 'function') missingLibraries.push('MathJax');
+      if (missingLibraries.length > 0) {
+        showDependencyError(missingLibraries);
+        return;
+      }
+      initScene();
+      applyTheme(currentTheme);
+      if (!isPreview) openHelpModal();
+    });
+  </script>
+</body>
+</html>

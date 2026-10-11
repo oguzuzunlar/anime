@@ -1,0 +1,65 @@
+{
+  "format": "matbis-materyal",
+  "surum": "1.0",
+  "kimlik": {
+    "id": "silindir-dilimleri-geometrik-seri-alan-hacim",
+    "baslik": "Katı Silindirin Hacmi Materyali",
+    "uretici": "OGM",
+    "materyal_surumu": "1.2",
+    "tarih": "2026-10-11"
+  },
+  "matematik": {
+    "durum": "Dik dairesel silindirin açısal dilimlere ayrılmasıyla geometrik diziler, sonsuz küçükler, limit yaklaşımı ile taban alanı ve hacim bağıntılarının yapılandırılması incelenir.",
+    "degiskenler": [
+      "taban yarıçapı",
+      "silindir yüksekliği",
+      "dilim sayısı ve merkez açı",
+      "geometrik dizi adım sayısı"
+    ],
+    "cikti": "dilim hacimleri, geometrik dizi toplamı, paralelkenara/dikdörtgene yaklaşan taban alanı ve silindir hacmi"
+  },
+  "teknik": {
+    "giris": "index.html",
+    "onizleme_tipi": "temsili_durum",
+    "onizleme_kipi": "?onizleme=1",
+    "onizleme_odagi": "Dik dairesel silindirin 1/4, 1/8, 1/16 ve 1/32'lik renkli dilimlerinin 3B temsili",
+    "dis_baglanti": [],
+    "tema": "gunduz-varsayilan_gece-kullanici-secimi",
+    "yerel_kutuphaneler": [
+      "lib/three.min.js",
+      "lib/mathjax/tex-chtml.js"
+    ],
+    "klavye": true,
+    "hareket_azaltma": true,
+    "responsive": true,
+    "paket_ayrismasi": true,
+    "kullanim_rehberi": true
+  },
+  "program": {
+    "program_surumu": "Türkiye Yüzyılı Maarif Modeli Matematik Dersi Öğretim Programı",
+    "sinif_duzeyi": [
+      10,
+      11,
+      12
+    ],
+    "ogrenme_ciktisi": [
+      "MAT.10.4.1",
+      "MAT.11.3.1",
+      "MAT.12.3.2"
+    ],
+    "beceri_etiketleri": [
+      "MAB1",
+      "MAB3",
+      "MAB5",
+      "KB2.6",
+      "KB2.10",
+      "OB2",
+      "OB4"
+    ],
+    "surec_bilesenleri": [
+      "MAT.10.4.1.a",
+      "MAT.11.3.1.b",
+      "MAT.12.3.2.c"
+    ]
+  }
+}
