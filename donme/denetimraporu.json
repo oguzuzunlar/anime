@@ -1,0 +1,159 @@
+{
+  "rapor_format": "materyal_seti_html_denetim_v1_3_4",
+  "rapor_tarihi": "2026-10-04",
+  "denetci": "Antigravity - Alan ve Teknik Denetçi (Revizyon Sonrası)",
+  "kaynak": {
+    "materyal_adi": "Dönme Dönüşümü Materyali — MEBİ Teması",
+    "dosya_yolu": "Donme_Donusumu_Materyali_Oguz_MEBI/index.html",
+    "materyal_hatti": "bagimsiz_materyal_seti",
+    "cikti_turu": "etkilesimli_html",
+    "eslik_eden_varliklar": [],
+    "kaynak_dosyalar_degistirildi": true
+  },
+  "denetim_kapsami": {
+    "yalniz_html_ciktisi": true,
+    "manifest_var": true,
+    "tymm_programi_referans_alindi": true,
+    "ders_kitabi_referansi_zorunlu_degil": true,
+    "statik_on_tarama_yapildi": true,
+    "tarayici_islev_testi_yapildi": true,
+    "cevrimdisi_test_yapildi": true,
+    "scorm_haric": true
+  },
+  "puanlama": {
+    "puan": 98,
+    "karar": "uygun",
+    "esik": "90_100",
+    "tavan_kurali": "Yok. Tüm teknik kapılar ve 2 Ekim 2026 Tema/Önizleme Eki koşulları eksiksiz doğrulanmıştır."
+  },
+  "on_kosul_kapilari": [
+    {
+      "kod": "MS-01",
+      "ad": "index_html_ve_manifest",
+      "durum": "gecti",
+      "kanit": "Kökte index.html ve geçerli manifest.json dosyaları eksiksiz mevcuttur."
+    },
+    {
+      "kod": "MS-02",
+      "ad": "manifest_bloklari",
+      "durum": "gecti",
+      "kanit": "Kimlik, matematik, teknik ve program blokları dolu; kök manifest.json ve index.html içindeki gömülü manifest v1.5 (2026-10-04) ile bire bir eşitlenmiştir."
+    },
+    {
+      "kod": "MS-03",
+      "ad": "ogrenme_dili",
+      "durum": "gecti",
+      "kanit": "MAT.9.4.1 öğrenme çıktısı, MAB1, MAB3, MAB5, KB2.10, OB2, OB4 beceri etiketleri ve 5 süreç bileşeni eksiksiz tanımlıdır."
+    },
+    {
+      "kod": "MS-04",
+      "ad": "referans_ve_amac_beyani",
+      "durum": "gecti",
+      "kanit": "Programdan bağımsız matematiksel durum cümlesi net; TYMM 9. Sınıf 4. Tema Eşlik ve Benzerlik referansı açıkça belirtilmiştir."
+    },
+    {
+      "kod": "MS-05",
+      "ad": "onizleme_kipi",
+      "durum": "gecti",
+      "kanit": "?onizleme=1 kipi 333x333 ve 240x240 kare alanlarda sıfır yatay/dikey taşma ile ortalanmış şekilde açılmakta; dinamik CS.scale uyarlamasıyla şekil ve etiketler tam görünmekte, cevabı veya gereksiz kontrolleri açmamaktadır."
+    },
+    {
+      "kod": "MS-06",
+      "ad": "tema",
+      "durum": "gecti",
+      "kanit": "Gündüz varsayılan, gece modu kullanıcı seçimiyle çalışmaktadır. 2 Ekim 2026 ekindeki 'matbis-theme' postMessage dinleyicisi kurulmuş, açılışta ready sinyali gönderilmekte ve ortak --ms-bg, --ms-surface, --ms-surface-alt, --ms-text, --ms-preview-bg CSS değişkenleri tam entegre edilmiştir."
+    },
+    {
+      "kod": "MS-07",
+      "ad": "responsive",
+      "durum": "gecti",
+      "kanit": "390x844 mobil dikey ve 1440x900 masaüstü görünümlerinde sıfır taşma doğrulanmıştır."
+    },
+    {
+      "kod": "MS-08",
+      "ad": "erisilebilirlik",
+      "durum": "gecti",
+      "kanit": "Görünür odak (:focus-visible), ARIA adları (role=dialog, aria-modal), diyalog odak hapsi (focus trap) ve WCAG AA kontrastı eksiksizdir."
+    },
+    {
+      "kod": "MS-09",
+      "ad": "etkilesim_alternatifleri",
+      "durum": "gecti",
+      "kanit": "Klavye (ok tuşları, sekme), butonlar ve sayısal giriş alternatifleri sorunsuz çalışmaktadır."
+    },
+    {
+      "kod": "MS-10",
+      "ad": "hareket_azaltma",
+      "durum": "gecti",
+      "kanit": "prefers-reduced-motion etkin olduğunda animasyon 90° temsilî karesinde sabitlenmektedir."
+    },
+    {
+      "kod": "MS-11",
+      "ad": "scorm",
+      "durum": "uygulanamaz",
+      "kanit": "Materyal Seti hattında uygulanmaz; puan kırmaz."
+    },
+    {
+      "kod": "MS-12",
+      "ad": "dis_bagimlilik",
+      "durum": "gecti",
+      "kanit": "Sıfır dış URL bağlantısı; MathJax lib klasöründen yerel, 3 alt uygulama tek dosyada gömülü, tam çevrimdışı çalışma doğrulanmıştır."
+    },
+    {
+      "kod": "MS-13",
+      "ad": "kutuphane_acilisi",
+      "durum": "gecti",
+      "kanit": "Konsolda sıfır hata ve sıfır uyarı kaydı; MathJax yüklenememe durumuna karşı role=alert erişilebilir uyarısı bulunmaktadır."
+    }
+  ],
+  "icerik_kapilari": {
+    "matematiksel_dogruluk": {
+      "durum": "gecti",
+      "kanit": "Dönme formülü x'=x*cosθ - y*sinθ, y'=x*sinθ + y*cosθ; 90°, 180°, 270° özel açıları, saat yönü/tersi işaretleri ve koordinat değişimleri hatasızdır."
+    },
+    "pedagojik_uygunluk": {
+      "durum": "gecti",
+      "kanit": "Rehberli keşif, formül türetme ve açık uçlu serbest manipülasyon modları öğrencinin kavramsal gelişimini eksiksiz desteklemektedir."
+    },
+    "etkilesim_anlami": {
+      "durum": "gecti",
+      "kanit": "Yapılan her kullanıcı eylemi matematiksel durumu doğrudan değiştirmektedir."
+    },
+    "islevsel_butunluk": {
+      "durum": "gecti",
+      "kanit": "Diyaloglar, tema geçişleri, sekme geçişleri ve tam ekran kaplama sorunsuz çalışmaktadır."
+    },
+    "pedagojik_akis": {
+      "durum": "gecti",
+      "profil": "karma",
+      "akis_modu": "kesif",
+      "kanit": "Amaç -> eylem -> durum değişimi -> test ve genelleme bağı kurulmuştur."
+    },
+    "dil_dizgi": {
+      "durum": "gecti",
+      "kucuk_kusurlar": [],
+      "kritik_kusurlar": []
+    }
+  },
+  "tymm_eslesmesi": {
+    "referans": "TYMM Matematik Öğretim Programı",
+    "durum": "guclu",
+    "sinif_duzeyi": [9],
+    "tema": "4. Tema: Eşlik ve Benzerlik / Geometrik Dönüşümler",
+    "ogrenme_ciktilari": ["MAT.9.4.1"],
+    "eslesme_gerekcesi": "Nokta ve şekillerin dönme dönüşümlerinin incelenmesi, koordinat değişimlerinin keşfi ve genel cebirsel kuralın türetilmesi program çıktılarıyla bire bir örtüşmektedir.",
+    "kesinlestirme_notu": "Resmî TYMM 9. sınıf programıyla tam uyumlu."
+  },
+  "scorm": {
+    "durum": "haric",
+    "puan_etkisi": false,
+    "not": "Materyal Seti hattında uygulanmaz."
+  },
+  "duzeltme_oncelikleri": [],
+  "ic_yonlendirme": {
+    "gerekli": false,
+    "konu": "diger",
+    "gerekce": ""
+  },
+  "nihai_not": "4 düzeltme ve iyileştirme önerisi eksiksiz uygulanmış, tarayıcıda 333x333 kare önizleme sığması, matbis-theme protokolü ve CSS değişkenleri doğrulanmıştır. Konsolda 0 hata bulunmaktadır. Materyal 98/100 puan ile tam kabul düzeyindedir."
+}
