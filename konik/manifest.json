@@ -1,0 +1,53 @@
+{
+  "format": "matbis-materyal",
+  "surum": "1.3.4",
+  "kimlik": {
+    "id": "konikler-sanal-matematik-laboratuvari",
+    "baslik": "Konikler Sanal Matematik Laboratuvarı",
+    "uretici": "Oğuz Uzunlar",
+    "materyal_surumu": "2.0.0",
+    "tarih": "2026-10-04"
+  },
+  "matematik": {
+    "durum": "Bir düzlemin çift koniye göre konumu değiştikçe oluşan arakesitin çember, elips, parabol, hiperbol veya dejenere konik olması incelenir.",
+    "degiskenler": [
+      "düzlemin taban düzlemiyle yaptığı açı α",
+      "düzlemin koni eksenini kestiği c değeri",
+      "koni yarı tepe açısı θ",
+      "kesit görünürlüğü ve gözlem kamerası"
+    ],
+    "cikti": "Arakesit türü, yerel düzlem denklemi, dışmerkezlik, odaklar ve doğrultman"
+  },
+  "teknik": {
+    "giris": "index.html",
+    "onizleme_tipi": "sinirli_etkilesim",
+    "onizleme_kipi": "?onizleme=1",
+    "onizleme_odagi": "Düzlemin açısı değiştikçe konik kesit türünün ve dışmerkezliğin değişmesi",
+    "dis_baglanti": [],
+    "tema": "gunduz-varsayilan_gece-kullanici-secimi-matbis-mesaj-destekli",
+    "klavye": true,
+    "hareket_azaltma": true,
+    "responsive": true,
+    "paket_ayrismasi": true,
+    "kullanim_rehberi": true,
+    "hata_yedegi": true
+  },
+  "program": {
+    "program_surumu": "Türkiye Yüzyılı Maarif Modeli Ortaöğretim Matematik Dersi Öğretim Programı",
+    "sinif_duzeyi": [12],
+    "ogrenme_ciktisi": ["MAT.12.3.2"],
+    "beceri_etiketleri": ["MAB3", "MAB5", "KB2.10", "OB2"],
+    "surec_bilesenleri": ["MAT.12.3.2.a", "MAT.12.3.2.b", "MAT.12.3.2.c"]
+  },
+  "referans": {
+    "tur": "MMS kılavuzu ve TYMM Matematik Dersi Öğretim Programı",
+    "dosya": "../konikler materyli.pdf",
+    "not": "Dijital materyal, fiziksel koni kesiti etkinliğini çift koni, iki boyutlu analitik izdüşüm ve dışmerkezlik gösterimiyle zenginleştirir."
+  },
+  "paketleme": {
+    "tur": "yerel_html_css_js_ve_threejs",
+    "dis_dosya_gereksinimi": false,
+    "yerel_kutuphaneler": ["vendor/three.local.js"]
+  },
+  "revizyon_notu": "2.0.0: file:// ile doğrudan açılabilen yerel Three.js ve OrbitControls paketi, MATBİS önizleme kipi, tema mesaj köprüsü, hareket azaltma, erişilebilir etiketler, yükleme hata yedeği ve bilimsel örnek düzeltmeleri eklendi."
+}

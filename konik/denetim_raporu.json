@@ -1,0 +1,142 @@
+{
+  "rapor_format": "materyal_seti_html_denetim_v1_3_4",
+  "rapor_tarihi": "2026-10-05",
+  "denetci": "Antigravity & JEV Classifier (mcp-advisory)",
+  "kaynak": {
+    "materyal_adi": "Konikler Sanal Matematik Laboratuvarı",
+    "dosya_yolu": "c:/Users/oguzu/OneDrive/Desktop/MATERYAL SETİ DENETİM/Konikler_3B_Materyali_90_Plus_YEDEK_2026-10-05",
+    "materyal_hatti": "bagimsiz_materyal_seti",
+    "cikti_turu": "etkilesimli_html",
+    "eslik_eden_varliklar": [
+      "manifest.json",
+      "index.html",
+      "konikler_uygulama1_3D.html",
+      "konikler_uygulama2_3D.html",
+      "bundle-konikler-single.js",
+      "vendor/three.local.js"
+    ],
+    "kaynak_dosyalar_degistirildi": false
+  },
+  "denetim_kapsami": {
+    "yalniz_html_ciktisi": true,
+    "manifest_var": true,
+    "tymm_programi_referans_alindi": true,
+    "ders_kitabi_referansi_zorunlu_degil": true,
+    "statik_on_tarama_yapildi": true,
+    "tarayici_islev_testi_yapildi": true,
+    "cevrimdisi_test_yapildi": true,
+    "scorm_haric": true
+  },
+  "puanlama": {
+    "puan": 96,
+    "karar": "uygun",
+    "esik": "90_100",
+    "tavan_kurali": "Yok (Tüm ön koşul ve içerik kapıları başarıyla geçildi)"
+  },
+  "on_kosul_kapilari": [
+    {
+      "kod": "MS-01",
+      "ad": "index_html_ve_manifest",
+      "durum": "gecti",
+      "kanit": "index.html ve manifest.json dosyaları mevcut, geçerli JSON formatında ve tüm zorunlu alanlar (kimlik, matematik, teknik, program) eksiksiz tanımlanmış."
+    },
+    {
+      "kod": "M1_yerel_paket",
+      "ad": "yerel_ve_cevrimdisi_calisma",
+      "durum": "gecti",
+      "kanit": "0 dış bağımlılık URL'si. Three.js kütüphanesi yerel vendor/three.local.js üzerinden offline yüklenmekte; CDN veya internet bağımlılığı bulunmamaktadır."
+    },
+    {
+      "kod": "M2_manifest",
+      "ad": "manifest_butunlugu",
+      "durum": "gecti",
+      "kanit": "Manifest v1.3.4 formatına tam uyumlu; id, baslik, uretici, teknik parametreler ve TYMM program eşleşmesi eksiksiz."
+    },
+    {
+      "kod": "M3_onizleme",
+      "ad": "onizleme_kipi",
+      "durum": "gecti",
+      "kanit": "?onizleme=1 parametresi ile bağımsız SVG/analitik önizleme modu (preview-card) başarıyla devreye girmektedir."
+    },
+    {
+      "kod": "M4_klavye_ve_odak",
+      "ad": "klavye_ve_erisilebilirlik",
+      "durum": "gecti",
+      "kanit": "24 adet ARIA özniteliği, belirgin odak halkaları (:focus-visible), klavye gezinimi ve ekran okuyucu uyumluluğu (.sr-only) mevcuttur."
+    },
+    {
+      "kod": "M5_hareket_azaltma",
+      "ad": "prefers_reduced_motion",
+      "durum": "gecti",
+      "kanit": "@media (prefers-reduced-motion: reduce) kuralı ile animasyon süreleri 0.01ms'ye çekilmekte ve ani hareketler sınırlandırılmaktadır."
+    },
+    {
+      "kod": "M6_tema",
+      "ad": "mebi_tema_sistemi",
+      "durum": "gecti",
+      "kanit": "Açık tema (MEBİ kurumsal lacivert/mavi paleti) varsayılandır; koyu tema kullanıcı seçimi ve window postMessage ('matbis-theme') desteği bulunmaktadır."
+    },
+    {
+      "kod": "M6b_responsive_rehber_paket",
+      "ad": "responsive_rehber_paket",
+      "durum": "gecti",
+      "kanit": "Mobil/tablet/masaüstü için dinamik kırılım noktaları (<=900px, <=600px), alt araç çubuğu, giriş yönergeleri ve modal rehber eksiksizdir."
+    },
+    {
+      "kod": "H1_belge_hijyeni",
+      "ad": "belge_hijyeni",
+      "durum": "gecti",
+      "kanit": "lang='tr', UTF-8 charset ve viewport meta etiketleri standartlara uygun yerleştirilmiştir."
+    }
+  ],
+  "icerik_kapilari": {
+    "matematiksel_dogruluk": {
+      "durum": "gecti",
+      "kanit": "Koni denklemi x² + z² = y² (yarı tepe açısı θ = 45°). Düzlemin tabanla açısı α iken dışmerkezlik e = sin(α)/cos(θ) = √2·sin(α) olarak hatasız hesaplanmakta. α=0° için e=0 (çember), 0<α<45° için 0<e<1 (elips), α=45° için e=1 (parabol), α>45° için e>1 (hiperbol). Tepe noktasından geçen durumlarda (c=0) dejenere konikler (nokta, doğru, kesişen iki doğru) eksiksiz modellenmiştir."
+    },
+    "pedagojik_uygunluk": {
+      "durum": "gecti",
+      "kanit": "Somuttan soyuta geçiş ilkesi: 3B fiziksel kesim modeli ile eşzamanlı 2B analitik izdüşüm paneli (odaklar F1-F2, doğrultman d, dışmerkezlik e) birlikte sunulmaktadır. Uygulama 1 ve 2 yapılandırılmış rehberlik sağlarken Serbest Mod bağımsız keşif imkanı tanımaktadır."
+    },
+    "etkilesim_anlami": {
+      "durum": "gecti",
+      "kanit": "Düzlem açısı (α) ve eksen kesim noktası (c) sliderları, hızlı konik preset butonları, kesiti ayırma (cut section) özelliği ile iç yapıyı gözlemleme doğrudan amaca hizmet eden derin etkileşimler sunar."
+    },
+    "islevsel_butunluk": {
+      "durum": "gecti",
+      "kanit": "Bölümler arası çift yönlü navigasyon (Uygulama 1 <-> Uygulama 2 <-> Serbest Mod), 3B canvas WebGL yükleme hata yedeği (load-error fallback) ve router entegrasyonu kusursuz çalışmaktadır."
+    },
+    "pedagojik_akis": {
+      "durum": "gecti",
+      "profil": "kesif_manipulasyon",
+      "akis_modu": "karma",
+      "kanit": "Bilişsel yükü kademelendiren 3 modlu yapı: 1) Çember/Elips temeli, 2) Parabol/Hiperbol genellemesi ve değerlendirme soruları, 3) 3B+2B analitik serbest keşif laboratuvarı."
+    },
+    "dil_dizgi": {
+      "durum": "gecti",
+      "kucuk_kusurlar": [],
+      "kritik_kusurlar": []
+    }
+  },
+  "tymm_eslesmesi": {
+    "referans": "Türkiye Yüzyılı Maarif Modeli Matematik Dersi Öğretim Programı",
+    "durum": "guclu",
+    "sinif_duzeyi": [12],
+    "tema": "Geometri / Analitik Geometri",
+    "ogrenme_ciktilari": ["MAT.12.3.2"],
+    "eslesme_gerekcesi": "TYMM MAT.12.3.2 öğrenme çıktısı olan 'Koniklerin geometrik ve cebirsel özelliklerini inceleyebilme/keşfedebilme' hedefine doğrudan hizmet eder. MAB3 (Matematiksel Akıl Yürütme), MAB5 (Matematiksel Temsil) ve KB2.10 (Çıkarım Yapma) süreç bileşenlerini tam kapsar.",
+    "kesinlestirme_notu": "12. sınıf konikler ünitesi için referans niteliğinde bir dijital laboratuvardır."
+  },
+  "scorm": {
+    "durum": "haric",
+    "puan_etkisi": false,
+    "not": "Materyal Seti hattında SCORM paketi zorunlu olmayıp bağımsız HTML5 WebGL materyali olarak kabul edilir."
+  },
+  "duzeltme_oncelikleri": [],
+  "ic_yonlendirme": {
+    "gerekli": false,
+    "konu": "diger",
+    "gerekce": "Materyal 90+ puan eşiğini aşmış olup doğrudan yayıma ve kullanıma uygundur."
+  },
+  "nihai_not": "Materyal seti v1.3.4 teknik ön koşul kapılarının (M1-M6b, H1, MS-01) tamamını firesiz geçmiş, matematiksel ve analitik hesaplamaları kusursuz seviyede doğrulanmış, 96/100 puanla 'UYGUN' olarak değerlendirilmiştir."
+}
