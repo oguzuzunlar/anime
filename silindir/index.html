@@ -7,44 +7,73 @@
   
   <!-- Gömülü Matbis Manifest v1.0 -->
   <script type="application/json" id="matbis-manifest">
-  {
-    "format": "matbis-materyal",
-    "surum": "1.0",
-    "kimlik": {
-      "id": "silindir-dilimleri-geometrik-seri-alan-hacim",
-      "baslik": "Katı Silindirin Hacmi Materyali",
-      "uretici": "OGM",
-      "materyal_surumu": "1.2",
-      "tarih": "2026-10-11"
-    },
-    "matematik": {
-      "durum": "Dik dairesel silindirin açısal dilimlere ayrılmasıyla geometrik diziler, sonsuz küçükler, limit yaklaşımı ile taban alanı ve hacim bağıntılarının yapılandırılması incelenir.",
-      "degiskenler": ["taban yarıçapı", "silindir yüksekliği", "dilim sayısı ve merkez açı", "geometrik dizi adım sayısı"],
-      "cikti": "dilim hacimleri, geometrik dizi toplamı, paralelkenara/dikdörtgene yaklaşan taban alanı ve silindir hacmi"
-    },
-    "teknik": {
-      "giris": "index.html",
-      "onizleme_tipi": "temsili_durum",
-      "onizleme_kipi": "?onizleme=1",
-      "onizleme_odagi": "Dik dairesel silindirin 1/4, 1/8, 1/16 ve 1/32'lik renkli dilimlerinin 3B temsili",
-      "dis_baglanti": [],
-      "tema": "gunduz-varsayilan_gece-kullanici-secimi",
-      "yerel_kutuphaneler": ["lib/three.min.js", "lib/mathjax/tex-chtml.js"],
-      "klavye": true,
-      "hareket_azaltma": true,
-      "responsive": true,
-      "paket_ayrismasi": true,
-      "kullanim_rehberi": true
-    },
-    "program": {
-      "program_surumu": "Türkiye Yüzyılı Maarif Modeli Matematik Dersi Öğretim Programı",
-      "sinif_duzeyi": [10, 11, 12],
-      "ogrenme_ciktisi": ["MAT.10.4.1", "MAT.11.3.1", "MAT.12.3.2"],
-      "beceri_etiketleri": ["MAB1", "MAB3", "MAB5", "KB2.6", "KB2.10", "OB2", "OB4"],
-      "surec_bilesenleri": ["MAT.10.4.1.a", "MAT.11.3.1.b", "MAT.12.3.2.c"]
-    }
+{
+  "format": "matbis-materyal",
+  "surum": "1.0",
+  "kimlik": {
+    "id": "silindir-dilimleri-geometrik-seri-alan-hacim",
+    "baslik": "Katı Silindirin Hacmi Materyali",
+    "uretici": "OGM",
+    "materyal_surumu": "1.2.1",
+    "tarih": "2026-10-17"
+  },
+  "matematik": {
+    "durum": "Dik dairesel silindirin açısal dilimlere ayrılmasıyla geometrik diziler, sonsuz küçükler, limit yaklaşımı ile taban alanı ve hacim bağıntılarının yapılandırılması incelenir.",
+    "degiskenler": [
+      "taban yarıçapı",
+      "silindir yüksekliği",
+      "dilim sayısı ve merkez açı",
+      "geometrik dizi adım sayısı"
+    ],
+    "cikti": "dilim hacimleri, geometrik dizi toplamı, yeniden düzenlenen üst yüzeyin toplam alanı, limitte yaklaşılan dikdörtgenin alanı ve silindir hacmi"
+  },
+  "teknik": {
+    "giris": "index.html",
+    "onizleme_tipi": "temsili_durum",
+    "onizleme_kipi": "?onizleme=1",
+    "onizleme_odagi": "Dik dairesel silindirin 1/4, 1/8, 1/16 ve 1/32'lik renkli dilimlerinin 3B temsili",
+    "dis_baglanti": [],
+    "tema": "gunduz-varsayilan_gece-kullanici-secimi",
+    "yerel_kutuphaneler": [
+      "lib/three.min.js",
+      "lib/mathjax/tex-chtml.js",
+      "lib/mathjax/output/chtml/fonts/woff-v2/"
+    ],
+    "klavye": true,
+    "hareket_azaltma": true,
+    "responsive": true,
+    "paket_ayrismasi": true,
+    "kullanim_rehberi": true
+  },
+  "program": {
+    "program_surumu": "Türkiye Yüzyılı Maarif Modeli Matematik Dersi Öğretim Programı",
+    "sinif_duzeyi": [
+      10,
+      11,
+      12
+    ],
+    "ogrenme_ciktisi": [
+      "MAT.10.4.1",
+      "MAT.11.3.1",
+      "MAT.12.3.2"
+    ],
+    "beceri_etiketleri": [
+      "MAB1",
+      "MAB3",
+      "MAB5",
+      "KB2.6",
+      "KB2.10",
+      "OB2",
+      "OB4"
+    ],
+    "surec_bilesenleri": [
+      "MAT.10.4.1.a",
+      "MAT.11.3.1.b",
+      "MAT.12.3.2.c"
+    ]
   }
-  </script>
+}
+</script>
 
   <script>
     window.MathJax = {
@@ -52,7 +81,7 @@
         inlineMath: [['\\(', '\\)']],
         displayMath: [['\\[', '\\]']]
       },
-      chtml: { scale: 0.96 },
+      chtml: { scale: 1.06, fontURL: 'lib/mathjax/output/chtml/fonts/woff-v2' },
       options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
     };
   </script>
@@ -792,6 +821,7 @@
       }
     }
   </style>
+<link rel="stylesheet" href="assets/gorsel-duzeltmeler.css">
 </head>
 <body>
 
@@ -844,7 +874,7 @@
 
       <!-- TAB 1: Geometrik dizi ve seri -->
       <div id="panel-tab-1" class="panel-section" style="display: none;">
-        <div class="section-title" id="app1-step-title">Adım 1: 1/4 Dilim (Mavi)</div>
+        <div class="section-title" id="app1-step-title">Adım 1: \(\frac{1}{4}\) — Mavi Dilim</div>
         <p id="app1-step-desc" style="font-size: 0.78rem; line-height: 1.45; color: var(--ms-text-muted);">
           Dik dairesel silindirden \(\frac14\)'lük bir dilim alıyoruz.
         </p>
@@ -852,7 +882,7 @@
           <span data-app1-math="1">\(\mathrm{a}_1=\frac14\), merkez açı \(=90^\circ\)</span>
           <span data-app1-math="2" hidden>\(45^\circ+45^\circ=90^\circ\Rightarrow \frac18+\frac18=\frac14\)</span>
           <span data-app1-math="3" hidden>\(11{,}25^\circ+11{,}25^\circ=22{,}5^\circ\Rightarrow \frac1{32}+\frac1{32}=\frac1{16}\)</span>
-          <span data-app1-math="4" hidden>\(\mathrm{a}_{\mathrm{n}}=\frac14(\frac12)^{\mathrm{n}-1}\to0\)<br>\(\mathrm{S}_{\mathrm{n}}=\frac12[1-(\frac12)^{\mathrm{n}}]\to\frac12\)</span>
+          <div data-app1-math="4" hidden class="formula-stack"><div><strong>Tek bir dilimin payı</strong>\[a_n=\frac14\left(\frac12\right)^{n-1}\longrightarrow0\]</div><div><strong>İlk n dilimin toplam payı</strong>\[S_n=\frac12\left[1-\left(\frac12\right)^n\right]\longrightarrow\frac12\]</div></div>
           <span data-app1-math="5" hidden>\(\mathrm{a}_{\mathrm{n}}=\mathrm{a}_1\mathrm{r}^{\mathrm{n}-1}\qquad \mathrm{S}_{\mathrm{n}}=\mathrm{a}_1\frac{1-\mathrm{r}^{\mathrm{n}}}{1-\mathrm{r}}\)</span>
         </div>
         <div style="display: flex; gap: 6px;">
@@ -861,14 +891,14 @@
         </div>
 
         <section id="series-quiz" class="quiz-panel" aria-labelledby="series-quiz-title" hidden>
-          <div class="quiz-heading" id="series-quiz-title">Geometrik Seri Kavrama Kontrolü</div>
+          <div class="quiz-heading" id="series-quiz-title">Geometrik Dizi ve Seri Soruları</div>
           <div class="quiz-progress-row">
             <span id="series-slide-counter">Soru 1 / 5</span>
             <div class="quiz-progress-track" aria-hidden="true"><div id="series-slide-progress" class="quiz-progress-value" style="width: 20%;"></div></div>
           </div>
 
           <fieldset class="quiz-item quiz-slide" data-series-slide="0">
-            <legend>1. \(\frac14,\frac18,\frac1{16},\ldots\) dizisinin \(\mathrm{r}\) ile gösterilen ortak çarpanı nedir?</legend>
+            <legend>Soru 1: \(\frac14,\frac18,\frac1{16},\ldots\) dizisinin \(\mathrm{r}\) ile gösterilen ortak çarpanı nedir?</legend>
             <div class="quiz-choices">
               <label class="quiz-choice"><input type="radio" name="q1" value="1/8"> \(\frac18\)</label>
               <label class="quiz-choice"><input type="radio" name="q1" value="1/4"> \(\frac14\)</label>
@@ -880,7 +910,7 @@
           </fieldset>
 
           <fieldset class="quiz-item quiz-slide" data-series-slide="1" hidden>
-            <legend>2. \(\mathrm{a}_1=\frac14\) ise \(\mathrm{a}_6\) kesrinin paydası kaçtır?</legend>
+            <legend>Soru 2: \(\mathrm{a}_1=\frac14\) ise \(\mathrm{a}_6\) kesrinin paydası kaçtır?</legend>
             <div class="quiz-choices">
               <label class="quiz-choice"><input type="radio" name="q2" value="32"> \(32\)</label>
               <label class="quiz-choice"><input type="radio" name="q2" value="64"> \(64\)</label>
@@ -892,7 +922,7 @@
           </fieldset>
 
           <fieldset class="quiz-item quiz-slide" data-series-slide="2" hidden>
-            <legend>3. “Terimler sıfıra yaklaşırken serinin toplamı \(\frac12\)'yi geçer.” ifadesi doğru mudur?</legend>
+            <legend>Soru 3: “Terimler sıfıra yaklaşırken serinin toplamı \(\frac12\)'yi geçer.” ifadesi doğru mudur?</legend>
             <div class="quiz-choices yes-no">
               <label class="quiz-choice"><input type="radio" name="q3" value="evet"> Evet</label>
               <label class="quiz-choice"><input type="radio" name="q3" value="hayir"> Hayır</label>
@@ -901,7 +931,7 @@
           </fieldset>
 
           <fieldset class="quiz-item quiz-slide" data-series-slide="3" hidden>
-            <legend>4. İlk dört dilimin toplamı \(\mathrm{S}_4\) hangisidir?</legend>
+            <legend>Soru 4: İlk dört dilimin toplamı \(\mathrm{S}_4\) hangisidir?</legend>
             <div class="quiz-choices">
               <label class="quiz-choice"><input type="radio" name="q4" value="3/8"> \(\frac38\)</label>
               <label class="quiz-choice"><input type="radio" name="q4" value="7/16"> \(\frac7{16}\)</label>
@@ -913,7 +943,7 @@
           </fieldset>
 
           <fieldset class="quiz-item quiz-slide" data-series-slide="4" hidden>
-            <legend>5. İlk beş terimden sonra \(\frac12\)'ye ulaşmak için kalan pay \(1\) ise payda kaçtır?</legend>
+            <legend>Soru 5: İlk beş terimden sonra \(\frac12\)'ye ulaşmak için kalan pay \(1\) ise payda kaçtır?</legend>
             <div class="quiz-choices">
               <label class="quiz-choice"><input type="radio" name="q5" value="16"> \(16\)</label>
               <label class="quiz-choice"><input type="radio" name="q5" value="32"> \(32\)</label>
@@ -930,19 +960,20 @@
             <button class="btn btn-secondary" id="series-next" type="button" onclick="moveSeriesSlide(1)">İleri →</button>
           </div>
           <div id="series-quiz-summary" class="quiz-summary" aria-live="polite">Soruları sırayla yanıtlayın.</div>
+          <div class="quiz-exit-actions"><button class="btn btn-secondary" onclick="prevApp1Step()">← Gösterime Dön</button><button class="btn" id="series-to-area" onclick="switchTab(2)" hidden>Uygulama 2’ye Geç →</button></div>
         </section>
       </div>
 
       <!-- TAB 2: Daireden dikdörtgene alan limiti -->
       <div id="panel-tab-2" class="panel-section" style="display: none;">
-        <div class="section-title">Daireden Dikdörtgene: Alan Limiti</div>
+        <div class="section-title">Üst Yüzeyin Dikdörtgene Yaklaşması</div>
         <p style="font-size: 0.78rem; line-height: 1.4; color: var(--ms-text-muted);">
-          Soldaki silindirin eş dilimleri <strong>tek tek sağdaki yüzeye taşınarak</strong> ters yönlü dizilir. Dilim sayısı arttıkça oluşan şeklin neden dikdörtgene yaklaştığını inceleyin.
+          Soldaki silindirin eş dilimleri <strong>tek tek sağdaki çalışma alanına taşınarak</strong> ters yönlü dizilir. İncelenen alan, dilimlerin üst yüzeylerindeki daire dilimlerinin toplam alanıdır. Tüm parçalar yerleştirildiğinde oluşan üst yüzey, sonlu sayıda dilim için tam bir dikdörtgen değildir; dilim sayısı arttıkça dikdörtgene yaklaşır.
         </p>
 
         <div class="control-row">
           <div class="control-label">
-            <span>Dilim Sayısı (n):</span>
+            <span>Dilim sayısı · \(n\):</span>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
             <button class="btn" id="btn-n-8" data-app2-n="8" onclick="setApp2N(8)">8 Dilim</button>
@@ -968,13 +999,13 @@
         <button class="btn btn-secondary" id="btn-app2-auto" onclick="toggleApp2AutoPlay()">▶ Otomatik Tek Tek Taşı</button>
 
         <section class="quiz-panel" aria-labelledby="area-quiz-title">
-          <div class="quiz-heading" id="area-quiz-title">Tahmin Et ve Gerekçelendir</div>
+          <div class="quiz-heading" id="area-quiz-title">Daire Alanı Soruları</div>
           <div class="quiz-progress-row">
             <span id="area-slide-counter">Soru 1 / 4</span>
             <div class="quiz-progress-track" aria-hidden="true"><div id="area-slide-progress" class="quiz-progress-value" style="width: 25%;"></div></div>
           </div>
           <fieldset class="quiz-item quiz-slide" data-area-slide="0">
-            <legend>6. Dilim sayısını artırmak dairenin gerçek alanını değiştirir mi?</legend>
+            <legend>Soru 1: Silindirin üst tabanını eş daire dilimlerine ayırıp yeniden düzenlemek, bu dairenin alanını değiştirir mi?</legend>
             <div class="quiz-choices yes-no">
               <label class="quiz-choice"><input type="radio" name="q6" value="evet"> Evet</label>
               <label class="quiz-choice"><input type="radio" name="q6" value="hayir"> Hayır</label>
@@ -982,7 +1013,7 @@
             <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
           </fieldset>
           <fieldset class="quiz-item quiz-slide" data-area-slide="1" hidden>
-            <legend>7. Limitte oluşan dikdörtgenin kenarları hangileridir?</legend>
+            <legend>Soru 2: Dilim sayısı sınırsız arttığında, yeniden düzenlenen üst yüzeyin yaklaştığı dikdörtgenin kenar uzunlukları hangileridir?</legend>
             <div class="quiz-choices">
               <label class="quiz-choice"><input type="radio" name="q7" value="halfr-r"> \(\frac{\mathrm{R}}2\) ve \(\mathrm{R}\)</label>
               <label class="quiz-choice"><input type="radio" name="q7" value="r-r"> \(\mathrm{R}\) ve \(\mathrm{R}\)</label>
@@ -993,7 +1024,7 @@
             <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
           </fieldset>
           <fieldset class="quiz-item quiz-slide" data-area-slide="2" hidden>
-            <legend>8. Kenarları \(\pi\mathrm{R}\) ve \(\mathrm{R}\) olan yaklaşık dikdörtgenin alanı hangisidir?</legend>
+            <legend>Soru 3: Üst yüzeyin limitte yaklaştığı, kenarları \(\pi\mathrm{R}\) ve \(\mathrm{R}\) olan dikdörtgenin alanı hangisidir?</legend>
             <div class="quiz-choices">
               <label class="quiz-choice"><input type="radio" name="q8" value="half-pir2"> \(\frac{\pi\mathrm{R}^2}{2}\)</label>
               <label class="quiz-choice"><input type="radio" name="q8" value="pir2"> \(\pi\mathrm{R}^2\)</label>
@@ -1004,7 +1035,7 @@
             <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
           </fieldset>
           <fieldset class="quiz-item quiz-slide" data-area-slide="3" hidden>
-            <legend>9. Dilimler yalnızca yeniden düzenlendiği için yaklaşık dikdörtgenin alanı başlangıçtaki dairenin alanına eşit midir?</legend>
+            <legend>Soru 4: Sonlu sayıda dilim yeniden düzenlendiğinde, dilimlerin üst yüzey alanları toplamı başlangıçtaki üst taban dairesinin alanına eşit midir?</legend>
             <div class="quiz-choices yes-no">
               <label class="quiz-choice"><input type="radio" name="q9" value="evet"> Evet</label>
               <label class="quiz-choice"><input type="radio" name="q9" value="hayir"> Hayır</label>
@@ -1043,19 +1074,19 @@
         <!-- Parça Ekleme Butonları -->
         <div style="display: flex; flex-direction: column; gap: 6px;">
           <div style="display: flex; gap: 4px; align-items: center;">
-            <button class="btn" style="flex: 3; background: #1d4ed8;" onclick="addLabPiece('blue')">+ Mavi Ekle (1/4)</button>
+            <button class="btn" style="flex: 3; background: #1d4ed8;" onclick="addLabPiece('blue')">+ Mavi Ekle  · \(\frac{1}{4}\)</button>
             <span id="cnt-blue" class="badge-chip badge-blue" style="flex: 1; text-align: center;">0 ad.</span>
           </div>
           <div style="display: flex; gap: 4px; align-items: center;">
-            <button class="btn" style="flex: 3; background: #b45309;" onclick="addLabPiece('yellow')">+ Sarı Ekle (1/8)</button>
+            <button class="btn" style="flex: 3; background: #b45309;" onclick="addLabPiece('yellow')">+ Sarı Ekle  · \(\frac{1}{8}\)</button>
             <span id="cnt-yellow" class="badge-chip badge-yellow" style="flex: 1; text-align: center;">0 ad.</span>
           </div>
           <div style="display: flex; gap: 4px; align-items: center;">
-            <button class="btn" style="flex: 3; background: #b91c1c;" onclick="addLabPiece('red')">+ Kırmızı Ekle (1/16)</button>
+            <button class="btn" style="flex: 3; background: #b91c1c;" onclick="addLabPiece('red')">+ Kırmızı Ekle  · \(\frac{1}{16}\)</button>
             <span id="cnt-red" class="badge-chip badge-red" style="flex: 1; text-align: center;">0 ad.</span>
           </div>
           <div style="display: flex; gap: 4px; align-items: center;">
-            <button class="btn" style="flex: 3; background: #0f766e;" onclick="addLabPiece('teal')">+ Turkuaz Ekle (1/32)</button>
+            <button class="btn" style="flex: 3; background: #0f766e;" onclick="addLabPiece('teal')">+ Turkuaz Ekle  · \(\frac{1}{32}\)</button>
             <span id="cnt-teal" class="badge-chip" style="flex: 1; text-align: center; background: #ccfbf1; color: #115e59;">0 ad.</span>
           </div>
         </div>
@@ -1096,7 +1127,7 @@
         <!-- Hacim ve Ölçü Sürgüleri -->
         <div class="control-row">
           <div class="control-label">
-            <span>Yarıçap (R):</span>
+            <span>Yarıçap · \(R\):</span>
             <span id="txt-lab-r">2,0 br</span>
           </div>
           <input type="range" class="range-slider" min="1.0" max="3.5" step="0.1" value="2.0" oninput="setLabRadius(this.value)">
@@ -1104,7 +1135,7 @@
 
         <div class="control-row">
           <div class="control-label">
-            <span>Yükseklik (h):</span>
+            <span>Yükseklik · \(h\):</span>
             <span id="txt-lab-h">3,0 br</span>
           </div>
           <input type="range" class="range-slider" min="1.0" max="5.0" step="0.5" value="3.0" oninput="setLabHeight(this.value)">
@@ -1161,7 +1192,7 @@
         <ol>
           <li><strong>Tanıtım:</strong> Renkli silindir dilimlerini ve bunların bütün içindeki paylarını karşılaştırın.</li>
           <li><strong>Uygulama 1:</strong> Dilimlerin küçülme örüntüsünü izleyerek geometrik dizi ve seri ilişkisini keşfedin.</li>
-          <li><strong>Uygulama 2:</strong> Daire dilimlerinin yeniden düzenlenmesiyle alan ilişkisinin nasıl ortaya çıktığını inceleyin.</li>
+          <li><strong>Uygulama 2:</strong> Silindir dilimlerinin üst yüzeylerini inceleyerek alanın korunmasını ve dikdörtgene yaklaşmayı karşılaştırın.</li>
           <li><strong>Serbest Mod:</strong> Boyutları ve parçaları değiştirerek kendi silindirinizi oluşturun; ölçümleri karşılaştırın.</li>
         </ol>
         <p style="margin-top: 10px;">3B modeli fareyle veya parmağınızla çevirebilir; yön tuşları ve [+ / −] tuşlarıyla da kontrol edebilirsiniz. Bu tanıtıma üstteki <strong>?</strong> düğmesinden yeniden ulaşabilirsiniz.</p>
@@ -1196,6 +1227,14 @@
         minimumFractionDigits: digits,
         maximumFractionDigits: digits
       });
+    }
+
+    let mathUpdateQueue=Promise.resolve();
+    function setMathHtml(id,html){
+      const element=document.getElementById(id);
+      if(window.MathJax?.typesetClear)MathJax.typesetClear([element]);
+      element.innerHTML=html;
+      mathUpdateQueue=mathUpdateQueue.then(()=>MathJax.startup.promise).then(()=>MathJax.typesetPromise([element]));
     }
 
     function showApp1Math(step) {
@@ -1591,7 +1630,7 @@
         app1Step = 1;
         buildApp1Scene();
       } else if (index === 2) {
-        document.getElementById('scene-badge').textContent = 'Uygulama 2: Daire Alanı ve Limit';
+        document.getElementById('scene-badge').textContent = 'Uygulama 2: Üst Yüzeyin Alanı';
         app2Progress = 0;
         document.getElementById('slider-app2-progress').value = 0;
         renderAreaSlide();
@@ -1657,21 +1696,25 @@
       const quiz = document.getElementById('series-quiz');
       quiz.hidden = app1Step !== 5;
       showApp1Math(app1Step);
+      document.getElementById('app1-math-box').hidden=app1Step===5;
+      document.getElementById('app1-step-title').hidden=app1Step===5;
+      document.getElementById('app1-step-desc').hidden=app1Step===5;
+      document.getElementById('btn-app1-next').parentElement.hidden=app1Step===5;
       if (app1Step === 5) renderSeriesSlide();
 
       if (app1Step === 1) {
-        document.getElementById('app1-step-title').textContent = 'Adım 1: 1/4 Dilim (Mavi)';
+        setMathHtml('app1-step-title',String.raw`Adım 1: \(\frac14\) — Mavi Dilim`);
         document.getElementById('app1-step-desc').textContent = 'Mavi dik dairesel silindirden bir çeyrek dilim alıyoruz. Bu, dizinin ilk terimidir.';
-        document.getElementById('btn-app1-next').textContent = 'Sonraki Adım (Sarı Dilimler) →';
+        document.getElementById('btn-app1-next').textContent = 'Sonraki Adım — Sarı Dilimler →';
 
         const g1 = createCylinderSectorGeometry(R, H, Math.PI / 2, 16);
         const m1 = createSliceMesh(g1, COLOR_BLUE);
         mainGroup.add(m1);
 
       } else if (app1Step === 2) {
-        document.getElementById('app1-step-title').textContent = 'Adım 2: 1/8 Dilimler (Sarı)';
-        document.getElementById('app1-step-desc').textContent = "1/4'lük mavi dilimin yanına iki adet 1/8'lik sarı dilim (45°+45°) koyuyoruz. İki sarı dilim tam olarak bir mavi dilimi oluşturur.";
-        document.getElementById('btn-app1-next').textContent = 'Sonraki Adım (Kırmızı Dilimler) →';
+        setMathHtml('app1-step-title',String.raw`Adım 2: \(\frac18\) — Sarı Dilimler`);
+        setMathHtml('app1-step-desc',String.raw`\(\frac14\)'lük mavi dilimin yanına iki adet \(\frac18\)'lik sarı dilim koyuyoruz. Her sarı dilimin merkez açısı \(45^\circ\)'dir. İki sarı dilim tam olarak bir mavi dilimi oluşturur.`);
+        document.getElementById('btn-app1-next').textContent = 'Sonraki Adım — Kırmızı Dilimler →';
 
         // Sol: 1/4 Mavi
         const g1 = createCylinderSectorGeometry(R, H, Math.PI / 2, 16);
@@ -1691,9 +1734,9 @@
         mainGroup.add(m2b);
 
       } else if (app1Step === 3) {
-        document.getElementById('app1-step-title').textContent = 'Adım 3: 1/32 Dilimler (Turkuaz)';
-        document.getElementById('app1-step-desc').textContent = "1/16'lık kırmızı dilimin yanında iki adet 1/32'lik turkuaz dilimi karşılaştırın. İki turkuaz dilim bir kırmızı dilime eşittir; merkez açı da 22,5°'den 11,25°'ye yarıya iner.";
-        document.getElementById('btn-app1-next').textContent = 'Sonraki Adım (Diziden Seriye) →';
+        setMathHtml('app1-step-title',String.raw`Adım 3: \(\frac1{32}\) — Turkuaz Dilimler`);
+        setMathHtml('app1-step-desc',String.raw`\(\frac1{16}\)'lık kırmızı dilimin yanında iki adet \(\frac1{32}\)'lik turkuaz dilimi karşılaştırın. İki turkuaz dilim bir kırmızı dilime eşittir. Merkez açı \(22{,}5^\circ\)'den \(11{,}25^\circ\)'ye yarıya iner.`);
+        document.getElementById('btn-app1-next').textContent = 'Sonraki Adım — Diziden Seriye →';
 
         // Sol: 1/16 Kırmızı
         const gRed = createCylinderSectorGeometry(R, H, Math.PI / 8, 10);
@@ -1743,8 +1786,8 @@
         });
 
       } else if (app1Step === 5) {
-        document.getElementById('app1-step-title').textContent = 'Adım 5: Tahmin Et, Hesapla, Açıkla';
-        document.getElementById('app1-step-desc').textContent = 'Modeli kullanarak r ortak çarpanını, genel terimi ve kısmi toplamların sınırını belirleyin. Yanıtlamadan önce dilimlerin kapladığı açıyı karşılaştırın.';
+        document.getElementById('app1-step-title').textContent = 'Geometrik Dizi ve Seri Soruları';
+        document.getElementById('app1-step-desc').textContent = 'Dilimler arasındaki ilişkiyle ilgili soruları yanıtlayın.';
         document.getElementById('btn-app1-next').textContent = seriesQuizChecked ? "Uygulama 2'ye Geç →" : 'Önce Yanıtları Kontrol Et';
 
         // Karşılaştırmalı 3 silindir
@@ -1796,15 +1839,16 @@
     function setQuestionFeedback(id, correct, message) {
       const element = document.getElementById(id);
       element.className = `quiz-feedback ${correct ? 'correct' : 'incorrect'}`;
-      element.innerHTML = `${correct ? 'Doğru.' : 'Tekrar düşünün.'} ${message}`;
+      const richMessage=message.replace(/(\d+)\/(\d+)/g,(_,a,b)=>String.raw`\(\frac{${a}}{${b}}\)`);
+      setMathHtml(id,`${correct ? 'Doğru.' : 'Tekrar düşünün.'} ${richMessage}`);
     }
 
     const seriesQuestions = [
       { name: 'q1', answer: '1/2', feedback: 'feedback-q1', explanation: 'Her dilim bir öncekinin yarısıdır; dolayısıyla ortak çarpan r = 1/2 olur.' },
-      { name: 'q2', answer: '128', feedback: 'feedback-q2', explanation: 'a₆ = (1/4)·(1/2)⁵ = 1/128.' },
+      { name: 'q2', answer: '128', feedback: 'feedback-q2', explanation: String.raw`\(a_6=\frac14\cdot\left(\frac12\right)^5=\frac1{128}\).` },
       { name: 'q3', answer: 'hayir', feedback: 'feedback-q3', explanation: 'Kısmi toplamlar 1/2’ye alttan yaklaşır; bu değeri geçmez.' },
-      { name: 'q4', answer: '15/32', feedback: 'feedback-q4', explanation: 'S₄ = 1/4 + 1/8 + 1/16 + 1/32 = 15/32.' },
-      { name: 'q5', answer: '64', feedback: 'feedback-q5', explanation: 'S₅ = 31/64 olduğundan 1/2 − S₅ = 1/64.' }
+      { name: 'q4', answer: '15/32', feedback: 'feedback-q4', explanation: String.raw`\(S_4=\frac14+\frac18+\frac1{16}+\frac1{32}=\frac{15}{32}\).` },
+      { name: 'q5', answer: '64', feedback: 'feedback-q5', explanation: String.raw`\(S_5=\frac{31}{64}\) olduğundan \(\frac12-S_5=\frac1{64}\).` }
     ];
     let seriesSlideIndex = 0;
 
@@ -1837,7 +1881,7 @@
         const score = seriesQuestions.filter((question) => getRadioValue(question.name) === question.answer).length;
         seriesQuizChecked = true;
         document.getElementById('series-quiz-summary').textContent = `${score} / ${seriesQuestions.length} doğru. Yanıtlarınızı Geri düğmesiyle inceleyebilir veya Uygulama 2'ye geçebilirsiniz.`;
-        document.getElementById('btn-app1-next').textContent = "Uygulama 2'ye Geç →";
+        document.getElementById('series-to-area').hidden=false;
       }
     }
 
@@ -1848,10 +1892,10 @@
     }
 
     const areaQuestions = [
-      { name: 'q6', answer: 'hayir', feedback: 'feedback-q6', explanation: 'Dilimler yalnızca yeniden düzenlenir; alan korunur.' },
-      { name: 'q7', answer: 'pir-r', feedback: 'feedback-q7', explanation: 'Çevrenin yarısı πR, dilimin yüksekliği ise yarıçap R’dir.' },
-      { name: 'q8', answer: 'pir2', feedback: 'feedback-q8', explanation: 'Dikdörtgenin alanı, kenar uzunluklarının çarpımıdır: πR · R = πR².' },
-      { name: 'q9', answer: 'evet', feedback: 'feedback-q9', explanation: 'Kesilip yeniden düzenlenen parçaların toplam alanı değişmez; bu nedenle yaklaşık dikdörtgen ile dairenin alanları eşittir.' }
+      { name: 'q6', answer: 'hayir', feedback: 'feedback-q6', explanation: 'Dilimlerin üst yüzeyleri yalnızca yeniden düzenlenir; toplam alanları başlangıçtaki üst taban dairesinin alanına eşittir.' },
+      { name: 'q7', answer: 'pir-r', feedback: 'feedback-q7', explanation: 'Üst yüzeyin limitte yaklaştığı dikdörtgenin bir kenarı daire çevresinin yarısı olan πR, diğer kenarı yarıçap R’dir. Buradaki R, silindirin yüksekliği değildir.' },
+      { name: 'q8', answer: 'pir2', feedback: 'feedback-q8', explanation: 'Üst yüzeyin limitte yaklaştığı dikdörtgenin alanı πR · R = πR²’dir. Bu, dairenin alanıdır; silindirin hacmi için ayrıca silindirin yüksekliğiyle çarpılır.' },
+      { name: 'q9', answer: 'evet', feedback: 'feedback-q9', explanation: 'Her sonlu dilim sayısında üst yüzeylerin toplam alanı aynen korunur. Oluşan üst yüzeyin sınırlarında yaylar bulunur; dikdörtgene benzemesi, onun tam bir dikdörtgen olduğu anlamına gelmez.' }
     ];
     let areaSlideIndex = 0;
     let areaQuizChecked = false;
@@ -2086,10 +2130,10 @@
     let labGroundVisible = true;
 
     const PIECE_CONFIG = {
-      blue: { dTheta: Math.PI / 2, color: COLOR_BLUE, ratio: 8, name: 'Mavi (1/4)' },
-      yellow: { dTheta: Math.PI / 4, color: COLOR_YELLOW, ratio: 4, name: 'Sarı (1/8)' },
-      red: { dTheta: Math.PI / 8, color: COLOR_RED, ratio: 2, name: 'Kırmızı (1/16)' },
-      teal: { dTheta: Math.PI / 16, color: COLOR_TEAL, ratio: 1, name: 'Turkuaz (1/32)' }
+      blue: { dTheta: Math.PI / 2, color: COLOR_BLUE, ratio: 8, name: 'Mavi dilim' },
+      yellow: { dTheta: Math.PI / 4, color: COLOR_YELLOW, ratio: 4, name: 'Sarı dilim' },
+      red: { dTheta: Math.PI / 8, color: COLOR_RED, ratio: 2, name: 'Kırmızı dilim' },
+      teal: { dTheta: Math.PI / 16, color: COLOR_TEAL, ratio: 1, name: 'Turkuaz dilim' }
     };
 
     function buildLabScene() {

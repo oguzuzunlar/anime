@@ -5,8 +5,8 @@
     "id": "silindir-dilimleri-geometrik-seri-alan-hacim",
     "baslik": "Katı Silindirin Hacmi Materyali",
     "uretici": "OGM",
-    "materyal_surumu": "1.2",
-    "tarih": "2026-10-11"
+    "materyal_surumu": "1.2.1",
+    "tarih": "2026-10-17"
   },
   "matematik": {
     "durum": "Dik dairesel silindirin açısal dilimlere ayrılmasıyla geometrik diziler, sonsuz küçükler, limit yaklaşımı ile taban alanı ve hacim bağıntılarının yapılandırılması incelenir.",
@@ -16,7 +16,7 @@
       "dilim sayısı ve merkez açı",
       "geometrik dizi adım sayısı"
     ],
-    "cikti": "dilim hacimleri, geometrik dizi toplamı, paralelkenara/dikdörtgene yaklaşan taban alanı ve silindir hacmi"
+    "cikti": "dilim hacimleri, geometrik dizi toplamı, yeniden düzenlenen üst yüzeyin toplam alanı, limitte yaklaşılan dikdörtgenin alanı ve silindir hacmi"
   },
   "teknik": {
     "giris": "index.html",
@@ -27,7 +27,8 @@
     "tema": "gunduz-varsayilan_gece-kullanici-secimi",
     "yerel_kutuphaneler": [
       "lib/three.min.js",
-      "lib/mathjax/tex-chtml.js"
+      "lib/mathjax/tex-chtml.js",
+      "lib/mathjax/output/chtml/fonts/woff-v2/"
     ],
     "klavye": true,
     "hareket_azaltma": true,

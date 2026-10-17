@@ -1,0 +1,20 @@
+[hidden]{display:none!important}
+#app1-math-box{padding:16px!important;font-size:1.15rem!important;line-height:1.8!important;text-align:left!important}
+.formula-stack{display:grid;gap:18px}
+.formula-stack>div{padding:12px;border-left:3px solid var(--ms-primary);border-radius:6px;background:var(--ms-surface-alt);min-width:0}
+.formula-stack strong{display:block;font-size:.95rem;font-weight:600;color:var(--ms-text-muted)}
+.formula-stack mjx-container[display=true]{margin:20px 0 12px!important;text-align:center!important}
+.formula-stack mjx-container{font-size:115%!important}
+.quiz-slide{min-height:0;animation:none;padding:12px}
+.quiz-item legend{float:left;display:block;box-sizing:border-box;background:transparent;padding:0 0 12px;line-height:1.65}
+.quiz-choice{min-height:54px}
+.quiz-exit-actions{display:flex;gap:8px;flex-wrap:wrap}
+.quiz-exit-actions>.btn{flex:1}
+.btn mjx-container,.section-title mjx-container{margin:0 3px!important}
+@media(max-width:520px){
+ #app1-math-box{font-size:1rem!important;padding:10px!important}
+ .formula-stack{gap:12px}
+ .formula-stack>div{padding:10px 6px}
+ .formula-stack mjx-container{font-size:102%!important}
+ .quiz-choices{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
