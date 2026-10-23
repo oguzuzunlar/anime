@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="light">
+<head>
+<script>
+function showStartupError(){
+ const loading=document.getElementById('loading-overlay');
+ if(loading){loading.classList.remove('hidden');loading.setAttribute('role','alert');loading.textContent='3B görünüm açılamadı. Paket klasörünü tüm dosyalarıyla çıkarınız ve yeniden açınız. Sorun sürerse WebGL destekleyen güncel bir tarayıcı kullanınız.';}
+}
+window.addEventListener('error',function(e){if(e.target?.tagName==='SCRIPT'||e.target?.tagName==='LINK'||e.message)showStartupError();},true);
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<title>Küpler Materyali</title>
+<script>
+try {
+  const saved = localStorage.getItem('matbis_ic_ice_kupler_theme');
+  document.documentElement.dataset.theme = (saved === 'dark' || saved === 'light') ? saved : 'light';
+} catch (e) {
+  document.documentElement.dataset.theme = 'light';
+}
+(function() {
+  const sp = new URLSearchParams(location.search);
+  if (sp.get('onizleme') === '1') {
+    document.documentElement.dataset.preview = '1';
+  }
+  if (sp.get('mode') === 'free' || location.hash === '#serbest') {
+    document.documentElement.dataset.entryMode = 'free';
+  }
+})();
+</script>
+<script defer src="lib/three.local.js"></script>
+<script defer src="lib/OrbitControls.local.js"></script>
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/layout.css">
+<link rel="stylesheet" href="assets/mobile-scene.css">
+</head>
+<body>
+
+<header id="material-header">
+  <h1 class="material-title">Küpler Materyali</h1>
+  <nav id="material-nav" aria-label="Uygulamalar">
+    <button type="button" data-nav="u1">Uygulama 1</button>
+    <button type="button" data-nav="u2">Uygulama 2</button>
+    <button type="button" data-nav="u3">Uygulama 3</button>
+    <button type="button" data-nav="free">Serbest Mod</button>
+  </nav>
+<div class="top-floating-actions">
+  <button id="guide-open-btn" class="icon-circle-btn" type="button" aria-label="Kullanım rehberini ve bölüm seçiciyi açınız" title="Bölümler ve Rehber">📘</button>
+  <button id="theme-toggle" class="icon-circle-btn" type="button" aria-label="Koyu temaya geçiniz" aria-pressed="false" title="Temayı değiştiriniz">☀️</button>
+</div>
+</header>
+
+<!-- Giriş Portalı Modalı (konikler_materyali_3D.html stili) -->
+<div id="intro" role="dialog" aria-modal="true" aria-labelledby="intro-title">
+  <div class="modal-box">
+    <h1 id="intro-title"><span style="color:var(--col-ant)">❖</span> Küpler Materyali</h1>
+    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--ms-text-muted);margin:4px 0 8px;">
+      Başlamak İstediğiniz Etkinliği veya Laboratuvar Modunu Seçiniz
+    </p>
+
+    <div class="portal-grid">
+      <button type="button" class="portal-btn" data-launch="u1">
+        <span class="p-icon">📏</span>
+        Uygulama 1
+        <span class="p-sub">Ayrıt Dizileri</span>
+      </button>
+      <button type="button" class="portal-btn" data-launch="u2">
+        <span class="p-icon">🌸</span>
+        Uygulama 2
+        <span class="p-sub">Ayrıt ve Alan Dizileri</span>
+      </button>
+      <button type="button" class="portal-btn" data-launch="u3">
+        <span class="p-icon">🐜</span>
+        Uygulama 3
+        <span class="p-sub">Atom Karınca • Dış Yüzeyde Yol</span>
+      </button>
+      <button type="button" id="startBtn" class="portal-btn portal-btn-free" data-launch="free">
+        <span class="p-icon">🔬</span>
+        Serbest Mod
+        <span class="p-sub">3B + 2B Keşif Alanı</span>
+      </button>
+    </div>
+
+    <div class="modal-warning">
+      💡 <b>İlk Eylem Yönergesi:</b> Bir uygulama seçtiğinizde modeli fare, dokunma veya <b>ok tuşlarıyla</b> inceleyebilirsiniz. <b>Shift + ok</b>: kaydırma; <b>+ / −</b>: yakınlaştırma. Sürgüler ok tuşlarıyla değişir. Önce tahmin ediniz, sonra karşılaştırınız. Rehber düğmesiyle buraya dönebilirsiniz.
+    </div>
+    <details class="teacher-tools">
+      <summary>Öğretmen araçları</summary>
+      <p>Yanıtlar yalnız bu oturumda tutulur. İndirilen kayıt, ilk seçimleri ve sonraki denemeleri içerir.</p>
+      <button type="button" id="download-responses">Yanıt Kaydını İndiriniz</button>
+    </details>
+  </div>
+</div>
+
+<!-- Üst Başlık (Serbest Modda görünür) -->
+
+
+<!-- ADIM ADIM UYGULAMA SOL PANELİ (Uygulama 1, 2, 3 seçildiğinde aktif olur) -->
+
+
+<!-- 3B SAHNE KAPSAYICISI -->
+<div id="canvas-wrap">
+  <div id="loading-overlay">
+    <strong>Çalışma yükleniyor…</strong>
+    <span style="font-size:13px;color:var(--ms-text-muted)">3B İç İçe Küpler motoru hazırlanıyor.</span>
+  </div>
+
+  <div id="cv-badge">Uygulama 1</div>
+  <div id="cv-shape-chip">Dizilim: Yan Yana</div>
+  <div id="shape-watermark"><span id="watermark-text">ARİTMETİK DİZİ</span></div>
+
+  <!-- Klavye / Hızlı Kamera Düğmeleri -->
+  <div id="cam-key-bar" role="toolbar" aria-label="Kamera Görünüm Kontrolleri">
+    <button type="button" class="cam-mini-btn" onclick="setCameraView('iso')">3B Açılı</button>
+    <button type="button" class="cam-mini-btn" onclick="setCameraView('front')">Ön</button>
+    <button type="button" class="cam-mini-btn" onclick="setCameraView('top')">Üst</button>
+  </div>
+
+  <div id="scene-stage">
+  <canvas id="three-canvas" tabindex="0" aria-label="3 Boyutlu Küpler Sahnesi. Yön tuşlarıyla döndürebilir, + ve - ile yakınlaştırabilirsiniz."></canvas>
+  </div>
+  <div id="ant-canvas-prompt" hidden></div>
+
+  <!-- ?onizleme=1 Vitrin Kipinde Gösterilen Tek Eksenli Sade Kontrol (M3) -->
+  <div id="preview-bar" aria-label="Önizleme Kipi Kontrolü">
+    <span style="font-size:12px;font-weight:800;" id="preview-caption">Küplerin ayrıt uzunlukları nasıl değişiyor?</span>
+
+  </div>
+</div>
+
+<main id="workspace-scroll" aria-label="Uygulama içeriği" tabindex="0">
+<aside id="ui-panel" aria-label="Adım Adım Uygulama Paneli">
+  <div id="panel-header">
+    <div id="panel-title">Uygulama 1: Aritmetik Dizi</div>
+    <div id="step-badge">Adım 1 / 5</div>
+  </div>
+
+  <div id="page-nav" role="navigation" aria-label="Bölüm Geçişleri">
+    <button type="button" class="pnav-btn current" data-nav="u1">📏<small>Uygulama 1</small></button>
+    <button type="button" class="pnav-btn" data-nav="u2">🌸<small>Uygulama 2</small></button>
+    <button type="button" class="pnav-btn" data-nav="u3">🐜<small>Uygulama 3</small></button>
+    <button type="button" class="pnav-btn" data-nav="free">🔬<small>Serbest Mod</small></button>
+  </div>
+
+  <div id="step-content">
+    <div id="step-title">Yükleniyor…</div>
+    <div id="step-body"></div>
+
+    <!-- Keşfet Sürgüsü -->
+    <div id="explore-wrap">
+      <div class="explore-head">
+        <span id="explore-slider-title">🎚️ Parametreyi Değiştiriniz</span>
+        <span id="explore-angle-label">d = 4 cm</span>
+      </div>
+      <input type="range" id="explore-slider" aria-labelledby="explore-slider-title" min="1" max="6" step="1" value="4">
+      <div id="explore-note">Sürgüyü kaydırarak 3B küplerin ve 2B grafiğin değişimini gözlemleyiniz.</div>
+    </div>
+
+    <!-- Soru Bloğu (Değerlendirme adımlarında Bitir/Onaylayınız sonrası kilitlenir) -->
+    <div id="question-wrap">
+      <div id="question-label"></div>
+      <div id="question-options" role="group" aria-label="Seçenekler"></div>
+      <div id="question-input-row">
+        <input id="question-input" aria-labelledby="question-label" type="text" autocomplete="off" spellcheck="false" placeholder="Cevabınızı yazınız…">
+        <button id="sqrt-btn" type="button" title="Karekök sembolü ekleyiniz">√</button>
+        <button id="question-btn" type="button">Onaylayınız</button>
+      </div>
+      <section id="reason-wrap" hidden>
+        <h3 id="reason-title" tabindex="-1">Gerekçeyi seçiniz</h3>
+        <p id="reason-prompt"></p>
+        <div id="reason-options" role="group" aria-labelledby="reason-prompt"></div>
+        <div id="reason-feedback" role="status" aria-live="polite" tabindex="-1"></div>
+      </section>
+      <div id="question-feedback" role="status" aria-live="polite"></div>
+    </div>
+
+    <!-- Yansıtıcı Not (Son Adımda) -->
+    <div id="reflection-wrap">
+      <label for="reflection-input">✍️ Yansıtıcı Not (Kendi cümlenizle gerekçelendiriniz):</label>
+      <textarea id="reflection-input" rows="2" placeholder="Modelin sınırlarını ve kullandığınız kuralı kısaca açıklayınız..."></textarea>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="nav-btn" id="btn-prev" type="button">◀ Geri</button>
+    <button class="nav-btn" id="btn-next" type="button">İleri ▶</button>
+    <button class="nav-btn" id="btn-replay" type="button">↺ Görünümü Ortalayınız</button>
+  </div>
+</aside>
+
+<!-- SERBEST MOD: SOL ÜST BİLGİ VE ADIM ADIM ANALİTİK ÇIKARIM (CoT) PANELİ -->
+<div id="info-panel">
+  <div class="info-card">
+    <h3>📚 Bölümler (Etkinlikler)</h3>
+    <button type="button" class="nav-link-btn" data-nav="u1">
+      <span class="nl-icon">📏</span>
+      <span>Uygulama 1<small>Ayrıt Dizileri ve n. Terim</small></span>
+    </button>
+    <button type="button" class="nav-link-btn" data-nav="u2">
+      <span class="nl-icon">🌸</span>
+      <span>Uygulama 2<small>Ayrıt ve Ön Yüz Alanı Dizileri</small></span>
+    </button>
+    <button type="button" class="nav-link-btn" data-nav="u3">
+      <span class="nl-icon">🐜</span>
+      <span>Uygulama 3<small>Atom Karınca • Dış Yüzeyde Yol (A → B)</small></span>
+    </button>
+    <div class="nav-link-btn current" aria-current="page">
+      <span class="nl-icon">🔬</span>
+      <span>Serbest Mod<small>3B + 2B Keşif Laboratuvarı</small></span>
+    </div>
+  </div>
+
+  <div class="info-card">
+    <h3>🧠 Adım Adım Analitik Çıkarım</h3>
+    <div class="cot-step" id="cot-step-1">
+      <b>1. Seçili Küpler ve Parametre:</b><br>
+      Küpler: <code id="cot-cubes-eq">1, 3, 5, 7, 9 (n = 5)</code><br>
+      Başlangıç: <code id="cot-param-eq">a₁ = 2 cm, d = 4 cm</code>
+    </div>
+    <div class="cot-step" id="cot-step-2">
+      <b>2. Genel Terim / Bağıntı:</b><br>
+      <span id="cot-ecc-text">aₙ = a₁ + (n−1)·d = 4n − 2 cm</span>
+    </div>
+    <div class="cot-step" id="cot-step-3">
+      <b>3. Geometrik Sonuç:</b><br>
+      <span id="cot-result-text">İlk 5 küp üst üste konduğunda S₅ = (5/2)·(2 + 18) = 50 cm olur.</span>
+    </div>
+  </div>
+</div>
+
+<!-- SERBEST MOD: SOL ALT AKTİF MOD KARTI -->
+<div id="conic-display" class="arith">
+  <div id="conic-name">Aritmetik Dizi (Yan Yana)</div>
+  <div id="conic-desc">Küplerin ayrıt uzunlukları sabit d = 4 cm farkla büyür. Her küpün üst yüzü açıktır.</div>
+  <div id="conic-formula">S₅ = (5/2)·(2 + 18) = 50 cm</div>
+</div>
+
+<!-- SERBEST MOD: SAĞ ÜST HIZLI DİZİLİM VE 3B GÖRÜNÜM KONTROLLERİ -->
+<button id="mobile-tools-toggle" type="button" aria-controls="side-panel" aria-expanded="false">
+  <span>🧰 Laboratuvar Araçları</span>
+  <span id="mobile-tools-current">Aritmetik Yan Yana</span>
+  <span aria-hidden="true">▲</span>
+</button>
+
+<div id="side-panel" aria-label="Hızlı Dizilim ve 3B Görünüm Araçları">
+  <div class="section-label">Hızlı Dizilim Modları</div>
+
+  <button type="button" class="ctrl-btn active" id="btn-mode-side" onclick="setFreeMode('side')">
+    <span class="btn-icon">📏</span>
+    <span>Yan Yana Dizilim</span>
+    <span class="angle-badge">aₙ</span>
+  </button>
+
+  <button type="button" class="ctrl-btn" id="btn-mode-tower" onclick="setFreeMode('tower')">
+    <span class="btn-icon">🗼</span>
+    <span>Aritmetik Kule</span>
+    <span class="angle-badge">aₙ</span>
+  </button>
+
+  <button type="button" class="ctrl-btn" id="btn-mode-nested" onclick="setFreeMode('nested')">
+    <span class="btn-icon">📦</span>
+    <span>İç İçe Takım</span>
+    <span class="angle-badge">1–10</span>
+  </button>
+
+  <button type="button" class="ctrl-btn" id="btn-mode-geo" onclick="setFreeMode('geo')">
+    <span class="btn-icon">🌸</span>
+    <span>Geometrik (1,2,4,8)</span>
+    <span class="angle-badge">Alan</span>
+  </button>
+
+  <button type="button" class="ctrl-btn" id="btn-mode-build8" onclick="setFreeMode('build8')">
+    <span class="btn-icon">🧱</span>
+    <span>Hacim İnşa</span>
+    <span class="angle-badge">16³</span>
+  </button>
+
+  <button type="button" class="ctrl-btn" id="btn-mode-antRow" onclick="setFreeMode('antRow')">
+    <span class="btn-icon">🐜</span>
+    <span>Karınca • Küp Sırası</span>
+    <span class="angle-badge">A → B</span>
+  </button>
+
+<div class="ctrl-sep" data-ant-hide></div>
+  <div class="section-label" data-ant-hide>3B Görünüm &amp; Kesit</div>
+
+  <button type="button" class="ctrl-btn" id="clip-btn" data-ant-hide onclick="toggleCrossSection()">
+    <span class="btn-icon">🔪</span>
+    <span>İç Kesiti Ayırınız</span>
+  </button>
+
+  <button type="button" class="ctrl-btn" id="wireframe-btn" data-ant-hide onclick="toggleWireframe()">
+    <span class="btn-icon">🔲</span>
+    <span>Tel Kafes</span>
+  </button>
+</div>
+
+<!-- SAĞ ALT: 2B ANALİTİK İZDÜŞÜM VE KAĞIT AÇINIMI CANVAS PANELİ -->
+<div id="proj-panel">
+  <div id="projection-overview">
+  <div class="proj-header">
+    <h4 id="proj-title">📐 2B Cetvel &amp; Açınım İzdüşümü</h4>
+    <span id="ecc-badge">a₅ = 18 cm</span>
+  </div>
+  <canvas role="img" aria-label="İki boyutlu matematiksel temsil; ölçüler aşağıdaki metinde de verilir." id="proj-canvas" width="456" height="300"></canvas>
+  <div id="geo-record" hidden></div>
+  <div id="ant-net-legend" aria-label="Açınımdaki yüz numaraları" hidden></div>
+  <div id="ant-pythagoras" aria-live="polite" hidden></div>
+  <div id="ant-exact-lengths" hidden></div>
+  <div class="proj-metrics">
+    <div class="metric-chip"><span id="m-lbl-1">İlk terim a₁:</span><b id="m-a">2 cm</b></div>
+    <div class="metric-chip"><span id="m-lbl-2">Son terim aₙ:</span><b id="m-b">18 cm</b></div>
+    <div class="metric-chip"><span id="m-lbl-3">Fark / Oran:</span><b id="m-f">d = 4</b></div>
+    <div class="metric-chip"><span id="m-lbl-4">Sıra / Yol:</span><b id="m-c">n = 5</b></div>
+  </div>
+  </div>
+  <section id="discovery-panel" aria-labelledby="discovery-title" hidden>
+    <h3 id="discovery-title">Önce tahmin ediniz</h3>
+    <label id="discovery-prompt" for="discovery-input"></label>
+    <p id="discovery-answer-note" class="ant-note" hidden></p>
+    <div id="discovery-options" role="group" aria-labelledby="discovery-prompt" hidden></div>
+    <input id="discovery-input" type="text" inputmode="decimal" autocomplete="off" aria-describedby="discovery-answer-note">
+    <button id="discovery-check" type="button">Tahmini Karşılaştırınız</button>
+    <div id="discovery-feedback" role="status" aria-live="polite" aria-atomic="true" tabindex="-1" hidden></div>
+  </section>
+  <section id="ant-controls" aria-labelledby="ant-controls-title" hidden>
+    <h3 id="ant-controls-title">Karıncanın Yolu</h3>
+    <div id="ant-builder" hidden>
+      <h4>Yolunuzu Oluşturunuz</h4>
+      <div class="ant-field-grid">
+        <label for="ant-count">Yan yana küp sayısı<select id="ant-count"><option value="1">1 küp</option><option value="2">2 küp</option><option value="3">3 küp</option><option value="4">4 küp</option></select></label>
+        <label for="ant-edge">Her küpün ayrıtı (cm)<select id="ant-edge"><option>2</option><option>4</option><option selected>6</option><option>8</option><option>10</option></select></label>
+      </div>
+      <p id="ant-pick-status" role="status" aria-live="polite">A noktasını seçmek için şeklin yüzeyine dokununuz.</p>
+      <div class="ant-pick-actions">
+        <button type="button" id="ant-pick-a" aria-pressed="true">A Noktasını Seçiniz</button>
+        <button type="button" id="ant-pick-b" aria-pressed="false">B Noktasını Seçiniz</button>
+        <button type="button" id="ant-reset-points">Yeni İki Nokta Seçiniz</button>
+      </div>
+      <details id="ant-precise-pick">
+        <summary>Klavyeyle kafes noktası seçimi</summary>
+        <label for="ant-face">Yüz<select id="ant-face"><option value="4">Ön</option><option value="5">Arka</option><option value="3">Üst</option><option value="2">Alt</option><option value="0">Sol</option><option value="1">Sağ</option></select></label>
+        <label for="ant-face-u">Birinci kafes doğrultusu <output id="ant-face-u-value">3 cm</output></label>
+        <input id="ant-face-u" type="range" min="0" max="6" step="1" value="3">
+        <label for="ant-face-v">İkinci kafes doğrultusu <output id="ant-face-v-value">3 cm</output></label>
+        <input id="ant-face-v" type="range" min="0" max="6" step="1" value="3">
+        <button type="button" id="ant-apply-point">Bu noktayı seçiniz</button>
+      </details>
+      <p class="ant-note">Kafes aralığı 1 cm’dir. Dokunuşunuz en yakın kafes noktasına yerleşir. İlk dokunuşta A, ikinci dokunuşta B seçilir. Karıncanın yolu kafes çizgileriyle sınırlı değildir. Modeli döndürmek için sürükleyiniz.</p>
+    </div>
+    <p id="ant-point-info"></p>
+    <label for="ant-walk-progress">Karıncanın ilerleyişi <output id="ant-walk-value" for="ant-walk-progress">%0</output></label>
+    <input id="ant-walk-progress" type="range" min="0" max="100" step="1" value="0">
+    <button id="ant-walk-button" type="button">▶ Karıncayı yürütünüz</button>
+    <h4>Alternatif Yolları Karşılaştırınız</h4>
+    <ul id="ant-comparisons"></ul>
+    <p id="ant-route-proof" class="ant-note"></p>
+    <p class="ant-note" data-result-info>Yeşil: en kısa yol. Mor: seçili daha uzun yol. Kesikli: diğer alternatifler. Gizli yüzlerdeki yollar modeli döndürünce görünür. Küplerin temas yüzleri yürünebilir değildir.</p>
+  </section>
+
+  <div class="proj-legend">
+    <span><i class="legend-dot" style="background:#0284c7"></i>Ayrıt / Alan</span>
+    <span><i class="legend-dot" style="background:#ea580c"></i>Karınca Yolu</span>
+    <span><i class="legend-dot" style="background:#059669"></i>Açınım Dik Üçgeni</span>
+  </div>
+</div>
+
+<!-- ALT ORTA: SERBEST PARAMETRE LABORATUVARI -->
+<div id="free-panel">
+  <div class="slider-row">
+    <div class="fp-header">
+      <span id="slider1-label">🎚️ Ortak Fark (d) / Karınca İlerleyişi</span>
+      <span class="fp-val" id="free-s1-val">d = 4 cm</span>
+    </div>
+    <input type="range" class="lab-slider" id="param1-slider" aria-labelledby="slider1-label" min="1" max="6" value="4" step="1">
+  </div>
+
+  <div class="slider-row">
+    <div class="fp-header">
+      <span id="slider2-label">📏 Terim Sayısı (n) / İlk Ayrıt (a₁)</span>
+      <span class="fp-val" id="free-s2-val">n = 5 küp</span>
+    </div>
+    <input type="range" class="lab-slider" id="param2-slider" aria-labelledby="slider2-label" min="2" max="10" value="5" step="1">
+  </div>
+
+  <div id="free-stats">
+    <button type="button" class="preset-pill" onclick="applyFreePreset('odd5')">Tekler (2,6,10,14,18)</button>
+    <button type="button" class="preset-pill" onclick="applyFreePreset('all10')">Tümü (1–10)</button>
+    <button type="button" class="preset-pill" onclick="setFreeMode('geo')">Geometrik (4⁴..4¹)</button>
+    <button type="button" class="preset-pill" onclick="setFreeMode('antRow')">Karınca • Küp Sırası</button>
+  </div>
+</div>
+
+</main>
+
+<div id="hint">🖱️ Sol tık / Ok tuşları: 3B modeli döndürünüz &nbsp;|&nbsp; Sağ tık: kaydırınız &nbsp;|&nbsp; Tekerlek / +-: yakınlaştırınız &nbsp;|&nbsp; Kesiti Ayırınız ile iç içe duvarları inceleyiniz</div>
+
+<script defer src="assets/ant-surface.js"></script>
+<script defer src="assets/ant-lattice.js"></script>
+<script defer src="assets/exact-length.js"></script>
+<script defer src="assets/ant-net-layout.js"></script>
+<script defer src="assets/math-display.js"></script>
+<script defer src="assets/sequence-activities.js"></script>
+<script defer src="assets/learning-record.js"></script>
+<script defer src="assets/app.js"></script>
+</body>
+</html>

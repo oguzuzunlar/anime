@@ -1,0 +1,83 @@
+{
+  "format": "matbis-materyal",
+  "surum": "1.0",
+  "kimlik": {
+    "id": "kupler-geometrik-kesif",
+    "baslik": "Küpler Materyali",
+    "uretici": "Kaynak materyal üreticisi belirtilmemiş; dijital revizyon Codex ile hazırlanmıştır.",
+    "materyal_surumu": "3.2.3",
+    "tarih": "2026-10-23"
+  },
+  "matematik": {
+    "durum": "Küplerin ayrıt uzunlukları ve bir kare ön yüzünün alanıyla dizi türünü, ortak farkı, ortak oranı ve n. terimi inceleme; Atom Karınca etkinliğinde küp sırasının dış yüzeyindeki alternatif yolları karşılaştırma.",
+    "degiskenler": [
+      "ortak fark: 1–6 cm",
+      "aritmetik terim sayısı: 2–10",
+      "geometrik dizide 16,8,4,2 cm ve 18,6,2 cm ayrıtlı sonlu küp seçimleri",
+      "yol üzerinde ilerleme: %0–100",
+      "karınca: yan yana 1–4 eş küp",
+      "karınca: ayrıt 2, 4, 6, 8 veya 10 cm",
+      "karınca: dış yüzey üzerinde dokunularak seçilen A ve B noktaları",
+      "karınca: A/B noktaları dış yüzeyde 1 cm aralıklı kafes noktalarına yerleştirilir"
+    ],
+    "cikti": "Dizinin türü, ortak fark veya oran, n. sıradaki tek küpün ayrıt uzunluğu veya bir kare ön yüzünün alanı; karıncanın en kısa dış yüzey yolu ve alternatif açınımları."
+  },
+  "teknik": {
+    "giris": "index.html",
+    "onizleme_tipi": "temsili_durum",
+    "onizleme_kipi": "?onizleme=1",
+    "onizleme_odagi": "üstü açık farklı ayrıtlı küplerin iç içe yerleşimi",
+    "dis_baglanti": [],
+    "tema": "gunduz-varsayilan_gece-kullanici-secimi",
+    "klavye": true,
+    "hareket_azaltma": true,
+    "responsive": true,
+    "paket_ayrismasi": true,
+    "kullanim_rehberi": true,
+    "karinca_gosterimi": "Açınımda ayrı A/B kutuları, numaralı yüz açıklamaları ve MathML ile kesin köklü uzunluklar. İrrasyonel uzunluklara ayrıca ≈ ile iki ondalığa yuvarlanmış karşılık eklenir. Açınımda a ve b dik kenarları, dik açı karesi ve c doğrusu vardır. Ölçüler ve Pisagor bağıntısı yanıttan sonra gösterilir.",
+    "karinca_yuzeyleri": "Karınca modunda kesit ve tel kafes araçları gizlidir; diğer modlardaki tel kafes ayarı karınca cisminin dolu yüzeylerini etkilemez.",
+    "karinca_kafesi": "Dokunma ve klavye seçimleri 1 cm kafesine oturur. Boyut değişiminde yeniden oturtulur. Yürüme yolu kafesle kısıtlanmaz.",
+    "mobil_sahne": "Mobil üst panel 46dvh; bilgi etiketleri küçük ve ayrı satırlarda, kamera düğmeleri ayrı alt satırda. 3B motor yalnız ayrılan çizim alanını ölçer. Model kadrajı mobil alana göre ayarlanır; başlık ve model sabit, alt içerik kaydırılabilir."
+  },
+  "program": {
+    "program_surumu": "TYMM; MAT.12.1.1 resmî web içeriği 20.10.2026 tarihinde doğrulandı",
+    "sinif_duzeyi": [
+      12,
+      9
+    ],
+    "ogrenme_ciktisi": [
+      "MAT.12.1.1",
+      "MAT.9.4.5"
+    ],
+    "beceri_etiketleri": [
+      "MAB1",
+      "MAB2",
+      "MAB3",
+      "MAB5"
+    ],
+    "surec_bilesenleri": [
+      "MAT.12.1.1: dizi türünü ayırt etme, ortak fark ve ortak oranı inceleme, genel terim kuralını seçme ve n. terimi bulma. Sonlu veya sonsuz dizi toplamları bu sürümün kapsamında değildir; tam çıktı kapsamı iddia edilmez.",
+      "MAT.9.4.5: Pisagor teoremiyle yüzey açınımlarını karşılaştırma; seçilen köşe çiftleri ve eş küp sırasıyla sınırlı, tam çıktı kapsamı iddiası yok."
+    ]
+  },
+  "pedagoji": {
+    "uygulama_1_hedefleri": [
+      "Ayrıt dizisini fark ve oranlarla sınıflandırma",
+      "Ortak farkı belirleme",
+      "İlk terim ve n−1 geçişten genel terim kuralını kurma",
+      "Eksik terimi, ilk terimi değişen dizinin terimini ve farklı sıradaki terimi bulma"
+    ],
+    "uygulama_2_hedefleri": [
+      "Aritmetik, geometrik ve ikisine de uymayan küp dizilimlerini ayırt etme",
+      "Büyükten küçüğe sıralanan ayrıt dizisinin türünü ve ortak oranını belirleme",
+      "Ayrıt oranıyla kare yüzün alan oranını ayırt etme",
+      "Genel terimde n−1 üssünü gerekçelendirme",
+      "Farklı ilk alan ve ortak oran için genel terimi seçip belirli bir alan terimini bulma"
+    ],
+    "siralamasi": "Uygulama 1 küçükten büyüğe ayrıtlar; Uygulama 2 ilk karşılaştırmada üç artan dizilim, sonraki görevlerde büyükten küçüğe ayrıtlar ve alanlar.",
+    "sinir": "Yalnız tek küpün ayrıtı veya bir kare ön yüzünün alanı değerlendirilir. Dizi toplamı, kule yüksekliği, toplam alan ve seri formülü yoktur. Ana geometrik modelde n=1..4; aktarım modelinde n=1..3. Aritmetik görevlerde takımdaki 2–20 cm ayrıtlı küpler kullanılır.",
+    "olcme": "Her iki uygulama altışar aşama ve altışar çoktan seçmeli soru içerir. Uygulama 1 içinde üç, Uygulama 2 içinde dört ayrıca gerekçe sorusu vardır. Sorulan ölçüler 2B çizimde, tabloda ve erişilebilir açıklamada gizlenir. Özet ve puan ekranı yoktur. İlk yanıtlar ve sonraki denemeler isteğe bağlı yerel JSON kaydında tutulur.",
+    "kaynak": "MEB Lise Matematik Materyal Seti, Küpler Takımı, basılı sayfa 236–237; TYMM MAT.12.1.1 diziler teması. Bu sürüm dizi türü ve genel terimle sınırlıdır.",
+    "kaynak_url": "https://tymm.meb.gov.tr/matematik-dersi/unite/305"
+  }
+}
