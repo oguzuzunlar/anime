@@ -5,11 +5,12 @@
     "id": "silindir-dilimleri-geometrik-seri-alan-hacim",
     "baslik": "Katı Silindirin Hacmi Materyali",
     "uretici": "OGM",
-    "materyal_surumu": "1.2.1",
-    "tarih": "2026-10-17"
+    "materyal_surumu": "1.3.12",
+    "tarih": "2026-10-23",
+    "kaynak_notu": "Fiziksel materyal: MEB OGM, Lise Matematik Materyal Seti, Ankara 2022, Katı Silindir, s. 221–228. Bu paket dijital uyarlamadır."
   },
   "matematik": {
-    "durum": "Dik dairesel silindirin açısal dilimlere ayrılmasıyla geometrik diziler, sonsuz küçükler, limit yaklaşımı ile taban alanı ve hacim bağıntılarının yapılandırılması incelenir.",
+    "durum": "Dik dairesel silindirin açısal dilimleriyle geometrik dizi ve kısmi toplamlar, üst yüzey alanının korunması, dikdörtgene limit yaklaşımı ve hacim bağıntısı incelenir.",
     "degiskenler": [
       "taban yarıçapı",
       "silindir yüksekliği",
@@ -22,7 +23,7 @@
     "giris": "index.html",
     "onizleme_tipi": "temsili_durum",
     "onizleme_kipi": "?onizleme=1",
-    "onizleme_odagi": "Dik dairesel silindirin 1/4, 1/8, 1/16 ve 1/32'lik renkli dilimlerinin 3B temsili",
+    "onizleme_odagi": "Aynı yarıçap/yükseklikle çeyrek, sekizlik ve on altılık dilimlerden oluşturulan silindir; tam araç panelleri ve cevaplar gizlidir.",
     "dis_baglanti": [],
     "tema": "gunduz-varsayilan_gece-kullanici-secimi",
     "yerel_kutuphaneler": [
@@ -34,33 +35,46 @@
     "hareket_azaltma": true,
     "responsive": true,
     "paket_ayrismasi": true,
-    "kullanim_rehberi": true
+    "kullanim_rehberi": true,
+    "dilim_renkleri": "1/4 mavi #004DFF; 1/8 sarı #FFFF00; 1/16 kırmızı #FF0000; 1/32 turkuaz #00BFA5; 1/64 mor #8B32FF. Her gösterilen boyutun rengi farklıdır.",
+    "uygulama_1_sirasi": [
+      "1/4 mavi",
+      "yanına 1/8 sarı ekleme",
+      "yanına 1/16 kırmızı ekleme",
+      "yanına 1/32 turkuaz ekleme",
+      "1/64 mor dilim; sürgüyle 1–5 dilimi karşılaştırma ve dört aşamalı yönlendirmeli kural keşfi",
+      "aynı birleşik modelle 5 soruluk kavram kontrolü"
+    ],
+    "birlesik_model": "Her ileri adımda tek yeni terim aynı yarıçap ve yükseklikteki silindire komşu açısal aralıkta eklenir. Önceki parçalar aynı konumda kalır. Tam silindirin çerçevesi sabittir. Terimlerin toplamı yarım silindire yaklaşır; tam doluluk iddiası yoktur. Soru bölümünde beş parçalı model korunur.",
+    "durum_koruma": "Açık oturumda bölüm değişimlerinde serbest modelin parça sırası, yarıçapı, yüksekliği, ayırma/rehber/zemin/ölçüm tercihleri, uygulama adımı, taşınan dilimler ve cevaplar korunur. Sayfa yenilenince yeni oturum başlar.",
+    "kesif_akisi": "Sonraki terim tahmini → n. terime geçiş sayısı → toplamın yaklaştığı pay → yarım silindirde kalan boşluk ile son dilim ilişkisi. Yanlış tahminde yeniden deneme; ilgili kural doğru yanıtın ardından, birleşik formül özeti dört keşiften sonra görünür. Açık oturumda keşif ve model seçimi korunur."
   },
   "program": {
-    "program_surumu": "Türkiye Yüzyılı Maarif Modeli Matematik Dersi Öğretim Programı",
+    "program_surumu": "TYMM Matematik Dersi Öğretim Programı — resmî web metni, erişim 2026-10-21",
     "sinif_duzeyi": [
-      10,
-      11,
       12
     ],
     "ogrenme_ciktisi": [
-      "MAT.10.4.1",
-      "MAT.11.3.1",
-      "MAT.12.3.2"
+      "MAT.12.1.1",
+      "MAT.12.3.3"
     ],
     "beceri_etiketleri": [
       "MAB1",
       "MAB3",
-      "MAB5",
-      "KB2.6",
-      "KB2.10",
-      "OB2",
-      "OB4"
+      "MAB5"
     ],
     "surec_bilesenleri": [
-      "MAT.10.4.1.a",
-      "MAT.11.3.1.b",
-      "MAT.12.3.2.c"
+      "MAT.12.1.1.a",
+      "MAT.12.1.1.b",
+      "MAT.12.1.1.c",
+      "MAT.12.3.3.a",
+      "MAT.12.3.3.b",
+      "MAT.12.3.3.c"
+    ],
+    "eslesme_kapsami": "Kısmi destek: dilim paylarını karşılaştırma, ortak oran ve terim hesaplama, sonlu toplamları yorumlama; yarıçap-yükseklik-hacim ilişkisini temsil etme. Genel terim ve toplam kuralı sayısal örnekler, model karşılaştırması ve çoktan seçmeli tahminlerle yönlendirmeli olarak oluşturulur. Bağımsız ispat veya açık uçlu kural üretimi ölçülmez. Çıktıların tüm süreçlerini karşılama iddiası yoktur. Sonsuz seri ve limit görsel zenginleştirmedir.",
+    "kaynaklar": [
+      "https://tymm.meb.gov.tr/matematik-dersi/unite/305",
+      "https://tymm.meb.gov.tr/matematik-dersi/unite/329"
     ]
   }
 }

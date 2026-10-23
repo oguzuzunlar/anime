@@ -14,11 +14,12 @@
     "id": "silindir-dilimleri-geometrik-seri-alan-hacim",
     "baslik": "Katı Silindirin Hacmi Materyali",
     "uretici": "OGM",
-    "materyal_surumu": "1.2.1",
-    "tarih": "2026-10-17"
+    "materyal_surumu": "1.3.12",
+    "tarih": "2026-10-23",
+    "kaynak_notu": "Fiziksel materyal: MEB OGM, Lise Matematik Materyal Seti, Ankara 2022, Katı Silindir, s. 221–228. Bu paket dijital uyarlamadır."
   },
   "matematik": {
-    "durum": "Dik dairesel silindirin açısal dilimlere ayrılmasıyla geometrik diziler, sonsuz küçükler, limit yaklaşımı ile taban alanı ve hacim bağıntılarının yapılandırılması incelenir.",
+    "durum": "Dik dairesel silindirin açısal dilimleriyle geometrik dizi ve kısmi toplamlar, üst yüzey alanının korunması, dikdörtgene limit yaklaşımı ve hacim bağıntısı incelenir.",
     "degiskenler": [
       "taban yarıçapı",
       "silindir yüksekliği",
@@ -31,7 +32,7 @@
     "giris": "index.html",
     "onizleme_tipi": "temsili_durum",
     "onizleme_kipi": "?onizleme=1",
-    "onizleme_odagi": "Dik dairesel silindirin 1/4, 1/8, 1/16 ve 1/32'lik renkli dilimlerinin 3B temsili",
+    "onizleme_odagi": "Aynı yarıçap/yükseklikle çeyrek, sekizlik ve on altılık dilimlerden oluşturulan silindir; tam araç panelleri ve cevaplar gizlidir.",
     "dis_baglanti": [],
     "tema": "gunduz-varsayilan_gece-kullanici-secimi",
     "yerel_kutuphaneler": [
@@ -43,46 +44,75 @@
     "hareket_azaltma": true,
     "responsive": true,
     "paket_ayrismasi": true,
-    "kullanim_rehberi": true
+    "kullanim_rehberi": true,
+    "dilim_renkleri": "1/4 mavi #004DFF; 1/8 sarı #FFFF00; 1/16 kırmızı #FF0000; 1/32 turkuaz #00BFA5; 1/64 mor #8B32FF. Her gösterilen boyutun rengi farklıdır.",
+    "uygulama_1_sirasi": [
+      "1/4 mavi",
+      "yanına 1/8 sarı ekleme",
+      "yanına 1/16 kırmızı ekleme",
+      "yanına 1/32 turkuaz ekleme",
+      "1/64 mor dilim; sürgüyle 1–5 dilimi karşılaştırma ve dört aşamalı yönlendirmeli kural keşfi",
+      "aynı birleşik modelle 5 soruluk kavram kontrolü"
+    ],
+    "birlesik_model": "Her ileri adımda tek yeni terim aynı yarıçap ve yükseklikteki silindire komşu açısal aralıkta eklenir. Önceki parçalar aynı konumda kalır. Tam silindirin çerçevesi sabittir. Terimlerin toplamı yarım silindire yaklaşır; tam doluluk iddiası yoktur. Soru bölümünde beş parçalı model korunur.",
+    "durum_koruma": "Açık oturumda bölüm değişimlerinde serbest modelin parça sırası, yarıçapı, yüksekliği, ayırma/rehber/zemin/ölçüm tercihleri, uygulama adımı, taşınan dilimler ve cevaplar korunur. Sayfa yenilenince yeni oturum başlar.",
+    "kesif_akisi": "Sonraki terim tahmini → n. terime geçiş sayısı → toplamın yaklaştığı pay → yarım silindirde kalan boşluk ile son dilim ilişkisi. Yanlış tahminde yeniden deneme; ilgili kural doğru yanıtın ardından, birleşik formül özeti dört keşiften sonra görünür. Açık oturumda keşif ve model seçimi korunur."
   },
   "program": {
-    "program_surumu": "Türkiye Yüzyılı Maarif Modeli Matematik Dersi Öğretim Programı",
+    "program_surumu": "TYMM Matematik Dersi Öğretim Programı — resmî web metni, erişim 2026-10-21",
     "sinif_duzeyi": [
-      10,
-      11,
       12
     ],
     "ogrenme_ciktisi": [
-      "MAT.10.4.1",
-      "MAT.11.3.1",
-      "MAT.12.3.2"
+      "MAT.12.1.1",
+      "MAT.12.3.3"
     ],
     "beceri_etiketleri": [
       "MAB1",
       "MAB3",
-      "MAB5",
-      "KB2.6",
-      "KB2.10",
-      "OB2",
-      "OB4"
+      "MAB5"
     ],
     "surec_bilesenleri": [
-      "MAT.10.4.1.a",
-      "MAT.11.3.1.b",
-      "MAT.12.3.2.c"
+      "MAT.12.1.1.a",
+      "MAT.12.1.1.b",
+      "MAT.12.1.1.c",
+      "MAT.12.3.3.a",
+      "MAT.12.3.3.b",
+      "MAT.12.3.3.c"
+    ],
+    "eslesme_kapsami": "Kısmi destek: dilim paylarını karşılaştırma, ortak oran ve terim hesaplama, sonlu toplamları yorumlama; yarıçap-yükseklik-hacim ilişkisini temsil etme. Genel terim ve toplam kuralı sayısal örnekler, model karşılaştırması ve çoktan seçmeli tahminlerle yönlendirmeli olarak oluşturulur. Bağımsız ispat veya açık uçlu kural üretimi ölçülmez. Çıktıların tüm süreçlerini karşılama iddiası yoktur. Sonsuz seri ve limit görsel zenginleştirmedir.",
+    "kaynaklar": [
+      "https://tymm.meb.gov.tr/matematik-dersi/unite/305",
+      "https://tymm.meb.gov.tr/matematik-dersi/unite/329"
     ]
   }
 }
 </script>
 
   <script>
+    // MathJax uses separate italic glyphs; CSS font-style alone cannot straighten them.
+    function useUprightMath(math) {
+      if (!math.root) return;
+      math.root.walkTree((node) => {
+        if (!['mi', 'mn', 'mo', 'mtext', 'ms'].includes(node.kind)) return;
+        const variant = String(node.attributes.get('mathvariant') || 'normal');
+        node.attributes.set('mathvariant', variant.includes('bold') ? 'bold' : 'normal');
+      });
+    }
     window.MathJax = {
       tex: {
         inlineMath: [['\\(', '\\)']],
         displayMath: [['\\[', '\\]']]
       },
       chtml: { scale: 1.06, fontURL: 'lib/mathjax/output/chtml/fonts/woff-v2' },
-      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+        renderActions: {
+          uprightMath: [30, (document) => {
+            for (const math of document.math) useUprightMath(math);
+          }, (math) => useUprightMath(math)]
+        }
+      }
     };
   </script>
   <script defer id="MathJax-script" src="lib/mathjax/tex-chtml.js"></script>
@@ -271,15 +301,6 @@
       transition: grid-template-columns 0.25s ease;
     }
 
-    main.sidebar-collapsed { grid-template-columns: 0 minmax(0, 1fr); }
-    main.sidebar-collapsed .sidebar {
-      display: none;
-      padding-inline: 0;
-      border-right-width: 0;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
 
     .sidebar {
       grid-column: 1;
@@ -294,32 +315,6 @@
       transition: opacity 0.2s ease, padding 0.25s ease;
     }
 
-    .sidebar-toggle {
-      position: absolute;
-      top: 34%;
-      left: calc(var(--sidebar-width) - 18px);
-      z-index: 12;
-      width: 36px;
-      height: 68px;
-      border: 2px solid var(--ms-primary);
-      border-radius: 10px;
-      background: var(--ms-surface);
-      color: var(--ms-primary);
-      box-shadow: var(--ms-card-shadow);
-      cursor: pointer;
-      font-size: 1.7rem;
-      font-weight: 800;
-      line-height: 1;
-      transform: translateY(-50%);
-      transition: left 0.25s ease, background 0.15s ease, color 0.15s ease;
-    }
-    .sidebar-toggle:hover {
-      background: var(--ms-primary);
-      color: #ffffff;
-    }
-    main.sidebar-collapsed .sidebar-toggle {
-      left: 8px;
-    }
 
     @media (max-width: 1100px) {
       body {
@@ -327,15 +322,13 @@
         overflow-x: hidden;
         overflow-y: auto;
       }
-      main,
-      main.sidebar-collapsed {
+      main {
         grid-template-columns: 1fr;
         grid-template-rows: minmax(260px, 44vh) auto;
         height: auto;
         overflow: visible;
       }
-      .sidebar,
-      main.sidebar-collapsed .sidebar {
+      .sidebar {
         display: flex;
         grid-row: 2;
         padding: 14px 16px;
@@ -345,7 +338,6 @@
         pointer-events: auto;
         overflow: visible;
       }
-      .sidebar-toggle { display: none; }
       main .viewport-container {
         grid-column: 1;
         grid-row: 1;
@@ -549,6 +541,7 @@
       left: 0;
       width: 100vw;
       height: 100vh;
+      height: 100dvh;
       background: rgba(0, 0, 0, 0.55);
       backdrop-filter: blur(3px);
       display: none;
@@ -573,10 +566,12 @@
       flex-direction: column;
       gap: 14px;
       max-height: calc(100vh - 32px);
+      max-height: calc(100dvh - 32px);
       overflow-y: auto;
     }
 
     .dialog-header {
+      flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -595,6 +590,7 @@
     }
 
     .dialog-title {
+      margin: 0;
       font-size: 1.35rem;
       font-weight: 700;
       color: var(--ms-text);
@@ -616,7 +612,7 @@
 
     @media (max-width: 520px) {
       .dialog-backdrop { padding: 10px; }
-      .dialog-box { padding: 16px; max-height: calc(100vh - 20px); }
+      .dialog-box { padding: 16px; max-height: calc(100vh - 20px); max-height: calc(100dvh - 20px); }
       .dialog-title { font-size: 1.18rem; }
       .intro-guide { font-size: 0.92rem; }
     }
@@ -791,7 +787,6 @@
     body.preview-mode .sidebar,
     body.preview-mode .viewport-controls,
     body.preview-mode .viewport-instructions,
-    body.preview-mode .sidebar-toggle,
     body.preview-mode .dialog-backdrop {
       display: none !important;
     }
@@ -843,7 +838,7 @@
   <div id="dependency-error" class="dependency-error" role="alert" hidden>
     <div class="dependency-error-card">
       <h1>Materyal bileşenleri yüklenemedi</h1>
-      <p id="dependency-error-detail">Yerel kütüphane dosyalarını kontrol edip sayfayı yeniden açın.</p>
+      <p id="dependency-error-detail">Yerel kütüphane dosyalarını kontrol edip sayfayı yeniden açınız.</p>
       <button class="btn" type="button" onclick="window.location.reload()">Yeniden Dene</button>
     </div>
   </div>
@@ -864,10 +859,11 @@
           Bu 3B öğrenme materyali; silindir dilimlerinden hareketle <strong>geometrik dizi ile seri arasındaki farkı</strong>, daire alanını ve silindir hacmini keşfetmenizi sağlar.
         </p>
         <div id="intro-fractions" style="background: var(--ms-surface); padding: 10px; border-radius: 6px; font-size: 1.14rem; line-height: 1.4; border: 1px solid var(--ms-border); display: flex; flex-direction: column; gap: 6px;">
-          <div><strong style="color: #1d4ed8;">■ Mavi Dilim:</strong> \(\frac14\) silindir \((90^\circ)\)</div>
-          <div><strong style="color: #b45309;">■ Sarı Dilim:</strong> \(\frac18\) silindir \((45^\circ)\)</div>
-          <div><strong style="color: #b91c1c;">■ Kırmızı Dilim:</strong> \(\frac1{16}\) silindir \((22{,}5^\circ)\)</div>
-          <div><strong style="color: #0f766e;">■ Turkuaz Dilim:</strong> \(\frac1{32}\) silindir \((11{,}25^\circ)\)</div>
+          <div><strong class="slice-key"><span class="slice-swatch slice-blue" aria-hidden="true"></span>Mavi Dilim:</strong> \(\frac14\) silindir \((90^\circ)\)</div>
+          <div><strong class="slice-key"><span class="slice-swatch slice-yellow" aria-hidden="true"></span>Sarı Dilim:</strong> \(\frac18\) silindir \((45^\circ)\)</div>
+          <div><strong class="slice-key"><span class="slice-swatch slice-red" aria-hidden="true"></span>Kırmızı Dilim:</strong> \(\frac1{16}\) silindir \((22{,}5^\circ)\)</div>
+          <div><strong class="slice-key"><span class="slice-swatch slice-teal" aria-hidden="true"></span>Turkuaz Dilim:</strong> \(\frac1{32}\) silindir \((11{,}25^\circ)\)</div>
+          <div><strong class="slice-key"><span class="slice-swatch slice-purple" aria-hidden="true"></span>Mor Dilim:</strong> \(\frac1{64}\) silindir \((5{,}625^\circ)\)</div>
         </div>
         <button class="btn" onclick="switchTab(1)">Geometrik Seriyi İnşa Et →</button>
       </div>
@@ -876,80 +872,107 @@
       <div id="panel-tab-1" class="panel-section" style="display: none;">
         <div class="section-title" id="app1-step-title">Adım 1: \(\frac{1}{4}\) — Mavi Dilim</div>
         <p id="app1-step-desc" style="font-size: 0.78rem; line-height: 1.45; color: var(--ms-text-muted);">
-          Dik dairesel silindirden \(\frac14\)'lük bir dilim alıyoruz.
+          Dik dairesel silindirin \(\frac14\)'ü hacmindeki mavi dilimi inceleyiniz.
         </p>
+        <p id="app1-assembly-note" class="assembly-note" role="status" aria-live="polite"></p>
         <div id="app1-math-box" style="background: var(--ms-surface); padding: 8px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; text-align: center; border: 1px solid var(--ms-border);">
           <span data-app1-math="1">\(\mathrm{a}_1=\frac14\), merkez açı \(=90^\circ\)</span>
-          <span data-app1-math="2" hidden>\(45^\circ+45^\circ=90^\circ\Rightarrow \frac18+\frac18=\frac14\)</span>
-          <span data-app1-math="3" hidden>\(11{,}25^\circ+11{,}25^\circ=22{,}5^\circ\Rightarrow \frac1{32}+\frac1{32}=\frac1{16}\)</span>
-          <div data-app1-math="4" hidden class="formula-stack"><div><strong>Tek bir dilimin payı</strong>\[a_n=\frac14\left(\frac12\right)^{n-1}\longrightarrow0\]</div><div><strong>İlk n dilimin toplam payı</strong>\[S_n=\frac12\left[1-\left(\frac12\right)^n\right]\longrightarrow\frac12\]</div></div>
-          <span data-app1-math="5" hidden>\(\mathrm{a}_{\mathrm{n}}=\mathrm{a}_1\mathrm{r}^{\mathrm{n}-1}\qquad \mathrm{S}_{\mathrm{n}}=\mathrm{a}_1\frac{1-\mathrm{r}^{\mathrm{n}}}{1-\mathrm{r}}\)</span>
+          <div data-app1-math="2" hidden class="math-comparison"><div class="math-row"><span>\(\displaystyle 90^\circ\cdot\frac12=45^\circ\)</span></div><div class="math-row"><span>\(\displaystyle \frac14\cdot\frac12=\frac18\)</span></div></div>
+          <div data-app1-math="3" hidden class="math-comparison"><div class="math-row"><span>\(\displaystyle 45^\circ\cdot\frac12=22{,}5^\circ\)</span></div><div class="math-row"><span>\(\displaystyle \frac18\cdot\frac12=\frac1{16}\)</span></div></div>
+          <div data-app1-math="4" hidden class="math-comparison"><div class="math-row"><span>\(\displaystyle 22{,}5^\circ\cdot\frac12=11{,}25^\circ\)</span></div><div class="math-row"><span>\(\displaystyle \frac1{16}\cdot\frac12=\frac1{32}\)</span></div></div>
         </div>
-        <div style="display: flex; gap: 6px;">
-          <button class="btn btn-secondary" style="flex: 1;" onclick="prevApp1Step()">← Geri</button>
-          <button class="btn" style="flex: 2;" id="btn-app1-next" onclick="nextApp1Step()">Sonraki Adım →</button>
+        <section id="app1-discovery" class="discovery-panel" aria-labelledby="discovery-heading" hidden>
+          <div class="discovery-observation">
+            <label for="discovery-count">Gözlenen dilim sayısı: <strong id="discovery-count-label">5 dilim</strong></label>
+            <input id="discovery-count" type="range" min="1" max="5" step="1" value="5" oninput="observeApp1Discovery(this.value)">
+            <p>Sürgüyle parçaları aynı silindirde birleştirip karşılaştırınız. Paylar tam silindirin hacmine göredir.</p>
+            <table class="discovery-table">
+              <caption>Modeldeki dilimler ve birlikte kapladıkları pay</caption>
+              <thead><tr><th scope="col">Dilim sırası</th><th scope="col">Yeni dilimin payı</th><th scope="col">Birleşen dilimlerin toplam payı</th><th id="discovery-gap-heading" scope="col" hidden>Yarım silindirde kalan pay</th></tr></thead>
+              <tbody id="discovery-observations"></tbody>
+            </table>
+          </div>
+          <p id="discovery-phase-label" class="discovery-phase"></p>
+          <h3 id="discovery-heading" tabindex="-1"></h3>
+          <fieldset class="quiz-item discovery-task">
+            <legend id="discovery-question"></legend>
+            <div id="discovery-choices" class="quiz-choices"></div>
+          </fieldset>
+          <button id="discovery-check" type="button" class="btn" onclick="checkApp1Discovery()">Tahmininizi Karşılaştırınız</button>
+          <div id="discovery-feedback" class="quiz-feedback discovery-feedback" aria-live="polite" hidden></div>
+          <div class="discovery-navigation">
+            <button id="discovery-prev" type="button" class="btn btn-secondary" onclick="moveApp1Discovery(-1)">← Önceki Keşif</button>
+            <button id="discovery-next" type="button" class="btn" onclick="moveApp1Discovery(1)" disabled>Sonraki Keşif →</button>
+          </div>
+          <div id="discovery-rules" class="discovery-rules" hidden></div>
+          <p id="discovery-complete-note" class="discovery-complete" role="status" hidden>Dört keşfi tamamladınız. Kuralları kavrama sorularında kullanabilirsiniz.</p>
+        </section>
+        <div class="step-navigation">
+          <button class="btn btn-secondary" onclick="prevApp1Step()">← Geri</button>
+          <button class="btn" id="btn-app1-next" onclick="nextApp1Step()">Sonraki Adım →</button>
         </div>
 
         <section id="series-quiz" class="quiz-panel" aria-labelledby="series-quiz-title" hidden>
-          <div class="quiz-heading" id="series-quiz-title">Geometrik Dizi ve Seri Soruları</div>
+          <div class="quiz-heading" id="series-quiz-title">Silindir Dilimlerinin Hacim Payları</div>
+          <p class="quiz-note">Kontrol edilen yanıt bu oturumda değişmez. Geri düğmesiyle açıklamaları inceleyebilirsiniz.</p>
           <div class="quiz-progress-row">
             <span id="series-slide-counter">Soru 1 / 5</span>
             <div class="quiz-progress-track" aria-hidden="true"><div id="series-slide-progress" class="quiz-progress-value" style="width: 20%;"></div></div>
           </div>
 
           <fieldset class="quiz-item quiz-slide" data-series-slide="0">
-            <legend>Soru 1: \(\frac14,\frac18,\frac1{16},\ldots\) dizisinin \(\mathrm{r}\) ile gösterilen ortak çarpanı nedir?</legend>
+            <legend aria-label="Soru 1: Aynı silindirden alınan mavi, sarı ve kırmızı dilimlerin hacimleri tam silindirin hacminin sırasıyla dörtte biri, sekizde biri ve on altıda biridir. Bu ardışık dilimlerin hacimleri hangi ortak çarpanla küçülür?">Soru 1: Aynı silindirden alınan mavi, sarı ve kırmızı dilimlerin hacimleri, tam silindirin hacminin sırasıyla \(\frac14\), \(\frac18\) ve \(\frac1{16}\)'sıdır. Bu ardışık dilimlerin hacimleri hangi ortak çarpanla küçülür?</legend>
             <div class="quiz-choices">
-              <label class="quiz-choice"><input type="radio" name="q1" value="1/8"> \(\frac18\)</label>
-              <label class="quiz-choice"><input type="radio" name="q1" value="1/4"> \(\frac14\)</label>
-              <label class="quiz-choice"><input type="radio" name="q1" value="1/2"> \(\frac12\)</label>
-              <label class="quiz-choice"><input type="radio" name="q1" value="2"> \(2\)</label>
-              <label class="quiz-choice"><input type="radio" name="q1" value="4"> \(4\)</label>
+              <label class="quiz-choice"><input type="radio" name="q1" value="1/8" aria-label="Sekizde bir"> \(\frac18\)</label>
+              <label class="quiz-choice"><input type="radio" name="q1" value="1/4" aria-label="Dörtte bir"> \(\frac14\)</label>
+              <label class="quiz-choice"><input type="radio" name="q1" value="1/2" aria-label="İkide bir"> \(\frac12\)</label>
+              <label class="quiz-choice"><input type="radio" name="q1" value="2" aria-label="2"> \(2\)</label>
+              <label class="quiz-choice"><input type="radio" name="q1" value="4" aria-label="4"> \(4\)</label>
             </div>
             <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-item quiz-slide" data-series-slide="1" hidden>
-            <legend>Soru 2: \(\mathrm{a}_1=\frac14\) ise \(\mathrm{a}_6\) kesrinin paydası kaçtır?</legend>
+            <legend aria-label="Soru 2: Tam silindirin dörtte biri hacmindeki mavi dilimle başlayan örüntüde her yeni dilimin hacmi bir öncekinin yarısıdır. Altıncı dilimin hacmi tam silindirin hacminin bir bölü k kadarı ise k kaçtır?">Soru 2: Tam silindirin \(\frac14\)'ü hacmindeki mavi dilimle başlayan örüntüde her yeni dilimin hacmi bir öncekinin yarısıdır. Altıncı dilimin hacmi tam silindirin hacminin \(\frac1k\)'si ise \(k\) kaçtır?</legend>
             <div class="quiz-choices">
-              <label class="quiz-choice"><input type="radio" name="q2" value="32"> \(32\)</label>
-              <label class="quiz-choice"><input type="radio" name="q2" value="64"> \(64\)</label>
-              <label class="quiz-choice"><input type="radio" name="q2" value="128"> \(128\)</label>
-              <label class="quiz-choice"><input type="radio" name="q2" value="256"> \(256\)</label>
-              <label class="quiz-choice"><input type="radio" name="q2" value="512"> \(512\)</label>
+              <label class="quiz-choice"><input type="radio" name="q2" value="32" aria-label="32"> \(32\)</label>
+              <label class="quiz-choice"><input type="radio" name="q2" value="64" aria-label="64"> \(64\)</label>
+              <label class="quiz-choice"><input type="radio" name="q2" value="128" aria-label="128"> \(128\)</label>
+              <label class="quiz-choice"><input type="radio" name="q2" value="256" aria-label="256"> \(256\)</label>
+              <label class="quiz-choice"><input type="radio" name="q2" value="512" aria-label="512"> \(512\)</label>
             </div>
             <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-item quiz-slide" data-series-slide="2" hidden>
-            <legend>Soru 3: “Terimler sıfıra yaklaşırken serinin toplamı \(\frac12\)'yi geçer.” ifadesi doğru mudur?</legend>
+            <legend aria-label="Soru 3: Mavi dilimden başlayıp hacmi her adımda yarıya inen silindir dilimleri boşluk bırakmadan yan yana ekleniyor. Bu işlem sürdürüldükçe parçaların toplam hacmi yarım silindirin hacmini aşar mı?">Soru 3: Mavi dilimden başlayıp hacmi her adımda yarıya inen silindir dilimleri boşluk bırakmadan yan yana ekleniyor. Bu işlem sürdürüldükçe parçaların toplam hacmi yarım silindirin hacmini aşar mı?</legend>
             <div class="quiz-choices yes-no">
-              <label class="quiz-choice"><input type="radio" name="q3" value="evet"> Evet</label>
-              <label class="quiz-choice"><input type="radio" name="q3" value="hayir"> Hayır</label>
+              <label class="quiz-choice"><input type="radio" name="q3" value="evet" aria-label="Evet"> Evet</label>
+              <label class="quiz-choice"><input type="radio" name="q3" value="hayir" aria-label="Hayır"> Hayır</label>
             </div>
             <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-item quiz-slide" data-series-slide="3" hidden>
-            <legend>Soru 4: İlk dört dilimin toplamı \(\mathrm{S}_4\) hangisidir?</legend>
+            <legend aria-label="Soru 4: Tam silindirin sırasıyla dörtte biri, sekizde biri, on altıda biri ve otuz ikide biri hacmindeki dört silindir dilimi birleştiriliyor. Bu dört parçanın toplam hacmi tam silindirin hacminin kaçta kaçıdır?">Soru 4: Tam silindirin sırasıyla \(\frac14\), \(\frac18\), \(\frac1{16}\) ve \(\frac1{32}\)'si hacmindeki dört silindir dilimi birleştiriliyor. Bu dört parçanın toplam hacmi tam silindirin hacminin kaçta kaçıdır?</legend>
             <div class="quiz-choices">
-              <label class="quiz-choice"><input type="radio" name="q4" value="3/8"> \(\frac38\)</label>
-              <label class="quiz-choice"><input type="radio" name="q4" value="7/16"> \(\frac7{16}\)</label>
-              <label class="quiz-choice"><input type="radio" name="q4" value="15/32"> \(\frac{15}{32}\)</label>
-              <label class="quiz-choice"><input type="radio" name="q4" value="31/64"> \(\frac{31}{64}\)</label>
-              <label class="quiz-choice"><input type="radio" name="q4" value="1/2"> \(\frac12\)</label>
+              <label class="quiz-choice"><input type="radio" name="q4" value="3/8" aria-label="Sekizde üç"> \(\frac38\)</label>
+              <label class="quiz-choice"><input type="radio" name="q4" value="7/16" aria-label="On altıda yedi"> \(\frac7{16}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q4" value="15/32" aria-label="Otuz ikide on beş"> \(\frac{15}{32}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q4" value="31/64" aria-label="Altmış dörtte otuz bir"> \(\frac{31}{64}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q4" value="1/2" aria-label="İkide bir"> \(\frac12\)</label>
             </div>
             <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-item quiz-slide" data-series-slide="4" hidden>
-            <legend>Soru 5: İlk beş terimden sonra \(\frac12\)'ye ulaşmak için kalan pay \(1\) ise payda kaçtır?</legend>
+            <legend aria-label="Soru 5: Tam silindirin dörtte biri, sekizde biri, on altıda biri, otuz ikide biri ve altmış dörtte biri hacmindeki dilimler birleştiriliyor. Yarım silindiri tamamlamak için kalan boşluk tam silindirin bir bölü k kadarı hacminde ise k kaçtır?">Soru 5: Tam silindirin \(\frac14\), \(\frac18\), \(\frac1{16}\), \(\frac1{32}\) ve \(\frac1{64}\)'ü hacmindeki dilimler birleştiriliyor. Yarım silindiri tamamlamak için kalan boşluk, tam silindirin \(\frac1k\)'si hacminde ise \(k\) kaçtır?</legend>
             <div class="quiz-choices">
-              <label class="quiz-choice"><input type="radio" name="q5" value="16"> \(16\)</label>
-              <label class="quiz-choice"><input type="radio" name="q5" value="32"> \(32\)</label>
-              <label class="quiz-choice"><input type="radio" name="q5" value="48"> \(48\)</label>
-              <label class="quiz-choice"><input type="radio" name="q5" value="64"> \(64\)</label>
-              <label class="quiz-choice"><input type="radio" name="q5" value="128"> \(128\)</label>
+              <label class="quiz-choice"><input type="radio" name="q5" value="16" aria-label="16"> \(16\)</label>
+              <label class="quiz-choice"><input type="radio" name="q5" value="32" aria-label="32"> \(32\)</label>
+              <label class="quiz-choice"><input type="radio" name="q5" value="48" aria-label="48"> \(48\)</label>
+              <label class="quiz-choice"><input type="radio" name="q5" value="64" aria-label="64"> \(64\)</label>
+              <label class="quiz-choice"><input type="radio" name="q5" value="128" aria-label="128"> \(128\)</label>
             </div>
             <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
           </fieldset>
@@ -959,16 +982,16 @@
             <button class="btn" type="button" onclick="checkCurrentSeriesQuestion()">Kontrol Et</button>
             <button class="btn btn-secondary" id="series-next" type="button" onclick="moveSeriesSlide(1)">İleri →</button>
           </div>
-          <div id="series-quiz-summary" class="quiz-summary" aria-live="polite">Soruları sırayla yanıtlayın.</div>
+          <div id="series-quiz-summary" aria-live="polite" class="quiz-summary">Soruları sırayla yanıtlayınız.</div>
           <div class="quiz-exit-actions"><button class="btn btn-secondary" onclick="prevApp1Step()">← Gösterime Dön</button><button class="btn" id="series-to-area" onclick="switchTab(2)" hidden>Uygulama 2’ye Geç →</button></div>
         </section>
       </div>
 
       <!-- TAB 2: Daireden dikdörtgene alan limiti -->
       <div id="panel-tab-2" class="panel-section" style="display: none;">
-        <div class="section-title">Üst Yüzeyin Dikdörtgene Yaklaşması</div>
+        <div class="section-title">Dilimleri Taşıyıp Karşılaştırınız</div>
         <p style="font-size: 0.78rem; line-height: 1.4; color: var(--ms-text-muted);">
-          Soldaki silindirin eş dilimleri <strong>tek tek sağdaki çalışma alanına taşınarak</strong> ters yönlü dizilir. İncelenen alan, dilimlerin üst yüzeylerindeki daire dilimlerinin toplam alanıdır. Tüm parçalar yerleştirildiğinde oluşan üst yüzey, sonlu sayıda dilim için tam bir dikdörtgen değildir; dilim sayısı arttıkça dikdörtgene yaklaşır.
+          Soldaki silindirin dilimlerini sağdaki çalışma alanına taşıyınız. Farklı dilim sayılarını deneyerek oluşan şekilleri ve parçaların üst yüzeylerini karşılaştırınız.
         </p>
 
         <div class="control-row">
@@ -988,7 +1011,7 @@
             <span>Taşınan Parça Sayısı:</span>
             <span id="txt-app2-moved">0 / 8</span>
           </div>
-          <input type="range" id="slider-app2-progress" class="range-slider" min="0" max="8" step="0.05" value="0" oninput="onApp2Slider(this.value)">
+          <input type="range" id="slider-app2-progress" aria-label="Taşınan dilim sayısı" class="range-slider" min="0" max="8" step="0.05" value="0" oninput="onApp2Slider(this.value)">
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
@@ -996,49 +1019,50 @@
           <button class="btn" onclick="stepApp2Move(1)">1 Dilim Taşı ⟶</button>
         </div>
 
-        <button class="btn btn-secondary" id="btn-app2-auto" onclick="toggleApp2AutoPlay()">▶ Otomatik Tek Tek Taşı</button>
+        <button class="btn btn-secondary" id="btn-app2-auto" onclick="toggleApp2AutoPlay()">▶ Parçaları otomatik taşı</button>
 
         <section class="quiz-panel" aria-labelledby="area-quiz-title">
-          <div class="quiz-heading" id="area-quiz-title">Daire Alanı Soruları</div>
+          <div class="quiz-heading" id="area-quiz-title">Silindir Parçalarının Üst Yüzeyleri</div>
+          <p class="quiz-note">Kontrol edilen yanıt bu oturumda değişmez. Geri düğmesiyle açıklamaları inceleyebilirsiniz.</p>
           <div class="quiz-progress-row">
             <span id="area-slide-counter">Soru 1 / 4</span>
             <div class="quiz-progress-track" aria-hidden="true"><div id="area-slide-progress" class="quiz-progress-value" style="width: 25%;"></div></div>
           </div>
           <fieldset class="quiz-item quiz-slide" data-area-slide="0">
-            <legend>Soru 1: Silindirin üst tabanını eş daire dilimlerine ayırıp yeniden düzenlemek, bu dairenin alanını değiştirir mi?</legend>
+            <legend aria-label="Soru 1: Soldaki silindirin bütün dilimleri kesilmeden ve üst üste gelmeden sağdaki alana taşınıyor. Parçaların üst yüzeylerinin toplam alanı bu taşıma işlemiyle değişir mi?">Soru 1: Soldaki silindirin bütün dilimleri, kesilmeden ve üst üste gelmeden sağdaki alana taşınıyor. Parçaların üst yüzeylerinin toplam alanı bu taşıma işlemiyle değişir mi?</legend>
             <div class="quiz-choices yes-no">
-              <label class="quiz-choice"><input type="radio" name="q6" value="evet"> Evet</label>
-              <label class="quiz-choice"><input type="radio" name="q6" value="hayir"> Hayır</label>
+              <label class="quiz-choice"><input type="radio" name="q6" value="evet" aria-label="Evet"> Evet</label>
+              <label class="quiz-choice"><input type="radio" name="q6" value="hayir" aria-label="Hayır"> Hayır</label>
             </div>
             <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
           </fieldset>
           <fieldset class="quiz-item quiz-slide" data-area-slide="1" hidden>
-            <legend>Soru 2: Dilim sayısı sınırsız arttığında, yeniden düzenlenen üst yüzeyin yaklaştığı dikdörtgenin kenar uzunlukları hangileridir?</legend>
+            <legend aria-label="Soru 2: Taban yarıçapı R olan silindirin dilimleri sağda ters yönlü diziliyor. Dilim sayısı sınırsız arttığında parçaların üst yüzeylerinin yaklaştığı dikdörtgenin kenarları hangileridir?">Soru 2: Taban yarıçapı \(R\) olan silindirin dilimleri sağda ters yönlü diziliyor. Dilim sayısı sınırsız arttığında, parçaların üst yüzeylerinin yaklaştığı dikdörtgenin kenarları hangileridir?</legend>
             <div class="quiz-choices">
-              <label class="quiz-choice"><input type="radio" name="q7" value="halfr-r"> \(\frac{\mathrm{R}}2\) ve \(\mathrm{R}\)</label>
-              <label class="quiz-choice"><input type="radio" name="q7" value="r-r"> \(\mathrm{R}\) ve \(\mathrm{R}\)</label>
-              <label class="quiz-choice"><input type="radio" name="q7" value="2r-r"> \(2\mathrm{R}\) ve \(\mathrm{R}\)</label>
-              <label class="quiz-choice"><input type="radio" name="q7" value="pir-r"> \(\pi\mathrm{R}\) ve \(\mathrm{R}\)</label>
-              <label class="quiz-choice"><input type="radio" name="q7" value="2pir-r"> \(2\pi\mathrm{R}\) ve \(\mathrm{R}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q7" value="halfr-r" aria-label="R bölü iki ve R"> \(\frac{\mathrm{R}}2\) ve \(\mathrm{R}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q7" value="r-r" aria-label="R ve R"> \(\mathrm{R}\) ve \(\mathrm{R}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q7" value="2r-r" aria-label="İki R ve R"> \(2\mathrm{R}\) ve \(\mathrm{R}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q7" value="pir-r" aria-label="Pi R ve R"> \(\pi\mathrm{R}\) ve \(\mathrm{R}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q7" value="2pir-r" aria-label="İki pi R ve R"> \(2\pi\mathrm{R}\) ve \(\mathrm{R}\)</label>
             </div>
             <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
           </fieldset>
           <fieldset class="quiz-item quiz-slide" data-area-slide="2" hidden>
-            <legend>Soru 3: Üst yüzeyin limitte yaklaştığı, kenarları \(\pi\mathrm{R}\) ve \(\mathrm{R}\) olan dikdörtgenin alanı hangisidir?</legend>
+            <legend aria-label="Soru 3: Taban yarıçapı R olan silindirin bütün dilimleri sağdaki alana taşınıyor. Bu parçaların üst yüzey alanları toplamı hangisidir?">Soru 3: Taban yarıçapı \(R\) olan silindirin bütün dilimleri sağdaki alana taşınıyor. Bu parçaların üst yüzey alanları toplamı hangisidir?</legend>
             <div class="quiz-choices">
-              <label class="quiz-choice"><input type="radio" name="q8" value="half-pir2"> \(\frac{\pi\mathrm{R}^2}{2}\)</label>
-              <label class="quiz-choice"><input type="radio" name="q8" value="pir2"> \(\pi\mathrm{R}^2\)</label>
-              <label class="quiz-choice"><input type="radio" name="q8" value="2pir2"> \(2\pi\mathrm{R}^2\)</label>
-              <label class="quiz-choice"><input type="radio" name="q8" value="3pir2"> \(3\pi\mathrm{R}^2\)</label>
-              <label class="quiz-choice"><input type="radio" name="q8" value="4pir2"> \(4\pi\mathrm{R}^2\)</label>
+              <label class="quiz-choice"><input type="radio" name="q8" value="half-pir2" aria-label="Pi R kare bölü iki"> \(\frac{\pi\mathrm{R}^2}{2}\)</label>
+              <label class="quiz-choice"><input type="radio" name="q8" value="pir2" aria-label="Pi R kare"> \(\pi\mathrm{R}^2\)</label>
+              <label class="quiz-choice"><input type="radio" name="q8" value="2pir2" aria-label="İki pi R kare"> \(2\pi\mathrm{R}^2\)</label>
+              <label class="quiz-choice"><input type="radio" name="q8" value="3pir2" aria-label="Üç pi R kare"> \(3\pi\mathrm{R}^2\)</label>
+              <label class="quiz-choice"><input type="radio" name="q8" value="4pir2" aria-label="Dört pi R kare"> \(4\pi\mathrm{R}^2\)</label>
             </div>
             <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
           </fieldset>
           <fieldset class="quiz-item quiz-slide" data-area-slide="3" hidden>
-            <legend>Soru 4: Sonlu sayıda dilim yeniden düzenlendiğinde, dilimlerin üst yüzey alanları toplamı başlangıçtaki üst taban dairesinin alanına eşit midir?</legend>
+            <legend aria-label="Soru 4: Sağda birleştirilen sonlu sayıdaki silindir dilimlerinin üst yüzeyi tam bir dikdörtgen midir?">Soru 4: Sağda birleştirilen sonlu sayıdaki silindir dilimlerinin üst yüzeyi tam bir dikdörtgen midir?</legend>
             <div class="quiz-choices yes-no">
-              <label class="quiz-choice"><input type="radio" name="q9" value="evet"> Evet</label>
-              <label class="quiz-choice"><input type="radio" name="q9" value="hayir"> Hayır</label>
+              <label class="quiz-choice"><input type="radio" name="q9" value="evet" aria-label="Evet"> Evet</label>
+              <label class="quiz-choice"><input type="radio" name="q9" value="hayir" aria-label="Hayır"> Hayır</label>
             </div>
             <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
           </fieldset>
@@ -1047,7 +1071,7 @@
             <button class="btn" type="button" onclick="checkCurrentAreaQuestion()">Kontrol Et</button>
             <button class="btn btn-secondary" id="area-next" type="button" onclick="moveAreaSlide(1)">İleri →</button>
           </div>
-          <div id="area-quiz-summary" class="quiz-summary" aria-live="polite">Soruları sırayla yanıtlayın.</div>
+          <div id="area-quiz-summary" aria-live="polite" class="quiz-summary">Soruları sırayla yanıtlayınız.</div>
           <button class="btn" id="btn-app2-free" type="button" onclick="switchTab(3)" hidden>Serbest Moda Geç →</button>
         </section>
       </div>
@@ -1056,7 +1080,7 @@
       <div id="panel-tab-3" class="panel-section" style="display: none;">
         <div class="section-title">Serbest Keşif Alanı</div>
         <p style="font-size: 0.77rem; line-height: 1.35; color: var(--ms-text-muted);">
-          Boyutları ve dilimleri siz belirleyin; parçaları ekleyip çıkarın, ayırarak inceleyin ve istediğiniz zaman ölçümleri açın.
+          Boyutları ve dilimleri siz belirleyiniz; parçaları ekleyip çıkarınız, ayırarak inceleyiniz ve istediğiniz zaman ölçümleri açınız.
         </p>
 
         <!-- Doluluk Çubuğu -->
@@ -1074,19 +1098,19 @@
         <!-- Parça Ekleme Butonları -->
         <div style="display: flex; flex-direction: column; gap: 6px;">
           <div style="display: flex; gap: 4px; align-items: center;">
-            <button class="btn" style="flex: 3; background: #1d4ed8;" onclick="addLabPiece('blue')">+ Mavi Ekle  · \(\frac{1}{4}\)</button>
+            <button class="btn" style="flex: 3; background: #004dff;" onclick="addLabPiece('blue')">+ Mavi Ekle  · \(\frac{1}{4}\)</button>
             <span id="cnt-blue" class="badge-chip badge-blue" style="flex: 1; text-align: center;">0 ad.</span>
           </div>
           <div style="display: flex; gap: 4px; align-items: center;">
-            <button class="btn" style="flex: 3; background: #b45309;" onclick="addLabPiece('yellow')">+ Sarı Ekle  · \(\frac{1}{8}\)</button>
+            <button class="btn" style="flex: 3; background: #ffff00; color: #111111;" onclick="addLabPiece('yellow')">+ Sarı Ekle  · \(\frac{1}{8}\)</button>
             <span id="cnt-yellow" class="badge-chip badge-yellow" style="flex: 1; text-align: center;">0 ad.</span>
           </div>
           <div style="display: flex; gap: 4px; align-items: center;">
-            <button class="btn" style="flex: 3; background: #b91c1c;" onclick="addLabPiece('red')">+ Kırmızı Ekle  · \(\frac{1}{16}\)</button>
+            <button class="btn" style="flex: 3; background: #cf0000;" onclick="addLabPiece('red')">+ Kırmızı Ekle  · \(\frac{1}{16}\)</button>
             <span id="cnt-red" class="badge-chip badge-red" style="flex: 1; text-align: center;">0 ad.</span>
           </div>
           <div style="display: flex; gap: 4px; align-items: center;">
-            <button class="btn" style="flex: 3; background: #0f766e;" onclick="addLabPiece('teal')">+ Turkuaz Ekle  · \(\frac{1}{32}\)</button>
+            <button class="btn" style="flex: 3; background: #007e71;" onclick="addLabPiece('teal')">+ Turkuaz Ekle  · \(\frac{1}{32}\)</button>
             <span id="cnt-teal" class="badge-chip" style="flex: 1; text-align: center; background: #ccfbf1; color: #115e59;">0 ad.</span>
           </div>
         </div>
@@ -1109,12 +1133,12 @@
           <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">
           
           <div id="card-goal-min" style="padding: 6px; border-radius: 4px; background: var(--ms-surface-alt); font-size: 0.72rem; border-left: 3px solid var(--ms-border);">
-            <strong>Görev A (En Az Parça):</strong> Her renkten en az bir tane kullanarak tam bir silindiri mümkün olan en az parçayla oluşturun.
+            <strong>Görev A (En Az Parça):</strong> Her renkten en az bir tane kullanarak tam bir silindiri mümkün olan en az parçayla oluşturunuz.
             <div id="badge-goal-min" style="display: none; margin-top: 3px; color: var(--ms-success); font-weight: 700;">Başarıldı: 3 mavi + 1 sarı + 1 kırmızı + 2 turkuaz = 7 parça</div>
           </div>
 
           <div id="card-goal-max" style="padding: 6px; border-radius: 4px; background: var(--ms-surface-alt); font-size: 0.72rem; border-left: 3px solid var(--ms-border);">
-            <strong>Görev B (En Çok Parça):</strong> Her renkten en az bir tane kullanarak tam bir silindiri mümkün olan en çok parçayla oluşturun.
+            <strong>Görev B (En Çok Parça):</strong> Her renkten en az bir tane kullanarak tam bir silindiri mümkün olan en çok parçayla oluşturunuz.
             <div id="badge-goal-max" style="display: none; margin-top: 3px; color: var(--ms-success); font-weight: 700;">Başarıldı: 1 mavi + 1 sarı + 1 kırmızı + 18 turkuaz = 21 parça</div>
           </div>
 
@@ -1130,7 +1154,7 @@
             <span>Yarıçap · \(R\):</span>
             <span id="txt-lab-r">2,0 br</span>
           </div>
-          <input type="range" class="range-slider" min="1.0" max="3.5" step="0.1" value="2.0" oninput="setLabRadius(this.value)">
+          <input type="range" id="lab-radius" aria-label="Silindirin yarıçapı, birim" class="range-slider" min="1.0" max="3.5" step="0.1" value="2.0" oninput="setLabRadius(this.value)">
         </div>
 
         <div class="control-row">
@@ -1138,7 +1162,7 @@
             <span>Yükseklik · \(h\):</span>
             <span id="txt-lab-h">3,0 br</span>
           </div>
-          <input type="range" class="range-slider" min="1.0" max="5.0" step="0.5" value="3.0" oninput="setLabHeight(this.value)">
+          <input type="range" id="lab-height" aria-label="Silindirin yüksekliği, birim" class="range-slider" min="1.0" max="5.0" step="0.5" value="3.0" oninput="setLabHeight(this.value)">
         </div>
 
         <div id="lab-measurements" hidden style="background: var(--ms-surface); padding: 8px; border-radius: 6px; font-size: 0.82rem; line-height: 1.5; border: 1px solid var(--ms-border);">
@@ -1150,17 +1174,6 @@
       </div>
     </aside>
 
-    <button
-      class="sidebar-toggle"
-      id="sidebar-toggle"
-      type="button"
-      aria-controls="control-panel"
-      aria-expanded="true"
-      aria-label="Kontrol panelini gizle"
-      title="Kontrol panelini göster veya gizle"
-      onclick="toggleSidebar()"
-    >‹</button>
-
     <div class="viewport-container">
       <div class="viewport-overlay" id="scene-badge">Temsilî Silindir Modeli</div>
       
@@ -1171,17 +1184,23 @@
         <button class="btn-icon" onclick="toggleAutoRotate()" id="btn-spin" title="Döndürme Aç/Kapa" aria-label="Otomatik Döndür">🔄</button>
       </div>
 
-      <div class="viewport-instructions">Fareyle/parmakla çevirin · Ok tuşlarıyla döndürün · [+ / −] yakınlaştırın</div>
+      <div class="viewport-instructions">Fareyle/parmakla çeviriniz · Ok tuşlarıyla döndürünüz · [+ / −] yakınlaştırınız</div>
 
       <canvas id="three-canvas" aria-label="3 Boyutlu Silindir Sahnesi" role="img" tabindex="0"></canvas>
     </div>
   </main>
 
   <!-- KULLANIM REHBERİ MODAL -->
+  <dialog id="lab-warning" class="lab-warning" role="alertdialog" aria-labelledby="lab-warning-title" aria-describedby="lab-warning-message">
+    <h2 id="lab-warning-title">Parça eklenemedi</h2>
+    <p id="lab-warning-message">Eklemek istediğiniz parça kalan boşluğa sığmıyor. Daha küçük bir dilim seçebilir veya önce bir parçayı çıkarabilirsiniz.</p>
+    <form method="dialog"><button class="btn" type="submit" autofocus>Tamam</button></form>
+  </dialog>
+
   <div class="dialog-backdrop" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-description">
     <div class="dialog-box">
       <div class="dialog-header">
-        <div class="dialog-title" id="modal-title">İncelemeye Başlarken</div>
+        <h2 class="dialog-title" id="modal-title" tabindex="-1">İncelemeye Başlarken</h2>
         <div class="dialog-actions">
           <button id="btn-theme-modal" class="btn-icon" type="button" aria-label="Koyu temaya geç" title="Koyu temaya geç" aria-pressed="false">🌙</button>
           <button class="btn-icon" type="button" aria-label="Tanıtımı kapat" title="Tanıtımı kapat" onclick="closeHelpModal()">×</button>
@@ -1190,12 +1209,13 @@
       <div class="intro-guide" id="modal-description">
         <p>Silindir dilimlerinden hareketle geometrik seri, daire alanı ve silindir hacmi arasındaki ilişkileri inceleyeceksiniz.</p>
         <ol>
-          <li><strong>Tanıtım:</strong> Renkli silindir dilimlerini ve bunların bütün içindeki paylarını karşılaştırın.</li>
-          <li><strong>Uygulama 1:</strong> Dilimlerin küçülme örüntüsünü izleyerek geometrik dizi ve seri ilişkisini keşfedin.</li>
-          <li><strong>Uygulama 2:</strong> Silindir dilimlerinin üst yüzeylerini inceleyerek alanın korunmasını ve dikdörtgene yaklaşmayı karşılaştırın.</li>
-          <li><strong>Serbest Mod:</strong> Boyutları ve parçaları değiştirerek kendi silindirinizi oluşturun; ölçümleri karşılaştırın.</li>
+          <li><strong>Tanıtım:</strong> Renkli silindir dilimlerini ve bunların bütün içindeki paylarını karşılaştırınız.</li>
+          <li><strong>Uygulama 1:</strong> Dilimlerin küçülme örüntüsünü izleyerek geometrik dizi ve seri ilişkisini keşfediniz.</li>
+          <li><strong>Uygulama 2:</strong> Silindir dilimlerini taşıyınız; farklı dilim sayılarında oluşan şekilleri ve üst yüzeyleri karşılaştırınız.</li>
+          <li><strong>Serbest Mod:</strong> Boyutları ve parçaları değiştirerek kendi silindirinizi oluşturunuz; ölçümleri karşılaştırınız.</li>
         </ol>
         <p style="margin-top: 10px;">3B modeli fareyle veya parmağınızla çevirebilir; yön tuşları ve [+ / −] tuşlarıyla da kontrol edebilirsiniz. Bu tanıtıma üstteki <strong>?</strong> düğmesinden yeniden ulaşabilirsiniz.</p>
+
       </div>
       <button class="btn dialog-start" id="btn-start-material" type="button" onclick="closeHelpModal()">İncelemeye Başla</button>
     </div>
@@ -1216,11 +1236,11 @@
     let isPreview = false;
 
     // Renk Sabitleri
-    const COLOR_BLUE = 0x1d4ed8;    // 1/4 dilim
-    const COLOR_YELLOW = 0xd97706;  // 1/8 dilim
-    const COLOR_RED = 0xb91c1c;     // 1/16 dilim
-    const COLOR_TEAL = 0x0f766e;    // 1/32 dilim
-    const COLOR_PURPLE = 0x6b21a8;  // 1/64 dilim
+    const COLOR_BLUE = 0x004dff;    // 1/4 dilim
+    const COLOR_YELLOW = 0xffff00;  // 1/8 dilim
+    const COLOR_RED = 0xff0000;     // 1/16 dilim
+    const COLOR_TEAL = 0x00bfa5;    // 1/32 dilim
+    const COLOR_PURPLE = 0x8b32ff;  // 1/64 dilim
 
     function formatTr(value, digits = 2) {
       return Number(value).toLocaleString('tr-TR', {
@@ -1390,8 +1410,10 @@
       opacity = opacity || 0.92;
       const mat = new THREE.MeshStandardMaterial({
         color: color,
-        roughness: 0.35,
-        metalness: 0.1,
+        emissive: color,
+        emissiveIntensity: 0.65,
+        roughness: 0.65,
+        metalness: 0,
         transparent: opacity < 1.0,
         opacity: opacity,
         side: THREE.DoubleSide
@@ -1415,6 +1437,7 @@
       camera.lookAt(0, -0.3, 0);
 
       renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer.outputEncoding = THREE.sRGBEncoding;
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(container.clientWidth, container.clientHeight, false);
 
@@ -1447,7 +1470,14 @@
 
       initInteractions(canvas);
       window.addEventListener('resize', onWindowResize);
-      animate();
+      syncRendering();
+      if ('IntersectionObserver' in window) {
+        const visibilityObserver = new IntersectionObserver(entries => {
+          viewportVisible = entries[0].isIntersecting;
+          syncRendering();
+        });
+        visibilityObserver.observe(container);
+      }
 
       // Önizleme veya Standart Kontrolü
       const urlParams = new URLSearchParams(window.location.search);
@@ -1467,22 +1497,12 @@
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
+      fitCameraToModel();
     }
 
     function setGroundLevel(level) {
       currentGroundLevel = level;
       if (groundGrid) groundGrid.position.y = level;
-    }
-
-    function toggleSidebar() {
-      const mainElement = document.querySelector('main');
-      const toggleButton = document.getElementById('sidebar-toggle');
-      const isCollapsed = mainElement.classList.toggle('sidebar-collapsed');
-      toggleButton.textContent = isCollapsed ? '›' : '‹';
-      toggleButton.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
-      toggleButton.setAttribute('aria-label', isCollapsed ? 'Kontrol panelini göster' : 'Kontrol panelini gizle');
-      window.requestAnimationFrame(onWindowResize);
-      window.setTimeout(onWindowResize, 280);
     }
 
     /* --- ETKİLEŞİM & KAMERA KONTROLLERİ --- */
@@ -1494,6 +1514,7 @@
     let cameraTargetX = 0;
     let cameraTargetY = -0.3;
     let cameraOrbitCenterY = 0;
+    let cameraTargetZ = 0;
 
     function initInteractions(canvas) {
       canvas.addEventListener('mousedown', (e) => {
@@ -1536,7 +1557,7 @@
 
       canvas.addEventListener('wheel', (e) => {
         e.preventDefault();
-        cameraDist = Math.max(4.0, Math.min(22.0, cameraDist + e.deltaY * 0.01));
+        cameraDist = Math.max(4.0, Math.min(200.0, cameraDist + e.deltaY * 0.01));
         updateCameraTransform();
       }, { passive: false });
 
@@ -1547,7 +1568,7 @@
         else if (e.key === 'ArrowUp') cameraRotX = Math.min(1.4, cameraRotX + 0.06);
         else if (e.key === 'ArrowDown') cameraRotX = Math.max(-0.2, cameraRotX - 0.06);
         else if (e.key === '+' || e.key === '=') cameraDist = Math.max(4.0, cameraDist - 0.5);
-        else if (e.key === '-' || e.key === '_') cameraDist = Math.min(22.0, cameraDist + 0.5);
+        else if (e.key === '-' || e.key === '_') cameraDist = Math.min(200.0, cameraDist + 0.5);
         else return;
         e.preventDefault();
         updateCameraTransform();
@@ -1557,31 +1578,52 @@
     function updateCameraTransform() {
       camera.position.x = cameraTargetX + cameraDist * Math.sin(cameraRotY) * Math.cos(cameraRotX);
       camera.position.y = cameraOrbitCenterY + cameraDist * Math.sin(cameraRotX);
-      camera.position.z = cameraDist * Math.cos(cameraRotY) * Math.cos(cameraRotX);
-      camera.lookAt(cameraTargetX, cameraTargetY, 0);
+      camera.position.z = cameraTargetZ + cameraDist * Math.cos(cameraRotY) * Math.cos(cameraRotX);
+      camera.lookAt(cameraTargetX, cameraTargetY, cameraTargetZ);
+    }
+
+    function fitCameraToModel() {
+      if (!camera || !mainGroup || !mainGroup.children.length) return;
+      mainGroup.updateMatrixWorld(true);
+      const box = currentTab === 1 && !isPreview
+        ? new THREE.Box3(new THREE.Vector3(-2.2, -1.4, -2.2), new THREE.Vector3(2.2, 1.4, 2.2))
+        : currentTab === 2 && !isPreview
+        ? new THREE.Box3(new THREE.Vector3(-6.8, -1.3, -2.4), new THREE.Vector3(7.1, 4.3, 2.4))
+        : new THREE.Box3().setFromObject(mainGroup);
+      if (box.isEmpty()) return;
+      const center = box.getCenter(new THREE.Vector3());
+      cameraTargetX = center.x;
+      cameraTargetY = cameraOrbitCenterY = center.y;
+      cameraTargetZ = center.z;
+      cameraDist = 1;
+      updateCameraTransform();
+      camera.updateMatrixWorld(true);
+      const inverseRotation = camera.quaternion.clone().invert();
+      const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      const tanH = tanV * camera.aspect;
+      let distance = 4;
+      for (const x of [box.min.x, box.max.x]) {
+        for (const y of [box.min.y, box.max.y]) {
+          for (const z of [box.min.z, box.max.z]) {
+            const point = new THREE.Vector3(x, y, z).sub(center).applyQuaternion(inverseRotation);
+            distance = Math.max(distance, point.z + Math.abs(point.x) / (tanH * 0.82), point.z + Math.abs(point.y) / (tanV * 0.78));
+          }
+        }
+      }
+      cameraDist = distance;
+      camera.far = Math.max(100, distance * 4);
+      camera.updateProjectionMatrix();
+      updateCameraTransform();
     }
 
     function resetCamera() {
       cameraRotY = 0;
-      cameraRotX = 0.35;
-      if (currentTab === 2) {
-        // İki çalışma masasının geometrik merkezi x=-0,5'tir. Kameranın
-        // zemin düzlemine bakması, zemini ekran yüksekliğinin ortasına getirir.
-        cameraTargetX = -0.5;
-        cameraTargetY = currentGroundLevel;
-        cameraOrbitCenterY = currentGroundLevel;
-        cameraDist = 14.5;
-      } else {
-        cameraTargetX = 0;
-        cameraTargetY = -0.3;
-        cameraOrbitCenterY = 0;
-        cameraDist = 14.0;
-      }
-      updateCameraTransform();
+      cameraRotX = currentTab === 2 ? 0.65 : 0.35;
+      fitCameraToModel();
     }
 
     function zoomCamera(factor) {
-      cameraDist = Math.max(4.0, Math.min(24.0, cameraDist * factor));
+      cameraDist = Math.max(4.0, Math.min(200.0, cameraDist * factor));
       updateCameraTransform();
     }
 
@@ -1590,21 +1632,64 @@
       document.getElementById('btn-spin').style.background = isAutoRotating ? 'var(--ms-primary-light)' : '';
     }
 
-    function animate() {
-      requestAnimationFrame(animate);
+    let animationFrame = null;
+    let viewportVisible = true;
+    let previousFrameTime = null;
+    function animate(timestamp) {
+      animationFrame = null;
+      if (document.hidden || !viewportVisible) { previousFrameTime = null; return; }
+      const elapsed = previousFrameTime === null ? 0 : Math.min(50, timestamp - previousFrameTime);
+      previousFrameTime = timestamp;
       if (isAutoRotating) {
-        cameraRotY += 0.005;
+        cameraRotY += elapsed * 0.0003;
         updateCameraTransform();
       }
-      if (app2AutoPlaying) {
-        advanceApp2AutoPlay();
-      }
+      if (currentTab === 1) advanceApp1Placement(elapsed);
+      if (currentTab === 2 && app2AutoPlaying) advanceApp2AutoPlay(elapsed);
       renderer.render(scene, camera);
+      animationFrame = requestAnimationFrame(animate);
     }
+    function syncRendering() {
+      if (animationFrame !== null) cancelAnimationFrame(animationFrame);
+      animationFrame = null;
+      previousFrameTime = null;
+      if (!document.hidden && viewportVisible && renderer) animationFrame = requestAnimationFrame(animate);
+    }
+    document.addEventListener('visibilitychange', syncRendering);
+    window.addEventListener('pagehide', () => { if (animationFrame !== null) cancelAnimationFrame(animationFrame); animationFrame = null; });
+    window.addEventListener('pageshow', syncRendering);
+    const motionPreference = matchMedia('(prefers-reduced-motion: reduce)');
+    motionPreference.addEventListener('change', event => {
+      if (!event.matches) return;
+      if(app1Placement){app1Placement.mesh.position.set(0,0,0);app1Placement=null;}
+      isAutoRotating = false;
+      app2AutoPlaying = false;
+      document.getElementById('btn-spin').style.background = '';
+      document.getElementById('btn-app2-auto').textContent = '▶ Parçaları otomatik taşı';
+      document.getElementById('btn-app2-auto').classList.add('btn-secondary');
+    });
 
     /* --- SEKME YÖNETİMİ --- */
 
+    function disposeObject(object) {
+      object.traverse(child => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) (Array.isArray(child.material) ? child.material : [child.material]).forEach(material => material.dispose());
+      });
+    }
+    function clearMainGroup() {
+      app1Placement = null;
+      while (mainGroup.children.length) {
+        const object = mainGroup.children[0];
+        mainGroup.remove(object);
+        disposeObject(object);
+      }
+    }
+
     function switchTab(index) {
+      app2AutoPlaying = false;
+      document.getElementById('btn-app2-auto').textContent = '▶ Parçaları otomatik taşı';
+      document.getElementById('btn-app2-auto').classList.add('btn-secondary');
       currentTab = index;
       if (groundGrid && index !== 3) groundGrid.visible = true;
       document.querySelectorAll('.tab-btn').forEach((btn, i) => {
@@ -1617,22 +1702,17 @@
       }
 
       // Sahne Temizleme
-      while (mainGroup.children.length > 0) {
-        const obj = mainGroup.children[0];
-        mainGroup.remove(obj);
-      }
+      clearMainGroup();
 
       if (index === 0) {
         document.getElementById('scene-badge').textContent = 'Silindir Dilimleri 3B Tanıtım';
         buildOverviewScene();
       } else if (index === 1) {
         document.getElementById('scene-badge').textContent = 'Uygulama 1: Geometrik Dizi ve Seri';
-        app1Step = 1;
         buildApp1Scene();
       } else if (index === 2) {
         document.getElementById('scene-badge').textContent = 'Uygulama 2: Üst Yüzeyin Alanı';
-        app2Progress = 0;
-        document.getElementById('slider-app2-progress').value = 0;
+        document.getElementById('slider-app2-progress').value = app2Progress;
         renderAreaSlide();
         buildApp2Scene();
       } else if (index === 3) {
@@ -1689,129 +1769,241 @@
     let app1Step = 1;
     let seriesQuizChecked = false;
 
-    function buildApp1Scene() {
-      while (mainGroup.children.length > 0) mainGroup.remove(mainGroup.children[0]);
+    // Guided discovery: concrete evidence comes before a symbolic rule.
+    let app1DiscoveryCount = 5;
+    let app1DiscoveryPhase = 0;
+    const app1DiscoveryAnswers = [null, null, null, null];
+    const app1DiscoveryTasks = [
+      {
+        title: 'Sonraki dilimi tahmin ediniz',
+        question: 'Aynı örüntü sürdürüldüğünde altıncı silindir diliminin hacmi, tam silindirin hacminin kaçta kaçı olur?',
+        choices: [['1/32','Otuz ikide bir',String.raw`\(\frac1{32}\)`],['1/64','Altmış dörtte bir',String.raw`\(\frac1{64}\)`],['1/128','Yüz yirmi sekizde bir',String.raw`\(\frac1{128}\)`],['1/256','İki yüz elli altıda bir',String.raw`\(\frac1{256}\)`]],
+        answer: '1/128',
+        hint: 'Son iki dilimin hacim paylarını karşılaştırınız. Aynı çarpanla bir adım daha ilerlemeyi deneyiniz.',
+        explanation: String.raw`Beşinci dilimin payı \(\frac1{64}\)'tür. Bir kez daha yarıya inince \(\frac1{64}\cdot\frac12=\frac1{128}\) elde edilir.`
+      },
+      {
+        title: 'Dilim sırasından kurala ulaşınız',
+        question: 'Birinci dilimden ikinciye geçerken bir kez, üçüncüye geçerken iki kez yarıya iniliyor. Birinci dilimden n. dilime ulaşmak için kaç kez yarıya inmek gerekir?',
+        choices: [['n','n kez',String.raw`\(n\) kez`],['n-1','n eksi bir kez',String.raw`\(n-1\) kez`],['n+1','n artı bir kez',String.raw`\(n+1\) kez`],['2n','İki n kez',String.raw`\(2n\) kez`]],
+        answer: 'n-1',
+        hint: 'Birinci dilimde henüz yarıya inme işlemi yapılmamıştır. Beşinci dilime kadar kaç geçiş olduğunu sayıp önerinizi yeniden deneyiniz.',
+        explanation: String.raw`n. dilime kadar \(n-1\) geçiş vardır. Başlangıç payı \(\frac14\) olduğundan bulduğunuz kural \(a_n=\frac14\left(\frac12\right)^{n-1}\) biçiminde yazılır. Burada \(n\) dilimin sırasını, \(a_n\) bu dilimin tam silindire göre hacim payını gösterir.`
+      },
+      {
+        title: 'Birleşen parçaların payını araştırınız',
+        question: 'Tablodaki toplam payları ve 3B modelde kaplanan bölgeyi karşılaştırınız. Aynı örüntüyle dilimler eklenmeye devam edilirse toplam hacim, tam silindirin hacminin hangi payına yaklaşır?',
+        choices: [['0','Sıfır',String.raw`\(0\)`],['1/4','Dörtte bir',String.raw`\(\frac14\)`],['1/2','İkide bir',String.raw`\(\frac12\)`],['1','Bir',String.raw`\(1\)`]],
+        answer: '1/2',
+        hint: 'Sürgüyle birden beşe kadar olan birleşimleri karşılaştırınız. Toplam paylar büyürken artışların nasıl değiştiğine ve silindirde kaplanan bölgeye dikkat ediniz.',
+        explanation: String.raw`Toplam paylar \(\frac14,\frac38,\frac7{16},\frac{15}{32},\frac{31}{64}\) olur. Örüntü sürdürüldüğünde her yeni dilim yarım silindirde kalan boşluğun yarısını doldurur. Toplam pay \(\frac12\)'ye yaklaşır; sonlu sayıda dilimle bu değere ulaşılmaz.`
+      },
+      {
+        title: 'Kalan boşluktan toplamın kuralını bulunuz',
+        question: 'İlk n dilim birleştirildiğinde yarım silindiri tamamlamak için kalan boşluğun hacmini son eklenen dilimin hacmiyle karşılaştırınız. Tabloda farklı dilim sayılarını deneyerek hangi ilişkinin sürdüğünü belirleyiniz.',
+        choices: [['half','Son dilimin yarısı','Kalan boşluk son dilimin yarısıdır.'],['same','Son dilime eşit','Kalan boşluk son dilime eşittir.'],['double','Son dilimin iki katı','Kalan boşluk son dilimin iki katıdır.'],['fixed','Dilim sayısından bağımsız','Kalan boşluk dilim sayısından bağımsızdır.']],
+        answer: 'same',
+        hint: 'Örneğin üç dilimin toplam payı 7/16 olur. Yarım silindiri tamamlayan boşluğun payını bulup üçüncü dilimin 1/16 olan payıyla karşılaştırınız; ardından başka bir satırı deneyiniz.',
+        explanation: String.raw`İlk dilimden sonra yarım silindirde kalan pay \(\frac14\)'tür. Sonraki dilim bu boşluğun yarısını doldurur; kalan boşluk yeni dilime eşit olur. Dilimler yarıya indikçe bu ilişki her adımda sürer. Böylece n. dilimden sonra kalan pay \(a_n\)'ye eşittir ve toplam pay \(S_n=\frac12-a_n\) olur. Bulduğunuz terim kuralını yerine koyunca \(S_n=\frac12\left[1-\left(\frac12\right)^n\right]\) elde edilir. Burada \(S_n\), ilk n dilimin tam silindire göre toplam hacim payıdır.`
+      }
+    ];
+
+    function app1DiscoveryComplete() {
+      return app1DiscoveryTasks.every((task, index) => app1DiscoveryAnswers[index] === task.answer);
+    }
+
+    function renderApp1DiscoveryObservation() {
+      const count = app1DiscoveryCount;
+      document.getElementById('discovery-count').value = count;
+      document.getElementById('discovery-count-label').textContent = `${count} dilim`;
+      document.getElementById('discovery-gap-heading').hidden = app1DiscoveryPhase < 3;
+      let rows = '';
+      for (let n = 1; n <= count; n++) {
+        const denominator = 2 ** (n + 1), numerator = 2 ** n - 1;
+        rows += `<tr><th scope="row">${n}</th><td>1/${denominator}</td><td>${numerator}/${denominator}</td>`;
+        if (app1DiscoveryPhase >= 3) rows += `<td>1/${denominator}</td>`;
+        rows += '</tr>';
+      }
+      document.getElementById('discovery-observations').innerHTML = rows;
+    }
+
+    function observeApp1Discovery(value) {
+      const count = Number(value);
+      if (!Number.isInteger(count) || count < 1 || count > 5) return;
+      app1DiscoveryCount = count;
+      if (currentTab === 1 && app1Step === 5) buildApp1Scene();
+    }
+
+    function renderApp1Discovery() {
+      const phase = app1DiscoveryPhase, task = app1DiscoveryTasks[phase];
+      const selected = app1DiscoveryAnswers[phase], correct = selected === task.answer;
+      document.getElementById('discovery-phase-label').textContent = `Keşif ${phase + 1} / ${app1DiscoveryTasks.length}`;
+      document.getElementById('discovery-heading').textContent = task.title;
+      document.getElementById('discovery-question').textContent = task.question;
+      renderApp1DiscoveryObservation();
+      const choices = task.choices.map(([value, label, text]) =>
+        `<label class="quiz-choice"><input type="radio" name="discovery-choice" value="${value}" aria-label="${label}"${selected === value ? ' checked' : ''}${correct ? ' disabled' : ''}> <span>${text}</span></label>`).join('');
+      setMathHtml('discovery-choices', choices);
+      const feedback = document.getElementById('discovery-feedback');
+      feedback.className = `quiz-feedback discovery-feedback${selected ? (correct ? ' correct' : ' incorrect') : ''}`;
+      feedback.hidden = !selected;
+      setMathHtml('discovery-feedback', selected ? (correct ? 'Doğru. ' + task.explanation : 'Modeli yeniden inceleyiniz. ' + task.hint) : '');
+      document.getElementById('discovery-check').disabled = correct;
+      document.getElementById('discovery-prev').disabled = phase === 0;
+      document.getElementById('discovery-next').hidden = phase === app1DiscoveryTasks.length - 1;
+      document.getElementById('discovery-next').disabled = !correct;
+      const complete = app1DiscoveryComplete();
+      document.getElementById('btn-app1-next').disabled = !complete;
+      document.getElementById('discovery-complete-note').hidden = !complete;
+      const summary = document.getElementById('discovery-rules');
+      summary.hidden = !complete || phase !== 3;
+      // Rules enter the DOM only after all four investigations are verified.
+      setMathHtml('discovery-rules', complete && phase === 3 ? String.raw`<h3>Ulaştığınız kurallar</h3><p>Tek bir dilimin payı:</p><div class="math-row"><span>\(a_n=\frac14\left(\frac12\right)^{n-1}\)</span></div><p>İlk n dilimin toplam payı:</p><div class="math-row"><span>\(S_n=\frac12-a_n\)</span></div><div class="math-row"><span>\(S_n=\frac12\left[1-\left(\frac12\right)^n\right]\)</span></div><p>Dilimler küçüldükçe tek dilimin payı 0'a, toplam pay yarım silindire yaklaşır. Bu iki değişimi aynı model üzerinde karşılaştırınız.</p>` : '');
+    }
+
+    function checkApp1Discovery() {
+      const task = app1DiscoveryTasks[app1DiscoveryPhase];
+      if (app1DiscoveryAnswers[app1DiscoveryPhase] === task.answer) return;
+      const value = getRadioValue('discovery-choice');
+      if (!task.choices.some(choice => choice[0] === value)) {
+        const feedback = document.getElementById('discovery-feedback');
+        feedback.hidden = false;
+        feedback.className = 'quiz-feedback discovery-feedback incorrect';
+        feedback.textContent = 'Tahmininizi karşılaştırmak için bir seçenek işaretleyiniz.';
+        return;
+      }
+      app1DiscoveryAnswers[app1DiscoveryPhase] = value;
+      renderApp1Discovery();
+    }
+
+    function moveApp1Discovery(direction) {
+      if (direction > 0 && app1DiscoveryAnswers[app1DiscoveryPhase] !== app1DiscoveryTasks[app1DiscoveryPhase].answer) return;
+      app1DiscoveryPhase = Math.max(0, Math.min(app1DiscoveryTasks.length - 1, app1DiscoveryPhase + direction));
+      renderApp1Discovery();
+      document.getElementById('discovery-heading').focus({preventScroll:true});
+    }
+
+
+    // Every term occupies its own adjacent angular interval, with unchanged radius and height.
+    let app1Placement = null;
+    function app1PieceData(count) {
+      const colors = [COLOR_BLUE, COLOR_YELLOW, COLOR_RED, COLOR_TEAL, COLOR_PURPLE];
+      let start = 0;
+      return colors.slice(0, count).map((color, index) => {
+        const denominator = 2 ** (index + 2), angle = 2 * Math.PI / denominator;
+        const piece = { color, denominator, angle, start, index };
+        start += angle;
+        return piece;
+      });
+    }
+
+    function buildApp1Assembly(count, animateNew = false) {
       const R = 2.2, H = 2.8;
-      setGroundLevel(app1Step === 5 ? -(H * 0.7) / 2 : -H / 2);
-      const quiz = document.getElementById('series-quiz');
-      quiz.hidden = app1Step !== 5;
+      // A quiet full-cylinder frame gives the empty space a fixed reference.
+      const guide = new THREE.Group();
+      guide.userData.app1Guide = true;
+      const outline = new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.65 });
+      for (const y of [-H / 2, H / 2]) {
+        const circle = Array.from({length:96}, (_,i) => new THREE.Vector3(R*Math.cos(i*2*Math.PI/96), y, R*Math.sin(i*2*Math.PI/96)));
+        guide.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(circle), outline));
+      }
+      for (const angle of [0, Math.PI / 2, Math.PI, 3 * Math.PI / 2]) {
+        const x = R * Math.cos(angle), z = R * Math.sin(angle);
+        guide.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x,-H/2,z),new THREE.Vector3(x,H/2,z)]), outline));
+      }
+      mainGroup.add(guide);
+      const data = app1PieceData(count);
+      data.forEach((piece, index) => {
+        const mesh = createSliceMesh(createCylinderSectorGeometry(R, H, piece.angle, Math.max(6,Math.ceil(piece.angle*32))), piece.color, 1);
+        mesh.rotation.y = -piece.start;
+        mesh.userData.app1Part = true;
+        mesh.userData.termIndex = piece.index;
+        mesh.userData.denominator = piece.denominator;
+        mainGroup.add(mesh);
+        if (animateNew && index === count - 1 && !motionPreference.matches) {
+          app1Placement = { mesh, elapsed:0, duration:650, offset:new THREE.Vector3(0,H*0.35,0) };
+        }
+      });
+      updateApp1AssemblyFocus();
+    }
+
+    function advanceApp1Placement(elapsed) {
+      if (!app1Placement) return;
+      const placement = app1Placement;
+      placement.elapsed += elapsed;
+      const t = Math.min(1, placement.elapsed / placement.duration);
+      placement.mesh.position.copy(placement.offset).multiplyScalar((1 - t) ** 3);
+      if (t === 1) app1Placement = null;
+    }
+
+    function updateApp1AssemblyFocus() {
+      const count = app1Step===5 ? app1DiscoveryCount : Math.min(app1Step,5), focusCount = app1Step===6?[3,5,5,4,5][seriesSlideIndex]:count;
+      for (const mesh of mainGroup.children.filter(m=>m.userData.app1Part)) {
+        const emphasized = app1Step===6 ? mesh.userData.termIndex<focusCount : mesh.userData.termIndex===count-1;
+        mesh.children[0].material.opacity = emphasized ? 0.8 : 0.25;
+      }
+      const hints = [
+        '',
+        'Dilimlerin sırasını izleyerek altıncı dilimin payını tahmin ediniz.',
+        'Dilimler eklendikçe kaplanan bölgenin nasıl değiştiğini inceleyiniz.',
+        'Bu soruda ilk dört dilimi dikkate alınız: mavi, sarı, kırmızı ve turkuaz.',
+        ''
+      ];
+      const assemblyNote = document.getElementById('app1-assembly-note');
+      const noteText = app1Step===5 ? '' : app1Step===6
+        ? hints[seriesSlideIndex]
+        : `Aynı silindire ${count} dilim yerleştirildi. Çerçeve tam silindirin sınırını gösterir.`;
+      assemblyNote.textContent = noteText;
+      assemblyNote.hidden = !noteText;
+    }
+
+    function buildApp1Scene(options = {}) {
+      clearMainGroup();
+      setGroundLevel(-2.8 / 2);
+      const quizStep = app1Step === 6;
+      document.getElementById('series-quiz').hidden = !quizStep;
       showApp1Math(app1Step);
-      document.getElementById('app1-math-box').hidden=app1Step===5;
-      document.getElementById('app1-step-title').hidden=app1Step===5;
-      document.getElementById('app1-step-desc').hidden=app1Step===5;
-      document.getElementById('btn-app1-next').parentElement.hidden=app1Step===5;
-      if (app1Step === 5) renderSeriesSlide();
+      for (const id of ['app1-step-title','app1-step-desc']) document.getElementById(id).hidden = quizStep;
+      document.getElementById('app1-math-box').hidden = quizStep || app1Step === 5;
+      document.getElementById('app1-discovery').hidden = app1Step !== 5;
+      document.getElementById('btn-app1-next').disabled = app1Step === 5 && !app1DiscoveryComplete();
+      if (app1Step === 5) renderApp1Discovery();
+      document.getElementById('btn-app1-next').parentElement.hidden = quizStep;
+      if (quizStep) renderSeriesSlide();
 
       if (app1Step === 1) {
         setMathHtml('app1-step-title',String.raw`Adım 1: \(\frac14\) — Mavi Dilim`);
-        document.getElementById('app1-step-desc').textContent = 'Mavi dik dairesel silindirden bir çeyrek dilim alıyoruz. Bu, dizinin ilk terimidir.';
-        document.getElementById('btn-app1-next').textContent = 'Sonraki Adım — Sarı Dilimler →';
-
-        const g1 = createCylinderSectorGeometry(R, H, Math.PI / 2, 16);
-        const m1 = createSliceMesh(g1, COLOR_BLUE);
-        mainGroup.add(m1);
-
+        setMathHtml('app1-step-desc',String.raw`Tam silindirin \(\frac14\)'ü hacmindeki mavi dilimi inceleyiniz. Merkez açısı \(90^\circ\)'dir. Sonraki adımda yeni dilim bu parçanın yanına eklenecektir.`);
+        document.getElementById('btn-app1-next').textContent = 'Sarı Dilimi Ekleyiniz →';
       } else if (app1Step === 2) {
-        setMathHtml('app1-step-title',String.raw`Adım 2: \(\frac18\) — Sarı Dilimler`);
-        setMathHtml('app1-step-desc',String.raw`\(\frac14\)'lük mavi dilimin yanına iki adet \(\frac18\)'lik sarı dilim koyuyoruz. Her sarı dilimin merkez açısı \(45^\circ\)'dir. İki sarı dilim tam olarak bir mavi dilimi oluşturur.`);
-        document.getElementById('btn-app1-next').textContent = 'Sonraki Adım — Kırmızı Dilimler →';
-
-        // Sol: 1/4 Mavi
-        const g1 = createCylinderSectorGeometry(R, H, Math.PI / 2, 16);
-        const m1 = createSliceMesh(g1, COLOR_BLUE);
-        m1.position.x = -1.6;
-        mainGroup.add(m1);
-
-        // Sağ: 2 adet 1/8 Sarı bitişik
-        const g2 = createCylinderSectorGeometry(R, H, Math.PI / 4, 12);
-        const m2a = createSliceMesh(g2, COLOR_YELLOW);
-        m2a.position.x = 1.6;
-        mainGroup.add(m2a);
-
-        const m2b = createSliceMesh(g2, COLOR_YELLOW);
-        m2b.position.x = 1.6;
-        m2b.rotation.y = -Math.PI / 4;
-        mainGroup.add(m2b);
-
+        setMathHtml('app1-step-title',String.raw`Adım 2: \(\frac18\) — Sarı Dilim`);
+        setMathHtml('app1-step-desc',String.raw`Mavi dilimin yanına tam silindirin \(\frac18\)'i hacmindeki sarı dilim eklendi. Sarı dilimin hacmi mavi dilimin hacminin yarısıdır; merkez açısı \(45^\circ\)'dir. İki parçanın aynı silindirde yan yana duruşunu inceleyiniz.`);
+        document.getElementById('btn-app1-next').textContent = 'Kırmızı Dilimi Ekleyiniz →';
       } else if (app1Step === 3) {
-        setMathHtml('app1-step-title',String.raw`Adım 3: \(\frac1{32}\) — Turkuaz Dilimler`);
-        setMathHtml('app1-step-desc',String.raw`\(\frac1{16}\)'lık kırmızı dilimin yanında iki adet \(\frac1{32}\)'lik turkuaz dilimi karşılaştırın. İki turkuaz dilim bir kırmızı dilime eşittir. Merkez açı \(22{,}5^\circ\)'den \(11{,}25^\circ\)'ye yarıya iner.`);
-        document.getElementById('btn-app1-next').textContent = 'Sonraki Adım — Diziden Seriye →';
-
-        // Sol: 1/16 Kırmızı
-        const gRed = createCylinderSectorGeometry(R, H, Math.PI / 8, 10);
-        const mRed = createSliceMesh(gRed, COLOR_RED);
-        mRed.position.x = -1.6;
-        mainGroup.add(mRed);
-
-        // Sağ: 2 adet 1/32 Turkuaz bitişik
-        const gTeal = createCylinderSectorGeometry(R, H, Math.PI / 16, 8);
-        const mTealA = createSliceMesh(gTeal, COLOR_TEAL);
-        mTealA.position.x = 1.6;
-        mainGroup.add(mTealA);
-
-        const mTealB = createSliceMesh(gTeal, COLOR_TEAL);
-        mTealB.position.x = 1.6;
-        mTealB.rotation.y = -Math.PI / 16;
-        mainGroup.add(mTealB);
-
+        setMathHtml('app1-step-title',String.raw`Adım 3: \(\frac1{16}\) — Kırmızı Dilim`);
+        setMathHtml('app1-step-desc',String.raw`Önceki iki parçanın yanına tam silindirin \(\frac1{16}\)'sı hacmindeki kırmızı dilim eklendi. Kırmızı dilimin hacmi sarı dilimin hacminin yarısıdır; merkez açısı \(22{,}5^\circ\)'dir. Üç parçanın birleşimini inceleyiniz.`);
+        document.getElementById('btn-app1-next').textContent = 'Turkuaz Dilimi Ekleyiniz →';
       } else if (app1Step === 4) {
-        document.getElementById('app1-step-title').textContent = 'Adım 4: Diziden Seriye';
-        document.getElementById('app1-step-desc').textContent = 'Her terim bir öncekinin yarısıdır. Tek tek terimler sıfıra yaklaşırken, bu terimlerin kısmi toplamları büyür ve yarım silindire yaklaşır. Dizi ile seriyi birbirine karıştırmayın.';
-        document.getElementById('btn-app1-next').textContent = 'Kavrama Sorularına Geç →';
-
-        // Silindir teli (Yarım silindir)
-        const wireCylGeom = new THREE.CylinderGeometry(R, R, H, 32, 1, true, 0, Math.PI);
-        const wireCylMat = new THREE.MeshBasicMaterial({ color: 0x64748b, wireframe: true, transparent: true, opacity: 0.3 });
-        const wireCyl = new THREE.Mesh(wireCylGeom, wireCylMat);
-        wireCyl.rotation.y = Math.PI / 2;
-        mainGroup.add(wireCyl);
-
-        // Ardışık azalan dilimler
-        const series = [
-          { dTh: Math.PI / 2, col: COLOR_BLUE },
-          { dTh: Math.PI / 4, col: COLOR_YELLOW },
-          { dTh: Math.PI / 8, col: COLOR_RED },
-          { dTh: Math.PI / 16, col: COLOR_TEAL },
-          { dTh: Math.PI / 32, col: COLOR_PURPLE }
-        ];
-
-        let curTh = 0;
-        series.forEach((s) => {
-          const g = createCylinderSectorGeometry(R, H, s.dTh, 10);
-          const m = createSliceMesh(g, s.col, 0.95);
-          m.rotation.y = -curTh;
-          mainGroup.add(m);
-          curTh += s.dTh;
-        });
-
+        setMathHtml('app1-step-title',String.raw`Adım 4: \(\frac1{32}\) — Turkuaz Dilim`);
+        setMathHtml('app1-step-desc',String.raw`Kırmızı dilimin yanına tam silindirin \(\frac1{32}\)'si hacmindeki turkuaz dilim eklendi. Yeni dilimin hacmi bir öncekinin yarısıdır; merkez açısı \(11{,}25^\circ\)'dir. Önceki parçalar yerinde kalırken kaplanan bölgenin büyümesini inceleyiniz.`);
+        document.getElementById('btn-app1-next').textContent = 'Mor Dilimi Ekleyiniz →';
       } else if (app1Step === 5) {
-        document.getElementById('app1-step-title').textContent = 'Geometrik Dizi ve Seri Soruları';
-        document.getElementById('app1-step-desc').textContent = 'Dilimler arasındaki ilişkiyle ilgili soruları yanıtlayın.';
-        document.getElementById('btn-app1-next').textContent = seriesQuizChecked ? "Uygulama 2'ye Geç →" : 'Önce Yanıtları Kontrol Et';
-
-        // Karşılaştırmalı 3 silindir
-        const gBlue = createCylinderSectorGeometry(R * 0.7, H * 0.7, Math.PI / 2, 12);
-        const mB = createSliceMesh(gBlue, COLOR_BLUE);
-        mB.position.x = -2.5;
-        mainGroup.add(mB);
-
-        const gYel = createCylinderSectorGeometry(R * 0.7, H * 0.7, Math.PI / 4, 10);
-        const mY = createSliceMesh(gYel, COLOR_YELLOW);
-        mY.position.x = 0;
-        mainGroup.add(mY);
-
-        const gRed = createCylinderSectorGeometry(R * 0.7, H * 0.7, Math.PI / 8, 8);
-        const mR = createSliceMesh(gRed, COLOR_RED);
-        mR.position.x = 2.5;
-        mainGroup.add(mR);
+        document.getElementById('app1-step-title').textContent = 'Adım 5: Örüntünün Kuralını Araştırınız';
+        setMathHtml('app1-step-desc',String.raw`Silindir dilimlerini farklı sayılarda birleştiriniz. Tahminlerinizi model üzerinde sınayarak tek dilimin ve toplamın kuralını araştırınız.`);
+        document.getElementById('btn-app1-next').textContent = 'Kavrama Sorularına Geçiniz →';
       }
+      buildApp1Assembly(app1Step===5 ? app1DiscoveryCount : Math.min(app1Step,5), !!options.animateNew);
     }
 
     function nextApp1Step() {
-      if (app1Step < 5) {
+      if (app1Step === 5 && !app1DiscoveryComplete()) {
+        document.getElementById('discovery-heading').focus({preventScroll:true});
+        return;
+      }
+      if (app1Step < 6) {
         app1Step++;
-        buildApp1Scene();
+        buildApp1Scene({ animateNew: app1Step <= 5 });
+        fitCameraToModel();
       } else {
         if (!seriesQuizChecked) {
           document.getElementById('series-quiz-summary').textContent = 'Beş soru tamamlandığında ikinci uygulamaya geçebilirsiniz.';
@@ -1826,6 +2018,7 @@
       if (app1Step > 1) {
         app1Step--;
         buildApp1Scene();
+        fitCameraToModel();
       } else {
         switchTab(0);
       }
@@ -1840,15 +2033,16 @@
       const element = document.getElementById(id);
       element.className = `quiz-feedback ${correct ? 'correct' : 'incorrect'}`;
       const richMessage=message.replace(/(\d+)\/(\d+)/g,(_,a,b)=>String.raw`\(\frac{${a}}{${b}}\)`);
-      setMathHtml(id,`${correct ? 'Doğru.' : 'Tekrar düşünün.'} ${richMessage}`);
+      setMathHtml(id,`${correct ? 'Doğru.' : 'Bu yanıt doğru değil.'} ${richMessage}`);
     }
 
+    const submittedAnswers = Object.create(null);
     const seriesQuestions = [
-      { name: 'q1', answer: '1/2', feedback: 'feedback-q1', explanation: 'Her dilim bir öncekinin yarısıdır; dolayısıyla ortak çarpan r = 1/2 olur.' },
-      { name: 'q2', answer: '128', feedback: 'feedback-q2', explanation: String.raw`\(a_6=\frac14\cdot\left(\frac12\right)^5=\frac1{128}\).` },
-      { name: 'q3', answer: 'hayir', feedback: 'feedback-q3', explanation: 'Kısmi toplamlar 1/2’ye alttan yaklaşır; bu değeri geçmez.' },
-      { name: 'q4', answer: '15/32', feedback: 'feedback-q4', explanation: String.raw`\(S_4=\frac14+\frac18+\frac1{16}+\frac1{32}=\frac{15}{32}\).` },
-      { name: 'q5', answer: '64', feedback: 'feedback-q5', explanation: String.raw`\(S_5=\frac{31}{64}\) olduğundan \(\frac12-S_5=\frac1{64}\).` }
+      { name: 'q1', answer: '1/2', feedback: 'feedback-q1', explanation: String.raw`Sarı dilimin hacmi mavi dilimin, kırmızı dilimin hacmi de sarı dilimin yarısıdır. Ardışık parça hacimlerinin ortak çarpanı \(r=\frac12\) olur.` },
+      { name: 'q2', answer: '128', feedback: 'feedback-q2', explanation: String.raw`Mavi dilimden altıncı dilime gelene kadar hacim beş kez yarıya iner: \(\frac14\cdot\left(\frac12\right)^5=\frac1{128}\). Altıncı dilimin hacmi tam silindirin hacminin \(\frac1{128}\)'idir; \(k=128\).` },
+      { name: 'q3', answer: 'hayir', feedback: 'feedback-q3', explanation: String.raw`Her yeni dilim yarım silindirde kalan boşluğun bir bölümünü doldurur. Sonlu sayıdaki bu dilimlerin toplam hacmi yarım silindirin hacminden küçüktür; dilimler eklendikçe tam silindirin hacminin \(\frac12\)'sine yaklaşır, onu aşmaz.` },
+      { name: 'q4', answer: '15/32', feedback: 'feedback-q4', explanation: String.raw`Dört silindir diliminin hacim payları toplanır: \(\frac14+\frac18+\frac1{16}+\frac1{32}=\frac{15}{32}\). Birleşen parçaların toplam hacmi tam silindirin hacminin \(\frac{15}{32}\)'sidir.` },
+      { name: 'q5', answer: '64', feedback: 'feedback-q5', explanation: String.raw`Beş dilimin toplam hacmi tam silindirin hacminin \(\frac{31}{64}\)'üdür. Yarım silindiri tamamlayacak boşluğun hacim payı \(\frac12-\frac{31}{64}=\frac1{64}\) olduğundan \(k=64\).` }
     ];
     let seriesSlideIndex = 0;
 
@@ -1860,17 +2054,20 @@
       document.getElementById('series-slide-progress').style.width = `${((seriesSlideIndex + 1) / seriesQuestions.length) * 100}%`;
       document.getElementById('series-prev').disabled = seriesSlideIndex === 0;
       document.getElementById('series-next').hidden = seriesSlideIndex === seriesQuestions.length - 1;
+      if(currentTab===1 && app1Step===6) updateApp1AssemblyFocus();
     }
 
     function checkSeriesQuestion(index) {
       const question = seriesQuestions[index];
-      const value = getRadioValue(question.name);
+      const value = submittedAnswers[question.name] ?? getRadioValue(question.name);
       if (!value) {
         const feedback = document.getElementById(question.feedback);
         feedback.className = 'quiz-feedback incorrect';
-        feedback.textContent = 'Devam etmek için bir seçenek işaretleyin.';
+        feedback.textContent = 'Devam etmek için bir seçenek işaretleyiniz.';
         return false;
       }
+      submittedAnswers[question.name] = value;
+      document.querySelectorAll(`input[name="${question.name}"]`).forEach(input => { input.disabled = true; });
       setQuestionFeedback(question.feedback, value === question.answer, question.explanation);
       return true;
     }
@@ -1878,7 +2075,7 @@
     function checkCurrentSeriesQuestion() {
       if (!checkSeriesQuestion(seriesSlideIndex)) return;
       if (seriesSlideIndex === seriesQuestions.length - 1) {
-        const score = seriesQuestions.filter((question) => getRadioValue(question.name) === question.answer).length;
+        const score = seriesQuestions.filter((question) => submittedAnswers[question.name] === question.answer).length;
         seriesQuizChecked = true;
         document.getElementById('series-quiz-summary').textContent = `${score} / ${seriesQuestions.length} doğru. Yanıtlarınızı Geri düğmesiyle inceleyebilir veya Uygulama 2'ye geçebilirsiniz.`;
         document.getElementById('series-to-area').hidden=false;
@@ -1892,10 +2089,10 @@
     }
 
     const areaQuestions = [
-      { name: 'q6', answer: 'hayir', feedback: 'feedback-q6', explanation: 'Dilimlerin üst yüzeyleri yalnızca yeniden düzenlenir; toplam alanları başlangıçtaki üst taban dairesinin alanına eşittir.' },
-      { name: 'q7', answer: 'pir-r', feedback: 'feedback-q7', explanation: 'Üst yüzeyin limitte yaklaştığı dikdörtgenin bir kenarı daire çevresinin yarısı olan πR, diğer kenarı yarıçap R’dir. Buradaki R, silindirin yüksekliği değildir.' },
-      { name: 'q8', answer: 'pir2', feedback: 'feedback-q8', explanation: 'Üst yüzeyin limitte yaklaştığı dikdörtgenin alanı πR · R = πR²’dir. Bu, dairenin alanıdır; silindirin hacmi için ayrıca silindirin yüksekliğiyle çarpılır.' },
-      { name: 'q9', answer: 'evet', feedback: 'feedback-q9', explanation: 'Her sonlu dilim sayısında üst yüzeylerin toplam alanı aynen korunur. Oluşan üst yüzeyin sınırlarında yaylar bulunur; dikdörtgene benzemesi, onun tam bir dikdörtgen olduğu anlamına gelmez.' }
+      { name: 'q6', answer: 'hayir', feedback: 'feedback-q6', explanation: String.raw`Silindir parçaları taşınırken kesilmez ve üst üste getirilmez. Bu nedenle üst yüzeylerinin toplam alanı korunur; başlangıçtaki silindirin üst taban alanına eşit kalır.` },
+      { name: 'q7', answer: 'pir-r', feedback: 'feedback-q7', explanation: String.raw`Dilimler ters yönlü dizildiğinde üst yüzeyin uzun kenarı, limitte silindirin taban çevresinin yarısı olan \(\pi R\)'ye; diğer kenarı taban yarıçapı \(R\)'ye yaklaşır.` },
+      { name: 'q8', answer: 'pir2', feedback: 'feedback-q8', explanation: String.raw`Bütün dilimlerin üst yüzeyleri, soldaki silindirin üst taban dairesini oluşturur. Taşıma bu alanı değiştirmez; toplam üst yüzey alanı \(\pi R^2\) olur. Silindirin hacmi için bu alan ayrıca yükseklik \(h\) ile çarpılır.` },
+      { name: 'q9', answer: 'hayir', feedback: 'feedback-q9', explanation: String.raw`Sonlu sayıda silindir dilimi birleştirildiğinde üst yüzeyin sınırında dairesel yaylar kalır. Bu yüzden üst yüzey tam bir dikdörtgen değildir; dilim sayısı arttıkça dikdörtgene yaklaşır. Parçaların üst yüzey alanları toplamı ise her aşamada korunur.` }
     ];
     let areaSlideIndex = 0;
     let areaQuizChecked = false;
@@ -1913,13 +2110,15 @@
 
     function checkAreaQuestion(index) {
       const question = areaQuestions[index];
-      const value = getRadioValue(question.name);
+      const value = submittedAnswers[question.name] ?? getRadioValue(question.name);
       if (!value) {
         const feedback = document.getElementById(question.feedback);
         feedback.className = 'quiz-feedback incorrect';
-        feedback.textContent = 'Devam etmek için bir seçenek işaretleyin.';
+        feedback.textContent = 'Devam etmek için bir seçenek işaretleyiniz.';
         return false;
       }
+      submittedAnswers[question.name] = value;
+      document.querySelectorAll(`input[name="${question.name}"]`).forEach(input => { input.disabled = true; });
       setQuestionFeedback(question.feedback, value === question.answer, question.explanation);
       return true;
     }
@@ -1927,7 +2126,7 @@
     function checkCurrentAreaQuestion() {
       if (!checkAreaQuestion(areaSlideIndex)) return;
       if (areaSlideIndex === areaQuestions.length - 1) {
-        const score = areaQuestions.filter((question) => getRadioValue(question.name) === question.answer).length;
+        const score = areaQuestions.filter((question) => submittedAnswers[question.name] === question.answer).length;
         areaQuizChecked = true;
         document.getElementById('area-quiz-summary').textContent = `${score} / ${areaQuestions.length} doğru. Yanıtlarınızı Geri düğmesiyle gözden geçirebilir veya Serbest Mod'a geçebilirsiniz.`;
         document.getElementById('btn-app2-free').hidden = false;
@@ -1954,7 +2153,7 @@
       });
       app2AutoPlaying = false;
       const autoButton = document.getElementById('btn-app2-auto');
-      autoButton.textContent = '▶ Otomatik Tek Tek Taşı';
+      autoButton.textContent = '▶ Parçaları otomatik taşı';
       autoButton.classList.add('btn-secondary');
       const slider = document.getElementById('slider-app2-progress');
       slider.max = n;
@@ -1964,7 +2163,7 @@
     }
 
     function buildApp2Scene() {
-      while (mainGroup.children.length > 0) mainGroup.remove(mainGroup.children[0]);
+      clearMainGroup();
       app2Slices = [];
 
       const R = 2.0, H = 2.4;
@@ -2008,7 +2207,7 @@
 
       const stripBorder = new THREE.LineSegments(
         new THREE.EdgesGeometry(stripMatGeom),
-        new THREE.LineBasicMaterial({ color: 0xd97706 })
+        new THREE.LineBasicMaterial({ color: 0x8a7900 })
       );
       stripBorder.rotation.x = Math.PI / 2;
       stripBorder.position.set(stripCenterX, -H/2 - 0.01, 0);
@@ -2048,6 +2247,7 @@
       }
 
       updateApp2SlicePositions();
+      fitCameraToModel();
     }
 
     function onApp2Slider(val) {
@@ -2069,17 +2269,17 @@
         btn.classList.remove('btn-secondary');
         if (app2Progress >= app2N) app2Progress = 0;
       } else {
-        btn.textContent = '▶ Otomatik Tek Tek Taşı';
+        btn.textContent = '▶ Parçaları otomatik taşı';
         btn.classList.add('btn-secondary');
       }
     }
 
-    function advanceApp2AutoPlay() {
-      app2Progress += 0.04;
+    function advanceApp2AutoPlay(elapsed) {
+      app2Progress += elapsed * 0.0024;
       if (app2Progress >= app2N) {
         app2Progress = app2N;
         app2AutoPlaying = false;
-        document.getElementById('btn-app2-auto').textContent = '▶ Otomatik Tek Tek Taşı';
+        document.getElementById('btn-app2-auto').textContent = '▶ Parçaları otomatik taşı';
         document.getElementById('btn-app2-auto').classList.add('btn-secondary');
       }
       document.getElementById('slider-app2-progress').value = app2Progress;
@@ -2087,6 +2287,7 @@
     }
 
     function updateApp2SlicePositions() {
+      document.getElementById('slider-app2-progress').setAttribute('aria-valuetext', `${formatTr(app2Progress, 1)} / ${app2N} dilim taşındı`);
       const movedCount = Math.floor(app2Progress);
       document.getElementById('txt-app2-moved').textContent = `${movedCount} / ${app2N}`;
 
@@ -2128,6 +2329,7 @@
     let labExploded = false;
     let labGuideVisible = true;
     let labGroundVisible = true;
+    let labMeasurementsVisible = false;
 
     const PIECE_CONFIG = {
       blue: { dTheta: Math.PI / 2, color: COLOR_BLUE, ratio: 8, name: 'Mavi dilim' },
@@ -2137,22 +2339,21 @@
     };
 
     function buildLabScene() {
-      while (mainGroup.children.length > 0) mainGroup.remove(mainGroup.children[0]);
+      // Keep mathematical state; disposed scene objects are recreated from piece types.
+      const savedTypes = labPieces.map(piece => piece.type);
+      clearMainGroup();
       labPieces = [];
-      labExploded = false;
-      labGuideVisible = true;
-      labGroundVisible = true;
       setGroundLevel(-labHeight / 2);
-      groundGrid.visible = true;
-      document.getElementById('lab-measurements').hidden = true;
-      document.getElementById('btn-lab-measures').textContent = 'Ölçümleri Göster';
-      updateLabUI();
-
-      // Silindirin tel kafesi (rehber boş silindir)
+      groundGrid.visible = labGroundVisible;
+      document.getElementById('lab-measurements').hidden = !labMeasurementsVisible;
+      document.getElementById('btn-lab-measures').textContent = labMeasurementsVisible ? 'Ölçümleri Gizle' : 'Ölçümleri Göster';
       const guideGeom = new THREE.CylinderGeometry(labRadius, labRadius, labHeight, 32, 1, true);
       const guideMat = new THREE.MeshBasicMaterial({ color: 0x94a3b8, wireframe: true, transparent: true, opacity: 0.25 });
       labGuideMesh = new THREE.Mesh(guideGeom, guideMat);
+      labGuideMesh.visible = labGuideVisible;
       mainGroup.add(labGuideMesh);
+      savedTypes.forEach(type => addLabPiece(type));
+      updateLabUI();
       updateLabToolButtons();
     }
 
@@ -2160,7 +2361,8 @@
       const current32nds = getLabTotal32nds();
       const cfg = PIECE_CONFIG[type];
       if (current32nds + cfg.ratio > 32) {
-        alert('Silindir taştı! Eklemek istediğiniz parça kalan boşluğa sığmıyor.');
+        const warning = document.getElementById('lab-warning');
+        if (!warning.open) warning.showModal();
         return;
       }
 
@@ -2187,6 +2389,7 @@
       if (labPieces.length === 0) return;
       const last = labPieces.pop();
       mainGroup.remove(last.mesh);
+      disposeObject(last.mesh);
       applyLabPieceLayout();
       updateLabUI();
     }
@@ -2195,6 +2398,7 @@
       while (labPieces.length > 0) {
         const p = labPieces.pop();
         mainGroup.remove(p.mesh);
+        disposeObject(p.mesh);
       }
       updateLabUI();
     }
@@ -2231,6 +2435,7 @@
     function toggleLabExplode() {
       labExploded = !labExploded;
       applyLabPieceLayout();
+      fitCameraToModel();
       updateLabToolButtons();
     }
 
@@ -2249,7 +2454,8 @@
     function toggleLabMeasurements() {
       const panel = document.getElementById('lab-measurements');
       const button = document.getElementById('btn-lab-measures');
-      panel.hidden = !panel.hidden;
+      labMeasurementsVisible = !labMeasurementsVisible;
+      panel.hidden = !labMeasurementsVisible;
       button.textContent = panel.hidden ? 'Ölçümleri Göster' : 'Ölçümleri Gizle';
     }
 
@@ -2313,8 +2519,8 @@
       // Canlı Hacimler
       const totalVol = Math.PI * labRadius * labRadius * labHeight;
       const filledVol = totalVol * (total32nds / 32);
-      document.getElementById('txt-lab-vol').textContent = formatTr(totalVol, 2);
-      document.getElementById('txt-lab-filled-vol').textContent = formatTr(filledVol, 2);
+      document.getElementById('txt-lab-vol').textContent = `≈ ${formatTr(totalVol, 2)}`;
+      document.getElementById('txt-lab-filled-vol').textContent = `${filledVol ? '≈ ' : ''}${formatTr(filledVol, 2)}`;
       document.getElementById('txt-lab-angle').textContent = `${formatTr((total32nds / 32) * 360, 1)}°`;
     }
 
@@ -2322,9 +2528,9 @@
       const hint = document.getElementById('lab-hint');
       hint.hidden = false;
       if (goal === 'min') {
-        hint.innerHTML = '<strong>İpucu A:</strong> Önce her renkten bir tane ayırın. Kalan boşluğu mümkün olduğunca büyük dilimlerle doldurun. Denklem: 8m + 4s + 2k + t = 32.';
+        hint.innerHTML = '<strong>İpucu A:</strong> Önce her renkten bir tane ayırınız. Kalan boşluğu mümkün olduğunca büyük dilimlerle doldurunuz. Denklem: 8m + 4s + 2k + t = 32.';
       } else {
-        hint.innerHTML = '<strong>İpucu B:</strong> Önce her renkten bir tane ayırın. Parça sayısını artırmak için kalan boşlukta en küçük dilimi tercih edin. Denklem: 8m + 4s + 2k + t = 32.';
+        hint.innerHTML = '<strong>İpucu B:</strong> Önce her renkten bir tane ayırınız. Parça sayısını artırmak için kalan boşlukta en küçük dilimi tercih ediniz. Denklem: 8m + 4s + 2k + t = 32.';
       }
     }
 
@@ -2341,17 +2547,8 @@
     }
 
     function rebuildLabGeometry() {
-      const savedTypes = labPieces.map(p => p.type);
-      clearLab();
-      setGroundLevel(-labHeight / 2);
-      // Silindir teli yenile
-      while (mainGroup.children.length > 0) mainGroup.remove(mainGroup.children[0]);
-      const guideGeom = new THREE.CylinderGeometry(labRadius, labRadius, labHeight, 32, 1, true);
-      const guideMat = new THREE.MeshBasicMaterial({ color: 0x94a3b8, wireframe: true, transparent: true, opacity: 0.25 });
-      labGuideMesh = new THREE.Mesh(guideGeom, guideMat);
-      labGuideMesh.visible = labGuideVisible;
-      mainGroup.add(labGuideMesh);
-      savedTypes.forEach(t => addLabPiece(t));
+      buildLabScene();
+      fitCameraToModel();
     }
 
     /* --- ÖNİZLEME KİPİ (?onizleme=1) --- */
@@ -2361,8 +2558,7 @@
       document.body.classList.add('preview-mode');
       document.getElementById('scene-badge').textContent = 'Silindir Dilimleri 3B Temsili';
       buildOverviewScene();
-      camera.position.set(0, 4.5, 7.5);
-      camera.lookAt(0, 0, 0);
+      resetCamera();
       onWindowResize();
     }
 
@@ -2373,7 +2569,7 @@
       if (window.parent === window || !document.referrer) return null;
       try {
         const referrerOrigin = new URL(document.referrer).origin;
-        return referrerOrigin === window.location.origin ? referrerOrigin : null;
+        return /^https?:$/.test(window.location.protocol) && referrerOrigin === window.location.origin ? referrerOrigin : null;
       } catch (error) {
         return null;
       }
@@ -2425,6 +2621,13 @@
       if (renderer) {
         renderer.setClearColor(normalizedTheme === 'dark' ? 0x151c28 : 0xf4f6f9, 1);
       }
+      if (groundGrid) {
+        for (const material of (Array.isArray(groundGrid.material) ? groundGrid.material : [groundGrid.material])) {
+          material.vertexColors = false;
+          material.color.set(normalizedTheme === 'dark' ? 0x2c3d61 : 0xdce4f4);
+          material.needsUpdate = true;
+        }
+      }
     }
 
     function toggleLocalTheme() {
@@ -2446,12 +2649,6 @@
 
     applyTheme(currentTheme);
 
-    if (trustedParentOrigin) {
-      window.parent.postMessage(
-        { channel: 'matbis-theme', type: 'ready' },
-        trustedParentOrigin
-      );
-    }
 
     /* --- YARDIM MODALI --- */
 
@@ -2464,7 +2661,13 @@
       document.querySelector('header').inert = true;
       document.querySelector('main').inert = true;
       modal.classList.add('open');
-      window.requestAnimationFrame(() => document.getElementById('btn-start-material').focus());
+      const box = modal.querySelector('.dialog-box');
+      box.scrollTop = 0;
+      window.requestAnimationFrame(() => {
+        if (!modal.classList.contains('open')) return;
+        document.getElementById('modal-title').focus({ preventScroll: true });
+        box.scrollTop = 0;
+      });
     }
 
     function closeHelpModal() {
@@ -2490,10 +2693,10 @@
         return;
       }
       if (event.key === 'Tab') {
-        const focusable = [...modal.querySelectorAll('button:not([hidden])')];
+        const focusable = [...modal.querySelectorAll('button:not([hidden]), summary, a[href]')].filter(el => el.getClientRects().length);
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
+        if (event.shiftKey && (document.activeElement === first || document.activeElement === document.getElementById('modal-title'))) {
           event.preventDefault();
           last.focus();
         } else if (!event.shiftKey && document.activeElement === last) {
@@ -2505,10 +2708,13 @@
 
     function showDependencyError(missingLibraries) {
       document.getElementById('app-loading').hidden = true;
+      document.querySelector('header').inert = true;
+      document.querySelector('main').inert = true;
       const errorPanel = document.getElementById('dependency-error');
       document.getElementById('dependency-error-detail').textContent =
-        `${missingLibraries.join(' ve ')} yüklenemedi. lib klasöründeki yerel dosyaları kontrol edip yeniden deneyin.`;
+        `${missingLibraries.join(' ve ')} yüklenemedi. lib klasöründeki yerel dosyaları kontrol edip yeniden deneyiniz.`;
       errorPanel.hidden = false;
+      errorPanel.querySelector('button').focus();
     }
 
     // Başlatma
@@ -2520,8 +2726,17 @@
         showDependencyError(missingLibraries);
         return;
       }
-      initScene();
+      try { initScene(); } catch (error) {
+        showDependencyError(['3B çizim ortamı']);
+        return;
+      }
       applyTheme(currentTheme);
+    if (trustedParentOrigin) {
+      window.parent.postMessage(
+        { channel: 'matbis-theme', type: 'ready' },
+        trustedParentOrigin
+      );
+    }
       if (!isPreview) openHelpModal();
     });
   </script>

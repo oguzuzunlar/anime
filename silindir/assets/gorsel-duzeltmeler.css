@@ -18,3 +18,95 @@
  .formula-stack mjx-container{font-size:102%!important}
  .quiz-choices{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* İlk sürüm 1.3: kabul denetiminde doğrulanan yerleşim ve erişim düzeltmeleri. */
+.header-title,.section-title,.quiz-heading{color:var(--ms-link)}
+.control-label #txt-lab-ratio,details>summary{color:var(--ms-link)!important}
+[data-theme=dark] strong[style*="color: #1d4ed8"]{color:#A2BDFF!important}
+[data-theme=dark] strong[style*="color: #b45309"]{color:#FFD38A!important}
+[data-theme=dark] strong[style*="color: #b91c1c"]{color:#FFA8B1!important}
+[data-theme=dark] strong[style*="color: #0f766e"]{color:#85E3C2!important}
+.btn-icon{min-width:44px;min-height:44px;width:44px;height:44px;flex-shrink:0}
+.tab-btn{min-height:44px}
+.btn{min-height:44px}
+.btn-secondary:hover{color:var(--ms-link)}
+.range-slider{min-height:44px;background:transparent}
+.quiz-note{font-size:.88rem;line-height:1.45;color:var(--ms-text-muted)}
+.lab-warning{position:fixed;inset:0;margin:auto;width:min(440px,calc(100% - 32px));max-height:calc(100dvh - 32px);overflow:auto;padding:24px;border:1px solid var(--ms-control-border);border-radius:12px;background:var(--ms-surface);color:var(--ms-text);box-shadow:var(--ms-card-shadow)}
+.lab-warning::backdrop{background:rgba(9,19,42,.55)}
+.lab-warning h2{font-size:1.2rem;line-height:1.4;color:var(--ms-warning)}
+.lab-warning p{margin:12px 0 20px;line-height:1.6}
+.lab-warning form{display:flex;justify-content:flex-end}
+.lab-warning .btn{min-width:100px}
+.quiz-choice:has(input:disabled){cursor:default}
+.quiz-choice input:disabled{opacity:1}
+.viewport-overlay{max-width:calc(100% - 24px)}
+.scene-badge{white-space:normal}
+body.preview-mode{height:100vh;height:100dvh;min-height:0;overflow:hidden}
+body.preview-mode main{height:100%!important;min-height:0!important;grid-template-rows:minmax(0,1fr)!important;overflow:hidden}
+body.preview-mode .viewport-container{position:relative!important;top:auto!important;height:100%!important;min-height:0!important;max-height:100%;border:0;overflow:hidden}
+body.preview-mode #three-canvas{display:block;width:100%!important;height:100%!important;min-height:0}
+body.preview-mode .viewport-overlay{display:none}
+@media(max-width:1100px){.viewport-instructions{display:none!important}.viewport-controls{gap:6px;bottom:12px;right:12px}}
+
+/* 1.3.5: distinguish section buttons and keep mobile mathematics inside its panel. */
+.tabs{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:0;background:transparent;border:0;border-radius:0}
+.tab-btn{min-height:48px;padding:10px 6px;border:1px solid var(--ms-control-border);border-radius:8px;background:var(--ms-surface);color:var(--ms-text);font-size:.9rem;line-height:1.3;box-shadow:0 2px 0 var(--ms-border)}
+.tab-btn:hover{background:var(--ms-primary-light);border-color:var(--ms-link);color:var(--ms-link)}
+.tab-btn.active{background:var(--ms-primary);color:#fff;border-color:var(--ms-primary);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.panel-section{min-width:0;max-width:100%}
+#app1-step-title{display:block;line-height:1.6;min-width:0}
+#app1-math-box{min-width:0;max-width:100%}
+.math-comparison{display:grid;gap:14px}
+.math-row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;min-width:0;max-width:100%;line-height:1.8}
+.math-row>span{display:inline-block;white-space:nowrap;max-width:100%}
+.math-row mjx-container{margin:0!important}
+.formula-line{margin:18px 0 10px;row-gap:12px}
+.step-navigation{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:8px}
+.step-navigation .btn{min-width:0;white-space:normal;line-height:1.4;padding:10px 12px}
+@media(max-width:520px){
+ .tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .tab-btn{font-size:.95rem}
+ .step-navigation{grid-template-columns:minmax(0,1fr)}
+ .step-navigation .btn{min-height:48px}
+ .formula-stack mjx-container{font-size:100%!important}
+}
+
+/* 1.3.6: primary-colour parts and matching accessible colour keys. */
+.slice-key{display:inline-flex;align-items:center;gap:7px;color:var(--ms-text)}
+.slice-swatch{display:inline-block;width:16px;height:16px;flex:0 0 16px;border:1px solid #142448;border-radius:3px}
+.slice-blue{background:#004dff}.slice-yellow{background:#ffff00}.slice-red{background:#ff0000}
+
+/* 1.3.7: one assembled cylinder, a distinct colour per term. */
+.slice-teal{background:#00bfa5}.slice-purple{background:#8b32ff}
+.assembly-note{padding:10px 12px;border-left:3px solid var(--ms-primary);background:var(--ms-surface);border-radius:6px;font-size:.9rem;line-height:1.5;color:var(--ms-text);margin:0 0 12px}
+/* 1.3.8: preview owns the first and only grid cell at every breakpoint. */
+body.preview-mode main{grid-template-columns:minmax(0,1fr)!important;transition:none!important}
+body.preview-mode .viewport-container{grid-column:1!important;grid-row:1!important}
+
+/* 1.3.10: model evidence, prediction and feedback precede symbolic rules. */
+.discovery-panel{display:flex;flex-direction:column;gap:12px;min-width:0;font-weight:400;text-align:left}
+.discovery-panel h3{margin:0;color:var(--ms-link);font-size:1.06rem;line-height:1.45}
+.discovery-panel p{margin:0;font-size:.94rem;line-height:1.55}
+.discovery-observation{padding:12px;border:1px solid var(--ms-control-border);border-radius:8px;background:var(--ms-surface)}
+.discovery-observation label{display:block;font-size:.95rem;line-height:1.5}
+.discovery-observation input{display:block;width:100%;min-height:44px;accent-color:var(--ms-primary)}
+.discovery-table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:.88rem;line-height:1.35;margin-top:10px}
+.discovery-table caption{text-align:left;margin-bottom:8px;color:var(--ms-text-muted);font-size:.86rem}
+.discovery-table th,.discovery-table td{padding:8px 3px;text-align:center;border-bottom:1px solid var(--ms-border);overflow-wrap:anywhere}
+.discovery-table thead th{font-size:.8rem;color:var(--ms-text-muted)}
+.discovery-phase{font-weight:700;color:var(--ms-link)}
+.discovery-task{min-width:0;margin:0}
+.discovery-task legend{font-size:1rem;line-height:1.55;max-width:100%}
+.discovery-task .quiz-choices{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.discovery-task .quiz-choice{min-width:0;align-items:center;line-height:1.5;font-size:.96rem}
+.discovery-task .quiz-choice span{min-width:0;overflow-wrap:anywhere}
+.discovery-feedback{padding:12px;border:2px solid currentColor;border-radius:8px;line-height:1.65}
+.discovery-navigation{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.discovery-panel .btn{white-space:normal;min-width:0;line-height:1.4}
+.discovery-panel .btn:disabled,#btn-app1-next:disabled{background:var(--ms-surface-alt);color:var(--ms-text-muted);border:1px solid var(--ms-control-border);box-shadow:none;cursor:default}
+.discovery-rules{padding:12px;border:1px solid var(--ms-control-border);border-left:4px solid var(--ms-primary);border-radius:8px;background:var(--ms-surface-alt);min-width:0}
+.discovery-rules p{margin-top:12px}
+.discovery-rules .math-row{margin-top:10px}
+.discovery-complete{padding:12px;border:2px solid var(--ms-link);border-radius:8px;background:var(--ms-primary-light)}
+@media(max-width:520px){.discovery-task .quiz-choices,.discovery-navigation{grid-template-columns:minmax(0,1fr)}.discovery-observation{padding:8px}.discovery-table{font-size:.82rem}.discovery-table thead th{font-size:.75rem}.discovery-rules{padding:9px}.discovery-rules mjx-container{font-size:95%!important}}
