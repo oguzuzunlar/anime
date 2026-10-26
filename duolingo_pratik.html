@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duolingo Tarzı Kelime Tamamlama & Sınav Pratiği | FOIT Exam Trainer</title>
+  <link rel="stylesheet" href="shared.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦉</text></svg>">
+  <style>
+    /* Duolingo Gamified Styling */
+    .duo-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 24px;
+      background: var(--bg-surface);
+      border-bottom: 2px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-wrap: wrap;
+    }
+    .duo-stats {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .duo-stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+    .duo-progress-wrap {
+      flex: 1;
+      min-width: 180px;
+      max-width: 440px;
+      height: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      position: relative;
+    }
+    .duo-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #06b6d4);
+      width: 0%;
+      border-radius: var(--radius-full);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .duo-card-container {
+      max-width: 800px;
+      margin: 28px auto;
+      padding: 0 16px;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .duo-question-box {
+      background: var(--bg-surface);
+      border: 2px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+    .duo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 5px 14px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 14px;
+    }
+    .duo-badge-cloze {
+      background: rgba(6, 182, 212, 0.15);
+      color: var(--accent-cyan);
+      border: 1px solid var(--accent-cyan);
+    }
+    .duo-badge-sentence {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--accent-indigo);
+      border: 1px solid var(--accent-indigo);
+    }
+    .duo-badge-spelling {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-amber);
+      border: 1px solid var(--accent-amber);
+    }
+    .duo-prompt-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+    .duo-prompt-sub {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+    .duo-retry-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid var(--accent-rose);
+      color: var(--accent-rose);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.04); }
+    }
+
+    /* Cloze / Word Completion Styling */
+    .duo-cloze-sentence {
+      font-size: 1.22rem;
+      line-height: 1.8;
+      background: rgba(15, 23, 42, 0.7);
+      padding: 20px 24px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      margin-bottom: 24px;
+      color: #f8fafc;
+    }
+    .duo-blank-slot {
+      display: inline-block;
+      min-width: 130px;
+      text-align: center;
+      border-bottom: 3px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-weight: 800;
+      padding: 2px 12px;
+      background: rgba(6, 182, 212, 0.12);
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+    .duo-blank-slot.filled {
+      background: rgba(16, 185, 129, 0.18);
+      border-bottom-color: #10b981;
+      color: #34d399;
+    }
+    .duo-options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    .duo-option-btn {
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface-elevated);
+      border: 2px solid var(--border-subtle);
+      color: var(--text-main);
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.25);
+      text-align: center;
+    }
+    .duo-option-btn:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+    }
+    .duo-option-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    }
+    .duo-option-btn.selected {
+      border-color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.2);
+      color: var(--accent-cyan);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+    }
+
+    /* Word Building Dropzone & Bank */
+    .duo-dropzone {
+      min-height: 90px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px dashed var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-content: flex-start;
+      margin-bottom: 24px;
+      transition: all 0.2s;
+    }
+    .duo-dropzone.has-items {
+      border-style: solid;
+      border-color: var(--accent-indigo);
+      background: rgba(99, 102, 241, 0.05);
+    }
+    .duo-word-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 24px;
+      min-height: 80px;
+    }
+    .duo-chip {
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.25);
+    }
+    .duo-chip:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+    }
+    .duo-chip:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+    }
+    .duo-chip.used {
+      opacity: 0.25;
+      pointer-events: none;
+      box-shadow: none;
+      transform: none;
+    }
+    .duo-chip.placed {
+      background: linear-gradient(135deg, var(--accent-indigo), #4f46e5);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    /* Spelling Input */
+    .duo-spelling-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .duo-input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 2px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      font-size: 1.25rem;
+      font-family: var(--font-mono);
+      color: var(--accent-cyan);
+      font-weight: 700;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .duo-input:focus {
+      border-color: var(--accent-indigo);
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Feedback Banner (Duolingo Bottom Sheet) */
+    .duo-feedback-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 22px 32px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 999;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+      animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .duo-feedback-bar.correct {
+      background: #064e3b;
+      border-top: 3px solid #10b981;
+      display: flex;
+    }
+    .duo-feedback-bar.wrong {
+      background: #4c0519;
+      border-top: 3px solid #f43f5e;
+      display: flex;
+    }
+    .duo-feedback-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .duo-feedback-icon {
+      font-size: 2.2rem;
+    }
+    .duo-feedback-text h4 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .duo-feedback-bar.correct h4 { color: #34d399; }
+    .duo-feedback-bar.wrong h4 { color: #fb7185; }
+    .duo-feedback-solution {
+      font-size: 0.95rem;
+      color: #f8fafc;
+      font-weight: 600;
+      line-height: 1.4;
+      max-width: 680px;
+    }
+
+    /* Victory Card */
+    .duo-victory-card {
+      background: var(--bg-surface);
+      border: 2px solid var(--accent-emerald);
+      border-radius: var(--radius-lg);
+      padding: 40px 32px;
+      text-align: center;
+      box-shadow: var(--shadow-glow);
+    }
+    .duo-victory-icon {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      animation: bounce 1s infinite alternate;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-12px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-bg">
+    <div class="ambient-orb-1"></div>
+    <div class="ambient-orb-2"></div>
+  </div>
+
+  <!-- DUOLINGO TOP APP BAR -->
+  <header class="duo-topbar">
+    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+      <a href="hizli_sinav_cevaplari.html" class="icon-btn" title="Geri Dön" style="font-size: 1.1rem; text-decoration: none;">✕</a>
+      <select id="scenarioSelector" class="filter-btn" onchange="changeScenario(this.value)" style="font-size: 0.85rem; padding: 7px 12px;">
+        <option value="s1" selected>💻 Senaryo 1: Dev Workspace (Tüm Sorular)</option>
+        <option value="s2">🛡️ Senaryo 2: Suspicious Shop</option>
+        <option value="s3">🤖 Senaryo 3: AI Coding Agent</option>
+        <option value="s4">📱 Senaryo 4: Mobile App Crash</option>
+        <option value="s5">📦 Senaryo 5: Execution Environments</option>
+        <option value="all">🌟 Tüm Senaryolar (Karma Mod)</option>
+      </select>
+
+      <select id="modeSelector" class="filter-btn" onchange="changeMode(this.value)" style="font-size: 0.85rem; padding: 7px 12px;">
+        <option value="all">🎯 Tüm Egzersiz Tipleri (Karma)</option>
+        <option value="cloze">🧩 Sadece Kelime Tamamlama (Cloze)</option>
+        <option value="spelling">✍️ Sadece Harf & Spelling (Yazma)</option>
+        <option value="sentence">🔤 Sadece Cümle Kurma (Scramble)</option>
+      </select>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="duo-progress-wrap" title="Ders İlerlemesi">
+      <div class="duo-progress-bar" id="duoProgressBar"></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="duo-stats">
+      <div class="duo-stat-item" style="color: var(--accent-amber);" title="Seri">
+        <span>🔥</span> <span id="streakCount">1</span>
+      </div>
+      <div class="duo-stat-item" style="color: var(--accent-rose);" title="Canlar">
+        <span>❤️</span> <span id="heartCount">5</span>
+      </div>
+      <div class="duo-stat-item" style="color: var(--accent-cyan);" title="Kazanılan XP">
+        <span>⚡</span> <span id="xpCount">150 XP</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN DRILL CONTAINER -->
+  <main class="duo-card-container">
+
+    <!-- Active Question Card -->
+    <div id="exerciseContainer">
+      <!-- Injected by JavaScript -->
+    </div>
+
+    <!-- Bottom Action Button -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 24px;">
+      <button class="btn-secondary" id="btnSkip" onclick="skipExercise()">
+        ⏭️ Bu Soruyu Atla
+      </button>
+      <button class="btn-primary" id="btnCheck" style="padding: 14px 36px; font-size: 1.05rem;" onclick="checkAnswer()">
+        Kontrol Et ➡️
+      </button>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM POPUP FEEDBACK SHEET -->
+  <div class="duo-feedback-bar" id="feedbackBar">
+    <div class="duo-feedback-info">
+      <div class="duo-feedback-icon" id="feedbackIcon">🎉</div>
+      <div class="duo-feedback-text">
+        <h4 id="feedbackTitle">Harika! Doğru cevap.</h4>
+        <div class="duo-feedback-solution" id="feedbackSolution"></div>
+      </div>
+    </div>
+    <button class="btn-primary" id="btnContinue" style="padding: 12px 28px; font-size: 1rem;" onclick="nextExercise()">
+      Devam Et ➡️
+    </button>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    // ================= EXERCISE DATABASE (ZERO PARENTHESES) =================
+    // Comprehensive word completion, spelling, and sentence ordering drills for ALL questions.
+    const DRILL_DATA = {
+      
+      // ========================================================
+      // SCENARIO 1: ALL QUESTIONS Q1 TO Q6 COMPREHENSIVE DRILLS
+      // ========================================================
+      s1: [
+        // S1 - Q1 (Traditional IDE, AI-assisted IDE, Vibe Coding)
+        {
+          id: 's1_q1_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 1 (Development Environments)',
+          promptTr: 'Geleneksel IDE ortamında geliştirici tüm kodu yapay zekâ olmadan elle yazar.',
+          beforeText: 'In a traditional IDE, the developer writes code',
+          afterText: 'without AI.',
+          missingWord: 'manually',
+          options: ['manually', 'automatically', 'visually', 'randomly'],
+          fullSentence: 'In a traditional IDE, the developer writes code manually without AI.'
+        },
+        {
+          id: 's1_q1_c2',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 1 (Development Environments)',
+          promptTr: 'YZ destekli IDE insan için satır içi kod tamamlama önerileri sunar.',
+          beforeText: 'An AI-assisted IDE suggests',
+          afterText: 'code completions for the human to accept or edit.',
+          missingWord: 'inline',
+          options: ['inline', 'offline', 'terminal', 'binary'],
+          fullSentence: 'An AI-assisted IDE suggests inline code completions for the human to accept or edit.'
+        },
+        {
+          id: 's1_q1_c3',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 1 (Development Environments)',
+          promptTr: 'Vibe coding platformu doğal dil istemlerinden çoklu dosya kodu yazar.',
+          beforeText: 'A vibe coding platform uses',
+          afterText: 'agents to write and edit multi-file code from natural language prompts.',
+          missingWord: 'autonomous',
+          options: ['autonomous', 'manual', 'passive', 'debugger'],
+          fullSentence: 'A vibe coding platform uses autonomous agents to write and edit multi-file code from natural language prompts.'
+        },
+        {
+          id: 's1_q1_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 1 (Teknik Terim Yazımı)',
+          word: 'traditional',
+          clue: 'Geliştiricinin kodu elle yazdığı yapay zekâsız ortam: _______ IDE'
+        },
+        {
+          id: 's1_q1_sp2',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 1 (Teknik Terim Yazımı)',
+          word: 'completions',
+          clue: 'Satır içi kod tamamlama önerileri: inline code _______'
+        },
+        {
+          id: 's1_q1_sp3',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 1 (Teknik Terim Yazımı)',
+          word: 'autonomous',
+          clue: 'Vibe coding platformunda görevleri otonom yürüten ajanlar: _______ agents'
+        },
+
+        // S1 - Q2 (Traditional Programming vs Vibe Coding)
+        {
+          id: 's1_q2_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 2 (Programming Approaches)',
+          promptTr: 'Geleneksel programlamada geliştirici her sözdizimi ifadesini elle yazar.',
+          beforeText: 'In traditional programming, the developer writes every syntax',
+          afterText: 'and designs algorithms manually.',
+          missingWord: 'statement',
+          options: ['statement', 'prompt', 'shortcut', 'plugin'],
+          fullSentence: 'In traditional programming, the developer writes every syntax statement and designs algorithms manually.'
+        },
+        {
+          id: 's1_q2_c2',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 2 (Programming Approaches)',
+          promptTr: 'Geleneksel programlamada geliştirici algoritmaları elle tasarlar.',
+          beforeText: 'In traditional programming, the developer designs',
+          afterText: 'manually.',
+          missingWord: 'algorithms',
+          options: ['algorithms', 'terminals', 'proxies', 'browsers'],
+          fullSentence: 'In traditional programming, the developer designs algorithms manually.'
+        },
+        {
+          id: 's1_q2_c3',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 2 (Programming Approaches)',
+          promptTr: 'Vibe coding ortamında insan yüksek seviyeli sınırları çizilmiş görevleri devreder.',
+          beforeText: 'In vibe coding, the human delegates high-level',
+          afterText: 'tasks in natural language.',
+          missingWord: 'bounded',
+          options: ['bounded', 'unlimited', 'binary', 'syntax'],
+          fullSentence: 'In vibe coding, the human delegates high-level bounded tasks in natural language.'
+        },
+        {
+          id: 's1_q2_c4',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 2 (Programming Approaches)',
+          promptTr: 'Otonom ajanlar uygulama kodlamasını ve terminal çalıştırmasını yönetir.',
+          beforeText: 'Autonomous agents handle implementation and terminal',
+          afterText: 'in an automated feedback loop.',
+          missingWord: 'execution',
+          options: ['execution', 'compilation', 'syntax', 'design'],
+          fullSentence: 'Autonomous agents handle implementation and terminal execution in an automated feedback loop.'
+        },
+        {
+          id: 's1_q2_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 2 (Teknik Terim Yazımı)',
+          word: 'statement',
+          clue: 'Programlamada her bir kod/sözdizimi ifadesi: syntax _______'
+        },
+        {
+          id: 's1_q2_sp2',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 2 (Teknik Terim Yazımı)',
+          word: 'delegates',
+          clue: 'Geliştiricinin görevi YZ ajanına devretmesi fiili: human _______ tasks'
+        },
+
+        // S1 - Q3 (Testing Working Hours)
+        {
+          id: 's1_q3_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 3 (Testing Working Hours)',
+          promptTr: '09:00 ile 17:00 arasındaki 8 saatlik normal senaryoyu test ederim.',
+          beforeText: 'I would test a normal',
+          afterText: 'path from 9 AM to 5 PM calculating 8 working hours.',
+          missingWord: 'happy',
+          options: ['happy', 'broken', 'virtual', 'negative'],
+          fullSentence: 'I would test a normal happy path from 9 AM to 5 PM calculating 8 working hours.'
+        },
+        {
+          id: 's1_q3_c2',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 3 (Testing Working Hours)',
+          promptTr: 'Gece yarısını geçen ve 0 saatlik sınır durumları test ederim.',
+          beforeText: 'I would test boundary edge cases such as',
+          afterText: 'cross-overs and zero-hour shifts.',
+          missingWord: 'midnight',
+          options: ['midnight', 'morning', 'weekend', 'monthly'],
+          fullSentence: 'I would test boundary edge cases such as midnight cross-overs and zero-hour shifts.'
+        },
+        {
+          id: 's1_q3_c3',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 3 (Testing Working Hours)',
+          promptTr: 'Çıkışın girişten önce olması gibi negatif girdilerin hata döndürdüğünü test ederim.',
+          beforeText: 'I would run negative tests with',
+          afterText: 'inputs returning an HTTP 400 error.',
+          missingWord: 'invalid',
+          options: ['invalid', 'verified', 'standard', 'encrypted'],
+          fullSentence: 'I would run negative tests with invalid inputs returning an HTTP 400 error.'
+        },
+        {
+          id: 's1_q3_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 3 (Teknik Terim Yazımı)',
+          word: 'boundary',
+          clue: 'Sınır değerlerini test etme kavramı: _______ testing'
+        },
+        {
+          id: 's1_q3_sp2',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 3 (Teknik Terim Yazımı)',
+          word: 'calculating',
+          clue: 'Çalışma saatlerini hesaplama işlemi: _______ working hours'
+        },
+
+        // S1 - Q4 (AI Security Risks & Mitigations)
+        {
+          id: 's1_q4_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 4 (AI Security Risks)',
+          promptTr: 'SQL enjeksiyonu ve güvenlik açıklarını parametreli sorgularla önleyin.',
+          beforeText: 'First, reduce SQL injection and security vulnerabilities by enforcing',
+          afterText: 'queries.',
+          missingWord: 'parameterized',
+          options: ['parameterized', 'concatenated', 'raw', 'untrusted'],
+          fullSentence: 'First, reduce SQL injection and security vulnerabilities by enforcing parameterized queries.'
+        },
+        {
+          id: 's1_q4_c2',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 4 (AI Security Risks)',
+          promptTr: 'Güvenlik açıklarını otomatik linters araçlarıyla tespit edin.',
+          beforeText: 'Enforce automated security',
+          afterText: 'to catch code flaws.',
+          missingWord: 'linters',
+          options: ['linters', 'browsers', 'routers', 'proxies'],
+          fullSentence: 'Enforce automated security linters to catch code flaws.'
+        },
+        {
+          id: 's1_q4_c3',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 4 (AI Security Risks)',
+          promptTr: 'Güvensiz kodları satır satır insan kod incelemesiyle engelleyin.',
+          beforeText: 'Second, prevent insecure code and data leaks through line-by-line human code',
+          afterText: 'and automated testing.',
+          missingWord: 'review',
+          options: ['review', 'generation', 'execution', 'prompt'],
+          fullSentence: 'Second, prevent insecure code and data leaks through line-by-line human code review and automated testing.'
+        },
+        {
+          id: 's1_q4_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 4 (Teknik Terim Yazımı)',
+          word: 'parameterized',
+          clue: 'SQL Injection saldırısını önleyen parametreli sorgular: _______ queries'
+        },
+        {
+          id: 's1_q4_sp2',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 4 (Teknik Terim Yazımı)',
+          word: 'vulnerabilities',
+          clue: 'Sistemdeki güvenlik açıkları ve zafiyetler terimi'
+        },
+
+        // S1 - Q5 (Troubleshooting Overtime Bug)
+        {
+          id: 's1_q5_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 5 (Troubleshooting Overtime Bug)',
+          promptTr: 'Önce şirket yönetiminden fazla mesai kurallarını netleştiririm.',
+          beforeText: 'I would first',
+          afterText: 'overtime policy rules with company management.',
+          missingWord: 'clarify',
+          options: ['clarify', 'delete', 'ignore', 'commit'],
+          fullSentence: 'I would first clarify overtime policy rules with company management.'
+        },
+        {
+          id: 's1_q5_c2',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 5 (Troubleshooting Overtime Bug)',
+          promptTr: 'Çalışanın test verisini kullanarak hatayı yeniden üretirim.',
+          beforeText: 'I would',
+          afterText: 'the bug using the employee test data.',
+          missingWord: 'reproduce',
+          options: ['reproduce', 'hide', 'revert', 'delete'],
+          fullSentence: 'I would reproduce the bug using the employee test data.'
+        },
+        {
+          id: 's1_q5_c3',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 5 (Troubleshooting Overtime Bug)',
+          promptTr: 'Son kod değişikliklerini tespit etmek için git diff geçmişini incelerim.',
+          beforeText: 'I would inspect git diff',
+          afterText: 'to identify recent code modifications.',
+          missingWord: 'history',
+          options: ['history', 'cables', 'cache', 'cookies'],
+          fullSentence: 'I would inspect git diff history to identify recent code modifications.'
+        },
+        {
+          id: 's1_q5_c4',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 5 (Troubleshooting Overtime Bug)',
+          promptTr: 'IDE hata ayıklayıcı durma noktasıyla hesaplamaları adım adım izlerim.',
+          beforeText: 'I would step through calculations using an IDE debugger',
+          afterText: 'to find the math error.',
+          missingWord: 'breakpoint',
+          options: ['breakpoint', 'router', 'gateway', 'terminal'],
+          fullSentence: 'I would step through calculations using an IDE debugger breakpoint to find the math error.'
+        },
+        {
+          id: 's1_q5_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 5 (Teknik Terim Yazımı)',
+          word: 'reproduce',
+          clue: 'Hatayı verilerle yeniden oluşturma/üretme eylemi'
+        },
+        {
+          id: 's1_q5_sp2',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 5 (Teknik Terim Yazımı)',
+          word: 'breakpoint',
+          clue: 'IDE hata ayıklayıcıda kodu adım adım durdurma noktası'
+        },
+
+        // S1 - Q6 (Workflow Recommendation)
+        {
+          id: 's1_q6_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 6 (Workflow Recommendation)',
+          promptTr: 'Bu şirket için yapay zekâ destekli bir IDE iş akışı öneririm.',
+          beforeText: 'I',
+          afterText: 'an AI-assisted IDE workflow for this company.',
+          missingWord: 'recommend',
+          options: ['recommend', 'refuse', 'cancel', 'avoid'],
+          fullSentence: 'I recommend an AI-assisted IDE workflow for this company.'
+        },
+        {
+          id: 's1_q6_c2',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 6 (Workflow Recommendation)',
+          promptTr: 'YZ kod tamamlaması dar teslim tarihlerinde geliştirmeyi hızlandırır.',
+          beforeText: 'AI code completions speed up development under short',
+          afterText: 'effectively.',
+          missingWord: 'deadlines',
+          options: ['deadlines', 'routers', 'proxies', 'breakdowns'],
+          fullSentence: 'AI code completions speed up development under short deadlines effectively.'
+        },
+        {
+          id: 's1_q6_c3',
+          type: 'cloze',
+          scenario: 'Senaryo 1 • Soru 6 (Workflow Recommendation)',
+          promptTr: 'İnsan geliştirici denetimi çalışan bordro kayıtlarının yasal doğruluğunu garanti eder.',
+          beforeText: 'Human developer review guarantees legal calculation',
+          afterText: 'for employee payroll records.',
+          missingWord: 'accuracy',
+          options: ['accuracy', 'vulnerabilities', 'discrepancy', 'conflicts'],
+          fullSentence: 'Human developer review guarantees legal calculation accuracy for employee payroll records.'
+        },
+        {
+          id: 's1_q6_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 6 (Teknik Terim Yazımı)',
+          word: 'workflow',
+          clue: 'Geliştirme süreci ve çalışma tarzı: IDE _______'
+        },
+        {
+          id: 's1_q6_sp2',
+          type: 'spelling',
+          scenario: 'Senaryo 1 • Soru 6 (Teknik Terim Yazımı)',
+          word: 'accuracy',
+          clue: 'Bordro hesaplamalarında yasal kesinlik ve doğruluk terimi'
+        }
+      ],
+
+      // ========================================================
+      // SCENARIO 2 (A Suspicious Online Shopping Website)
+      // ========================================================
+      s2: [
+        {
+          id: 's2_q1_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 2 • Soru 1 (IT Fundamentals)',
+          promptTr: 'İstemci tarayıcı ürünleri gösterir ve ödeme detaylarını toplar.',
+          beforeText: 'The client',
+          afterText: 'displays products and collects payment details.',
+          missingWord: 'browser',
+          options: ['browser', 'router', 'cable', 'firewall'],
+          fullSentence: 'The client browser displays products and collects payment details.'
+        },
+        {
+          id: 's2_q1_c2',
+          type: 'cloze',
+          scenario: 'Senaryo 2 • Soru 1 (IT Fundamentals)',
+          promptTr: 'Güvenli bir ödeme ağ geçidi işlemi bankayla onaylar.',
+          beforeText: 'A secure payment',
+          afterText: 'authorizes the transaction with the bank over encrypted HTTPS.',
+          missingWord: 'gateway',
+          options: ['gateway', 'switch', 'terminal', 'compiler'],
+          fullSentence: 'A secure payment gateway authorizes the transaction with the bank over encrypted HTTPS.'
+        },
+        {
+          id: 's2_q1_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 2 • Soru 1 (Teknik Terim Yazımı)',
+          word: 'gateway',
+          clue: 'Bankayla güvenli kart onayı yapan servis: Payment _______'
+        },
+        {
+          id: 's2_q2_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 2 • Soru 2 (Web Technologies)',
+          promptTr: 'HTTPS trafiği şifreler ancak web sitesi sahibinin dürüst olduğunu garanti etmez.',
+          beforeText: 'HTTPS encrypts traffic but does not guarantee',
+          afterText: 'of the website owner.',
+          missingWord: 'honesty',
+          options: ['honesty', 'speed', 'bandwidth', 'resolution'],
+          fullSentence: 'HTTPS encrypts traffic but does not guarantee honesty of the website owner.'
+        },
+        {
+          id: 's2_q2_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 2 • Soru 2 (Teknik Terim Yazımı)',
+          word: 'typosquatting',
+          clue: 'Alan adındaki harf oyunuyla sahte site kurma tuzağı'
+        },
+        {
+          id: 's2_q3_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 2 • Soru 3 (Cybersecurity)',
+          promptTr: 'Yazmadan önce adres çubuğundaki alan adı yazımını harf harf doğrulayın.',
+          beforeText: 'Verify the exact domain',
+          afterText: 'in the address bar before typing sensitive data.',
+          missingWord: 'spelling',
+          options: ['spelling', 'image', 'color', 'height'],
+          fullSentence: 'Verify the exact domain spelling in the address bar before typing sensitive data.'
+        },
+        {
+          id: 's2_q3_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 2 • Soru 3 (Teknik Terim Yazımı)',
+          word: 'harvesting',
+          clue: 'Sahte sitenin kredi kartı verilerini toplama saldırısı: Card _______'
+        },
+        {
+          id: 's2_q4_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 2 • Soru 4 (Technical Investigation)',
+          promptTr: 'İstek URL adresini görmek için Geliştirici Araçları Ağ sekmesini kullanın.',
+          beforeText: 'Use DevTools',
+          afterText: 'tab to see where the HTTP POST request is sent.',
+          missingWord: 'Network',
+          options: ['Network', 'Console', 'Memory', 'Storage'],
+          fullSentence: 'Use DevTools Network tab to see where the HTTP POST request is sent.'
+        },
+        {
+          id: 's2_q4_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 2 • Soru 4 (Teknik Terim Yazımı)',
+          word: 'certificate',
+          clue: 'Kilit simgesine tıklanarak kurum adı kontrol edilen belge: TLS _______'
+        },
+        {
+          id: 's2_q5_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 2 • Soru 5 (Problem Solving)',
+          promptTr: 'Mobil bankacılık uygulamasından kredi kartını derhal dondurun veya iptal edin.',
+          beforeText: 'Immediately',
+          afterText: 'or cancel the credit card through your mobile banking app.',
+          missingWord: 'freeze',
+          options: ['freeze', 'recharge', 'hide', 'delete'],
+          fullSentence: 'Immediately freeze or cancel the credit card through your mobile banking app.'
+        },
+        {
+          id: 's2_q5_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 2 • Soru 5 (Teknik Terim Yazımı)',
+          word: 'chargeback',
+          clue: 'Sahte çekimlerde bankadan resmi para iadesi isteme hakkı'
+        },
+        {
+          id: 's2_q6_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 2 • Soru 6 (Decision Making)',
+          promptTr: 'Alan adındaki yazım farklılığı typosquatting ve oltalama göstergesidir.',
+          beforeText: 'The domain spelling',
+          afterText: 'indicates typosquatting and brand impersonation.',
+          missingWord: 'discrepancy',
+          options: ['discrepancy', 'similarity', 'agreement', 'equality'],
+          fullSentence: 'The domain spelling discrepancy indicates typosquatting and brand impersonation.'
+        },
+        {
+          id: 's2_q6_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 2 • Soru 6 (Teknik Terim Yazımı)',
+          word: 'discrepancy',
+          clue: 'Alan adındaki tutarsızlık ve uyuşmazlık: Domain _______'
+        }
+      ],
+
+      // ========================================================
+      // SCENARIO 3 (Git & AI Agent Damage)
+      // ========================================================
+      s3: [
+        {
+          id: 's3_q1_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 3 • Soru 1 (Coding Agent vs Assistant)',
+          promptTr: 'Kodlama ajanı proje dosyalarını otonom okur ve çoklu dosya düzenlemesi yapar.',
+          beforeText: 'A coding agent',
+          afterText: 'reads project files and makes multi-file edits.',
+          missingWord: 'autonomously',
+          options: ['autonomously', 'manually', 'partially', 'slowly'],
+          fullSentence: 'A coding agent autonomously reads project files and makes multi-file edits.'
+        },
+        {
+          id: 's3_q2_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 3 • Soru 2 (Git History & Diff)',
+          promptTr: 'Git diff satır satır kod eklemelerini ve silmelerini gösterir.',
+          beforeText: 'Git diff displays line-by-line additions and',
+          afterText: 'revealing unwanted modifications.',
+          missingWord: 'deletions',
+          options: ['deletions', 'compilers', 'passwords', 'tokens'],
+          fullSentence: 'Git diff displays line-by-line additions and deletions revealing unwanted modifications.'
+        },
+        {
+          id: 's3_q2_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 3 • Soru 2 (Teknik Terim Yazımı)',
+          word: 'revert',
+          clue: 'Geçmişi bozmadan hatalı commit işlemini geri alan Git komutu: git _______'
+        },
+        {
+          id: 's3_q4_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 3 • Soru 4 (Teknik Terim Yazımı)',
+          word: 'authorization',
+          clue: 'YZ ajanının yanlışlıkla sildiği erişim yetki denetimi: _______ check'
+        }
+      ],
+
+      // ========================================================
+      // SCENARIO 4 (Mobile App & Server Debugging)
+      // ========================================================
+      s4: [
+        {
+          id: 's4_q2_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 4 • Soru 2 (Web & APIs)',
+          promptTr: 'Mobil uygulama arka yüz servislerine HTTP istekleri gönderir.',
+          beforeText: 'The mobile app sends HTTP requests to backend',
+          afterText: 'endpoints.',
+          missingWord: 'REST APIs',
+          options: ['REST APIs', 'hardware', 'screens', 'chargers'],
+          fullSentence: 'The mobile app sends HTTP requests to backend REST APIs endpoints.'
+        },
+        {
+          id: 's4_q6_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 4 • Soru 6 (Decision Making)',
+          promptTr: 'Hizmeti kurtarmak için derhal önceki kararlı sürüme geri alırım.',
+          beforeText: 'I would immediately',
+          afterText: 'to the previous stable release.',
+          missingWord: 'roll back',
+          options: ['roll back', 'push force', 'delete files', 'turn off'],
+          fullSentence: 'I would immediately roll back to the previous stable release.'
+        },
+        {
+          id: 's4_q3_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 4 • Soru 3 (Teknik Terim Yazımı)',
+          word: 'breakpoints',
+          clue: 'Hata ayıklayıcıda API kodunu adım adım inceleme durakları'
+        }
+      ],
+
+      // ========================================================
+      // SCENARIO 5 (Execution Environments)
+      // ========================================================
+      s5: [
+        {
+          id: 's5_q1_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 5 • Soru 1 (Python Virtual Environments)',
+          promptTr: 'Sanal ortamlar paketleri ayrı klasörlerde izole eder.',
+          beforeText: 'Virtual environments',
+          afterText: 'packages into separate project folders so versions do not conflict.',
+          missingWord: 'isolate',
+          options: ['isolate', 'merge', 'delete', 'ignore'],
+          fullSentence: 'Virtual environments isolate packages into separate project folders so versions do not conflict.'
+        },
+        {
+          id: 's5_q2_c1',
+          type: 'cloze',
+          scenario: 'Senaryo 5 • Soru 2 (Docker vs VM)',
+          promptTr: 'Docker ana işletim sistemi çekirdeğini paylaşır ve hafiftir.',
+          beforeText: 'Docker packages code while sharing the host',
+          afterText: 'and is lightweight and fast.',
+          missingWord: 'kernel',
+          options: ['kernel', 'screen', 'battery', 'keyboard'],
+          fullSentence: 'Docker packages code while sharing the host kernel and is lightweight and fast.'
+        },
+        {
+          id: 's5_q1_sp1',
+          type: 'spelling',
+          scenario: 'Senaryo 5 • Soru 1 (Teknik Terim Yazımı)',
+          word: 'isolate',
+          clue: 'Sanal ortamların kütüphane sürümlerini birbirinden ayırma/yalıtma işlevi'
+        }
+      ]
+    };
+
+    // ================= DUOLINGO ENGINE CONTROLLER =================
+    class DuolingoTrainer {
+      constructor() {
+        this.currentScenario = 's1';
+        this.currentMode = 'all';
+        this.activeQueue = [];
+        this.totalInitialCount = 0;
+        this.completedCount = 0;
+        this.currentExercise = null;
+        this.placedChips = [];
+        this.selectedClozeWord = null;
+        this.hearts = 5;
+        this.streak = 1;
+        this.isEvaluated = false;
+
+        this.init();
+      }
+
+      init() {
+        this.loadScenario(this.currentScenario);
+        this.updateHeaderUI();
+      }
+
+      loadScenario(key) {
+        let pool = [];
+        if (key === 'all') {
+          Object.values(DRILL_DATA).forEach(arr => pool.push(...arr));
+        } else {
+          pool = [...(DRILL_DATA[key] || DRILL_DATA.s1)];
+        }
+
+        // Apply exercise mode filter if set
+        if (this.currentMode !== 'all') {
+          pool = pool.filter(ex => ex.type === this.currentMode);
+          if (pool.length === 0) {
+            // fallback if mode has no items in scenario
+            pool = [...(DRILL_DATA[key] || DRILL_DATA.s1)];
+          }
+        }
+
+        // Shuffle queue
+        this.activeQueue = this.shuffle([...pool]);
+        this.totalInitialCount = this.activeQueue.length;
+        this.completedCount = 0;
+        this.isEvaluated = false;
+
+        this.nextExercise();
+      }
+
+      shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      updateHeaderUI() {
+        const progBar = document.getElementById('duoProgressBar');
+        if (progBar && this.totalInitialCount > 0) {
+          const pct = Math.min(100, Math.round((this.completedCount / this.totalInitialCount) * 100));
+          progBar.style.width = `${pct}%`;
+        }
+
+        const hEl = document.getElementById('heartCount');
+        if (hEl) hEl.textContent = this.hearts;
+
+        const sEl = document.getElementById('streakCount');
+        if (sEl) sEl.textContent = this.streak;
+
+        const xpEl = document.getElementById('xpCount');
+        if (xpEl) {
+          const s = FOIT_STATE.getStorage();
+          xpEl.textContent = `${s.xp || 150} XP`;
+        }
+      }
+
+      nextExercise() {
+        this.hideFeedback();
+        this.isEvaluated = false;
+
+        // Check if finished!
+        if (this.activeQueue.length === 0) {
+          this.renderVictory();
+          return;
+        }
+
+        this.currentExercise = this.activeQueue[0];
+        this.placedChips = [];
+        this.selectedClozeWord = null;
+
+        if (this.currentExercise.type === 'cloze') {
+          this.renderClozeExercise();
+        } else if (this.currentExercise.type === 'sentence') {
+          this.renderSentenceExercise();
+        } else if (this.currentExercise.type === 'spelling') {
+          this.renderSpellingExercise();
+        }
+
+        this.updateHeaderUI();
+      }
+
+      // 1. CLOZE / KELİME TAMAMLAMA DRILL
+      renderClozeExercise() {
+        const container = document.getElementById('exerciseContainer');
+        const ex = this.currentExercise;
+        const shuffledOptions = this.shuffle([...ex.options]);
+
+        container.innerHTML = `
+          <div class="duo-question-box">
+            ${ex.isRetry ? '<div class="duo-retry-badge">⚠️ Tekrar Gelen Soru</div>' : ''}
+            <div class="duo-badge duo-badge-cloze">🧩 Kelime Tamamlama Oyunu</div>
+            <div class="duo-prompt-title">Cümledeki boşluğa uygun doğru teknik kelimeyi seç:</div>
+            <div class="duo-prompt-sub">🇹🇷 "${ex.promptTr}"</div>
+
+            <div class="duo-cloze-sentence">
+              ${ex.beforeText} <span class="duo-blank-slot" id="duoBlankSlot">?</span> ${ex.afterText}
+            </div>
+
+            <div class="duo-options-grid" id="duoOptionsGrid">
+              ${shuffledOptions.map(opt => `
+                <button class="duo-option-btn" onclick="trainer.selectClozeOption('${opt}', this)">
+                  ${opt}
+                </button>
+              `).join('')}
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-mini" onclick="speakText('${ex.fullSentence.replace(/'/g, "\\'")}', this)">
+                🔊 Cümlenin Sesini Dinle
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      selectClozeOption(word, btnEl) {
+        if (this.isEvaluated) return;
+        if (window.soundFX) window.soundFX.click();
+
+        this.selectedClozeWord = word;
+
+        document.querySelectorAll('.duo-option-btn').forEach(b => b.classList.remove('selected'));
+        btnEl.classList.add('selected');
+
+        const slot = document.getElementById('duoBlankSlot');
+        if (slot) {
+          slot.textContent = word;
+          slot.classList.add('filled');
+        }
+      }
+
+      // 2. SENTENCE BUILDER DRILL
+      renderSentenceExercise() {
+        const container = document.getElementById('exerciseContainer');
+        const ex = this.currentExercise;
+
+        const cleanWords = ex.targetSentence.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").split(/\s+/);
+        const shuffledWords = this.shuffle(cleanWords);
+
+        container.innerHTML = `
+          <div class="duo-question-box">
+            ${ex.isRetry ? '<div class="duo-retry-badge">⚠️ Tekrar Gelen Soru</div>' : ''}
+            <div class="duo-badge duo-badge-sentence">🔤 Cümle Kurma Alıştırması</div>
+            <div class="duo-prompt-title">Kelimelere tıklayarak doğru İngilizce cümleyi kur:</div>
+            <div class="duo-prompt-sub">🇹🇷 "${ex.promptTr}"</div>
+
+            <div class="duo-dropzone" id="duoDropzone"></div>
+            <div class="duo-word-bank" id="duoWordBank"></div>
+
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-mini" onclick="speakText('${ex.audioText || ex.targetSentence}', this)">
+                🔊 Doğru Telaffuzu Dinle
+              </button>
+            </div>
+          </div>
+        `;
+
+        const dropEl = document.getElementById('duoDropzone');
+        const bankEl = document.getElementById('duoWordBank');
+
+        shuffledWords.forEach((word, idx) => {
+          const chip = document.createElement('div');
+          chip.className = 'duo-chip';
+          chip.textContent = word;
+          chip.dataset.idx = idx;
+          chip.dataset.word = word;
+
+          chip.onclick = () => {
+            if (!chip.classList.contains('used')) {
+              this.placeChip(word, chip, dropEl);
+            }
+          };
+
+          bankEl.appendChild(chip);
+        });
+      }
+
+      placeChip(word, bankChip, dropEl) {
+        if (window.soundFX) window.soundFX.click();
+        bankChip.classList.add('used');
+
+        const placedChip = document.createElement('div');
+        placedChip.className = 'duo-chip placed';
+        placedChip.textContent = word;
+
+        const record = { word, bankChip, placedChip };
+        this.placedChips.push(record);
+
+        placedChip.onclick = () => {
+          if (this.isEvaluated) return;
+          if (window.soundFX) window.soundFX.click();
+          bankChip.classList.remove('used');
+          dropEl.removeChild(placedChip);
+          this.placedChips = this.placedChips.filter(r => r !== record);
+          if (this.placedChips.length === 0) dropEl.classList.remove('has-items');
+        };
+
+        dropEl.appendChild(placedChip);
+        dropEl.classList.add('has-items');
+      }
+
+      // 3. SPELLING DRILL
+      renderSpellingExercise() {
+        const container = document.getElementById('exerciseContainer');
+        const ex = this.currentExercise;
+
+        container.innerHTML = `
+          <div class="duo-question-box">
+            ${ex.isRetry ? '<div class="duo-retry-badge">⚠️ Tekrar Gelen Soru</div>' : ''}
+            <div class="duo-badge duo-badge-spelling">✍️ Kusursuz Yazım (Spelling)</div>
+            <div class="duo-prompt-title">Aşağıdaki teknik terimi İngilizce olarak doğru yaz:</div>
+            <div class="duo-prompt-sub">💡 İpucu: <strong>${ex.clue}</strong></div>
+
+            <div class="duo-spelling-wrap">
+              <input type="text" id="duoSpellingInput" class="duo-input" placeholder="Type technical term here..." autocomplete="off" autofocus>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-mini" onclick="speakText('${ex.word}', this)">
+                🔊 Kelimenin Sesini Dinle
+              </button>
+            </div>
+          </div>
+        `;
+
+        const input = document.getElementById('duoSpellingInput');
+        if (input) {
+          input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') this.checkAnswer();
+          });
+          setTimeout(() => input.focus(), 150);
+        }
+      }
+
+      checkAnswer() {
+        if (this.isEvaluated) {
+          this.nextExercise();
+          return;
+        }
+
+        const ex = this.currentExercise;
+        let isCorrect = false;
+        let correctDisplay = '';
+
+        const norm = str => (str || '').toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").replace(/\s+/g, " ").trim();
+
+        if (ex.type === 'cloze') {
+          isCorrect = norm(this.selectedClozeWord) === norm(ex.missingWord);
+          correctDisplay = ex.fullSentence || (ex.beforeText + ' ' + ex.missingWord + ' ' + ex.afterText);
+        } else if (ex.type === 'sentence') {
+          const userOutput = this.placedChips.map(r => r.word).join(' ');
+          isCorrect = norm(userOutput) === norm(ex.targetSentence);
+          correctDisplay = ex.targetSentence;
+        } else if (ex.type === 'spelling') {
+          const input = document.getElementById('duoSpellingInput');
+          const userOutput = input ? input.value.trim() : '';
+          isCorrect = norm(userOutput) === norm(ex.word);
+          correctDisplay = ex.word;
+        }
+
+        this.isEvaluated = true;
+
+        if (isCorrect) {
+          if (window.soundFX) window.soundFX.success();
+          FOIT_STATE.addXP(15, 'Doğru Cevap');
+          this.completedCount++;
+
+          // Remove from active queue
+          this.activeQueue.shift();
+
+          this.showFeedback(true, '🎉 Harika! Kusursuz cevap.', correctDisplay);
+        } else {
+          if (window.soundFX) window.soundFX.error();
+          this.hearts = Math.max(1, this.hearts - 1);
+
+          // DUOLINGO RETRY MECHANISM: Re-add failed item to the end of the queue!
+          const failedItem = this.activeQueue.shift();
+          failedItem.isRetry = true;
+          this.activeQueue.push(failedItem);
+
+          this.showFeedback(false, '⚠️ Tekrar Denenecek! Doğru Cevap:', correctDisplay);
+        }
+
+        this.updateHeaderUI();
+      }
+
+      skipExercise() {
+        if (this.activeQueue.length > 0) {
+          const skipped = this.activeQueue.shift();
+          skipped.isRetry = true;
+          this.activeQueue.push(skipped);
+          this.nextExercise();
+        }
+      }
+
+      showFeedback(isCorrect, title, solution) {
+        const bar = document.getElementById('feedbackBar');
+        const icon = document.getElementById('feedbackIcon');
+        const titleEl = document.getElementById('feedbackTitle');
+        const solEl = document.getElementById('feedbackSolution');
+
+        bar.className = `duo-feedback-bar ${isCorrect ? 'correct' : 'wrong'}`;
+        icon.textContent = isCorrect ? '🎉' : '❌';
+        titleEl.textContent = title;
+        solEl.textContent = solution;
+        bar.style.display = 'flex';
+
+        const btnCheck = document.getElementById('btnCheck');
+        if (btnCheck) btnCheck.textContent = 'Devam Et ➡️';
+      }
+
+      hideFeedback() {
+        const bar = document.getElementById('feedbackBar');
+        if (bar) bar.style.display = 'none';
+
+        const btnCheck = document.getElementById('btnCheck');
+        if (btnCheck) btnCheck.textContent = 'Kontrol Et ➡️';
+      }
+
+      renderVictory() {
+        const container = document.getElementById('exerciseContainer');
+        container.innerHTML = `
+          <div class="duo-victory-card">
+            <div class="duo-victory-icon">🏆</div>
+            <h2 style="font-size: 2rem; font-weight: 800; color: var(--accent-emerald); margin-bottom: 8px;">
+              Ders Tamamlandı!
+            </h2>
+            <p style="font-size: 1.05rem; color: var(--text-secondary); max-width: 580px; margin: 0 auto 24px; line-height: 1.6;">
+              Tebrikler! Yanlış yaptığın tüm kelime tamamlama ve yazım sorularını tekrar tekrar çözerek bu senaryodaki tüm soruları <strong>sıfır hatayla</strong> tamamladın!
+            </p>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+              <button class="btn-primary" onclick="trainer.loadScenario(trainer.currentScenario)">
+                🔄 Bu Senaryoyu Tekrar Et
+              </button>
+              <button class="btn-secondary" onclick="trainer.changeScenario('s2')">
+                🛡️ 2. Senaryoya Geç
+              </button>
+              <a href="hizli_sinav_cevaplari.html" class="btn-secondary">
+                📖 Hızlı Cevap Tablosuna Dön
+              </a>
+            </div>
+          </div>
+        `;
+
+        if (window.soundFX) window.soundFX.success();
+        FOIT_STATE.addXP(50, 'Senaryo Başarıyla Tamamlandı!');
+      }
+    }
+
+    let trainer = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      trainer = new DuolingoTrainer();
+    });
+
+    function changeScenario(val) {
+      if (trainer) {
+        trainer.currentScenario = val;
+        trainer.loadScenario(val);
+      }
+    }
+
+    function changeMode(val) {
+      if (trainer) {
+        trainer.currentMode = val;
+        trainer.loadScenario(trainer.currentScenario);
+      }
+    }
+
+    function checkAnswer() {
+      if (trainer) trainer.checkAnswer();
+    }
+
+    function nextExercise() {
+      if (trainer) trainer.nextExercise();
+    }
+
+    function skipExercise() {
+      if (trainer) trainer.skipExercise();
+    }
+  </script>
+</body>
+</html>
