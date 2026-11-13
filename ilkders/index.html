@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>İlk Ders — Parçalanışlardan Toplama Zincirlerine</title>
+  <style>
+    :root{
+      --ink:#153047;--muted:#5d7180;--paper:#fbfaf5;--card:#fff;
+      --teal:#187f78;--teal2:#d9efea;--amber:#e8a93a;--amber2:#fff0cf;
+      --red:#b84a56;--line:#d7e0e2;--blue:#286d9b;--shadow:0 12px 30px rgba(22,48,71,.10);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.62 system-ui,-apple-system,"Segoe UI",sans-serif}
+    body:before{content:"";position:fixed;inset:0;z-index:-1;opacity:.35;background-image:linear-gradient(#dfe6e5 1px,transparent 1px),linear-gradient(90deg,#dfe6e5 1px,transparent 1px);background-size:28px 28px}
+    a{color:inherit}
+    button,input{font:inherit}
+    .wrap{width:min(1120px,calc(100% - 32px));margin:auto}
+    header{padding:18px 0;border-bottom:1px solid var(--line);background:rgba(251,250,245,.94);position:sticky;top:0;z-index:10;backdrop-filter:blur(8px)}
+    nav{display:flex;align-items:center;justify-content:space-between;gap:18px}
+    .brand{font-weight:900;letter-spacing:.02em}.brand span{color:var(--teal)}
+    .navlinks{display:flex;gap:18px;font-size:14px;color:var(--muted)}
+    .navlinks a{text-decoration:none}.navlinks a:hover{color:var(--teal)}
+    .hero{padding:72px 0 42px}
+    .hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:46px;align-items:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid #9fc9c4;background:#eef8f5;color:#14645f;border-radius:999px;padding:6px 11px;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+    h1{font:900 clamp(42px,6vw,74px)/.98 Georgia,serif;letter-spacing:-.045em;margin:22px 0 20px;max-width:800px}
+    .lead{font-size:20px;color:var(--muted);max-width:700px}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+    .btn{border:0;border-radius:12px;padding:12px 17px;font-weight:850;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+    .btn.primary{background:var(--ink);color:white}.btn.primary:hover{background:#244963}
+    .btn.secondary{background:white;color:var(--ink);border:1px solid var(--line)}
+    .number-stage{background:var(--ink);color:white;border-radius:28px;padding:26px;box-shadow:var(--shadow);min-height:390px;display:grid;place-items:center;position:relative;overflow:hidden}
+    .number-stage:after{content:"";position:absolute;width:220px;height:220px;border:46px solid rgba(255,255,255,.05);border-radius:50%;right:-95px;top:-95px}
+    .chain-visual{width:100%;position:relative;z-index:1}
+    .chain-row{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+    .node{width:49px;height:49px;border-radius:50%;display:grid;place-items:center;background:white;color:var(--ink);font-weight:900;border:4px solid #8dd2c6}
+    .arrow{color:#8dd2c6;font-weight:900}.hero-eq{text-align:center;font:700 24px Georgia,serif;margin:25px 0 6px}.hero-note{text-align:center;color:#bad6dd;font-size:14px}
+    section{padding:48px 0}
+    .section-head{max-width:780px;margin-bottom:26px}.kicker{color:var(--teal);font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:13px}
+    h2{font:900 clamp(30px,4vw,46px)/1.08 Georgia,serif;letter-spacing:-.025em;margin:7px 0 12px}
+    h3{font-size:20px;line-height:1.25;margin:0 0 10px}
+    .muted{color:var(--muted)}
+    .goals{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .goal,.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 7px 18px rgba(22,48,71,.05)}
+    .goal b{display:block;font-size:29px;color:var(--teal);margin-bottom:9px}
+    .lesson-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .big-card{background:white;border:1px solid var(--line);border-radius:22px;padding:28px;box-shadow:var(--shadow)}
+    .math{font:700 22px Georgia,serif;background:#f1f6f5;border-left:5px solid var(--teal);padding:14px 16px;margin:16px 0;border-radius:0 12px 12px 0;overflow:auto}
+    .partition-list{display:grid;gap:8px;margin-top:15px}.partition{display:flex;justify-content:space-between;gap:15px;border:1px solid var(--line);padding:9px 12px;border-radius:10px;background:#fff}.partition.good{background:var(--teal2);border-color:#78bab2;font-weight:800}
+    .warning{background:var(--amber2);border:1px solid #edcb7d;border-radius:14px;padding:15px 17px;margin-top:16px}
+    .lab{background:#f2f7f6;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .lab-shell{display:grid;grid-template-columns:310px 1fr;gap:20px;align-items:start}
+    .controls{background:white;border:1px solid var(--line);border-radius:20px;padding:20px;position:sticky;top:88px}
+    .controls label{font-weight:850;display:block;margin-bottom:6px}.target-line{display:flex;align-items:center;gap:12px;margin-bottom:20px}.target-line input{width:100%}.target-badge{min-width:52px;height:52px;display:grid;place-items:center;background:var(--ink);color:white;border-radius:13px;font-size:22px;font-weight:900}
+    .stat{border-top:1px solid var(--line);padding:12px 0}.stat small{display:block;color:var(--muted)}.stat strong{font-size:23px}
+    .workspace{display:grid;gap:16px}.panel{background:white;border:1px solid var(--line);border-radius:20px;padding:20px}
+    .panel-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.pill{font-size:12px;font-weight:850;border-radius:999px;padding:5px 9px;background:var(--teal2);color:#125f5a}
+    .current-chain{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-height:54px}.chain-item{height:44px;min-width:44px;padding:0 12px;border-radius:12px;background:var(--ink);color:white;display:grid;place-items:center;font-weight:900;position:relative}.chain-item:not(:last-child):after{content:"→";position:absolute;right:-15px;color:var(--muted)}.chain-item:not(:last-child){margin-right:9px}
+    .candidates{display:flex;flex-wrap:wrap;gap:9px}.candidate{border:1px solid #9cc7c2;background:#edf8f6;color:#145e59;border-radius:12px;padding:9px 12px;font-weight:850;cursor:pointer}.candidate:hover,.candidate.best{background:var(--teal);color:white;border-color:var(--teal)}
+    .candidate small{font-weight:600;display:block;opacity:.8}.empty{color:var(--muted);font-style:italic}
+    .rep{font:700 20px Georgia,serif;color:var(--blue);margin-bottom:8px}.progress{height:10px;background:#e5ecee;border-radius:99px;overflow:hidden}.progress span{display:block;height:100%;background:var(--teal);width:0;transition:.3s}
+    .feedback{min-height:54px;margin-top:12px;padding:12px 14px;border-radius:12px;background:#f6f8f8;color:var(--muted)}.feedback.win{background:#ddf3e7;color:#17613c}.feedback.bad{background:#fff0e6;color:#8d481f}
+    .steps{counter-reset:s;display:grid;gap:14px}.step{background:white;border:1px solid var(--line);border-radius:16px;padding:18px 18px 18px 68px;position:relative}.step:before{counter-increment:s;content:counter(s);position:absolute;left:18px;top:18px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--amber);font-weight:900;color:#4a3107}
+    .investigation{display:grid;grid-template-columns:1fr .9fr;gap:20px}.question-box{background:var(--ink);color:white;border-radius:22px;padding:26px}.question-box h3{font:800 27px Georgia,serif}.question-box ol{padding-left:20px;color:#dbe8ec}.notebook{background:white;border:1px solid var(--line);border-radius:22px;padding:25px}.prompt{border-bottom:1px dashed #9aabad;padding:11px 0}.reveal{display:none;margin-top:8px;color:#12655f;background:var(--teal2);padding:10px;border-radius:9px}.reveal.show{display:block}
+    .terms{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.term{background:white;border:1px solid var(--line);border-radius:14px;padding:16px}.term b{color:var(--teal);display:block;margin-bottom:4px}
+    footer{padding:36px 0 50px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+    @media(max-width:850px){.hero-grid,.lesson-grid,.lab-shell,.investigation{grid-template-columns:1fr}.goals{grid-template-columns:1fr}.controls{position:static}.navlinks{display:none}.hero{padding-top:45px}.terms{grid-template-columns:1fr 1fr}}
+    @media print{header,.hero-actions,.controls .btn,.candidate,.reveal-btn{display:none!important}body:before{display:none}section{break-inside:avoid}.lab-shell{grid-template-columns:1fr}.controls{position:static}.hero{padding-top:20px}}
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="wrap">
+      <div class="brand">MATEMATİK <span>ARAŞTIRMA LABI</span></div>
+      <div class="navlinks"><a href="#fikir">Ana fikir</a><a href="#lab">Deney</a><a href="#arastirma">Araştırma</a><a href="#sozluk">Sözlük</a></div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">İlk ders · 45–60 dakika</div>
+          <h1>Bir sayıya giden en akıllı yol hangisi?</h1>
+          <p class="lead">Tamsayı parçalanışlarını kullanarak kısa toplama zincirleri kuracağız. Amaç sadece hedefe ulaşmak değil, <strong>mümkün olduğunca az çarpma</strong> kullanmak.</p>
+          <div class="hero-actions"><a class="btn primary" href="#lab">Deneye başla ↓</a><a class="btn secondary" href="#fikir">Önce fikri öğren</a></div>
+        </div>
+        <div class="number-stage" aria-label="15 için toplama zinciri örneği">
+          <div class="chain-visual">
+            <div class="chain-row"><span class="node">1</span><span class="arrow">→</span><span class="node">2</span><span class="arrow">→</span><span class="node">3</span><span class="arrow">→</span><span class="node">6</span><span class="arrow">→</span><span class="node">12</span><span class="arrow">→</span><span class="node">15</span></div>
+            <div class="hero-eq">15 = 12 + 3</div>
+            <div class="hero-note">Her düğüm, daha önceki iki düğümün toplamı.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">Ders sonunda</div><h2>Üç önemli fikri ayırt edebileceksin</h2></div>
+        <div class="goals">
+          <div class="goal"><b>01</b><h3>Parçalanış</h3><p class="muted">Bir tamsayıyı pozitif tamsayıların toplamı biçiminde yazmak.</p></div>
+          <div class="goal"><b>02</b><h3>Toplama zinciri</h3><p class="muted">Her yeni sayıyı, daha önce üretilmiş iki sayının toplamı yaparak hedefe ulaşmak.</p></div>
+          <div class="goal"><b>03</b><h3>Kısıtlı parçalanış</h3><p class="muted">Hedefi yalnızca zincirde hazır bulunan parçalarla yazmak.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="fikir">
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">Ana fikir</div><h2>Her parçalanış işe yaramaz</h2><p class="muted">15’i birçok biçimde iki parçaya ayırabiliriz; fakat toplama zincirinde sadece daha önce ürettiğimiz sayıları kullanabiliriz.</p></div>
+        <div class="lesson-grid">
+          <article class="big-card">
+            <h3>15’in iki parçalı ayrılışları</h3>
+            <div class="partition-list">
+              <div class="partition"><span>15 = 1 + 14</span><span>14 hazır değil</span></div>
+              <div class="partition"><span>15 = 2 + 13</span><span>13 hazır değil</span></div>
+              <div class="partition good"><span>15 = 3 + 12</span><span>ikisi de hazır ✓</span></div>
+              <div class="partition"><span>15 = 6 + 9</span><span>9 hazır değil</span></div>
+              <div class="partition"><span>15 = 7 + 8</span><span>ikisi de hazır değil</span></div>
+            </div>
+          </article>
+          <article class="big-card">
+            <h3>Zincir neden bir hesaplama planıdır?</h3>
+            <div class="math">1, 2, 3, 6, 12, 15</div>
+            <p>Bu zincir, <em>x</em><sup>15</sup> değerini şu sırayla hesaplar:</p>
+            <div class="math">x² → x³ → x⁶ → x¹² → x¹⁵</div>
+            <p>Her ok yalnızca bir çarpma demektir. Toplam: <strong>5 çarpma</strong>.</p>
+            <div class="warning"><strong>Dikkat:</strong> Bir sayının çok parçalanışı olması, otomatik olarak en kısa zincire sahip olduğu anlamına gelmez. Araştıracağımız ilişki tam da budur.</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab" id="lab">
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">Etkileşimli laboratuvar</div><h2>Zinciri sen kur</h2><p class="muted">Bir hedef seç. Her adımda yalnızca mevcut zincirin iki elemanının toplamına tıklayabilirsin. Yeşil aday, kısıtlı parçalanış ölçüsüne göre en umut verici hamlelerden biridir.</p></div>
+        <div class="lab-shell">
+          <aside class="controls">
+            <label for="target">Hedef sayı</label>
+            <div class="target-line"><input id="target" type="range" min="3" max="40" value="15"><span class="target-badge" id="targetOut">15</span></div>
+            <button class="btn primary" id="reset" style="width:100%">Yeni zincir başlat</button>
+            <button class="btn secondary" id="undo" style="width:100%;margin-top:9px">Son adımı geri al</button>
+            <div class="stat"><small>Çarpma sayısı</small><strong id="stepCount">0</strong></div>
+            <div class="stat"><small>Hedefin en az parça sayısı</small><strong id="partCount">15</strong></div>
+            <div class="stat"><small>İkili yöntem tahmini</small><strong id="binaryCount">—</strong></div>
+          </aside>
+          <div class="workspace">
+            <div class="panel"><div class="panel-title"><h3>Mevcut zincir</h3><span class="pill" id="statusPill">Başlangıç</span></div><div class="current-chain" id="chain"></div></div>
+            <div class="panel"><div class="panel-title"><h3>Üretilebilecek yeni sayılar</h3><span class="pill">a + b</span></div><div class="candidates" id="candidates"></div></div>
+            <div class="panel"><div class="panel-title"><h3>Hedefin mevcut parçalarla en kısa yazılışı</h3><span class="pill">kısıtlı parçalanış</span></div><div class="rep" id="representation"></div><div class="progress"><span id="progressBar"></span></div><div class="feedback" id="feedback">İpucu: Parça sayısını azaltan bir aday seçmeye çalış.</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">Algoritmanın tohumu</div><h2>Parçalanış rehberli seçim nasıl çalışır?</h2></div>
+        <div class="steps">
+          <div class="step"><h3>Adayları üret</h3><p class="muted">Zincirdeki her iki sayıyı topla; son terimden büyük ve hedefi aşmayan sonuçları tut.</p></div>
+          <div class="step"><h3>Her adayı geçici olarak dene</h3><p class="muted">Aday zincire eklendiğinde hedefin en az kaç mevcut parçayla yazılabildiğini hesapla.</p></div>
+          <div class="step"><h3>Parça sayısını en çok azaltanı seç</h3><p class="muted">Eşitlik varsa hedefe yakınlık ve yeni toplamlar üretme potansiyeli ikinci ölçüt olabilir.</p></div>
+          <div class="step"><h3>Sonucu klasik yöntemlerle karşılaştır</h3><p class="muted">Daha kısa zincir bulmak kadar, zinciri bulmak için geçen süreyi de kaydet.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="arastirma">
+      <div class="wrap investigation">
+        <div class="question-box">
+          <div class="kicker" style="color:#80d0c6">Mini araştırma</div>
+          <h3>Hangi sayılar parçalanış rehberli yöntem için daha uygun?</h3>
+          <ol>
+            <li>10–25 arasından beş hedef seç.</li>
+            <li>Her hedef için en az iki farklı zincir kur.</li>
+            <li>Çarpma sayılarını kaydet.</li>
+            <li>Asal ve bileşik hedefleri karşılaştır.</li>
+            <li>İlk tahminine uymayan bir karşı örnek ara.</li>
+          </ol>
+        </div>
+        <div class="notebook">
+          <h3>Araştırmacı defteri</h3>
+          <div class="prompt"><strong>1.</strong> 15 için neden 12 iyi bir adaydır?<button class="btn secondary reveal-btn" data-r="r1" style="float:right;padding:5px 9px">İpucu</button><div class="reveal" id="r1">Çünkü 12 eklendiğinde 15 = 12 + 3 olur ve hedef iki hazır parçaya iner.</div></div>
+          <div class="prompt"><strong>2.</strong> En büyük adayı seçmek her zaman iyi midir?<button class="btn secondary reveal-btn" data-r="r2" style="float:right;padding:5px 9px">İpucu</button><div class="reveal" id="r2">Hayır. Büyük aday hedefin kalan kısmını üretmeyi zorlaştırabilir. Bir karşı örnek bulmak araştırmanın parçasıdır.</div></div>
+          <div class="prompt"><strong>3.</strong> Projenin ölçülebilir başarı değeri ne olabilir?<button class="btn secondary reveal-btn" data-r="r3" style="float:right;padding:5px 9px">İpucu</button><div class="reveal" id="r3">Optimum zincirden sapma, ortalama çarpma sayısı, çalışma süresi ve incelenen durum sayısı.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sozluk">
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">Kavram kartları</div><h2>Dersin kısa sözlüğü</h2></div>
+        <div class="terms">
+          <div class="term"><b>Tamsayı parçalanışı</b>n sayısını pozitif tamsayıların toplamı olarak yazma.</div>
+          <div class="term"><b>Kısıtlı parçalanış</b>Yalnızca izin verilen parçalardan oluşan yazılış.</div>
+          <div class="term"><b>Toplama zinciri</b>Her yeni terimi önceki iki terimin toplamı olan dizi.</div>
+          <div class="term"><b>Sezgisel yöntem</b>Hızlı ve iyi sonuç arayan, fakat her zaman optimumluğu garanti etmeyen yöntem.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap"><strong>İlk dersin sonucu:</strong> Toplama zinciri bir parçalanış listesi değil, parçaları üretme ve yeniden kullanma planıdır. Bir sonraki derste bu sezgiyi algoritmaya dönüştüreceğiz.</div></footer>
+
+  <script>
+    const $=s=>document.querySelector(s);
+    const els={target:$('#target'),targetOut:$('#targetOut'),chain:$('#chain'),candidates:$('#candidates'),step:$('#stepCount'),part:$('#partCount'),binary:$('#binaryCount'),rep:$('#representation'),bar:$('#progressBar'),feedback:$('#feedback'),pill:$('#statusPill')};
+    let chain=[1];
+
+    function binaryCost(n){return Math.floor(Math.log2(n))+n.toString(2).split('1').length-1;}
+    function restrictedPartition(n,parts){
+      const dp=Array(n+1).fill(Infinity),prev=Array(n+1).fill(null);dp[0]=0;
+      for(let s=1;s<=n;s++) for(const p of parts) if(p<=s&&dp[s-p]+1<dp[s]){dp[s]=dp[s-p]+1;prev[s]=p;}
+      if(!isFinite(dp[n])) return {count:Infinity,items:[]};
+      const items=[];let cur=n;while(cur>0){items.push(prev[cur]);cur-=prev[cur];}
+      return {count:dp[n],items};
+    }
+    function candidateList(){
+      const n=+els.target.value,last=chain.at(-1),set=new Set();
+      for(let i=0;i<chain.length;i++)for(let j=i;j<chain.length;j++){const v=chain[i]+chain[j];if(v>last&&v<=n)set.add(v);}
+      return [...set].sort((a,b)=>a-b);
+    }
+    function scoreCandidate(v){
+      const n=+els.target.value,after=restrictedPartition(n,[...chain,v]);
+      const pairReady=chain.includes(n-v)?1:0;
+      const future=[...chain,v].filter(x=>x+v<=n).length;
+      return (50-after.count*8)+(pairReady*12)+future-(n-v)/n;
+    }
+    function render(){
+      const n=+els.target.value;els.targetOut.textContent=n;els.step.textContent=chain.length-1;els.binary.textContent=binaryCost(n);
+      els.chain.innerHTML=chain.map(v=>`<span class="chain-item">${v}</span>`).join('');
+      const rp=restrictedPartition(n,chain);els.part.textContent=rp.count;els.rep.textContent=`${n} = ${rp.items.join(' + ')}`;
+      els.bar.style.width=`${Math.min(100,100*(chain.at(-1)-1)/(n-1))}%`;
+      if(chain.at(-1)===n){els.feedback.className='feedback win';els.feedback.textContent=`Tebrikler! ${n} sayısına ${chain.length-1} çarpma adımında ulaştın. İkili yöntem göstergesi: ${binaryCost(n)}.`;els.pill.textContent='Hedefe ulaşıldı';els.candidates.innerHTML='<span class="empty">Zincir tamamlandı.</span>';return;}
+      els.pill.textContent=`${chain.at(-1)} / ${n}`;els.feedback.className='feedback';
+      const candidates=candidateList();
+      if(!candidates.length){els.candidates.innerHTML='<span class="empty">Uygun aday yok.</span>';return;}
+      const scores=candidates.map(v=>[v,scoreCandidate(v)]),max=Math.max(...scores.map(x=>x[1]));
+      els.candidates.innerHTML=scores.map(([v,s])=>{const q=restrictedPartition(n,[...chain,v]).count;return `<button class="candidate ${Math.abs(s-max)<1e-9?'best':''}" data-v="${v}">${v}<small>hedef: ${q} parça</small></button>`}).join('');
+      els.candidates.querySelectorAll('button').forEach(b=>b.onclick=()=>{const before=restrictedPartition(n,chain).count;chain.push(+b.dataset.v);const after=restrictedPartition(n,chain).count;els.feedback.className='feedback '+(after<before?'win':'bad');els.feedback.textContent=after<before?`İyi hamle: gerekli parça sayısı ${before} → ${after} düştü.`:`Bu hamle geçerli; fakat parça sayısını azaltmadı (${after}). Başka bir zincirde daha iyi sonuç olabilir.`;render();});
+    }
+    function reset(){chain=[1];els.feedback.className='feedback';els.feedback.textContent='İpucu: Parça sayısını azaltan bir aday seçmeye çalış.';render();}
+    els.target.oninput=reset;$('#reset').onclick=reset;$('#undo').onclick=()=>{if(chain.length>1)chain.pop();render();};
+    document.querySelectorAll('.reveal-btn').forEach(b=>b.onclick=()=>document.getElementById(b.dataset.r).classList.toggle('show'));
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Kısıtlı parçalanışlarla yönlendirilen toplama zinciri TÜBİTAK matematik projesinin güncel özeti.">
+  <title>Toplama Zinciri Projesi — Güncel Araştırma Özeti</title>
+  <style>
+    :root{
+      --ink:#132b3a;--muted:#60727c;--paper:#f6f4ec;--card:#fffdf8;
+      --teal:#087c72;--teal-soft:#dcefeb;--amber:#e7a32d;--amber-soft:#fff0cb;
+      --blue:#225f85;--red:#a94552;--line:#d7dfdf;--shadow:0 18px 50px rgba(19,43,58,.09)
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 system-ui,-apple-system,"Segoe UI",sans-serif}
+    body:before{content:"";position:fixed;inset:0;z-index:-1;opacity:.35;background:linear-gradient(#dfe5e2 1px,transparent 1px),linear-gradient(90deg,#dfe5e2 1px,transparent 1px);background-size:32px 32px}
+    a{color:var(--blue)}
+    button{font:inherit}
+    .wrap{width:min(1180px,calc(100% - 34px));margin:auto}
+    header{position:sticky;top:0;z-index:20;background:rgba(246,244,236,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    nav{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:22px}
+    .brand{font-weight:950;letter-spacing:.02em}.brand span{color:var(--teal)}
+    .links{display:flex;gap:18px;align-items:center;font-size:14px}.links a{text-decoration:none;color:var(--muted);font-weight:700}.links a:hover{color:var(--teal)}
+    .print{border:1px solid var(--line);background:white;color:var(--ink);border-radius:10px;padding:8px 11px;cursor:pointer;font-weight:800}
+    .hero{padding:72px 0 45px}
+    .hero-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:44px;align-items:center}
+    .eyebrow{display:inline-flex;padding:6px 11px;border-radius:999px;background:var(--teal-soft);color:#08645d;font-size:13px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
+    h1{font:950 clamp(42px,6.2vw,76px)/.98 Georgia,serif;letter-spacing:-.045em;margin:21px 0 18px}
+    .lead{font-size:20px;color:var(--muted);max-width:760px}
+    .verdict{margin-top:24px;padding:16px 18px;border-left:5px solid var(--teal);background:white;border-radius:0 14px 14px 0;box-shadow:0 7px 20px rgba(19,43,58,.05)}
+    .chain-stage{background:var(--ink);color:white;border-radius:28px;padding:28px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .chain-stage:after{content:"";position:absolute;width:260px;height:260px;border:50px solid rgba(255,255,255,.04);border-radius:50%;right:-120px;top:-130px}
+    .chain-stage h2{color:white;margin-top:0}.nodes{display:flex;align-items:center;gap:7px;flex-wrap:wrap;position:relative;z-index:1}
+    .node{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;background:white;color:var(--ink);font-weight:950;border:4px solid #78c9be}.arrow{color:#78c9be;font-weight:950}
+    .equation{font:800 24px Georgia,serif;margin-top:24px}.stage-note{color:#bed4dc;font-size:14px}
+    section{padding:50px 0}.soft{background:rgba(220,239,235,.52);border-block:1px solid #cbdedb}
+    .section-head{max-width:800px;margin-bottom:26px}.kicker{color:var(--teal);font-weight:950;text-transform:uppercase;letter-spacing:.08em;font-size:13px}
+    h2{font:900 clamp(30px,4vw,47px)/1.08 Georgia,serif;letter-spacing:-.03em;margin:7px 0 12px}h3{line-height:1.25;margin:0 0 10px}.muted{color:var(--muted)}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:19px;padding:22px;box-shadow:0 8px 22px rgba(19,43,58,.05)}
+    .card .num{display:block;color:var(--teal);font:900 31px Georgia,serif;margin-bottom:7px}
+    .formula{font:700 21px Georgia,serif;background:#eef5f3;border-left:5px solid var(--teal);padding:13px 15px;border-radius:0 12px 12px 0;overflow:auto}
+    .app-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.dark{background:var(--ink);color:white}.dark .muted{color:#c4d5da}.dark h3{font-size:23px}
+    .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.flow-step{background:white;border:1px solid var(--line);border-radius:15px;padding:16px;min-height:150px;position:relative}.flow-step b{display:grid;place-items:center;width:31px;height:31px;border-radius:50%;background:var(--amber);color:#4d3307;margin-bottom:12px}.flow-step:not(:last-child):after{content:"→";position:absolute;right:-13px;top:50%;z-index:2;color:var(--teal);font-size:22px;font-weight:950}
+    .tabs{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:17px}.tab{border:1px solid var(--line);background:white;border-radius:999px;padding:8px 13px;font-weight:850;color:var(--muted);cursor:pointer}.tab.active{background:var(--ink);color:white;border-color:var(--ink)}
+    .result-panel{display:none}.result-panel.active{display:block}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric{background:white;border:1px solid var(--line);border-radius:15px;padding:17px}.metric strong{display:block;font-size:29px;color:var(--teal);line-height:1.1}.metric small{color:var(--muted)}
+    .bar-row{display:grid;grid-template-columns:150px 1fr 54px;align-items:center;gap:10px;margin:12px 0}.bar{height:12px;border-radius:99px;background:#e0e8e7;overflow:hidden}.bar span{display:block;height:100%;background:var(--teal)}
+    .status{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:900}.status.done{background:#dff1e7;color:#236744}.status.open{background:var(--amber-soft);color:#7a540f}.status.risk{background:#f6e2e4;color:#8e3440}
+    table{width:100%;border-collapse:collapse;background:white;border:1px solid var(--line);border-radius:16px;overflow:hidden;display:table}th,td{text-align:left;padding:12px 13px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#edf3f2;color:#3e5963;font-size:13px}tr:last-child td{border-bottom:0}
+    .callout{border:1px solid #e1c26e;background:var(--amber-soft);border-radius:16px;padding:18px}.callout strong{color:#65450d}
+    .claim-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.claim{border-radius:18px;padding:21px;border:1px solid var(--line);background:white}.claim.good{border-top:6px solid var(--teal)}.claim.bad{border-top:6px solid var(--red)}.claim ul{padding-left:20px;margin-bottom:0}
+    .roadmap{display:grid;gap:12px;counter-reset:r}.road{background:white;border:1px solid var(--line);border-radius:15px;padding:17px 18px 17px 66px;position:relative}.road:before{counter-increment:r;content:counter(r);position:absolute;left:18px;top:17px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--teal);color:white;font-weight:950}
+    .sources{font-size:14px}.sources li{margin:8px 0}.footer{padding:34px 0 50px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+    @media(max-width:930px){.hero-grid,.grid-3,.grid-2,.app-grid,.claim-grid{grid-template-columns:1fr}.flow{grid-template-columns:1fr 1fr}.flow-step:after{display:none}.metrics{grid-template-columns:1fr 1fr}.links a{display:none}}
+    @media(max-width:560px){.flow,.metrics{grid-template-columns:1fr}.bar-row{grid-template-columns:105px 1fr 44px}.hero{padding-top:45px}.chain-stage{padding:21px}}
+    @media print{header,.print,.tabs{display:none!important}body:before{display:none}.hero{padding-top:20px}section{padding:28px 0}.result-panel{display:block!important;break-inside:avoid}.card,.claim,.road,.flow-step{break-inside:avoid}.dark{print-color-adjust:exact;-webkit-print-color-adjust:exact}.wrap{width:100%}}
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="wrap">
+      <div class="brand">TOPLAMA ZİNCİRİ <span>ARAŞTIRMA DOSYASI</span></div>
+      <div class="links"><a href="#problem">Problem</a><a href="#yontem">Yöntem</a><a href="#bulgular">Bulgular</a><a href="#ozgunluk">Özgünlük</a><a href="#yol">Yol haritası</a><button class="print" onclick="window.print()">Yazdır / PDF</button></div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="eyebrow">TÜBİTAK lise matematik projesi · güncel özet</span>
+          <h1>Daha az çarpma için daha akıllı zincir</h1>
+          <p class="lead">Bir hedef üssü, daha önce üretilmiş üslerin toplamlarıyla mümkün olduğunca kısa biçimde kuruyoruz. Araştırmanın odağı, <strong>kısıtlı parçalanış bilgisinin kısa toplama zinciri üretiminde ne zaman işe yaradığını</strong> belirlemek.</p>
+          <div class="verdict"><strong>Bugünkü gerçekçi hüküm:</strong> Fikir uygulanabilir ve uygulama bağlantısı güçlü. Ön deneyler umut veriyor; fakat yöntemin çalışma süresi ve hangi sayı sınıflarında avantaj sağladığı henüz tamamlanmış değil.</div>
+        </div>
+        <aside class="chain-stage">
+          <h2>15 için kısa plan</h2>
+          <div class="nodes"><span class="node">1</span><span class="arrow">→</span><span class="node">2</span><span class="arrow">→</span><span class="node">4</span><span class="arrow">→</span><span class="node">5</span><span class="arrow">→</span><span class="node">10</span><span class="arrow">→</span><span class="node">15</span></div>
+          <div class="equation">x → x² → x⁴ → x⁵ → x¹⁰ → x¹⁵</div>
+          <p class="stage-note">5 çarpma. Klasik ikili yöntem bu örnekte 6 çarpma kullanır.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="problem" class="soft">
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">01 · Araştırma problemi</div><h2>Hedef yalnızca zincir bulmak değil</h2><p class="muted">Her pozitif tam sayı için geçerli bir zincir kolayca üretilebilir. Asıl soru, kısa zincire hızlı ve açıklanabilir bir seçim kuralıyla ulaşmaktır.</p></div>
+        <div class="grid-3">
+          <article class="card"><span class="num">Tanım</span><h3>Toplama zinciri</h3><p><strong>1 = a₀ &lt; a₁ &lt; … &lt; aᵣ = n</strong> ve her yeni terim daha önceki iki terimin toplamıdır.</p><div class="formula">aᵢ = aⱼ + aₖ &nbsp; (j,k &lt; i)</div></article>
+          <article class="card"><span class="num">Amaç</span><h3>Az çarpma</h3><p>Zincirin uzunluğu, <em>x</em><sup>n</sup> hesaplanırken gereken çarpma sayısını verir. Daha kısa zincir, daha az çarpma demektir.</p></article>
+          <article class="card"><span class="num">Soru</span><h3>Hangi sayılarda?</h3><p>Kısıtlı parçalanış rehberli sezgisel yöntem, ikili yöntemi hangi sayı sınıflarında geçer ve bunun matematiksel nedeni nedir?</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">02 · Uygulama</div><h2>Neden gerçek bir hesaplama problemidir?</h2></div>
+        <div class="app-grid">
+          <article class="card dark"><h3>Hızlı üs alma</h3><p class="muted">x<sup>a+b</sup> = x<sup>a</sup>·x<sup>b</sup> olduğundan zincirdeki her yeni üs, önceki iki sonucun tek çarpımla birleştirilmesini sağlar.</p><div class="formula" style="background:#1f4357;color:white;border-color:#78c9be">x¹⁵ = x¹⁰ · x⁵</div></article>
+          <article class="card"><h3>Uygulama bağlantısı</h3><p>Toplama zincirleri, büyük üslerin ve modüler üslerin daha az çarpma ile hesaplanmasıyla ilişkilidir. Bu bağlantı kriptografi ve bilgisayar cebirinde anlamlıdır.</p><p class="muted"><strong>Sınır:</strong> Proje doğrudan yeni bir şifreleme sistemi geliştirmiyor; üs alma planlarını karşılaştırıyor.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="yontem" class="soft">
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">03 · Mevcut algoritma fikri</div><h2>Kısıtlı parçalanışla aday seçimi</h2><p class="muted">Mevcut prototipte iki sürüm var: yalnızca en az parça sayısını kullanan sade <em>q</em> kuralı ve ek bağlayıcı ölçütler kullanan KPYTZ sürümü.</p></div>
+        <div class="flow">
+          <div class="flow-step"><b>1</b><h3>Başla</h3><p class="muted">Zinciri [1] ile başlat.</p></div>
+          <div class="flow-step"><b>2</b><h3>Aday üret</h3><p class="muted">Mevcut iki terimin toplamlarından hedefi aşmayan yeni sayıları bul.</p></div>
+          <div class="flow-step"><b>3</b><h3>Geçici ekle</h3><p class="muted">Her adayı zincire eklenmiş gibi değerlendir.</p></div>
+          <div class="flow-step"><b>4</b><h3>Parçalanışı ölç</h3><p class="muted">Hedefin mevcut zincir terimleriyle en az kaç parçadan yazıldığını hesapla.</p></div>
+          <div class="flow-step"><b>5</b><h3>Seç ve yinele</h3><p class="muted">En umut verici adayı ekle; hedefe ulaşana kadar devam et.</p></div>
+        </div>
+        <div class="grid-2" style="margin-top:18px">
+          <article class="card"><span class="status done">Çalışıyor</span><h3 style="margin-top:12px">Sade q kuralı</h3><p>Önce hedefin en az parça sayısını küçülten aday seçilir; eşitlikte büyük aday tercih edilir.</p><div class="formula">puan(y) = (q(y), −y)</div></article>
+          <article class="card"><span class="status done">Çalışıyor</span><h3 style="margin-top:12px">KPYTZ sürümü</h3><p>En az parça sayısına ek olarak iki parçalı hazır bitiriş, en iyi yazılış sayısı, gelecekte kullanılabilir toplamlar ve aday büyüklüğü dikkate alınır.</p><div class="formula">(q, −hazır, −yazılış, −gelecek, −y)</div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="bulgular">
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">04 · Ön deneyler</div><h2>Şu anda gerçekten bildiklerimiz</h2><p class="muted">Aşağıdaki sonuçlar mevcut Python prototipinin çıktısıdır. Bunlar nihai performans sonucu değil, proje fikrinin çalışabilirliğini gösteren başlangıç deneyleridir.</p></div>
+        <div class="tabs" role="tablist"><button class="tab active" data-tab="kpytz">KPYTZ · 2–300</button><button class="tab" data-tab="sade">Sade q · 2–300</button><button class="tab" data-tab="tur">Sayı türleri</button></div>
+
+        <div class="result-panel active" id="kpytz">
+          <div class="metrics">
+            <div class="metric"><strong>8,950</strong><small>ortalama zincir uzunluğu</small></div>
+            <div class="metric"><strong>9,304</strong><small>ikili yöntem ortalaması</small></div>
+            <div class="metric"><strong>86</strong><small>ikili yöntemden kısa sonuç</small></div>
+            <div class="metric"><strong>0</strong><small>ikili yöntemden uzun sonuç</small></div>
+          </div>
+          <div class="card" style="margin-top:15px"><h3>2–100 aralığında kesin optimum karşılaştırması</h3><div class="bar-row"><span>Optimum</span><div class="bar"><span style="width:82.8%"></span></div><strong>82</strong></div><div class="bar-row"><span>1 adım uzun</span><div class="bar"><span style="width:17.2%;background:var(--amber)"></span></div><strong>17</strong></div><p class="muted">99 sayının 82’sinde en kısa uzunluk bulundu; 17’sinde optimumdan bir adım sapıldı.</p></div>
+        </div>
+
+        <div class="result-panel" id="sade">
+          <div class="metrics">
+            <div class="metric"><strong>8,993</strong><small>ortalama zincir uzunluğu</small></div>
+            <div class="metric"><strong>9,304</strong><small>ikili yöntem ortalaması</small></div>
+            <div class="metric"><strong>74</strong><small>ikili yöntemden kısa sonuç</small></div>
+            <div class="metric"><strong>0</strong><small>ikili yöntemden uzun sonuç</small></div>
+          </div>
+          <div class="card" style="margin-top:15px"><h3>2–100 aralığında kesin optimum karşılaştırması</h3><div class="bar-row"><span>Optimum</span><div class="bar"><span style="width:79.8%"></span></div><strong>79</strong></div><div class="bar-row"><span>1 adım uzun</span><div class="bar"><span style="width:19.2%;background:var(--amber)"></span></div><strong>19</strong></div><div class="bar-row"><span>2 adım uzun</span><div class="bar"><span style="width:1%;background:var(--red)"></span></div><strong>1</strong></div></div>
+        </div>
+
+        <div class="result-panel" id="tur">
+          <div class="card"><h3>Sade q yönteminin ikili yöntemi iyileştirme oranı</h3><div class="bar-row"><span>2ᵏ−1 sayıları</span><div class="bar"><span style="width:71.4%"></span></div><strong>%71</strong></div><div class="bar-row"><span>Sonraki 2ᵏ'ya ≤3</span><div class="bar"><span style="width:60%"></span></div><strong>%60</strong></div><div class="bar-row"><span>5'e bölünen</span><div class="bar"><span style="width:30%"></span></div><strong>%30</strong></div><div class="bar-row"><span>Asal</span><div class="bar"><span style="width:22.6%"></span></div><strong>%23</strong></div><div class="bar-row"><span>2'nin kuvveti</span><div class="bar"><span style="width:0%"></span></div><strong>%0</strong></div><p class="muted">En belirgin ilk bulgu: ikilik gösteriminde çok sayıda 1 bulunan sayılarda yöntem daha sık avantaj sağlıyor. Bu ilişki henüz ispatlanmış değil.</p></div>
+        </div>
+
+        <div class="callout" style="margin-top:18px"><strong>Önemli yorum:</strong> Zincir uzunluğunda kazanım görülmesi yeterli değildir. Parçalanış profilini hesaplamanın ek maliyeti vardır. Nihai deneyde hem zincir uzunluğu hem çalışma süresi hem de incelenen aday sayısı birlikte ölçülmelidir.</div>
+      </div>
+    </section>
+
+    <section class="soft">
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">05 · Örnek sonuçlar</div><h2>Yöntem hangi zincirleri üretti?</h2></div>
+        <div style="overflow:auto">
+          <table>
+            <thead><tr><th>Hedef</th><th>KPYTZ zinciri</th><th>KPYTZ</th><th>İkili</th><th>Kazanç</th></tr></thead>
+            <tbody>
+              <tr><td>15</td><td>1, 2, 4, 5, 10, 15</td><td>5</td><td>6</td><td>1</td></tr>
+              <tr><td>31</td><td>1, 2, 4, 8, 10, 11, 20, 31</td><td>7</td><td>8</td><td>1</td></tr>
+              <tr><td>63</td><td>1, 2, 4, 8, 16, 20, 21, 42, 63</td><td>8</td><td>10</td><td>2</td></tr>
+              <tr><td>127</td><td>1, 2, 4, 8, 16, 32, 40, 42, 43, 84, 127</td><td>10</td><td>12</td><td>2</td></tr>
+              <tr><td>255</td><td>1, 2, 4, 8, 16, 32, 64, 80, 84, 85, 170, 255</td><td>11</td><td>14</td><td>3</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="ozgunluk">
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">06 · Özgün değer</div><h2>Savunulabilecek katkı nedir?</h2><p class="muted">Toplama zincirleri ve kısa zincir sezgiselleri bilinen konulardır. Özgünlük, problemi ilk kez tanımlamakta değil; geliştirilen ölçütün davranışını sistematik olarak ortaya koymaktadır.</p></div>
+        <div class="claim-grid">
+          <article class="claim good"><h3>Savunulabilir iddialar</h3><ul><li>Kısıtlı parçalanış profilini kullanan açık bir aday seçme kuralı tanımlamak.</li><li>Yöntemin başarılı olduğu sayı sınıflarını deneysel olarak belirlemek.</li><li>İkilik gösterimdeki 1 sayısı ile başarı arasındaki ilişkiyi incelemek.</li><li>Ortak ara terimleri ödüllendiren yeni bir maliyet fonksiyonu denemek.</li><li>Başarı ve başarısızlık örneklerini birlikte raporlamak.</li></ul></article>
+          <article class="claim bad"><h3>Kaçınılması gereken iddialar</h3><ul><li>“Her sayı için en kısa zinciri buluyoruz.”</li><li>“Parçalanış sayısı zincirin kısa olmasını garanti eder.”</li><li>“Kriptografiyi hızlandırdık.”</li><li>Yalnızca ikili yöntemle karşılaştırıp yöntemi genel olarak üstün ilan etmek.</li><li>Ek hesaplama maliyetini görmezden gelmek.</li></ul></article>
+        </div>
+        <div class="card" style="margin-top:18px"><h3>Önerilen çalışma başlığı</h3><div class="formula">Kısıtlı Tamsayı Parçalanışlarıyla Yönlendirilen Toplama Zinciri Sezgisellerinin Başarılı Olduğu Sayı Sınıflarının Belirlenmesi</div><p class="muted">Daha kısa seçenek: <strong>Kısıtlı Parçalanış Rehberli Toplama Zincirleri: Algoritma ve Deneysel Sınıflandırma</strong></p></div>
+      </div>
+    </section>
+
+    <section class="soft">
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">07 · Deney tasarımı</div><h2>Adil karşılaştırma nasıl yapılmalı?</h2></div>
+        <div style="overflow:auto"><table><thead><tr><th>Boyut</th><th>Ölçülecek değer</th><th>Neden gerekli?</th></tr></thead><tbody>
+          <tr><td>Çözüm kalitesi</td><td>Zincir uzunluğu ve bilinen optimumdan sapma</td><td>Gerçekten kısa zincir bulunup bulunmadığını gösterir.</td></tr>
+          <tr><td>Hız</td><td>Çalışma süresi</td><td>Ek parçalanış hesabının maliyetini görünür kılar.</td></tr>
+          <tr><td>Arama yükü</td><td>İncelenen aday ve durum sayısı</td><td>Donanımdan bağımsız karşılaştırma sağlar.</td></tr>
+          <tr><td>Referanslar</td><td>İkili, pencere/yıldız türü basit sezgisel, küçük n için kesin arama</td><td>Tek bir zayıf yönteme karşı yapay üstünlüğü önler.</td></tr>
+          <tr><td>Sayı sınıfları</td><td>Bit sayısı, 1-bit sayısı, 2ᵏ'ya uzaklık, asal/bileşik, bölünebilme</td><td>Yöntemin ne zaman işe yaradığını açıklar.</td></tr>
+        </tbody></table></div>
+      </div>
+    </section>
+
+    <section id="yol">
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">08 · Bundan sonra</div><h2>Projeyi tamamlayacak yol haritası</h2></div>
+        <div class="roadmap">
+          <div class="road"><span class="status done">Tamamlandı</span><h3>Temel tanımlar ve ilk ders</h3><p class="muted">Parçalanış, kısıtlı parçalanış, toplama zinciri ve üs alma bağlantısı açıklandı; etkileşimli ilk ders hazırlandı.</p></div>
+          <div class="road"><span class="status done">Tamamlandı</span><h3>İki prototip algoritma</h3><p class="muted">Sade q ve çok ölçütlü KPYTZ sürümleri kodlandı; küçük deneyler çalıştırıldı.</p></div>
+          <div class="road"><span class="status open">Sıradaki</span><h3>Ölçekli ve tekrarlanabilir deney</h3><p class="muted">En az 2–10.000 aralığında zincir uzunluğu, süre ve aday sayısı birlikte kaydedilecek.</p></div>
+          <div class="road"><span class="status open">Sıradaki</span><h3>Karşılaştırma yöntemlerini genişletme</h3><p class="muted">İkili yöntemin yanında en az bir farklı klasik sezgisel ve küçük sayılar için kesin optimum kullanılacak.</p></div>
+          <div class="road"><span class="status open">Araştırma</span><h3>Sayı sınıfı hipotezi</h3><p class="muted">Çok 1-bit içeren sayılardaki başarı gözlemi test edilecek; karşı örnekler aranacak ve mümkünse özel bir aile için açıklama geliştirilecek.</p></div>
+          <div class="road"><span class="status risk">Karar kapısı</span><h3>Ek maliyet kazancı yok ediyor mu?</h3><p class="muted">Yöntem kısa zincir üretse bile aşırı yavaşsa sonuç dürüstçe sınırlandırılacak veya daha ucuz ortak-ara-adım puanına geçilecek.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="soft">
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">09 · Başarı ölçütü</div><h2>Proje ne zaman başarılı sayılır?</h2></div>
+        <div class="grid-3">
+          <article class="card"><span class="num">A</span><h3>Yöntem açık</h3><p>Başka biri kodu ve seçim kuralını kullanarak aynı zincirleri üretebilmeli.</p></article>
+          <article class="card"><span class="num">B</span><h3>Avantaj sınırlı ama gerçek</h3><p>Yöntemin her sayıda değil, belirli sayı sınıflarında ölçülebilir avantaj sağladığı gösterilebilmeli.</p></article>
+          <article class="card"><span class="num">C</span><h3>Sonuç dürüst</h3><p>Başarısız örnekler ve ek işlem maliyeti saklanmadan raporlanmalı.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head"><div class="kicker">10 · Kaynak ve çalışma dosyaları</div><h2>Şu an elimizde bulunanlar</h2></div>
+        <ul class="sources">
+          <li><a href="index.html">Etkileşimli ilk ders: Parçalanışlardan Toplama Zincirlerine</a></li>
+          <li><code>kpytz_kucuk_deney.py</code> — yöntem karşılaştırması ve küçük n için kesin optimum kontrolü</li>
+          <li><code>kpytz_tur_analizi.py</code> — sayı sınıflarına göre başarı analizi</li>
+          <li>Yerel kaynak makale: <code>nntdm_lise_proje_taramasi/makaleler/13_Toplama_Zincirleri_2022.pdf</code></li>
+          <li>Toplama zincirlerinin hızlı modüler üs almayla ilişkisini açıklayan genel kaynaklar ve kısa zincir üretme sezgiselleri üzerine literatür notları</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="wrap"><strong>Sonuç:</strong> Projenin bugünkü en güçlü yönü, gerçek bir optimizasyon problemi üzerinde ölçülebilir bir sezgisel yöntem önermesidir. En kritik eksik, zincir kısalması ile ek hesaplama maliyetini aynı deneyde değerlendirmektir.</div></footer>
+
+  <script>
+    document.querySelectorAll('.tab').forEach(button=>button.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.result-panel').forEach(x=>x.classList.remove('active'));
+      button.classList.add('active');
+      document.getElementById(button.dataset.tab).classList.add('active');
+    }));
+  </script>
+</body>
+</html>
