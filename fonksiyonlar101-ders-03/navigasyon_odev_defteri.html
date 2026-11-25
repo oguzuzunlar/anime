@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A4 Öğrenci Ödev Defteri · Fonksiyonlar 101</title>
+<link rel="stylesheet" href="stil.css">
+<script defer src="ders-verisi.js"></script>
+<script defer src="uygulama.js"></script>
+</head>
+<body data-mode="homework">
+<a class="skip" href="#content">İçeriğe geç</a>
+<header class="top"><div class="shell topbar"><a class="brand" href="index.html">ƒ <span>Fonksiyonlar 101</span></a><nav aria-label="Ders uygulamaları"><a href="index.html">Ana Panel</a><a href="navigasyon_konu_anlatim.html">Akıllı Tahta</a><a href="navigasyon_defter.html">Çalışma Defteri</a><a href="navigasyon_odev_defteri.html">Ödev Defteri</a></nav></div></header>
+<main id="content" class="shell booklet">
+<div class="intro"><div><p class="kicker">DERS 03 · EĞİMİ DEĞİŞTİR</p><h1>A4 Öğrenci Ödev Defteri</h1></div><button class="accent" id="print">Yazdır / PDF kaydet</button></div>
+<section class="card book-controls toolbar" aria-label="Fasikül seçenekleri">
+<label>Örnek kapsamı <select id="scope"><option value="all">Tümü</option><option value="0">1. örnek</option><option value="1">2. örnek</option></select></label>
+<label>Soru seviyesi <select id="level-filter"><option value="all">Tüm seviyeler</option><option value="basic">İlk üç seviye</option><option value="advanced">Yalnız yeni nesil</option></select></label>
+<label>Çözüm alanı <select id="pattern"><option value="dot">Noktalı</option><option value="grid">Kareli</option><option value="lined">Çizgili</option><option value="plain">Boş</option></select></label>
+<label><input id="scores" type="checkbox" checked> Puan kutuları</label>
+<label><input id="key" type="checkbox"> Cevap anahtarı sayfası</label>
+</section><p class="preview-status" id="preview-status" role="status"></p><div id="pages"></div></main>
+</body>
+</html>

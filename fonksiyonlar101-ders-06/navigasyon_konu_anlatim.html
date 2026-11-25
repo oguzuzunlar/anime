@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Navigasyon Akıllı Tahta · Fonksiyonlar 101</title>
+<link rel="stylesheet" href="stil.css">
+<script defer src="ders-verisi.js"></script>
+<script defer src="uygulama.js"></script>
+</head>
+<body data-mode="board">
+<a class="skip" href="#content">İçeriğe geç</a>
+<header class="top"><div class="shell topbar"><a class="brand" href="index.html">ƒ <span>Fonksiyonlar 101</span></a><nav aria-label="Ders uygulamaları"><a href="index.html">Ana Panel</a><a href="navigasyon_konu_anlatim.html">Akıllı Tahta</a><a href="navigasyon_defter.html">Çalışma Defteri</a><a href="navigasyon_odev_defteri.html">Ödev Defteri</a></nav></div></header>
+<main id="content" class="shell board-shell">
+<div class="intro"><div><p class="kicker">DERS 06 · PARÇALI MODEL KUR</p><h1>Navigasyon Akıllı Tahta</h1></div><div class="toolbar"><button id="zoom" aria-pressed="false">2× Punto</button><button id="full" hidden>Tam ekran</button></div></div>
+<div class="switch-strip"><div class="toolbar" id="example-nav" aria-label="Örnek seçimi"></div><span id="examined" role="status"></span></div>
+<div class="toolbar levels" id="level-nav" aria-label="Soru seviyesi"></div>
+<div class="board-grid" id="board-layout">
+<aside class="card notes"><p class="kicker">PROBLEM</p><h2 id="topic"></h2><p id="context"></p><h3>Konu notu</h3><p id="rule"></p></aside>
+<section class="card question" aria-labelledby="question-title">
+<div class="switch-strip"><strong id="difficulty"></strong><div class="toolbar"><button id="prev">Önceki</button><button id="next">Sonraki</button></div></div>
+<h2 id="question-title" tabindex="-1"></h2><label for="response">Çözümün</label><textarea id="response" rows="5" placeholder="İşlemini ve gerekçeni yaz"></textarea>
+<div class="reveals" id="reveals"></div>
+</section>
+<section class="card board-tools" aria-label="Çizim ve grafik">
+<div class="switch-strip lab-bar"><div class="toolbar" id="lab-nav"><button data-panel="draw" aria-pressed="true">Çizim Tahtası</button><button data-panel="graph" aria-pressed="false">Grafik Laboratuvarı</button></div><button class="accent" id="expand-board" aria-pressed="false">Çizim alanını büyüt</button></div>
+<details class="focus-problem" id="focus-problem" hidden><summary>Problem ve soru</summary><p id="focus-context"></p><p id="focus-question"></p></details>
+<div id="draw">
+<div class="toolbar controls"><button data-tool="pen" aria-pressed="true">Kalem</button><button data-tool="highlight" aria-pressed="false">Fosforlu</button><button data-tool="erase" aria-pressed="false">Silgi</button><label>Renk <input type="color" id="ink" value="#facc15"></label><label>Kalınlık <select id="width"><option value="3">İnce</option><option value="6">Orta</option><option value="10">Kalın</option></select></label><button id="grid" aria-pressed="true">Kareli</button><button id="undo">Geri al</button><button id="clear">Temizle</button></div>
+<canvas id="drawing" class="grid" aria-label="Fare veya dokunmayla kullanılan çizim tahtası"></canvas>
+</div>
+<div id="graph" hidden>
+<div class="graph-legend"><span class="series-a" id="graph-key-a"></span><span class="model-key" id="graph-key-b"></span></div>
+<canvas id="plot" role="img" aria-label="Etkileşimli fonksiyon grafiği" aria-describedby="graph-note"></canvas>
+<p class="muted" id="graph-note">Sürgüyü eşik noktasına getir. Boş ve dolu uçları karşılaştır.</p>
+<label for="probe" id="axis-input">Girdi</label><input type="range" id="probe" min="0" max="10" step="0.5" value="0"><output id="probe-result" aria-live="polite"></output>
+</div>
+</section></div></main>
+</body>
+</html>

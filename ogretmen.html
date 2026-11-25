@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Fonksiyonlar 101 · Öğretmen Paneli</title>
+  <link rel="stylesheet" href="fonksiyonlar101-mobil/kurs.css">
+  <script defer src="cevrimici/ayarlar.js"></script>
+  <script defer src="cevrimici/api.js"></script>
+  <script defer src="fonksiyonlar101-mobil/soru-bankasi.js"></script>
+  <script defer src="cevrimici/ogretmen.js"></script>
+</head>
+<body>
+  <header class="mast"><a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">ƒ</span> Fonksiyonlar 101</a><a class="mast-link" href="index.html#dersler">Dersler</a></header>
+  <main class="course-shell teacher-shell">
+    <p class="eyebrow">MOBİL PEKİŞTİRME</p>
+    <h1>Öğretmen paneli</h1>
+    <p class="tracking-notice" id="teacher-status" role="status"></p>
+    <section id="setup" class="teacher-card" hidden>
+      <h2>Çevrimiçi takip kurulumu</h2>
+      <p>Supabase projesini bağladıktan sonra bu sayfadan giriş yapabilirsin.</p>
+      <a class="text-link" href="KURULUM.md">Kurulum kılavuzu</a>
+    </section>
+    <form id="teacher-login" class="teacher-card teacher-form" hidden>
+      <h2>Öğretmen girişi</h2>
+      <label>E-posta <input type="email" id="teacher-email" autocomplete="username" required></label>
+      <label>Şifre <input type="password" id="teacher-password" autocomplete="current-password" required></label>
+      <button type="submit" class="primary">Giriş yap</button>
+    </form>
+    <div id="teacher-dashboard" hidden>
+      <div class="teacher-actions">
+        <button class="secondary" id="teacher-refresh">Sonuçları yenile</button>
+        <button class="secondary" id="teacher-logout">Çıkış yap</button>
+      </div>
+      <form id="add-student" class="teacher-card teacher-form">
+        <h2>Öğrenci bağlantısı oluştur</h2>
+        <div class="teacher-actions">
+          <label>Öğrenci etiketi <input id="student-label" maxlength="60" placeholder="Örnek Ö-12" required></label>
+          <label>Sınıf <input id="student-class" maxlength="30" placeholder="Örnek 9-A"></label>
+          <button type="submit" class="primary">Bağlantı oluştur</button>
+        </div>
+        <p>Bağlantıyı ilgili öğrenciyle bire bir paylaş.</p>
+      </form>
+      <div class="teacher-card teacher-form" id="share-box" hidden>
+        <label id="share-label" for="share-url">Öğrenci bağlantısı</label>
+        <div class="teacher-actions"><input id="share-url" type="url" readonly><button class="primary" id="copy-link">Kopyala</button></div>
+      </div>
+      <div class="teacher-layout">
+        <section class="teacher-card" aria-labelledby="roster-title">
+          <div class="section-heading"><h2 id="roster-title">Öğrenciler</h2><label>Sınıf <select id="class-filter"><option value="">Tümü</option></select></label></div>
+          <div id="roster" class="student-list"></div>
+        </section>
+        <section class="teacher-card" id="student-detail" aria-label="Öğrenci ilerlemesi"><p>Detayını görmek için bir öğrenci seç.</p></section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

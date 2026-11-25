@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Fonksiyonlar 101 · Mobil Pekiştirme</title>
+  <link rel="stylesheet" href="kurs.css">
+  <script defer src="../cevrimici/ayarlar.js"></script>
+  <script defer src="../cevrimici/api.js"></script>
+  <script defer src="../cevrimici/ogrenci.js"></script>
+  <script defer src="soru-bankasi.js"></script>
+  <script defer src="kurs.js"></script>
+</head>
+<body data-page="mobile">
+  <header class="mast"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">ƒ</span> Fonksiyonlar 101</a><a class="mast-link" id="lesson-link" href="../index.html">Ders materyalleri</a></header>
+  <main class="mobile-shell">
+    <aside class="tracking-bar" id="student-tracking" hidden aria-label="Öğrenci bağlantısı">
+      <p id="tracking-status" role="status"></p>
+      <div><button class="secondary" id="tracking-retry" hidden>Tekrar dene</button> <button class="secondary" id="tracking-exit" hidden>Öğrenciyi değiştir</button></div>
+    </aside>
+    <section id="rounds-view" aria-labelledby="lesson-title">
+      <p class="eyebrow" id="lesson-number"></p>
+      <h1 id="lesson-title"></h1>
+      <p class="lead" id="lesson-description"></p>
+      <div class="status-row"><strong id="overall-status"></strong><progress id="overall-progress" value="0" max="24" aria-label="Toplam cevaplanan soru"></progress></div>
+      <div id="round-list" class="round-list"></div>
+      <button class="secondary revisit" id="retry-all" hidden>Yanlışları yeniden çöz</button>
+      <a class="text-link" href="../index.html#dersler">Tüm dersler</a>
+    </section>
+    <section id="quiz-view" hidden aria-labelledby="question">
+      <div class="quiz-toolbar"><button class="secondary" id="exit-quiz">Bölümlere dön</button><strong id="step-label"></strong></div>
+      <progress id="quiz-progress" value="0" max="6" aria-label="Bu turdaki ilerleme"></progress>
+      <article class="quiz-card">
+        <p class="eyebrow" id="round-name"></p>
+        <h1 id="question" tabindex="-1"></h1>
+        <div class="visual" id="visual" hidden><canvas id="quiz-graph" role="img"></canvas><p id="visual-note"></p></div>
+        <div class="choices" id="choices" aria-label="Yanıt seçenekleri"></div>
+        <div id="feedback" class="feedback" role="status" hidden><strong id="feedback-title"></strong><p id="feedback-text"></p></div>
+        <button id="continue" class="primary next-button" hidden>Sonraki soru</button>
+      </article>
+    </section>
+    <section id="result-view" hidden aria-labelledby="result-title" class="result-card">
+      <p class="eyebrow">TUR TAMAMLANDI</p>
+      <h1 id="result-title" tabindex="-1">Sonuç</h1>
+      <p id="result-score" class="result-score"></p>
+      <p id="result-text"></p>
+      <div class="result-actions"><button class="primary" id="retry-round" hidden>Yanlışları yeniden çöz</button><button class="secondary" id="result-back">Bölümlere dön</button></div>
+    </section>
+  </main>
+</body>
+</html>
